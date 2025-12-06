@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -302,8 +301,12 @@
             if (!ratingsData) return;
 
             // Update active tab
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().includes(division.replace('tag', ' tag'))) {
+                    tab.classList.add('active');
+                }
+            });
 
             const divisionData = ratingsData[division];
             if (!divisionData || divisionData.length === 0) {
