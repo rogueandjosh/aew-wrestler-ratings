@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEW Wrestler Ratings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1.1em;
+        }
+
+        .last-updated {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .division-content {
+            display: none;
+        }
+
+        .division-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #b8b8b8;
+            margin-top: 5px;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ffd700;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+
+        .name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .rating {
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .rating-excellent { color: #4ade80; }
+        .rating-great { color: #86efac; }
+        .rating-good { color: #a3e635; }
+        .rating-average { color: #fbbf24; }
+        .rating-below { color: #fb923c; }
+        .rating-poor { color: #f87171; }
+
+        .change {
+            font-weight: bold;
+        }
+
+        .change-up { color: #4ade80; }
+        .change-down { color: #f87171; }
+        .change-new { color: #ffd700; }
+        .change-same { color: #888; }
+
+        .about {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .about h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .about p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: #b8b8b8;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+            }
+
+            .stats-summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #ffd700;
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.1em;
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AEW Wrestler Ratings</h1>
+            <p class="subtitle">Comprehensive Performance Rankings Across All Divisions</p>
+            <p class="last-updated" id="lastUpdated">Loading...</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showDivision('mens')">Men's Singles</button>
+            <button class="tab" onclick="showDivision('womens')">Women's Singles</button>
+            <button class="tab" onclick="showDivision('menstag')">Men's Tag Teams</button>
+            <button class="tab" onclick="showDivision('womenstag')">Women's Tag Teams</button>
+            <button class="tab" onclick="showDivision('trios')">Trios</button>
+        </div>
+
+        <div id="content">
+            <div class="loading">Loading rankings data...</div>
+        </div>
+
+        <section class="about">
+            <h2>About the Ratings</h2>
+            <p><strong>What are these ratings?</strong> These rankings track wrestler performance based on match ratings from Cagematch.net, weighted by match significance, opponent quality, and consistency.</p>
+            <p><strong>How often updated?</strong> Rankings are updated weekly after major AEW shows (Dynamite, Collision, Rampage, and PPVs).</p>
+            <p><strong>Minimum matches:</strong> Wrestlers need at least 2 rated matches to appear in the rankings.</p>
+            <p><strong>Peak/Floor:</strong> Peak shows a wrestler's highest rating achieved; Floor shows their lowest rating.</p>
+            <p><strong>Change indicators:</strong> 🔺 = moved up, 🔻 = moved down, ⬆️ = significant jump, ⬇️ = significant drop, NEW = first appearance in rankings.</p>
+        </section>
+    </div>
+
+    <script>
+        let ratingsData = null;
+
+        // Load the rankings data
+        fetch('current-rankings.json')
+            .then(response => response.json())
+            .then(data => {
+                ratingsData = data;
+                document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
+                showDivision('mens');
+            })
+            .catch(error => {
+                document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
+                console.error('Error loading data:', error);
+            });
+
+        function showDivision(division) {
+            if (!ratingsData) return;
+
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const divisionData = ratingsData[division];
+            if (!divisionData || divisionData.length === 0) {
+                document.getElementById('content').innerHTML = '<div class="error">No data available for this division.</div>';
+                return;
+            }
+
+            // Calculate stats
+            const totalWrestlers = divisionData.length;
+            const avgRating = (divisionData.reduce((sum, w) => sum + w.rating, 0) / totalWrestlers).toFixed(2);
+            const totalMatches = divisionData.reduce((sum, w) => sum + w.matches, 0);
+
+            // Build HTML
+            let html = `
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <div class="stat-number">${totalWrestlers}</div>
+                        <div class="stat-label">Ranked Wrestlers</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">${avgRating}</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">${totalMatches}</div>
+                        <div class="stat-label">Total Matches</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Rating</th>
+                                <th>Change</th>
+                                <th>Matches</th>
+                                <th>Peak</th>
+                                <th>Floor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            divisionData.forEach(wrestler => {
+                const ratingClass = getRatingClass(wrestler.rating);
+                const changeClass = getChangeClass(wrestler.change);
+                const changeSymbol = getChangeSymbol(wrestler.change);
+
+                html += `
+                    <tr>
+                        <td class="rank">${wrestler.rank}</td>
+                        <td class="name">${wrestler.name}</td>
+                        <td class="rating ${ratingClass}">${wrestler.rating.toFixed(2)}</td>
+                        <td class="change ${changeClass}">${changeSymbol}</td>
+                        <td>${wrestler.matches}</td>
+                        <td>${wrestler.peak.toFixed(2)}</td>
+                        <td>${wrestler.floor.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function getRatingClass(rating) {
+            if (rating >= 110) return 'rating-excellent';
+            if (rating >= 105) return 'rating-great';
+            if (rating >= 100) return 'rating-good';
+            if (rating >= 95) return 'rating-average';
+            if (rating >= 90) return 'rating-below';
+            return 'rating-poor';
+        }
+
+        function getChangeClass(change) {
+            if (change === 'NEW') return 'change-new';
+            if (change === '—') return 'change-same';
+            
+            const match = change.match(/^([↑↓]|[⬆⬇])/);
+            if (!match) return 'change-same';
+            
+            const symbol = match[1];
+            if (symbol === '↑' || symbol === '⬆') return 'change-up';
+            if (symbol === '↓' || symbol === '⬇') return 'change-down';
+            return 'change-same';
+        }
+
+        function getChangeSymbol(change) {
+            if (change === 'NEW') return '🆕 NEW';
+            if (change === '—') return '—';
+            return change;
+        }
+    </script>
+</body>
+</html>
