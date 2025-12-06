@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,6 +50,38 @@
             margin-top: 15px;
             font-size: 0.9em;
             color: #888;
+        }
+
+        .week-selector {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .week-selector label {
+            color: #ffd700;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        .week-selector select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .week-selector select:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .week-selector select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .tabs {
@@ -254,6 +287,12 @@
         <header>
             <h1>AEW Wrestler Ratings</h1>
             <p class="subtitle">Wrestler Ratings based on Match Performances, not Wins and Losses</p>
+            <div class="week-selector">
+                <label for="weekSelect">View Week:</label>
+                <select id="weekSelect" onchange="loadSelectedWeek()">
+                    <option value="current">Loading...</option>
+                </select>
+            </div>
             <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
@@ -283,19 +322,92 @@
 
     <script>
         let ratingsData = null;
+        let archiveIndex = null;
+        let currentWeek = 'current';
 
-        // Load the rankings data
-        fetch('current-rankings.json')
-            .then(response => response.json())
-            .then(data => {
-                ratingsData = data;
-                document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
-                showDivision('mens');
-            })
-            .catch(error => {
-                document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
-                console.error('Error loading data:', error);
-            });
+        // Load archive index and current rankings on page load
+        Promise.all([
+            fetch('archive/index.json').catch(() => ({ weeks: [] })),
+            fetch('current-rankings.json')
+        ])
+        .then(async ([archiveResponse, currentResponse]) => {
+            // Load archive index
+            if (archiveResponse.weeks) {
+                archiveIndex = archiveResponse;
+            } else {
+                archiveIndex = await archiveResponse.json().catch(() => ({ weeks: [] }));
+            }
+            
+            // Load current rankings
+            ratingsData = await currentResponse.json();
+            
+            // Populate week selector
+            populateWeekSelector();
+            
+            // Update last updated
+            document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+            
+            // Show current week
+            showDivision('mens');
+        })
+        .catch(error => {
+            document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
+            console.error('Error loading data:', error);
+        });
+
+        function populateWeekSelector() {
+            const select = document.getElementById('weekSelect');
+            select.innerHTML = '';
+            
+            // Add current week option
+            const currentOption = document.createElement('option');
+            currentOption.value = 'current';
+            currentOption.textContent = `Current (${ratingsData.currentWeek})`;
+            select.appendChild(currentOption);
+            
+            // Add archived weeks
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
+                archiveIndex.weeks.forEach(week => {
+                    const option = document.createElement('option');
+                    option.value = `archive/${week.filename}`;
+                    option.textContent = week.label;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        function loadSelectedWeek() {
+            const select = document.getElementById('weekSelect');
+            const selectedValue = select.value;
+            
+            if (selectedValue === 'current') {
+                // Reload current rankings
+                fetch('current-rankings.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        ratingsData = data;
+                        document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
+                        showDivision('mens');
+                    })
+                    .catch(error => {
+                        console.error('Error loading current rankings:', error);
+                        document.getElementById('content').innerHTML = '<div class="error">Error loading current rankings.</div>';
+                    });
+            } else {
+                // Load archived week
+                fetch(selectedValue)
+                    .then(response => response.json())
+                    .then(data => {
+                        ratingsData = data;
+                        document.getElementById('lastUpdated').textContent = `Week: ${data.currentWeek} (Archived)`;
+                        showDivision('mens');
+                    })
+                    .catch(error => {
+                        console.error('Error loading archived week:', error);
+                        document.getElementById('content').innerHTML = '<div class="error">Error loading archived rankings.</div>';
+                    });
+            }
+        }
 
         function showDivision(division) {
             if (!ratingsData) return;
@@ -409,5 +521,3 @@
     </script>
 </body>
 </html>
-
-
