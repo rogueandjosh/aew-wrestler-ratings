@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,6 +226,44 @@
             border-radius: 15px;
             padding: 30px;
             border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .dropped-out {
+            margin-top: 30px;
+            background: rgba(255, 100, 100, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .dropped-out h3 {
+            color: #fb923c;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .dropped-out-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .dropped-wrestler {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 3px solid #fb923c;
+        }
+
+        .dropped-wrestler-name {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .dropped-wrestler-info {
+            font-size: 0.85em;
+            color: #b8b8b8;
         }
 
         .about h2 {
@@ -487,6 +524,34 @@
                     </table>
                 </div>
             `;
+
+            // Add dropped out section if there are any
+            const droppedOutKey = division + 'DroppedOut';
+            const droppedOut = ratingsData[droppedOutKey];
+            
+            if (droppedOut && droppedOut.length > 0) {
+                html += `
+                    <div class="dropped-out">
+                        <h3>⬇️ Recently Dropped From Rankings (${droppedOut.length})</h3>
+                        <div class="dropped-out-list">
+                `;
+                
+                droppedOut.forEach(wrestler => {
+                    html += `
+                        <div class="dropped-wrestler">
+                            <div class="dropped-wrestler-name">${wrestler.name}</div>
+                            <div class="dropped-wrestler-info">
+                                Was #${wrestler.lastRank}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
 
             document.getElementById('content').innerHTML = html;
         }
