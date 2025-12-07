@@ -46,9 +46,16 @@
         }
 
         .last-updated {
-            margin-top: 15px;
+            margin-top: 5px;
             font-size: 0.9em;
             color: #888;
+        }
+
+        .date-range {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #ffd700;
+            font-weight: 600;
         }
 
         .week-selector {
@@ -395,6 +402,7 @@
                     <option value="current">Loading...</option>
                 </select>
             </div>
+            <p class="date-range" id="dateRange">Loading...</p>
             <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
@@ -478,7 +486,12 @@
             // Populate week selector
             populateWeekSelector();
             
-            // Update last updated
+            // Update date range and last updated
+            if (ratingsData.dateRange) {
+                document.getElementById('dateRange').textContent = ratingsData.dateRange;
+            } else {
+                document.getElementById('dateRange').textContent = '';
+            }
             document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
             
             // Show current week
@@ -520,6 +533,11 @@
                     .then(response => response.json())
                     .then(data => {
                         ratingsData = data;
+                        if (data.dateRange) {
+                            document.getElementById('dateRange').textContent = data.dateRange;
+                        } else {
+                            document.getElementById('dateRange').textContent = '';
+                        }
                         document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
                         showDivision('mens');
                     })
@@ -533,6 +551,11 @@
                     .then(response => response.json())
                     .then(data => {
                         ratingsData = data;
+                        if (data.dateRange) {
+                            document.getElementById('dateRange').textContent = data.dateRange;
+                        } else {
+                            document.getElementById('dateRange').textContent = '';
+                        }
                         document.getElementById('lastUpdated').textContent = `Week: ${data.currentWeek} (Archived)`;
                         showDivision('mens');
                     })
