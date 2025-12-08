@@ -708,35 +708,36 @@
         }
 
         function getChangeClass(change) {
-    // Handle undefined, null, or empty values
-if (changeStr === 'RE-ENTRY') {
-        return 'rank-reentry';
-    }
-            
     if (!change && change !== 0) {
         return 'no-change';
     }
     
-    // Convert to string if it's a number
-    const changeStr = String(change);
+    const changeStr = String(change);  // ← Move this up!
     
-    // Handle various formats
+    // RE-ENTRY gets special class
+    if (changeStr === 'RE-ENTRY') {  // ← Now it exists!
+        return 'rank-reentry';
+    }
+    
     if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
         return 'no-change';
     }
     
-    // Check if it contains up/down arrows or starts with +/-
-    if (changeStr.match(/↑/) || changeStr.startsWith('+') || (changeStr.match(/^\d/) && !changeStr.match(/↓/))) {
+    // Check for up arrows or positive changes
+    if (changeStr.includes('↑') || changeStr.includes('⬆') || changeStr.startsWith('+')) {
         return 'rank-up';
     }
     
-    if (changeStr.match(/↓/) || changeStr.startsWith('-')) {
+    // Check for down arrows or negative changes
+    if (changeStr.includes('↓') || changeStr.includes('⬇') || changeStr.startsWith('-')) {
         return 'rank-down';
     }
     
-    // If it's just a number, treat as no change
-    if (!isNaN(changeStr) && changeStr !== '') {
-        return 'no-change';
+    // Parse numeric changes
+    const numericChange = parseFloat(changeStr);
+    if (!isNaN(numericChange)) {
+        if (numericChange > 0) return 'rank-up';
+        if (numericChange < 0) return 'rank-down';
     }
     
     return 'no-change';
