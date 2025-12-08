@@ -706,16 +706,15 @@
             if (rating >= 90) return 'rating-below';
             return 'rating-poor';
         }
-
-        function getChangeClass(change) {
+function getChangeClass(change) {
     if (!change && change !== 0) {
         return 'no-change';
     }
     
-    const changeStr = String(change);  // ← Move this up!
+    const changeStr = String(change);
     
     // RE-ENTRY gets special class
-    if (changeStr === 'RE-ENTRY') {  // ← Now it exists!
+    if (changeStr === 'RE-ENTRY') {
         return 'rank-reentry';
     }
     
@@ -742,6 +741,7 @@
     
     return 'no-change';
 }
+        
         function formatChangeWithArrows(change) {
     if (!change && change !== 0) return '—';
     
