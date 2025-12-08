@@ -764,10 +764,37 @@
 }
 
         function getChangeSymbol(change) {
-            if (change === 'NEW') return '🆕 NEW';
-            if (change === '—') return '—';
-            return change;
-        }
+    if (!change && change !== 0) return '—';
+    
+    const changeStr = String(change);
+    
+    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+        return changeStr;
+    }
+    
+    // If already has arrows, return as is
+    if (changeStr.includes('↑') || changeStr.includes('↓') || 
+        changeStr.includes('⬆') || changeStr.includes('⬇')) {
+        return changeStr;
+    }
+    
+    // Parse numeric change
+    let numericChange = parseFloat(changeStr.replace('+', ''));
+    if (isNaN(numericChange)) return changeStr;
+    
+    const absChange = Math.abs(numericChange);
+    let arrow = '';
+    
+    if (numericChange > 0) {
+        arrow = absChange >= 10 ? '⬆' : '↑';
+        return `${arrow}${absChange}`;
+    } else if (numericChange < 0) {
+        arrow = absChange >= 10 ? '⬇' : '↓';
+        return `${arrow}${absChange}`;
+    }
+    
+    return '—';
+}
 
         function toggleDetails() {
             const details = document.getElementById('moreDetails');
