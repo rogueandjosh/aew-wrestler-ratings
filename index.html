@@ -34,11 +34,28 @@
         }
 
         h1 {
-            color: #ffd700;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
+    color: #ffd700;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ADD THESE THREE CLASSES HERE */
+.rank-up {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.rank-down {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.no-change {
+    color: #9ca3af;
+}
+
+/* Then the rest of your existing CSS continues... */
 
         .subtitle {
             color: #b8b8b8;
@@ -714,6 +731,36 @@
     }
     
     return 'no-change';
+}
+        function formatChangeWithArrows(change) {
+    if (!change && change !== 0) return '—';
+    
+    const changeStr = String(change);
+    
+    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+        return changeStr;
+    }
+    
+    if (changeStr.includes('↑') || changeStr.includes('↓') || 
+        changeStr.includes('⬆') || changeStr.includes('⬇')) {
+        return changeStr;
+    }
+    
+    let numericChange = parseFloat(changeStr.replace('+', ''));
+    if (isNaN(numericChange)) return changeStr;
+    
+    const absChange = Math.abs(numericChange);
+    let arrow = '';
+    
+    if (numericChange > 0) {
+        arrow = absChange >= 10 ? '⬆' : '↑';
+        return `${arrow}${absChange}`;
+    } else if (numericChange < 0) {
+        arrow = absChange >= 10 ? '⬇' : '↓';
+        return `${arrow}${absChange}`;
+    }
+    
+    return '—';
 }
 
         function getChangeSymbol(change) {
