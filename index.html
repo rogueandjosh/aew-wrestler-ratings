@@ -51,6 +51,11 @@
     font-weight: 600;
 }
 
+.rank-reentry {
+    color: #3b82f6; /* Blue */
+    font-weight: 600;
+}
+
 .no-change {
     color: #9ca3af;
 }
@@ -704,6 +709,10 @@
 
         function getChangeClass(change) {
     // Handle undefined, null, or empty values
+if (changeStr === 'RE-ENTRY') {
+        return 'rank-reentry';
+    }
+            
     if (!change && change !== 0) {
         return 'no-change';
     }
@@ -767,6 +776,10 @@
     if (!change && change !== 0) return '—';
     
     const changeStr = String(change);
+
+             if (changeStr === 'RE-ENTRY') {
+        return 'RE-ENTRY';
+    }
     
     if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
         return changeStr;
