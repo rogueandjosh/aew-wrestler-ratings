@@ -686,17 +686,35 @@
         }
 
         function getChangeClass(change) {
-            if (change === 'NEW') return 'change-new';
-            if (change === '—') return 'change-same';
-            
-            const match = change.match(/^([↑↓]|[⬆⬇])/);
-            if (!match) return 'change-same';
-            
-            const symbol = match[1];
-            if (symbol === '↑' || symbol === '⬆') return 'change-up';
-            if (symbol === '↓' || symbol === '⬇') return 'change-down';
-            return 'change-same';
-        }
+    // Handle undefined, null, or empty values
+    if (!change && change !== 0) {
+        return 'no-change';
+    }
+    
+    // Convert to string if it's a number
+    const changeStr = String(change);
+    
+    // Handle various formats
+    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+        return 'no-change';
+    }
+    
+    // Check if it contains up/down arrows or starts with +/-
+    if (changeStr.match(/↑/) || changeStr.startsWith('+') || (changeStr.match(/^\d/) && !changeStr.match(/↓/))) {
+        return 'rank-up';
+    }
+    
+    if (changeStr.match(/↓/) || changeStr.startsWith('-')) {
+        return 'rank-down';
+    }
+    
+    // If it's just a number, treat as no change
+    if (!isNaN(changeStr) && changeStr !== '') {
+        return 'no-change';
+    }
+    
+    return 'no-change';
+}
 
         function getChangeSymbol(change) {
             if (change === 'NEW') return '🆕 NEW';
