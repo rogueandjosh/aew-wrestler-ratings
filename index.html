@@ -1030,25 +1030,31 @@ let visibleColumns = {
 
     const weeksToLoad = [];
     
-    iif (selectedWeek === 'current' || !archiveIndex.weeks.find(w => w.label === selectedWeek)) {
-    // Load ALL weeks for current
-    archiveIndex.weeks.forEach(w => {
-        weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
-    });
-} else {
-    // For historical week: find its position and load from END (oldest) up to that week
-    const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeek);
-    if (selectedIndex !== -1) {
-        // Archive is newest-first, so we need weeks from selectedIndex to END (oldest weeks)
-        for (let i = archiveIndex.weeks.length - 1; i >= selectedIndex; i--) {
-            const week = archiveIndex.weeks[i];
-            weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
+    if (selectedWeek === 'current') {
+        // Load ALL weeks for current
+        archiveIndex.weeks.forEach(w => {
+            weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
+        });
+    } else {
+        // For historical week: find its position
+        const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeek);
+        
+        if (selectedIndex === -1) {
+            // Week not found, load all
+            archiveIndex.weeks.forEach(w => {
+                weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
+            });
+        } else {
+            // Archive is newest-first, load from END (oldest) up to selected week
+            for (let i = archiveIndex.weeks.length - 1; i >= selectedIndex; i--) {
+                const week = archiveIndex.weeks[i];
+                weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
+            }
         }
     }
-}
 
     const weekDataArray = [];
-    for (const weekInfo of weeksToLoad.reverse()) {
+    for (const weekInfo of weeksToLoad) {
         if (weekDataCache[weekInfo.url]) {
             weekDataArray.push({ ...weekDataCache[weekInfo.url], weekLabel: weekInfo.label });
         } else {
