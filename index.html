@@ -520,6 +520,19 @@
         let currentStatsDivision = 'mens';
         let currentSortColumn = 'peak';
         let currentSortDirection = 'desc';
+        let weekDataCache = {};
+let statisticsCache = {};
+let visibleColumns = {
+    rank: true,
+    name: true,
+    current: true,
+    peak: true,
+    floor: false,
+    average: true,
+    peakWeek: false,
+    floorWeek: false,
+    weeksAtNumber1: true
+};
 
         // Load archive index, current rankings, and statistics on page load
         Promise.all([
@@ -738,27 +751,43 @@
             document.getElementById('content').innerHTML = html;
         }
 
-        function showStatistics(division) {
-            currentView = 'statistics';
-            currentStatsDivision = division;
-            currentSortColumn = 'peak';
-            currentSortDirection = 'desc';
-            
-            if (!statisticsData) {
-                document.getElementById('content').innerHTML = '<div class="error">Statistics not available. Please try again later.</div>';
-                return;
-            }
+       async function showStatistics(division) {
+    currentView = 'statistics';
+    currentStatsDivision = division;
+    currentSortColumn = 'peak';
+    currentSortDirection = 'desc';
 
-            // Update active tab
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.textContent.includes('Statistics')) {
-                    tab.classList.add('active');
-                }
-            });
-
-            renderStatistics(division);
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.includes('Statistics')) {
+            tab.classList.add('active');
         }
+    });
+
+    document.getElementById('content').innerHTML = '<div class="loading">📊 Calculating statistics... This may take 5-10 seconds...</div>';
+
+    try {
+        const select = document.getElementById('weekSelect');
+        let selectedWeekLabel = 'current';
+        
+        if (select.value !== 'current') {
+            const selectedFilename = select.value.replace('archive/', '');
+            const weekInfo = archiveIndex.weeks.find(w => w.filename === selectedFilename);
+            if (weekInfo) {
+                selectedWeekLabel = weekInfo.label;
+            }
+        } else if (ratingsData && ratingsData.currentWeek) {
+            selectedWeekLabel = ratingsData.currentWeek;
+        }
+
+        const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
+        renderDynamicStatistics(division, dynamicStats, selectedWeekLabel);
+
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        document.getElementById('content').innerHTML = '<div class="error">Error calculating statistics. Please try again.</div>';
+    }
+}
 
         function renderStatistics(division) {
             const divisionData = statisticsData[division];
@@ -992,6 +1021,269 @@
                 btn.textContent = 'Show less ▲';
             }
         }
+
+        async function loadDynamicStatistics(selectedWeek, archiveIndex) {
+    const cacheKey = selectedWeek;
+    if (statisticsCache[cacheKey]) {
+        return statisticsCache[cacheKey];
+    }
+
+    const weeksToLoad = [];
+    
+    if (selectedWeek === 'current' || !archiveIndex.weeks.find(w => w.label === selectedWeek)) {
+        archiveIndex.weeks.forEach(w => {
+            weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
+        });
+    } else {
+        for (const week of archiveIndex.weeks) {
+            weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
+            if (week.label === selectedWeek) break;
+        }
+    }
+
+    const weekDataArray = [];
+    for (const weekInfo of weeksToLoad.reverse()) {
+        if (weekDataCache[weekInfo.url]) {
+            weekDataArray.push({ ...weekDataCache[weekInfo.url], weekLabel: weekInfo.label });
+        } else {
+            try {
+                const response = await fetch(weekInfo.url);
+                const data = await response.json();
+                weekDataCache[weekInfo.url] = data;
+                weekDataArray.push({ ...data, weekLabel: weekInfo.label });
+            } catch (error) {
+                console.error(`Error loading ${weekInfo.url}:`, error);
+            }
+        }
+    }
+
+    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek);
+    statisticsCache[cacheKey] = statistics;
+    return statistics;
+}
+
+function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
+    const statistics = { mens: {}, womens: {}, menstag: {}, womenstag: {}, trios: {} };
+    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+
+    weekDataArray.forEach((weekData, weekIndex) => {
+        if (!weekData) return;
+        const weekLabel = weekData.weekLabel || weekData.currentWeek;
+
+        divisions.forEach(divKey => {
+            const divisionData = weekData[divKey] || [];
+            divisionData.forEach((wrestler, index) => {
+                const rank = index + 1;
+                const name = wrestler.name;
+                const rating = wrestler.rating;
+
+                if (!statistics[divKey][name]) {
+                    statistics[divKey][name] = {
+                        name: name,
+                        ratings: [],
+                        weeks: [],
+                        ranks: [],
+                        weeksAtNumber1: 0,
+                        currentRating: null,
+                        inSelectedWeek: false
+                    };
+                }
+
+                const ws = statistics[divKey][name];
+                ws.ratings.push(rating);
+                ws.weeks.push(weekLabel);
+                ws.ranks.push(rank);
+
+                if (rank === 1) ws.weeksAtNumber1++;
+
+                if (weekLabel === selectedWeekLabel || 
+                    (selectedWeekLabel === 'current' && weekIndex === weekDataArray.length - 1)) {
+                    ws.currentRating = rating;
+                    ws.inSelectedWeek = true;
+                }
+            });
+        });
+    });
+
+    const finalStatistics = { mens: [], womens: [], menstag: [], womenstag: [], trios: [] };
+
+    divisions.forEach(divKey => {
+        Object.keys(statistics[divKey]).forEach(name => {
+            const wrestler = statistics[divKey][name];
+            if (wrestler.ratings.length === 0) return;
+
+            const peak = Math.max(...wrestler.ratings);
+            const peakIndex = wrestler.ratings.indexOf(peak);
+            const peakWeek = wrestler.weeks[peakIndex];
+            
+            const floor = Math.min(...wrestler.ratings);
+            const floorIndex = wrestler.ratings.indexOf(floor);
+            const floorWeek = wrestler.weeks[floorIndex];
+            
+            const sum = wrestler.ratings.reduce((a, b) => a + b, 0);
+            const average = sum / wrestler.ratings.length;
+            const current = wrestler.inSelectedWeek && wrestler.currentRating !== null ? wrestler.currentRating : 100.00;
+
+            finalStatistics[divKey].push({
+                name: name,
+                current: current,
+                peak: peak,
+                floor: floor,
+                average: average,
+                peakWeek: peakWeek,
+                floorWeek: floorWeek,
+                weeksAtNumber1: wrestler.weeksAtNumber1
+            });
+        });
+
+        finalStatistics[divKey].sort((a, b) => b.peak - a.peak);
+    });
+
+    return finalStatistics;
+}
+        function renderDynamicStatistics(division, statisticsData, selectedWeekLabel) {
+    const divisionData = statisticsData[division];
+    
+    if (!divisionData || divisionData.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="error">No statistics available.</div>';
+        return;
+    }
+
+    const divisionNames = {
+        'mens': "Men's Singles",
+        'womens': "Women's Singles",
+        'menstag': "Men's Tag Teams",
+        'womenstag': "Women's Tag Teams",
+        'trios': "Trios"
+    };
+
+    let html = `
+        <div class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-number">${divisionData.length}</div>
+                <div class="stat-label">Total Wrestlers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">${selectedWeekLabel}</div>
+                <div class="stat-label">Statistics Through</div>
+            </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom: 20px;">
+            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
+            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
+            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
+            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
+            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
+        </div>
+
+        <div class="table-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #ffd700; margin: 0;">📊 ${divisionNames[division]}</h2>
+                <button onclick="toggleColumnSelector()" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    ⚙️ Customize Columns
+                </button>
+            </div>
+            
+            <div id="columnSelector" style="display: none; background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.rank ? 'checked' : ''} onchange="toggleColumn('rank', this.checked)"> #
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" checked disabled> Name (required)
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.current ? 'checked' : ''} onchange="toggleColumn('current', this.checked)"> Current
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.peak ? 'checked' : ''} onchange="toggleColumn('peak', this.checked)"> Peak
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.floor ? 'checked' : ''} onchange="toggleColumn('floor', this.checked)"> Floor
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.average ? 'checked' : ''} onchange="toggleColumn('average', this.checked)"> Average
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.peakWeek ? 'checked' : ''} onchange="toggleColumn('peakWeek', this.checked)"> Peak Week
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.floorWeek ? 'checked' : ''} onchange="toggleColumn('floorWeek', this.checked)"> Floor Week
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.weeksAtNumber1 ? 'checked' : ''} onchange="toggleColumn('weeksAtNumber1', this.checked)"> Weeks at #1
+                    </label>
+                </div>
+            </div>
+            
+            <p style="color: #b8b8b8; margin-bottom: 15px;">Through <strong style="color: #ffd700;">${selectedWeekLabel}</strong></p>
+            <table>
+                <thead><tr>
+                        ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
+                        <th class="sortable" onclick="sortStatsData('name')">Name</th>
+                        ${visibleColumns.current ? '<th class="sortable" onclick="sortStatsData(\'current\')">Current</th>' : ''}
+                        ${visibleColumns.peak ? '<th class="sortable" onclick="sortStatsData(\'peak\')">Peak</th>' : ''}
+                        ${visibleColumns.floor ? '<th class="sortable" onclick="sortStatsData(\'floor\')">Floor</th>' : ''}
+                        ${visibleColumns.average ? '<th class="sortable" onclick="sortStatsData(\'average\')">Average</th>' : ''}
+                        ${visibleColumns.peakWeek ? '<th class="sortable" onclick="sortStatsData(\'peakWeek\')">Peak Week</th>' : ''}
+                        ${visibleColumns.floorWeek ? '<th class="sortable" onclick="sortStatsData(\'floorWeek\')">Floor Week</th>' : ''}
+                        ${visibleColumns.weeksAtNumber1 ? '<th class="sortable" onclick="sortStatsData(\'weeksAtNumber1\')">Weeks at #1</th>' : ''}
+                    </tr></thead>
+                <tbody>
+    `;
+
+    const sortedData = [...divisionData];
+    sortData(sortedData, currentSortColumn, currentSortDirection);
+
+    sortedData.forEach((wrestler, index) => {
+        const ratingClass = getRatingClass(wrestler.current);
+        const peakClass = getRatingClass(wrestler.peak);
+        
+        html += '<tr>';
+        if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
+        html += `<td class="name">${wrestler.name}</td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>`;
+        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
+        if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
+        if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
+        if (visibleColumns.peakWeek) html += `<td>${wrestler.peakWeek}</td>`;
+        if (visibleColumns.floorWeek) html += `<td>${wrestler.floorWeek}</td>`;
+        if (visibleColumns.weeksAtNumber1) html += `<td>${wrestler.weeksAtNumber1}</td>`;
+        html += '</tr>';
+    });
+
+    html += `</tbody></table></div>`;
+    document.getElementById('content').innerHTML = html;
+
+    window.currentStatisticsData = statisticsData;
+    window.currentSelectedWeek = selectedWeekLabel;
+    updateSortedColumnStyle();
+}
+        function toggleColumnSelector() {
+    const selector = document.getElementById('columnSelector');
+    selector.style.display = selector.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleColumn(column, checked) {
+    visibleColumns[column] = checked;
+    if (window.currentStatisticsData) {
+        renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
+    }
+}
+
+function sortStatsData(column) {
+    if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+    } else {
+        currentSortColumn = column;
+        currentSortDirection = (column === 'name' || column === 'peakWeek' || column === 'floorWeek') ? 'asc' : 'desc';
+    }
+
+    if (window.currentStatisticsData) {
+        renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
+    }
+}
     </script>
 </body>
 </html>
