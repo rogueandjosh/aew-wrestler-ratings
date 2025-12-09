@@ -1022,7 +1022,7 @@ let visibleColumns = {
             }
         }
 
-        async function loadDynamicStatistics(selectedWeek, archiveIndex) {
+async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     const cacheKey = selectedWeek;
     if (statisticsCache[cacheKey]) {
         return statisticsCache[cacheKey];
@@ -1031,21 +1031,17 @@ let visibleColumns = {
     const weeksToLoad = [];
     
     if (selectedWeek === 'current') {
-        // Load ALL weeks for current
         archiveIndex.weeks.forEach(w => {
             weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
         });
     } else {
-        // For historical week: find its position
         const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeek);
         
         if (selectedIndex === -1) {
-            // Week not found, load all
             archiveIndex.weeks.forEach(w => {
                 weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
             });
         } else {
-            // Archive is newest-first, load from END (oldest) up to selected week
             for (let i = archiveIndex.weeks.length - 1; i >= selectedIndex; i--) {
                 const week = archiveIndex.weeks[i];
                 weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
