@@ -34,33 +34,30 @@
         }
 
         h1 {
-    color: #ffd700;
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
 
-/* ADD THESE THREE CLASSES HERE */
-.rank-up {
-    color: #22c55e;
-    font-weight: 600;
-}
+        .rank-up {
+            color: #22c55e;
+            font-weight: 600;
+        }
 
-.rank-down {
-    color: #ef4444;
-    font-weight: 600;
-}
+        .rank-down {
+            color: #ef4444;
+            font-weight: 600;
+        }
 
-.rank-reentry {
-    color: #3b82f6; /* Blue */
-    font-weight: 600;
-}
+        .rank-reentry {
+            color: #3b82f6;
+            font-weight: 600;
+        }
 
-.no-change {
-    color: #9ca3af;
-}
-
-/* Then the rest of your existing CSS continues... */
+        .no-change {
+            color: #9ca3af;
+        }
 
         .subtitle {
             color: #b8b8b8;
@@ -206,6 +203,35 @@
             border-bottom: 2px solid #ffd700;
             position: sticky;
             top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+        }
+
+        th.sorted-asc::after {
+            content: ' ▲';
+            opacity: 1;
+        }
+
+        th.sorted-desc::after {
+            content: ' ▼';
+            opacity: 1;
+        }
+
+        th.no-sort {
+            cursor: default;
+        }
+
+        th.no-sort::after {
+            content: '';
         }
 
         td {
@@ -249,14 +275,6 @@
         .change-new { color: #ffd700; }
         .change-same { color: #888; }
 
-        .about {
-            margin-top: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
         .dropped-out {
             margin-top: 30px;
             background: rgba(255, 100, 100, 0.1);
@@ -293,6 +311,14 @@
         .dropped-wrestler-info {
             font-size: 0.85em;
             color: #b8b8b8;
+        }
+
+        .about {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .about h2 {
@@ -434,6 +460,7 @@
             <button class="tab" onclick="showDivision('menstag')">Men's Tag Teams</button>
             <button class="tab" onclick="showDivision('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="showDivision('trios')">Trios</button>
+            <button class="tab" onclick="showStatistics('mens')">📊 Statistics</button>
         </div>
 
         <div id="content">
@@ -486,15 +513,21 @@
 
     <script>
         let ratingsData = null;
+        let statisticsData = null;
         let archiveIndex = null;
         let currentWeek = 'current';
+        let currentView = 'rankings'; // 'rankings' or 'statistics'
+        let currentStatsDivision = 'mens';
+        let currentSortColumn = 'peak';
+        let currentSortDirection = 'desc';
 
-        // Load archive index and current rankings on page load
+        // Load archive index, current rankings, and statistics on page load
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
-            fetch('current-rankings.json')
+            fetch('current-rankings.json'),
+            fetch('statistics.json').catch(() => null)
         ])
-        .then(async ([archiveResponse, currentResponse]) => {
+        .then(async ([archiveResponse, currentResponse, statsResponse]) => {
             // Load archive index
             if (archiveResponse.weeks) {
                 archiveIndex = archiveResponse;
@@ -504,6 +537,11 @@
             
             // Load current rankings
             ratingsData = await currentResponse.json();
+            
+            // Load statistics if available
+            if (statsResponse) {
+                statisticsData = await statsResponse.json();
+            }
             
             // Populate week selector
             populateWeekSelector();
@@ -589,6 +627,8 @@
         }
 
         function showDivision(division) {
+            currentView = 'rankings';
+            
             if (!ratingsData) return;
 
             // Update active tab
@@ -698,6 +738,172 @@
             document.getElementById('content').innerHTML = html;
         }
 
+        function showStatistics(division) {
+            currentView = 'statistics';
+            currentStatsDivision = division;
+            currentSortColumn = 'peak';
+            currentSortDirection = 'desc';
+            
+            if (!statisticsData) {
+                document.getElementById('content').innerHTML = '<div class="error">Statistics not available. Please try again later.</div>';
+                return;
+            }
+
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.includes('Statistics')) {
+                    tab.classList.add('active');
+                }
+            });
+
+            renderStatistics(division);
+        }
+
+        function renderStatistics(division) {
+            const divisionData = statisticsData[division];
+            
+            if (!divisionData || divisionData.length === 0) {
+                document.getElementById('content').innerHTML = '<div class="error">No statistics available for this division.</div>';
+                return;
+            }
+
+            const divisionNames = {
+                'mens': "Men's Singles",
+                'womens': "Women's Singles",
+                'menstag': "Men's Tag Teams",
+                'womenstag': "Women's Tag Teams",
+                'trios': "Trios"
+            };
+
+            // Create tabs for divisions
+            let html = `
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <div class="stat-number">${divisionData.length}</div>
+                        <div class="stat-label">Total Wrestlers</div>
+                    </div>
+                </div>
+
+                <div class="tabs" style="margin-bottom: 20px;">
+                    <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
+                    <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
+                    <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
+                    <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
+                    <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
+                </div>
+
+                <div class="table-container">
+                    <h2 style="color: #ffd700; margin-bottom: 20px;">📊 All-Time Statistics - ${divisionNames[division]}</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="no-sort">#</th>
+                                <th class="sortable" onclick="sortStatistics('name')">Name</th>
+                                <th class="sortable" onclick="sortStatistics('current')">Current</th>
+                                <th class="sortable" onclick="sortStatistics('peak')">Peak</th>
+                                <th class="sortable" onclick="sortStatistics('floor')">Floor</th>
+                                <th class="sortable" onclick="sortStatistics('average')">Average</th>
+                                <th class="sortable" onclick="sortStatistics('peakWeek')">Peak Week</th>
+                                <th class="sortable" onclick="sortStatistics('weeksAtNumber1')">Weeks at #1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Sort data
+            const sortedData = [...divisionData];
+            sortData(sortedData, currentSortColumn, currentSortDirection);
+
+            sortedData.forEach((wrestler, index) => {
+                const ratingClass = getRatingClass(wrestler.current);
+                const peakClass = getRatingClass(wrestler.peak);
+                
+                html += `
+                    <tr>
+                        <td class="rank">${index + 1}</td>
+                        <td class="name">${wrestler.name}</td>
+                        <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
+                        <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
+                        <td class="rating">${wrestler.floor.toFixed(2)}</td>
+                        <td class="rating">${wrestler.average.toFixed(2)}</td>
+                        <td>${wrestler.peakWeek}</td>
+                        <td>${wrestler.weeksAtNumber1}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+
+            // Update sorted column styling
+            updateSortedColumnStyle();
+        }
+
+        function sortStatistics(column) {
+            if (currentSortColumn === column) {
+                // Toggle direction
+                currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+            } else {
+                // New column, default to desc for numbers, asc for text
+                currentSortColumn = column;
+                currentSortDirection = (column === 'name' || column === 'peakWeek') ? 'asc' : 'desc';
+            }
+
+            renderStatistics(currentStatsDivision);
+        }
+
+        function sortData(data, column, direction) {
+            data.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                // Handle special cases
+                if (column === 'name' || column === 'peakWeek') {
+                    valA = valA.toString().toLowerCase();
+                    valB = valB.toString().toLowerCase();
+                    return direction === 'asc' 
+                        ? valA.localeCompare(valB)
+                        : valB.localeCompare(valA);
+                } else {
+                    // Numeric sorting
+                    return direction === 'desc' 
+                        ? valB - valA
+                        : valA - valB;
+                }
+            });
+        }
+
+        function updateSortedColumnStyle() {
+            // Remove all sorted classes
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+            });
+
+            // Add sorted class to current column
+            const columnIndex = {
+                'name': 1,
+                'current': 2,
+                'peak': 3,
+                'floor': 4,
+                'average': 5,
+                'peakWeek': 6,
+                'weeksAtNumber1': 7
+            }[currentSortColumn];
+
+            if (columnIndex !== undefined) {
+                const th = document.querySelectorAll('th')[columnIndex];
+                if (th) {
+                    th.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            }
+        }
+
         function getRatingClass(rating) {
             if (rating >= 110) return 'rating-excellent';
             if (rating >= 105) return 'rating-great';
@@ -706,109 +912,73 @@
             if (rating >= 90) return 'rating-below';
             return 'rating-poor';
         }
-function getChangeClass(change) {
-    if (!change && change !== 0) {
-        return 'no-change';
-    }
-    
-    const changeStr = String(change);
-    
-    // RE-ENTRY gets special class
-    if (changeStr === 'RE-ENTRY') {
-        return 'rank-reentry';
-    }
-    
-    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
-        return 'no-change';
-    }
-    
-    // Check for up arrows or positive changes
-    if (changeStr.includes('↑') || changeStr.includes('⬆') || changeStr.startsWith('+')) {
-        return 'rank-up';
-    }
-    
-    // Check for down arrows or negative changes
-    if (changeStr.includes('↓') || changeStr.includes('⬇') || changeStr.startsWith('-')) {
-        return 'rank-down';
-    }
-    
-    // Parse numeric changes
-    const numericChange = parseFloat(changeStr);
-    if (!isNaN(numericChange)) {
-        if (numericChange > 0) return 'rank-up';
-        if (numericChange < 0) return 'rank-down';
-    }
-    
-    return 'no-change';
-}
-        
-        function formatChangeWithArrows(change) {
-    if (!change && change !== 0) return '—';
-    
-    const changeStr = String(change);
-    
-    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
-        return changeStr;
-    }
-    
-    if (changeStr.includes('↑') || changeStr.includes('↓') || 
-        changeStr.includes('⬆') || changeStr.includes('⬇')) {
-        return changeStr;
-    }
-    
-    let numericChange = parseFloat(changeStr.replace('+', ''));
-    if (isNaN(numericChange)) return changeStr;
-    
-    const absChange = Math.abs(numericChange);
-    let arrow = '';
-    
-    if (numericChange > 0) {
-        arrow = absChange >= 10 ? '⬆' : '↑';
-        return `${arrow}${absChange}`;
-    } else if (numericChange < 0) {
-        arrow = absChange >= 10 ? '⬇' : '↓';
-        return `${arrow}${absChange}`;
-    }
-    
-    return '—';
-}
+
+        function getChangeClass(change) {
+            if (!change && change !== 0) {
+                return 'no-change';
+            }
+            
+            const changeStr = String(change);
+            
+            if (changeStr === 'RE-ENTRY') {
+                return 'rank-reentry';
+            }
+            
+            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+                return 'no-change';
+            }
+            
+            if (changeStr.includes('↑') || changeStr.includes('⬆') || changeStr.startsWith('+')) {
+                return 'rank-up';
+            }
+            
+            if (changeStr.includes('↓') || changeStr.includes('⬇') || changeStr.startsWith('-')) {
+                return 'rank-down';
+            }
+            
+            const numericChange = parseFloat(changeStr);
+            if (!isNaN(numericChange)) {
+                if (numericChange > 0) return 'rank-up';
+                if (numericChange < 0) return 'rank-down';
+            }
+            
+            return 'no-change';
+        }
 
         function getChangeSymbol(change) {
-    if (!change && change !== 0) return '—';
-    
-    const changeStr = String(change);
+            if (!change && change !== 0) return '—';
+            
+            const changeStr = String(change);
 
-             if (changeStr === 'RE-ENTRY') {
-        return 'RE-ENTRY';
-    }
-    
-    if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
-        return changeStr;
-    }
-    
-    // If already has arrows, return as is
-    if (changeStr.includes('↑') || changeStr.includes('↓') || 
-        changeStr.includes('⬆') || changeStr.includes('⬇')) {
-        return changeStr;
-    }
-    
-    // Parse numeric change
-    let numericChange = parseFloat(changeStr.replace('+', ''));
-    if (isNaN(numericChange)) return changeStr;
-    
-    const absChange = Math.abs(numericChange);
-    let arrow = '';
-    
-    if (numericChange > 0) {
-        arrow = absChange >= 10 ? '⬆' : '↑';
-        return `${arrow}${absChange}`;
-    } else if (numericChange < 0) {
-        arrow = absChange >= 10 ? '⬇' : '↓';
-        return `${arrow}${absChange}`;
-    }
-    
-    return '—';
-}
+            if (changeStr === 'RE-ENTRY') {
+                return 'RE-ENTRY';
+            }
+            
+            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+                return changeStr;
+            }
+            
+            if (changeStr.includes('↑') || changeStr.includes('↓') || 
+                changeStr.includes('⬆') || changeStr.includes('⬇')) {
+                return changeStr;
+            }
+            
+            let numericChange = parseFloat(changeStr.replace('+', ''));
+            if (isNaN(numericChange)) return changeStr;
+            
+            const absChange = Math.abs(numericChange);
+            let arrow = '';
+            
+            if (numericChange > 0) {
+                arrow = absChange >= 10 ? '⬆' : '↑';
+                return `${arrow}${absChange}`;
+            } else if (numericChange < 0) {
+                arrow = absChange >= 10 ? '⬇' : '↓';
+                return `${arrow}${absChange}`;
+            }
+            
+            return '—';
+        }
 
         function toggleDetails() {
             const details = document.getElementById('moreDetails');
