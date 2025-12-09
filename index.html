@@ -1008,7 +1008,7 @@ let visibleColumns = {
             
             return '—';
         }
-
+        
         function toggleDetails() {
             const details = document.getElementById('moreDetails');
             const btn = document.querySelector('.expand-btn');
@@ -1021,7 +1021,7 @@ let visibleColumns = {
                 btn.textContent = 'Show less ▲';
             }
         }
-
+        
 async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     const cacheKey = selectedWeek;
     if (statisticsCache[cacheKey]) {
@@ -1048,7 +1048,7 @@ async function loadDynamicStatistics(selectedWeek, archiveIndex) {
             }
         }
     }
-
+}
     const weekDataArray = [];
     for (const weekInfo of weeksToLoad) {
         if (weekDataCache[weekInfo.url]) {
