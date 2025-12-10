@@ -154,6 +154,159 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .filter-controls {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
+        .rating-slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .rating-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+
+        .rating-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #ffd700;
+            font-weight: 600;
+            min-width: 50px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #ffd700;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .filter-label {
+            color: #e0e0e0;
+            font-size: 0.95em;
+        }
+
+        .active-count {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
         .stats-summary {
             display: flex;
             justify-content: center;
@@ -658,17 +811,78 @@ let visibleColumns = {
                 return;
             }
 
-            // Calculate stats
-            const totalWrestlers = divisionData.length;
-            const avgRating = (divisionData.reduce((sum, w) => sum + w.rating, 0) / totalWrestlers).toFixed(2);
-            const totalMatches = divisionData.reduce((sum, w) => sum + w.matches, 0);
+            // Store current division for filtering
+            window.currentDivision = division;
+            window.currentDivisionData = [...divisionData];
+            
+            // Render with initial filters
+            renderDivisionWithFilters(division, divisionData);
+        }
 
-            // Build HTML
+        function renderDivisionWithFilters(division, data) {
+            // Get filter values
+            const searchTerm = document.getElementById('search-' + division)?.value.toLowerCase() || '';
+            const minRating = parseInt(document.getElementById('rating-' + division)?.value || 0);
+            const showDropped = document.getElementById('show-dropped-' + division)?.checked !== false;
+
+            // Apply filters
+            let filteredData = data.filter(wrestler => {
+                const matchesSearch = wrestler.name.toLowerCase().includes(searchTerm);
+                const matchesRating = wrestler.rating >= minRating;
+                return matchesSearch && matchesRating;
+            });
+
+            // Calculate stats
+            const totalWrestlers = filteredData.length;
+            const avgRating = totalWrestlers > 0 ? (filteredData.reduce((sum, w) => sum + w.rating, 0) / totalWrestlers).toFixed(2) : '0.00';
+            const totalMatches = filteredData.reduce((sum, w) => sum + w.matches, 0);
+
+            // Build HTML with filter controls
             let html = `
+                <div class="filter-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="search-${division}">🔍 Search Wrestlers</label>
+                            <input type="text" 
+                                   id="search-${division}" 
+                                   class="search-box" 
+                                   placeholder="Type wrestler name..."
+                                   oninput="applyFilters('${division}')"
+                                   value="${searchTerm}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="rating-${division}">⭐ Minimum Rating: <span class="slider-value" id="rating-value-${division}">${minRating}</span></label>
+                            <input type="range" 
+                                   id="rating-${division}" 
+                                   class="rating-slider" 
+                                   min="0" 
+                                   max="200" 
+                                   step="10" 
+                                   value="${minRating}"
+                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                       id="show-dropped-${division}" 
+                                       ${showDropped ? 'checked' : ''}
+                                       onchange="applyFilters('${division}')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="filter-label">Show Dropped Out Wrestlers</span>
+                        </div>
+                        <div class="active-count">
+                            Showing ${totalWrestlers} of ${data.length} wrestlers
+                        </div>
+                    </div>
+                </div>
+
                 <div class="stats-summary">
                     <div class="stat-box">
                         <div class="stat-number">${totalWrestlers}</div>
-                        <div class="stat-label">Ranked Wrestlers</div>
+                        <div class="stat-label">Filtered Wrestlers</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-number">${avgRating}</div>
@@ -696,7 +910,7 @@ let visibleColumns = {
                         <tbody>
             `;
 
-            divisionData.forEach(wrestler => {
+            filteredData.forEach(wrestler => {
                 const ratingClass = getRatingClass(wrestler.rating);
                 const changeClass = getChangeClass(wrestler.change);
                 const changeSymbol = getChangeSymbol(wrestler.change);
@@ -720,35 +934,58 @@ let visibleColumns = {
                 </div>
             `;
 
-            // Add dropped out section if there are any
-            const droppedOutKey = division + 'DroppedOut';
-            const droppedOut = ratingsData[droppedOutKey];
-            
-            if (droppedOut && droppedOut.length > 0) {
-                html += `
-                    <div class="dropped-out">
-                        <h3>⬇️ Recently Dropped From Rankings (${droppedOut.length})</h3>
-                        <div class="dropped-out-list">
-                `;
+            // Add dropped out section if toggle is on
+            if (showDropped) {
+                const droppedOutKey = division + 'DroppedOut';
+                const droppedOut = ratingsData[droppedOutKey];
                 
-                droppedOut.forEach(wrestler => {
-                    html += `
-                        <div class="dropped-wrestler">
-                            <div class="dropped-wrestler-name">${wrestler.name}</div>
-                            <div class="dropped-wrestler-info">
-                                Was #${wrestler.lastRank}
+                if (droppedOut && droppedOut.length > 0) {
+                    // Apply search filter to dropped out
+                    const filteredDropped = droppedOut.filter(wrestler => 
+                        wrestler.name.toLowerCase().includes(searchTerm)
+                    );
+
+                    if (filteredDropped.length > 0) {
+                        html += `
+                            <div class="dropped-out">
+                                <h3>⬇️ Recently Dropped From Rankings (${filteredDropped.length})</h3>
+                                <div class="dropped-out-list">
+                        `;
+                        
+                        filteredDropped.forEach(wrestler => {
+                            html += `
+                                <div class="dropped-wrestler">
+                                    <div class="dropped-wrestler-name">${wrestler.name}</div>
+                                    <div class="dropped-wrestler-info">
+                                        Was #${wrestler.lastRank}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
+                        `;
+                    }
+                }
             }
 
             document.getElementById('content').innerHTML = html;
+        }
+
+        function applyFilters(division) {
+            if (window.currentDivisionData) {
+                renderDivisionWithFilters(division, window.currentDivisionData);
+            }
+        }
+
+        function updateRatingValue(division) {
+            const slider = document.getElementById('rating-' + division);
+            const display = document.getElementById('rating-value-' + division);
+            if (slider && display) {
+                display.textContent = slider.value;
+            }
         }
 
        async function showStatistics(division) {
