@@ -1802,8 +1802,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
     });
 
     divisions.forEach(divKey => {
-        Object.keys(statistics[divKey]).forEach(name => {
-            const wrestler = statistics[divKey][name];
+        Object.keys(statistics[divKey]).forEach(canonicalName => {
+            const wrestler = statistics[divKey][canonicalName];
             if (wrestler.ratings.length === 0) return;
 
             const peak = Math.max(...wrestler.ratings);
@@ -1818,8 +1818,12 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             const average = sum / wrestler.ratings.length;
             const current = wrestler.inSelectedWeek && wrestler.currentRating !== null ? wrestler.currentRating : 100.00;
 
+            // Get the display name for the selected week
+            const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
+
             finalStatistics[divKey].push({
-                name: name,
+                name: displayName,  // Show name as it was at selected week
+                canonicalName: canonicalName,  // Keep for grouping
                 current: current,
                 peak: peak,
                 floor: floor,
