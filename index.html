@@ -1648,7 +1648,31 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
         });
     });
 
-    const finalStatistics = { mens: [], womens: [], menstag: [], womenstag: [], trios: [] };
+    const finalStatistics = { 
+        mens: [], 
+        womens: [], 
+        menstag: [], 
+        womenstag: [], 
+        trios: [],
+        totalWeeks: { mens: 0, womens: 0, menstag: 0, womenstag: 0, trios: 0 }
+    };
+
+    // Calculate total weeks for each division (weeks with at least one wrestler/team)
+    divisions.forEach(divKey => {
+        const divisionWeeks = new Set();
+        
+        weekDataArray.forEach(weekData => {
+            const weekIndex = weekDataArray.indexOf(weekData);
+            const weekLabel = allWeeksData[weekIndex]?.label || 'current';
+            
+            // Only count week if there are wrestlers in this division
+            if (weekData[divKey] && weekData[divKey].length > 0) {
+                divisionWeeks.add(weekLabel);
+            }
+        });
+        
+        finalStatistics.totalWeeks[divKey] = divisionWeeks.size;
+    });
 
     divisions.forEach(divKey => {
         Object.keys(statistics[divKey]).forEach(name => {
@@ -1701,6 +1725,10 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
             <div class="stat-box">
                 <div class="stat-number">${divisionData?.length || 0}</div>
                 <div class="stat-label">Total Wrestlers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">${statisticsData.totalWeeks?.[division] || 0}</div>
+                <div class="stat-label">Total Weeks</div>
             </div>
             <div class="stat-box">
                 <div class="stat-number">${selectedWeekLabel}</div>
