@@ -815,11 +815,70 @@ let visibleColumns = {
             window.currentDivision = division;
             window.currentDivisionData = [...divisionData];
             
-            // Render with initial filters
-            renderDivisionWithFilters(division, divisionData);
+            // Render initial structure with filters
+            renderDivisionStructure(division, divisionData);
         }
 
-        function renderDivisionWithFilters(division, data) {
+        function renderDivisionStructure(division, data) {
+            // Build the STATIC structure with filter controls (only rendered once)
+            let html = `
+                <div class="filter-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="search-${division}">🔍 Search Wrestlers</label>
+                            <input type="text" 
+                                   id="search-${division}" 
+                                   class="search-box" 
+                                   placeholder="Type wrestler name..."
+                                   oninput="applyFilters('${division}')">
+                        </div>
+                        <div class="filter-group">
+                            <label for="rating-${division}">⭐ Minimum Rating: <span class="slider-value" id="rating-value-${division}">0</span></label>
+                            <input type="range" 
+                                   id="rating-${division}" 
+                                   class="rating-slider" 
+                                   min="0" 
+                                   max="200" 
+                                   step="1" 
+                                   value="0"
+                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')"
+                                   onchange="applyFilters('${division}', true)">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                       id="show-dropped-${division}" 
+                                       checked
+                                       onchange="applyFilters('${division}', true)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="filter-label">Show Dropped Out Wrestlers</span>
+                        </div>
+                        <div class="active-count" id="active-count-${division}">
+                            Showing ${data.length} of ${data.length} wrestlers
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-summary" id="stats-${division}">
+                </div>
+
+                <div class="table-container" id="table-${division}">
+                </div>
+
+                <div id="dropped-${division}">
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+            
+            // Now render the data (without touching the filters)
+            updateDivisionData(division, data);
+        }
+
+        function updateDivisionData(division, data) {
             // Get filter values
             const searchTerm = document.getElementById('search-' + division)?.value.toLowerCase() || '';
             const minRating = parseInt(document.getElementById('rating-' + division)?.value || 0);
@@ -848,50 +907,16 @@ let visibleColumns = {
                 avgRating = (ratingSum / totalWrestlers).toFixed(2);
             }
 
-            // Build HTML with filter controls
-            let html = `
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <label for="search-${division}">🔍 Search Wrestlers</label>
-                            <input type="text" 
-                                   id="search-${division}" 
-                                   class="search-box" 
-                                   placeholder="Type wrestler name..."
-                                   oninput="applyFilters('${division}')"
-                                   value="${searchTerm}">
-                        </div>
-                        <div class="filter-group">
-                            <label for="rating-${division}">⭐ Minimum Rating: <span class="slider-value" id="rating-value-${division}">${minRating}</span></label>
-                            <input type="range" 
-                                   id="rating-${division}" 
-                                   class="rating-slider" 
-                                   min="0" 
-                                   max="200" 
-                                   step="1" 
-                                   value="${minRating}"
-                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')"
-                                   onchange="applyFilters('${division}', true)">
-                        </div>
-                    </div>
-                    <div class="filter-row">
-                        <div class="toggle-container">
-                            <label class="toggle-switch">
-                                <input type="checkbox" 
-                                       id="show-dropped-${division}" 
-                                       ${showDropped ? 'checked' : ''}
-                                       onchange="applyFilters('${division}', true)">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="filter-label">Show Dropped Out Wrestlers</span>
-                        </div>
-                        <div class="active-count">
-                            Showing ${totalWrestlers} of ${data.length} wrestlers
-                        </div>
-                    </div>
-                </div>
+            // Update active count
+            const countEl = document.getElementById('active-count-' + division);
+            if (countEl) {
+                countEl.textContent = `Showing ${totalWrestlers} of ${data.length} wrestlers`;
+            }
 
-                <div class="stats-summary">
+            // Update stats
+            const statsEl = document.getElementById('stats-' + division);
+            if (statsEl) {
+                statsEl.innerHTML = `
                     <div class="stat-box">
                         <div class="stat-number">${totalWrestlers}</div>
                         <div class="stat-label">Filtered Wrestlers</div>
@@ -904,23 +929,8 @@ let visibleColumns = {
                         <div class="stat-number">${totalMatches}</div>
                         <div class="stat-label">Total Matches</div>
                     </div>
-                </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Name</th>
-                                <th>Rating</th>
-                                <th>Change</th>
-                                <th>Matches</th>
-                                <th>Peak</th>
-                                <th>Floor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+                `;
+            }
 
             // Build table rows efficiently
             const rows = [];
@@ -943,19 +953,36 @@ let visibleColumns = {
                 `);
             }
 
-            html += rows.join('') + `
+            // Update table
+            const tableEl = document.getElementById('table-' + division);
+            if (tableEl) {
+                tableEl.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Rating</th>
+                                <th>Change</th>
+                                <th>Matches</th>
+                                <th>Peak</th>
+                                <th>Floor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.join('')}
                         </tbody>
                     </table>
-                </div>
-            `;
+                `;
+            }
 
-            // Add dropped out section if toggle is on
-            if (showDropped) {
+            // Update dropped out section
+            const droppedEl = document.getElementById('dropped-' + division);
+            if (droppedEl && showDropped) {
                 const droppedOutKey = division + 'DroppedOut';
                 const droppedOut = ratingsData[droppedOutKey];
                 
                 if (droppedOut && droppedOut.length > 0) {
-                    // Apply search filter to dropped out - optimized
                     const droppedRows = [];
                     for (let i = 0; i < droppedOut.length; i++) {
                         const wrestler = droppedOut[i];
@@ -972,7 +999,7 @@ let visibleColumns = {
                     }
 
                     if (droppedRows.length > 0) {
-                        html += `
+                        droppedEl.innerHTML = `
                             <div class="dropped-out">
                                 <h3>⬇️ Recently Dropped From Rankings (${droppedRows.length})</h3>
                                 <div class="dropped-out-list">
@@ -980,11 +1007,15 @@ let visibleColumns = {
                                 </div>
                             </div>
                         `;
+                    } else {
+                        droppedEl.innerHTML = '';
                     }
+                } else {
+                    droppedEl.innerHTML = '';
                 }
+            } else if (droppedEl) {
+                droppedEl.innerHTML = '';
             }
-
-            document.getElementById('content').innerHTML = html;
         }
 
         // Debounce timer for search
@@ -992,16 +1023,16 @@ let visibleColumns = {
 
         function applyFilters(division, immediate = false) {
             if (immediate) {
-                // For checkbox toggle - apply immediately
+                // For checkbox/slider release - apply immediately
                 if (window.currentDivisionData) {
-                    renderDivisionWithFilters(division, window.currentDivisionData);
+                    updateDivisionData(division, window.currentDivisionData);
                 }
             } else {
-                // For search/slider - debounce
+                // For search/slider drag - debounce
                 clearTimeout(filterDebounceTimer);
                 filterDebounceTimer = setTimeout(() => {
                     if (window.currentDivisionData) {
-                        renderDivisionWithFilters(division, window.currentDivisionData);
+                        updateDivisionData(division, window.currentDivisionData);
                     }
                 }, 150); // Wait 150ms after user stops typing/sliding
             }
@@ -1314,20 +1345,27 @@ async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     }
 
     const weekDataArray = [];
-    for (const weekInfo of weeksToLoad) {
+    
+    // Load all weeks in PARALLEL for massive speed boost
+    const fetchPromises = weeksToLoad.map(weekInfo => {
         if (weekDataCache[weekInfo.url]) {
-            weekDataArray.push({ ...weekDataCache[weekInfo.url], weekLabel: weekInfo.label });
+            return Promise.resolve({ ...weekDataCache[weekInfo.url], weekLabel: weekInfo.label });
         } else {
-            try {
-                const response = await fetch(weekInfo.url);
-                const data = await response.json();
-                weekDataCache[weekInfo.url] = data;
-                weekDataArray.push({ ...data, weekLabel: weekInfo.label });
-            } catch (error) {
-                console.error(`Error loading ${weekInfo.url}:`, error);
-            }
+            return fetch(weekInfo.url)
+                .then(response => response.json())
+                .then(data => {
+                    weekDataCache[weekInfo.url] = data;
+                    return { ...data, weekLabel: weekInfo.label };
+                })
+                .catch(error => {
+                    console.error(`Error loading ${weekInfo.url}:`, error);
+                    return null;
+                });
         }
-    }
+    });
+
+    const loadedData = await Promise.all(fetchPromises);
+    weekDataArray.push(...loadedData.filter(data => data !== null));
 
     const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek);
     statisticsCache[cacheKey] = statistics;
