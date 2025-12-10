@@ -670,6 +670,7 @@
         let archiveIndex = null;
         let currentWeek = 'current';
         let currentView = 'rankings'; // 'rankings' or 'statistics'
+        let currentDivision = 'mens'; // Track which division/view is active
         let currentStatsDivision = 'mens';
         let currentSortColumn = 'peak';
         let currentSortDirection = 'desc';
@@ -765,7 +766,13 @@ let visibleColumns = {
                             document.getElementById('dateRange').textContent = '';
                         }
                         document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
-                        showDivision('mens');
+                        
+                        // Restore the previous view instead of always showing Men's
+                        if (currentView === 'statistics') {
+                            showStatistics(currentStatsDivision);
+                        } else {
+                            showDivision(currentDivision);
+                        }
                     })
                     .catch(error => {
                         console.error('Error loading current rankings:', error);
@@ -783,7 +790,13 @@ let visibleColumns = {
                             document.getElementById('dateRange').textContent = '';
                         }
                         document.getElementById('lastUpdated').textContent = `Week: ${data.currentWeek} (Archived)`;
-                        showDivision('mens');
+                        
+                        // Restore the previous view instead of always showing Men's
+                        if (currentView === 'statistics') {
+                            showStatistics(currentStatsDivision);
+                        } else {
+                            showDivision(currentDivision);
+                        }
                     })
                     .catch(error => {
                         console.error('Error loading archived week:', error);
@@ -794,6 +807,7 @@ let visibleColumns = {
 
         function showDivision(division) {
             currentView = 'rankings';
+            currentDivision = division; // Remember which division we're on
             
             if (!ratingsData) return;
 
@@ -1048,6 +1062,7 @@ let visibleColumns = {
 
        async function showStatistics(division) {
     currentView = 'statistics';
+    currentDivision = 'statistics'; // Remember we're in statistics
     currentStatsDivision = division;
     currentSortColumn = 'peak';
     currentSortDirection = 'desc';
