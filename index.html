@@ -737,12 +737,10 @@ let visibleColumns = {
                     const previousWrestlers = previousData[division] || [];
                     
                     currentWrestlers.forEach(currentWrestler => {
-                        // Check if change field has "?" with numbers (corrupted arrows)
-                        const changeMatch = currentWrestler.change?.match(/^\?(\d+)$/);
+                        // Check if change field has "?" (corrupted arrows) - with or without numbers
+                        const hasCorruptedChange = currentWrestler.change?.includes('?');
                         
-                        if (changeMatch) {
-                            const changeAmount = parseInt(changeMatch[1]);
-                            
+                        if (hasCorruptedChange) {
                             // Find this wrestler in previous week
                             const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
                             
