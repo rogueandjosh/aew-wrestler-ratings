@@ -691,26 +691,45 @@
             }
         }
 
-        // Get the canonical (most recent) name for a wrestler at a specific week
-        function getCanonicalNameAtWeek(anyName, weekLabel, nameChanges) {
-            if (!nameChanges || nameChanges.length === 0) return anyName;
+        // Get the correct name for a wrestler at a specific week
+        function getCanonicalNameAtWeek(canonicalName, weekLabel, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return canonicalName;
             
-            // Find all changes related to this name (either as old or new name)
+            // Find all changes related to this canonical name (trace the complete history)
             const relatedChanges = nameChanges.filter(change => 
-                change.oldName === anyName || change.newName === anyName
+                change.oldName === canonicalName || change.newName === canonicalName
             );
             
-            if (relatedChanges.length === 0) return anyName;
+            if (relatedChanges.length === 0) return canonicalName;
             
             // Sort by match ID to get chronological order
             relatedChanges.sort((a, b) => a.matchId - b.matchId);
             
-            // Build the complete chain of names for this wrestler
-            // Start by finding the earliest name
-            let earliestName = anyName;
-            for (const change of relatedChanges) {
-                if (change.newName === earliestName) {
-                    earliestName = change.oldName;
+            // Build a map of all names in this wrestler's history
+            const nameChain = new Set();
+            relatedChanges.forEach(change => {
+                nameChain.add(change.oldName);
+                nameChain.add(change.newName);
+            });
+            
+            // Find the earliest name by checking which name never appears as a "new name"
+            let earliestName = canonicalName;
+            for (const name of nameChain) {
+                const isEverNew = relatedChanges.some(change => change.newName === name && compareWeeks(change.effectiveWeek, weekLabel) <= 0);
+                const isEverOld = relatedChanges.some(change => change.oldName === name);
+                
+                if (isEverOld && !isEverNew) {
+                    earliestName = name;
+                    break;
+                }
+            }
+            
+            // If we couldn't find earliest, try working backward from canonical name
+            if (earliestName === canonicalName) {
+                for (const change of [...relatedChanges].reverse()) {
+                    if (change.newName === earliestName) {
+                        earliestName = change.oldName;
+                    }
                 }
             }
             
