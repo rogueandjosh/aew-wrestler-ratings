@@ -688,6 +688,139 @@ let visibleColumns = {
     weeksAtNumber1: true
 };
 
+        // Helper function to fix encoding issues in JSON data
+        function fixEncodingIssues(data) {
+            if (!data) return data;
+            
+            // Fix divisions
+            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+            divisions.forEach(division => {
+                if (data[division]) {
+                    data[division] = data[division].map(wrestler => {
+                        // Fix the encoding issue with em dash
+                        if (wrestler.change) {
+                            wrestler.change = wrestler.change.replace(/�/g, '—');
+                        }
+                        
+                        // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
+                        if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
+                            wrestler.change = 'RE-ENTRY';
+                        }
+                        
+                        return wrestler;
+                    });
+                }
+            });
+            
+            return data;
+        }
+
+        // Helper function to reconstruct arrows from rank changes by comparing with previous week
+        async function reconstructArrows(currentData, previousWeekUrl) {
+            if (!previousWeekUrl) return currentData;
+            
+            try {
+                const response = await fetch(previousWeekUrl);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const currentWrestlers = currentData[division] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    currentWrestlers.forEach(currentWrestler => {
+                        // Check if change field has "?" with numbers (corrupted arrows)
+                        const changeMatch = currentWrestler.change?.match(/^\?(\d+)$/);
+                        
+                        if (changeMatch) {
+                            const changeAmount = parseInt(changeMatch[1]);
+                            
+                            // Find this wrestler in previous week
+                            const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
+                            
+                            if (previousWrestler) {
+                                // Calculate actual rank change
+                                const rankDiff = previousWrestler.rank - currentWrestler.rank;
+                                
+                                if (rankDiff > 0) {
+                                    // Rank decreased (e.g., from 23 to 20) = moved UP
+                                    currentWrestler.change = `↑${Math.abs(rankDiff)}`;
+                                } else if (rankDiff < 0) {
+                                    // Rank increased (e.g., from 17 to 20) = moved DOWN
+                                    currentWrestler.change = `↓${Math.abs(rankDiff)}`;
+                                } else {
+                                    // No change
+                                    currentWrestler.change = '—';
+                                }
+                            } else {
+                                // Not in previous week = new or re-entry (handled by fixEncodingIssues)
+                                if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
+                                    currentWrestler.change = 'RE-ENTRY';
+                                } else {
+                                    currentWrestler.change = 'NEW';
+                                }
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.log('Could not reconstruct arrows from previous week:', error);
+            }
+            
+            return currentData;
+        }
+
+        // Helper function to calculate dropped out wrestlers from previous week
+        async function calculateDroppedOut(currentData, archiveIndex) {
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
+                return currentData;
+            }
+            
+            // Get the previous week
+            const previousWeekInfo = archiveIndex.weeks[1]; // Index 0 is current, 1 is previous
+            if (!previousWeekInfo) {
+                return currentData;
+            }
+            
+            try {
+                const response = await fetch(previousWeekInfo.url);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const currentWrestlers = currentData[division] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    // Find wrestlers in previous but not in current
+                    const droppedOut = [];
+                    previousWrestlers.forEach(prevWrestler => {
+                        const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
+                        if (!stillRanked) {
+                            droppedOut.push({
+                                name: prevWrestler.name,
+                                lastRank: prevWrestler.rank,
+                                lastRating: prevWrestler.rating
+                            });
+                        }
+                    });
+                    
+                    // Add to current data (but don't override if already exists)
+                    const droppedKey = division + 'DroppedOut';
+                    if (!currentData[droppedKey] || currentData[droppedKey].length === 0) {
+                        currentData[droppedKey] = droppedOut;
+                    }
+                });
+                
+            } catch (error) {
+                console.log('Could not calculate dropped out for previous week:', error);
+            }
+            
+            return currentData;
+        }
+
         // Load archive index, current rankings, and statistics on page load
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
@@ -704,6 +837,18 @@ let visibleColumns = {
             
             // Load current rankings
             ratingsData = await currentResponse.json();
+            ratingsData = fixEncodingIssues(ratingsData);
+            
+            // Reconstruct arrows from previous week if corrupted
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
+                const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
+                ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+            }
+            
+            // Calculate dropped out from previous week if not already present
+            if (archiveIndex) {
+                ratingsData = await calculateDroppedOut(ratingsData, archiveIndex);
+            }
             
             // Load statistics if available
             if (statsResponse) {
@@ -758,14 +903,26 @@ let visibleColumns = {
                 // Reload current rankings
                 fetch('current-rankings.json')
                     .then(response => response.json())
-                    .then(data => {
-                        ratingsData = data;
-                        if (data.dateRange) {
-                            document.getElementById('dateRange').textContent = data.dateRange;
+                    .then(async data => {
+                        ratingsData = fixEncodingIssues(data);
+                        
+                        // Reconstruct arrows from previous week if corrupted
+                        if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
+                            const previousWeekUrl = archiveIndex.weeks[1].url;
+                            ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                        }
+                        
+                        // Calculate dropped out from previous week
+                        if (archiveIndex) {
+                            ratingsData = await calculateDroppedOut(ratingsData, archiveIndex);
+                        }
+                        
+                        if (ratingsData.dateRange) {
+                            document.getElementById('dateRange').textContent = ratingsData.dateRange;
                         } else {
                             document.getElementById('dateRange').textContent = '';
                         }
-                        document.getElementById('lastUpdated').textContent = `Last Updated: ${data.lastUpdated}`;
+                        document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
                         
                         // Restore the previous view instead of always showing Men's
                         if (currentView === 'statistics') {
@@ -782,14 +939,65 @@ let visibleColumns = {
                 // Load archived week
                 fetch(selectedValue)
                     .then(response => response.json())
-                    .then(data => {
-                        ratingsData = data;
-                        if (data.dateRange) {
-                            document.getElementById('dateRange').textContent = data.dateRange;
+                    .then(async data => {
+                        ratingsData = fixEncodingIssues(data);
+                        
+                        // Reconstruct arrows from previous week in archive
+                        if (archiveIndex) {
+                            const currentFilename = selectedValue.replace('archive/', '');
+                            const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                            
+                            if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
+                                const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                                ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                            }
+                        }
+                        
+                        // Calculate dropped out from previous week in archive
+                        if (archiveIndex) {
+                            const currentFilename = selectedValue.replace('archive/', '');
+                            const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                            
+                            if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
+                                const previousWeekInfo = archiveIndex.weeks[currentIndex + 1];
+                                try {
+                                    const prevResponse = await fetch(previousWeekInfo.url);
+                                    const previousData = await prevResponse.json();
+                                    
+                                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                                    divisions.forEach(division => {
+                                        const currentWrestlers = ratingsData[division] || [];
+                                        const previousWrestlers = previousData[division] || [];
+                                        
+                                        const droppedOut = [];
+                                        previousWrestlers.forEach(prevWrestler => {
+                                            const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
+                                            if (!stillRanked) {
+                                                droppedOut.push({
+                                                    name: prevWrestler.name,
+                                                    lastRank: prevWrestler.rank,
+                                                    lastRating: prevWrestler.rating
+                                                });
+                                            }
+                                        });
+                                        
+                                        const droppedKey = division + 'DroppedOut';
+                                        if (!ratingsData[droppedKey] || ratingsData[droppedKey].length === 0) {
+                                            ratingsData[droppedKey] = droppedOut;
+                                        }
+                                    });
+                                } catch (error) {
+                                    console.log('Could not calculate dropped out:', error);
+                                }
+                            }
+                        }
+                        
+                        if (ratingsData.dateRange) {
+                            document.getElementById('dateRange').textContent = ratingsData.dateRange;
                         } else {
                             document.getElementById('dateRange').textContent = '';
                         }
-                        document.getElementById('lastUpdated').textContent = `Week: ${data.currentWeek} (Archived)`;
+                        document.getElementById('lastUpdated').textContent = `Week: ${ratingsData.currentWeek} (Archived)`;
                         
                         // Restore the previous view instead of always showing Men's
                         if (currentView === 'statistics') {
