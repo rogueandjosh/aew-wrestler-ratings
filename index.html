@@ -673,6 +673,126 @@
         let currentDivision = 'mens'; // Track which division/view is active
         let currentStatsDivision = 'mens';
         let currentSortColumn = 'peak';
+        let nameChangesData = null;
+
+        // Load name changes data
+        async function loadNameChanges() {
+            if (nameChangesData) return nameChangesData;
+            
+            try {
+                const response = await fetch('name-changes.json');
+                nameChangesData = await response.json();
+                console.log('✅ Loaded name changes:', nameChangesData.totalChanges);
+                return nameChangesData;
+            } catch (error) {
+                console.warn('⚠️ Name changes file not found, names will not be merged');
+                nameChangesData = { changes: [] };
+                return nameChangesData;
+            }
+        }
+
+        // Get the canonical (most recent) name for a wrestler at a specific week
+        function getCanonicalNameAtWeek(anyName, weekLabel, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return anyName;
+            
+            // Find all changes related to this name (either as old or new name)
+            const relatedChanges = nameChanges.filter(change => 
+                change.oldName === anyName || change.newName === anyName
+            );
+            
+            if (relatedChanges.length === 0) return anyName;
+            
+            // Sort by match ID to get chronological order
+            relatedChanges.sort((a, b) => a.matchId - b.matchId);
+            
+            // Build the complete chain of names for this wrestler
+            // Start by finding the earliest name
+            let earliestName = anyName;
+            for (const change of relatedChanges) {
+                if (change.newName === earliestName) {
+                    earliestName = change.oldName;
+                }
+            }
+            
+            // Now trace forward through time up to the selected week
+            let currentName = earliestName;
+            for (const change of relatedChanges) {
+                // Only apply changes that happened before or at the selected week
+                if (compareWeeks(change.effectiveWeek, weekLabel) <= 0) {
+                    if (currentName === change.oldName) {
+                        currentName = change.newName;
+                    }
+                }
+            }
+            
+            return currentName;
+        }
+
+        // Get the absolute most recent name (for grouping stats)
+        function getCanonicalName(anyName, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return anyName;
+            
+            // Find all changes related to this name
+            const relatedChanges = nameChanges.filter(change => 
+                change.oldName === anyName || change.newName === anyName
+            );
+            
+            if (relatedChanges.length === 0) return anyName;
+            
+            // Sort by match ID to get chronological order
+            relatedChanges.sort((a, b) => a.matchId - b.matchId);
+            
+            // Build complete chain of names
+            let earliestName = anyName;
+            for (const change of relatedChanges) {
+                if (change.newName === earliestName) {
+                    earliestName = change.oldName;
+                }
+            }
+            
+            // Trace through ALL changes to get the final name
+            let currentName = earliestName;
+            for (const change of relatedChanges) {
+                if (currentName === change.oldName) {
+                    currentName = change.newName;
+                }
+            }
+            
+            return currentName;
+        }
+
+        // Compare two week labels (e.g., "Jun '19 Week 1" vs "Nov '25 Week 5")
+        function compareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            if (week1 === 'current') return 1;
+            if (week2 === 'current') return -1;
+            
+            // Parse week format: "MMM 'YY Week N"
+            const parseWeek = (week) => {
+                const match = week.match(/(\w+)\s+'(\d+)\s+Week\s+(\d+)/);
+                if (!match) return null;
+                
+                const monthMap = {
+                    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+                };
+                
+                const month = monthMap[match[1]];
+                const year = 2000 + parseInt(match[2]);
+                const weekNum = parseInt(match[3]);
+                
+                return { year, month, weekNum };
+            };
+            
+            const w1 = parseWeek(week1);
+            const w2 = parseWeek(week2);
+            
+            if (!w1 || !w2) return 0;
+            
+            if (w1.year !== w2.year) return w1.year - w2.year;
+            if (w1.month !== w2.month) return w1.month - w2.month;
+            return w1.weekNum - w2.weekNum;
+        }
         let currentSortDirection = 'desc';
         let weekDataCache = {};
 let statisticsCache = {};
@@ -1600,12 +1720,16 @@ async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     const loadedData = await Promise.all(fetchPromises);
     weekDataArray.push(...loadedData.filter(data => data !== null));
 
-    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek);
+    // Load name changes data
+    const nameChangesInfo = await loadNameChanges();
+    const nameChanges = nameChangesInfo.changes || [];
+
+    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek, nameChanges);
     statisticsCache[cacheKey] = statistics;
     return statistics;
 }
 
-function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
+function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges = []) {
     const statistics = { mens: {}, womens: {}, menstag: {}, womenstag: {}, trios: {} };
     const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
@@ -1617,12 +1741,15 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
             const divisionData = weekData[divKey] || [];
             divisionData.forEach((wrestler, index) => {
                 const rank = index + 1;
-                const name = wrestler.name;
+                const originalName = wrestler.name;
                 const rating = wrestler.rating;
 
-                if (!statistics[divKey][name]) {
-                    statistics[divKey][name] = {
-                        name: name,
+                // Get the canonical name (most recent name for this wrestler)
+                const canonicalName = getCanonicalName(originalName, nameChanges);
+
+                if (!statistics[divKey][canonicalName]) {
+                    statistics[divKey][canonicalName] = {
+                        name: canonicalName,
                         ratings: [],
                         weeks: [],
                         ranks: [],
@@ -1632,7 +1759,7 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
                     };
                 }
 
-                const ws = statistics[divKey][name];
+                const ws = statistics[divKey][canonicalName];
                 ws.ratings.push(rating);
                 ws.weeks.push(weekLabel);
                 ws.ranks.push(rank);
