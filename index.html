@@ -870,7 +870,8 @@ let visibleColumns = {
                                    max="200" 
                                    step="1" 
                                    value="${minRating}"
-                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')">
+                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')"
+                                   onchange="applyFilters('${division}', true)">
                         </div>
                     </div>
                     <div class="filter-row">
@@ -879,7 +880,7 @@ let visibleColumns = {
                                 <input type="checkbox" 
                                        id="show-dropped-${division}" 
                                        ${showDropped ? 'checked' : ''}
-                                       onchange="applyFilters('${division}')">
+                                       onchange="applyFilters('${division}', true)">
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="filter-label">Show Dropped Out Wrestlers</span>
@@ -986,9 +987,23 @@ let visibleColumns = {
             document.getElementById('content').innerHTML = html;
         }
 
-        function applyFilters(division) {
-            if (window.currentDivisionData) {
-                renderDivisionWithFilters(division, window.currentDivisionData);
+        // Debounce timer for search
+        let filterDebounceTimer = null;
+
+        function applyFilters(division, immediate = false) {
+            if (immediate) {
+                // For checkbox toggle - apply immediately
+                if (window.currentDivisionData) {
+                    renderDivisionWithFilters(division, window.currentDivisionData);
+                }
+            } else {
+                // For search/slider - debounce
+                clearTimeout(filterDebounceTimer);
+                filterDebounceTimer = setTimeout(() => {
+                    if (window.currentDivisionData) {
+                        renderDivisionWithFilters(division, window.currentDivisionData);
+                    }
+                }, 150); // Wait 150ms after user stops typing/sliding
             }
         }
 
