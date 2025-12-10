@@ -825,17 +825,28 @@ let visibleColumns = {
             const minRating = parseInt(document.getElementById('rating-' + division)?.value || 0);
             const showDropped = document.getElementById('show-dropped-' + division)?.checked !== false;
 
-            // Apply filters
-            let filteredData = data.filter(wrestler => {
-                const matchesSearch = wrestler.name.toLowerCase().includes(searchTerm);
-                const matchesRating = wrestler.rating >= minRating;
-                return matchesSearch && matchesRating;
-            });
+            // Apply filters - optimized for performance
+            let filteredData = [];
+            for (let i = 0; i < data.length; i++) {
+                const wrestler = data[i];
+                if (wrestler.rating >= minRating && wrestler.name.toLowerCase().includes(searchTerm)) {
+                    filteredData.push(wrestler);
+                }
+            }
 
-            // Calculate stats
+            // Calculate stats efficiently
             const totalWrestlers = filteredData.length;
-            const avgRating = totalWrestlers > 0 ? (filteredData.reduce((sum, w) => sum + w.rating, 0) / totalWrestlers).toFixed(2) : '0.00';
-            const totalMatches = filteredData.reduce((sum, w) => sum + w.matches, 0);
+            let avgRating = '0.00';
+            let totalMatches = 0;
+            
+            if (totalWrestlers > 0) {
+                let ratingSum = 0;
+                for (let i = 0; i < filteredData.length; i++) {
+                    ratingSum += filteredData[i].rating;
+                    totalMatches += filteredData[i].matches;
+                }
+                avgRating = (ratingSum / totalWrestlers).toFixed(2);
+            }
 
             // Build HTML with filter controls
             let html = `
@@ -857,7 +868,7 @@ let visibleColumns = {
                                    class="rating-slider" 
                                    min="0" 
                                    max="200" 
-                                   step="10" 
+                                   step="1" 
                                    value="${minRating}"
                                    oninput="updateRatingValue('${division}'); applyFilters('${division}')">
                         </div>
@@ -910,12 +921,15 @@ let visibleColumns = {
                         <tbody>
             `;
 
-            filteredData.forEach(wrestler => {
+            // Build table rows efficiently
+            const rows = [];
+            for (let i = 0; i < filteredData.length; i++) {
+                const wrestler = filteredData[i];
                 const ratingClass = getRatingClass(wrestler.rating);
                 const changeClass = getChangeClass(wrestler.change);
                 const changeSymbol = getChangeSymbol(wrestler.change);
 
-                html += `
+                rows.push(`
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
                         <td class="name">${wrestler.name}</td>
@@ -925,10 +939,10 @@ let visibleColumns = {
                         <td>${wrestler.peak.toFixed(2)}</td>
                         <td>${wrestler.floor.toFixed(2)}</td>
                     </tr>
-                `;
-            });
+                `);
+            }
 
-            html += `
+            html += rows.join('') + `
                         </tbody>
                     </table>
                 </div>
@@ -940,30 +954,28 @@ let visibleColumns = {
                 const droppedOut = ratingsData[droppedOutKey];
                 
                 if (droppedOut && droppedOut.length > 0) {
-                    // Apply search filter to dropped out
-                    const filteredDropped = droppedOut.filter(wrestler => 
-                        wrestler.name.toLowerCase().includes(searchTerm)
-                    );
-
-                    if (filteredDropped.length > 0) {
-                        html += `
-                            <div class="dropped-out">
-                                <h3>⬇️ Recently Dropped From Rankings (${filteredDropped.length})</h3>
-                                <div class="dropped-out-list">
-                        `;
-                        
-                        filteredDropped.forEach(wrestler => {
-                            html += `
+                    // Apply search filter to dropped out - optimized
+                    const droppedRows = [];
+                    for (let i = 0; i < droppedOut.length; i++) {
+                        const wrestler = droppedOut[i];
+                        if (wrestler.name.toLowerCase().includes(searchTerm)) {
+                            droppedRows.push(`
                                 <div class="dropped-wrestler">
                                     <div class="dropped-wrestler-name">${wrestler.name}</div>
                                     <div class="dropped-wrestler-info">
                                         Was #${wrestler.lastRank}
                                     </div>
                                 </div>
-                            `;
-                        });
-                        
+                            `);
+                        }
+                    }
+
+                    if (droppedRows.length > 0) {
                         html += `
+                            <div class="dropped-out">
+                                <h3>⬇️ Recently Dropped From Rankings (${droppedRows.length})</h3>
+                                <div class="dropped-out-list">
+                                    ${droppedRows.join('')}
                                 </div>
                             </div>
                         `;
