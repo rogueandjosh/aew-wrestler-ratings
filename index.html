@@ -1469,11 +1469,6 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
         function renderDynamicStatistics(division, statisticsData, selectedWeekLabel) {
     const divisionData = statisticsData[division];
     
-    if (!divisionData || divisionData.length === 0) {
-        document.getElementById('content').innerHTML = '<div class="error">No statistics available.</div>';
-        return;
-    }
-
     const divisionNames = {
         'mens': "Men's Singles",
         'womens': "Women's Singles",
@@ -1482,10 +1477,11 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
         'trios': "Trios"
     };
 
+    // Always show the division tabs even if no data
     let html = `
         <div class="stats-summary">
             <div class="stat-box">
-                <div class="stat-number">${divisionData.length}</div>
+                <div class="stat-number">${divisionData?.length || 0}</div>
                 <div class="stat-label">Total Wrestlers</div>
             </div>
             <div class="stat-box">
@@ -1501,7 +1497,21 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
             <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
             <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
         </div>
+    `;
+    
+    if (!divisionData || divisionData.length === 0) {
+        html += `
+            <div class="error" style="text-align: center; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,215,0,0.3);">
+                <div style="font-size: 3em; margin-bottom: 10px;">📊</div>
+                <div style="font-size: 1.2em; color: #ffd700; margin-bottom: 10px;">No Statistics Available</div>
+                <div style="color: #b8b8b8;">There is no data for ${divisionNames[division]} in this time period.</div>
+            </div>
+        `;
+        document.getElementById('content').innerHTML = html;
+        return;
+    }
 
+    html += `
         <div class="table-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #ffd700; margin: 0;">📊 ${divisionNames[division]}</h2>
