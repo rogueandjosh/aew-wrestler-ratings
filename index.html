@@ -1662,8 +1662,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel) {
         const divisionWeeks = new Set();
         
         weekDataArray.forEach(weekData => {
-            const weekIndex = weekDataArray.indexOf(weekData);
-            const weekLabel = allWeeksData[weekIndex]?.label || 'current';
+            if (!weekData) return;
+            const weekLabel = weekData.weekLabel || weekData.currentWeek || 'current';
             
             // Only count week if there are wrestlers in this division
             if (weekData[divKey] && weekData[divKey].length > 0) {
