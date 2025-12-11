@@ -925,7 +925,7 @@ let visibleColumns = {
                             // If it's just empty or standalone dash, make it em dash
                             if (wrestler.change === '' || wrestler.change === '-') {
                                 wrestler.change = '—';
-                            }  
+                            }
                         } else if (wrestler.change === null || wrestler.change === undefined) {
                             // If change is missing, set to em dash
                             wrestler.change = '—';
@@ -939,6 +939,7 @@ let visibleColumns = {
                                 wrestler.change = '↑' + wrestler.change;
                             }
                         }
+                        
                         // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
                         if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
                             wrestler.change = 'RE-ENTRY';
@@ -954,7 +955,50 @@ let visibleColumns = {
 
         // Helper function to reconstruct arrows from rank changes by comparing with previous week
         async function reconstructArrows(currentData, previousWeekUrl) {
-            // Arrows are now correct from Google Sheets export
+            if (!previousWeekUrl) return currentData;
+            
+            try {
+                const response = await fetch(previousWeekUrl);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const currentWrestlers = currentData[division] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    currentWrestlers.forEach(currentWrestler => {
+                        const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
+                        
+                        if (previousWrestler) {
+                            // Calculate rank change: prevRank - currentRank
+                            const rankDiff = previousWrestler.rank - currentWrestler.rank;
+                            
+                            if (rankDiff > 0) {
+                                // Moved up (better rank)
+                                currentWrestler.change = rankDiff >= 5 ? `⬆${rankDiff}` : `↑${rankDiff}`;
+                            } else if (rankDiff < 0) {
+                                // Moved down (worse rank)
+                                const absChange = Math.abs(rankDiff);
+                                currentWrestler.change = absChange >= 5 ? `⬇${absChange}` : `↓${absChange}`;
+                            } else {
+                                currentWrestler.change = '—';
+                            }
+                        } else {
+                            // Not in previous week = new or re-entry
+                            if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
+                                currentWrestler.change = 'RE-ENTRY';
+                            } else {
+                                currentWrestler.change = 'NEW';
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.log('Could not reconstruct arrows from previous week:', error);
+            }
+            
             return currentData;
         }
 
@@ -988,6 +1032,7 @@ let visibleColumns = {
             // Reconstruct arrows from previous week if corrupted
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                 const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
+                ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
             }
 
             // Load statistics if available
@@ -1084,6 +1129,7 @@ let visibleColumns = {
                                 
                                 if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
                                     const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                                    ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
                                 }
                             }
 
