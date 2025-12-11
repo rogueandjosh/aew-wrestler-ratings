@@ -906,25 +906,23 @@
                 const prevResponse = await fetch(previousWeekInfo.url);
                 const previousWeekRawData = await prevResponse.json();
 
-                // CRITICAL: We need to check if they were in the UNFILTERED data last week
-                // If they weren't visible last week (already filtered out), they're not newly inactive
+                // CRITICAL: We need to filter the previous week's data the same way we filter current week
+                // This gives us accurate ranks from when they were last visible
                 
-                // Get the previous week's inactive list to filter out already-inactive wrestlers
                 if (archiveIndex.weeks.length >= 3) {
-                    const twoWeeksAgoInfo = archiveIndex.weeks[2];
-                    const prevPrevResponse = await fetch(twoWeeksAgoInfo.url);
-                    const twoWeeksAgoData = await prevPrevResponse.json();
-                    
-                    // Create temp archive index for previous week
+                    // Create temp archive index for previous week (to check its inactive wrestlers)
                     const prevWeekArchive = {
                         weeks: archiveIndex.weeks.slice(1)
                     };
                     
                     const prevWeekInactive = await checkInactiveWrestlers(previousWeekRawData, prevWeekArchive);
                     
+                    // Filter previous week's data to remove inactive wrestlers (same as we do for current week)
+                    const filteredPrevWeekData = filterInactiveWrestlers(previousWeekRawData, prevWeekInactive.inactiveWrestlers);
+                    
                     divisions.forEach(division => {
                         const newlyInactive = newlyInactiveByDivision[division] || [];
-                        const prevDivisionData = previousWeekRawData[division] || [];
+                        const prevDivisionFiltered = filteredPrevWeekData[division] || [];
                         
                         if (newlyInactive.length > 0) {
                             // Initialize droppedOut array if it doesn't exist
@@ -932,29 +930,25 @@
                                 data[division + 'DroppedOut'] = [];
                             }
 
-                            // Add each newly inactive wrestler IF they were NOT already inactive last week
+                            // Add each newly inactive wrestler IF they were visible last week
                             newlyInactive.forEach(wrestler => {
-                                // Check if this wrestler was VISIBLE last week (not in previous week's inactive list)
-                                const wasInactivePrevWeek = prevWeekInactive.inactiveWrestlers[wrestler.name];
+                                // Check if this wrestler was in the FILTERED/VISIBLE list last week
+                                const wasVisibleLastWeek = prevDivisionFiltered.find(w => w.name === wrestler.name);
                                 
-                                if (!wasInactivePrevWeek) {
-                                    // They were visible last week, now newly inactive
-                                    const lastWeekData = prevDivisionData.find(w => w.name === wrestler.name);
-                                    
-                                    if (lastWeekData) {
-                                        data[division + 'DroppedOut'].push({
-                                            name: wrestler.name + ' (Inactive)',
-                                            lastRank: lastWeekData.rank,
-                                            lastRating: lastWeekData.rating
-                                        });
-                                    }
+                                if (wasVisibleLastWeek) {
+                                    // Use their rank from the FILTERED data (accurate visible rank)
+                                    data[division + 'DroppedOut'].push({
+                                        name: wrestler.name + ' (Inactive)',
+                                        lastRank: wasVisibleLastWeek.rank,
+                                        lastRating: wasVisibleLastWeek.rating
+                                    });
                                 }
                             });
                         }
                     });
                     
                 } else {
-                    // Not enough history to check - just add all newly inactive
+                    // Not enough history - just use raw data
                     divisions.forEach(division => {
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionData = previousWeekRawData[division] || [];
