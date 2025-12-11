@@ -896,52 +896,17 @@
         async function addInactiveToDroppedOut(data, newlyInactiveByDivision, archiveIndex) {
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
-            // We need previous week data to check if they were VISIBLE last week
+            // We need previous week data to get their last visible rank
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
                 return data;
             }
 
             try {
-                // Helper function to find the last week a wrestler was visible
-                async function findLastVisibleRank(wrestlerName, division, startWeekIndex) {
-                    // Search backwards through weeks to find when they were last visible
-                    for (let weekIndex = startWeekIndex; weekIndex < Math.min(startWeekIndex + 20, archiveIndex.weeks.length); weekIndex++) {
-                        try {
-                            const weekInfo = archiveIndex.weeks[weekIndex];
-                            const weekResponse = await fetch(weekInfo.url);
-                            const weekData = await weekResponse.json();
-                            
-                            // Create temp archive for this week to apply inactive filtering
-                            const tempArchive = {
-                                weeks: archiveIndex.weeks.slice(weekIndex)
-                            };
-                            
-                            const weekInactive = await checkInactiveWrestlers(weekData, tempArchive);
-                            const filteredWeekData = filterInactiveWrestlers(weekData, weekInactive.inactiveWrestlers);
-                            
-                            const divisionData = filteredWeekData[division] || [];
-                            const wrestler = divisionData.find(w => w.name === wrestlerName);
-                            
-                            if (wrestler) {
-                                return {
-                                    rank: wrestler.rank,
-                                    rating: wrestler.rating
-                                };
-                            }
-                        } catch (error) {
-                            console.warn(`Could not check week ${weekIndex} for ${wrestlerName}`);
-                        }
-                    }
-                    
-                    // Not found in last 20 weeks - return null
-                    return null;
-                }
-                
                 const previousWeekInfo = archiveIndex.weeks[1];
                 const prevResponse = await fetch(previousWeekInfo.url);
                 const previousWeekRawData = await prevResponse.json();
 
-                // Apply inactive filtering to previous week
+                // Apply inactive filtering to previous week to get accurate ranks
                 if (archiveIndex.weeks.length >= 3) {
                     const prevWeekArchive = {
                         weeks: archiveIndex.weeks.slice(1)
@@ -950,44 +915,39 @@
                     const prevWeekInactive = await checkInactiveWrestlers(previousWeekRawData, prevWeekArchive);
                     const filteredPrevWeekData = filterInactiveWrestlers(previousWeekRawData, prevWeekInactive.inactiveWrestlers);
                     
-                    for (const division of divisions) {
+                    divisions.forEach(division => {
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionFiltered = filteredPrevWeekData[division] || [];
+                        const prevDivisionRaw = previousWeekRawData[division] || [];
                         
                         if (newlyInactive.length > 0) {
                             if (!data[division + 'DroppedOut']) {
                                 data[division + 'DroppedOut'] = [];
                             }
 
-                            for (const wrestler of newlyInactive) {
-                                // Check if visible in filtered previous week
-                                const wasVisibleLastWeek = prevDivisionFiltered.find(w => w.name === wrestler.name);
+                            // Add each newly inactive wrestler
+                            newlyInactive.forEach(wrestler => {
+                                // First try to find in filtered data (most accurate)
+                                let lastWeekData = prevDivisionFiltered.find(w => w.name === wrestler.name);
                                 
-                                if (wasVisibleLastWeek) {
-                                    // Use rank from filtered previous week
+                                // If not in filtered data, try raw data (they might have just dropped)
+                                if (!lastWeekData) {
+                                    lastWeekData = prevDivisionRaw.find(w => w.name === wrestler.name);
+                                }
+                                
+                                if (lastWeekData) {
                                     data[division + 'DroppedOut'].push({
                                         name: wrestler.name + ' (Inactive)',
-                                        lastRank: wasVisibleLastWeek.rank,
-                                        lastRating: wasVisibleLastWeek.rating
+                                        lastRank: lastWeekData.rank,
+                                        lastRating: lastWeekData.rating
                                     });
-                                } else {
-                                    // Not visible last week - search backwards to find last visible rank
-                                    const lastVisible = await findLastVisibleRank(wrestler.name, division, 1);
-                                    
-                                    if (lastVisible) {
-                                        data[division + 'DroppedOut'].push({
-                                            name: wrestler.name + ' (Inactive)',
-                                            lastRank: lastVisible.rank,
-                                            lastRating: lastVisible.rating
-                                        });
-                                    }
                                 }
-                            }
+                            });
                         }
-                    }
+                    });
                     
                 } else {
-                    // Not enough history - just use raw data
+                    // Not enough history - just use raw data from previous week
                     divisions.forEach(division => {
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionData = previousWeekRawData[division] || [];
