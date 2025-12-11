@@ -898,7 +898,7 @@
         }
 
         // Add newly inactive wrestlers to the dropped out section (those who JUST hit 12 weeks this week)
-        async function addInactiveToDroppedOut(data, newlyInactiveByDivision, archiveIndex) {
+        async function addInactiveToDroppedOut(data, newlyInactiveByDivision, archiveIndex, unfilteredData) {
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
             // We need previous week data to check if they were ALREADY inactive
@@ -929,7 +929,8 @@
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionFiltered = filteredPrevWeekData[division] || [];
                         const prevDivisionRaw = previousWeekRawData[division] || [];
-                        const currentDivisionRaw = data[division] || [];
+                        // Use UNFILTERED current data to check if wrestler is present this week
+                        const currentDivisionUnfiltered = unfilteredData ? (unfilteredData[division] || []) : (data[division] || []);
                         
                         if (newlyInactive.length > 0) {
                             if (!data[division + 'DroppedOut']) {
@@ -944,9 +945,9 @@
                                     return; // Skip this wrestler
                                 }
                                 
-                                // CHECK 2: Is this wrestler in the current week's raw data at all?
+                                // CHECK 2: Is this wrestler in the current week's UNFILTERED data?
                                 // If not, they dropped out in a previous week, not this one
-                                const inCurrentWeek = currentDivisionRaw.some(w => w.name === wrestler.name);
+                                const inCurrentWeek = currentDivisionUnfiltered.some(w => w.name === wrestler.name);
                                 if (!inCurrentWeek) {
                                     console.log(`SKIPPING ${wrestler.name} - not in current week (dropped earlier)`);
                                     return; // Skip this wrestler
@@ -1332,8 +1333,10 @@ let visibleColumns = {
             
             // Filter out inactive wrestlers from rankings and add ONLY newly inactive to dropped out
             if (archiveIndex && Object.keys(inactiveWrestlers).length > 0) {
+                // Save unfiltered data BEFORE filtering (for checking who's actually in current week)
+                const unfilteredRatingsData = JSON.parse(JSON.stringify(ratingsData));
                 ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlers);
-                ratingsData = await addInactiveToDroppedOut(ratingsData, newlyInactiveByDivision, archiveIndex);
+                ratingsData = await addInactiveToDroppedOut(ratingsData, newlyInactiveByDivision, archiveIndex, unfilteredRatingsData);
             }
             
             // Load statistics if available
@@ -1418,8 +1421,9 @@ let visibleColumns = {
                         
                         // Filter inactive and add newly inactive to dropped out
                         if (archiveIndex && Object.keys(inactiveWrestlers).length > 0) {
+                            const unfilteredRatingsData = JSON.parse(JSON.stringify(ratingsData));
                             ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlers);
-                            ratingsData = await addInactiveToDroppedOut(ratingsData, newlyInactiveByDivision, archiveIndex);
+                            ratingsData = await addInactiveToDroppedOut(ratingsData, newlyInactiveByDivision, archiveIndex, unfilteredRatingsData);
                         }
                         
                         if (ratingsData.dateRange) {
@@ -1526,8 +1530,9 @@ let visibleColumns = {
                                     weeks: archiveIndex.weeks.slice(currentIndex)
                                 };
                                 
+                                const unfilteredRatingsData = JSON.parse(JSON.stringify(ratingsData));
                                 ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlersInArchive);
-                                ratingsData = await addInactiveToDroppedOut(ratingsData, window.newlyInactiveByDivision, tempArchiveIndex);
+                                ratingsData = await addInactiveToDroppedOut(ratingsData, window.newlyInactiveByDivision, tempArchiveIndex, unfilteredRatingsData);
                             }
                             
                             if (ratingsData.dateRange) {
