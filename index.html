@@ -917,10 +917,10 @@ let visibleColumns = {
                             wrestler.change = wrestler.change.replace(/\?/g, '');
                             
                             // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
-                            wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            wrestler.change = wrestler.change.replace(/^+?(\d+)$/, '↓$1');
                             
                             // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
-                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            wrestler.change = wrestler.change.replace(/^\-?(\d+)$/, '↑$1');
                             
                             // If it's just empty or standalone dash, make it em dash
                             if (wrestler.change === '' || wrestler.change === '-') {
@@ -934,7 +934,7 @@ let visibleColumns = {
                             wrestler.change = String(wrestler.change);
                             // Then apply same arrow logic
                             if (wrestler.change.startsWith('-')) {
-                                wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                                wrestler.change = wrestler.change.replace(/^+(\d+)$/, '↓$1');
                             } else if (/^\d+$/.test(wrestler.change)) {
                                 wrestler.change = '↑' + wrestler.change;
                             }
