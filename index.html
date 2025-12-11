@@ -733,17 +733,6 @@
             <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
-        <div class="recently-dropped-toggle">
-            <label>
-                <input type="checkbox" id="recentlyDroppedToggle" onchange="toggleRecentlyDropped()">
-                Show Recently Dropped Out (Last 4 Weeks)
-            </label>
-        </div>
-        
-        <div id="recentlyDroppedSection" class="recently-dropped-section">
-            <!-- Content will be populated by JavaScript -->
-        </div>
-
         <div class="tabs">
             <button class="tab active" onclick="showDivision('mens')">Men</button>
             <button class="tab" onclick="showDivision('womens')">Women</button>
@@ -830,111 +819,83 @@
             }
         }
 
-        function toggleRecentlyDropped() {
-            const checkbox = document.getElementById('recentlyDroppedToggle');
-            const section = document.getElementById('recentlyDroppedSection');
+        function toggleRecentlyDropped(division) {
+            const checkbox = document.getElementById(`recentlyDroppedToggle_${division}`);
+            const section = document.getElementById(`recentlyDroppedSection_${division}`);
             
             if (checkbox.checked) {
                 section.classList.add('visible');
-                buildRecentlyDroppedSection();
+                buildRecentlyDroppedSection(division);
             } else {
                 section.classList.remove('visible');
             }
         }
         
-        async function buildRecentlyDroppedSection() {
-            const section = document.getElementById('recentlyDroppedSection');
+        async function buildRecentlyDroppedSection(division) {
+            const section = document.getElementById(`recentlyDroppedSection_${division}`);
             
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 5) {
                 section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
                 return;
             }
             
+            section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
+            
             // Get last 4 weeks (index 0-3 in archive, since 0 is current)
             const weeksToCheck = archiveIndex.weeks.slice(0, Math.min(5, archiveIndex.weeks.length));
             const recentlyDropped = {};
             
-            // Load each week and collect dropped out wrestlers
+            // Load each week and collect dropped out wrestlers for THIS division only
             for (let i = 0; i < weeksToCheck.length - 1; i++) {
                 try {
                     const weekData = await fetch(weeksToCheck[i].url).then(r => r.json());
                     const weekLabel = weeksToCheck[i].label;
                     
-                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                    divisions.forEach(div => {
-                        const droppedKey = div + 'DroppedOut';
-                        const dropped = weekData[droppedKey] || [];
-                        
-                        dropped.forEach(wrestler => {
-                            const key = `${div}-${wrestler.name}`;
-                            if (!recentlyDropped[key]) {
-                                recentlyDropped[key] = {
-                                    name: wrestler.name,
-                                    division: div,
-                                    rating: wrestler.lastRating,
-                                    lastSeen: weekLabel,
-                                    isInactive: wrestler.name.includes('(Inactive)')
-                                };
-                            }
-                        });
+                    const droppedKey = division + 'DroppedOut';
+                    const dropped = weekData[droppedKey] || [];
+                    
+                    dropped.forEach(wrestler => {
+                        const key = wrestler.name;
+                        if (!recentlyDropped[key]) {
+                            recentlyDropped[key] = {
+                                name: wrestler.name,
+                                rating: wrestler.lastRating,
+                                lastSeen: weekLabel,
+                                isInactive: wrestler.name.includes('(Inactive)')
+                            };
+                        }
                     });
                 } catch (error) {
                     console.log('Error loading week for recently dropped:', error);
                 }
             }
             
-            // Group by division
-            const byDivision = {
-                mens: [],
-                womens: [],
-                menstag: [],
-                womenstag: [],
-                trios: []
-            };
-            
-            Object.values(recentlyDropped).forEach(wrestler => {
-                byDivision[wrestler.division].push(wrestler);
-            });
-            
             // Build HTML
-            let html = '<h3>Recently Dropped Out (Last 4 Weeks)</h3>';
+            const wrestlers = Object.values(recentlyDropped);
             
-            const divisionNames = {
-                mens: 'Men\'s Singles',
-                womens: 'Women\'s Singles',
-                menstag: 'Men\'s Tag Teams',
-                womenstag: 'Women\'s Tag Teams',
-                trios: 'Trios'
-            };
-            
-            Object.keys(byDivision).forEach(div => {
-                if (byDivision[div].length > 0) {
-                    html += `<h4 style="color: #ffd700; margin-top: 20px; margin-bottom: 10px;">${divisionNames[div]}</h4>`;
-                    html += '<div class="recently-dropped-grid">';
-                    
-                    byDivision[div].forEach(wrestler => {
-                        const inactiveClass = wrestler.isInactive ? 'inactive' : '';
-                        const status = wrestler.isInactive ? 'Inactive' : 'Dropped';
-                        html += `
-                            <div class="recently-dropped-item ${inactiveClass}">
-                                <div class="recently-dropped-name">${wrestler.name.replace(' (Inactive)', '')}</div>
-                                <div class="recently-dropped-details">
-                                    Status: ${status}<br>
-                                    Rating: ${wrestler.rating.toFixed(2)}<br>
-                                    Last Seen: ${wrestler.lastSeen}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += '</div>';
-                }
-            });
-            
-            if (Object.values(byDivision).every(arr => arr.length === 0)) {
-                html = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
+            if (wrestlers.length === 0) {
+                section.innerHTML = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
+                return;
             }
             
+            let html = '<div class="recently-dropped-grid">';
+            
+            wrestlers.forEach(wrestler => {
+                const inactiveClass = wrestler.isInactive ? 'inactive' : '';
+                const status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                html += `
+                    <div class="recently-dropped-item ${inactiveClass}">
+                        <div class="recently-dropped-name">${wrestler.name.replace(' (Inactive)', '')}</div>
+                        <div class="recently-dropped-details">
+                            Status: ${status}<br>
+                            Rating: ${wrestler.rating.toFixed(2)}<br>
+                            Last Seen: ${wrestler.lastSeen}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
             section.innerHTML = html;
         }
 
@@ -1602,6 +1563,17 @@ let visibleColumns = {
                                 <div class="dropped-out-list">
                                     ${droppedRows.join('')}
                                 </div>
+                            </div>
+                            
+                            <div class="recently-dropped-toggle" style="margin-top: 20px;">
+                                <label>
+                                    <input type="checkbox" id="recentlyDroppedToggle_${division}" onchange="toggleRecentlyDropped('${division}')">
+                                    Show All Recently Dropped (Last 4 Weeks)
+                                </label>
+                            </div>
+                            
+                            <div id="recentlyDroppedSection_${division}" class="recently-dropped-section">
+                                <!-- Content will be populated by JavaScript -->
                             </div>
                         `;
                     } else {
