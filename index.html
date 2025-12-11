@@ -852,11 +852,16 @@
                             
                             // NEW: Only add to newly inactive if EXACTLY 12 weeks (not 13, 14, 15+)
                             if (unchangedWeeks === INACTIVITY_WEEKS) {
+                                // DEBUG: Log who we're adding
+                                console.log(`Adding ${name} as newly inactive (exactly ${unchangedWeeks} weeks)`);
                                 newlyInactiveByDivision[division].push({
                                     name: name,
                                     lastRank: lastKnownRank,
                                     lastRating: lastKnownRating
                                 });
+                            } else if (unchangedWeeks > INACTIVITY_WEEKS) {
+                                // DEBUG: Log who we're NOT adding
+                                console.log(`NOT adding ${name} - already inactive for ${unchangedWeeks} weeks`);
                             }
                         }
                     });
