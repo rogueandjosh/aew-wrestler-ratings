@@ -1184,7 +1184,18 @@ let visibleColumns = {
             
             try {
                 const response = await fetch(previousWeekUrl);
-                const previousData = await response.json();
+                let previousData = await response.json();
+                
+                // CRITICAL: Filter previous week's inactive wrestlers too for accurate comparison
+                // Check if we have archive index to determine previous week's inactive list
+                if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length >= 3) {
+                    const prevWeekArchive = {
+                        weeks: archiveIndex.weeks.slice(2) // Previous week's perspective
+                    };
+                    
+                    const prevWeekInactive = await checkInactiveWrestlers(previousData, prevWeekArchive);
+                    previousData = filterInactiveWrestlers(previousData, prevWeekInactive.inactiveWrestlers);
+                }
                 
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                 
@@ -1193,34 +1204,30 @@ let visibleColumns = {
                     const previousWrestlers = previousData[division] || [];
                     
                     currentWrestlers.forEach(currentWrestler => {
-                        // Check if change field has "?" (corrupted arrows) - with or without numbers
-                        const hasCorruptedChange = currentWrestler.change?.includes('?');
+                        // ALWAYS recalculate arrows from filtered data
+                        // Find this wrestler in previous week
+                        const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
                         
-                        if (hasCorruptedChange) {
-                            // Find this wrestler in previous week
-                            const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
+                        if (previousWrestler) {
+                            // Calculate actual rank change from FILTERED data
+                            const rankDiff = previousWrestler.rank - currentWrestler.rank;
                             
-                            if (previousWrestler) {
-                                // Calculate actual rank change
-                                const rankDiff = previousWrestler.rank - currentWrestler.rank;
-                                
-                                if (rankDiff > 0) {
-                                    // Rank decreased (e.g., from 23 to 20) = moved UP
-                                    currentWrestler.change = `↑${Math.abs(rankDiff)}`;
-                                } else if (rankDiff < 0) {
-                                    // Rank increased (e.g., from 17 to 20) = moved DOWN
-                                    currentWrestler.change = `↓${Math.abs(rankDiff)}`;
-                                } else {
-                                    // No change
-                                    currentWrestler.change = '—';
-                                }
+                            if (rankDiff > 0) {
+                                // Rank decreased (e.g., from 23 to 20) = moved UP
+                                currentWrestler.change = `↑${Math.abs(rankDiff)}`;
+                            } else if (rankDiff < 0) {
+                                // Rank increased (e.g., from 17 to 20) = moved DOWN
+                                currentWrestler.change = `↓${Math.abs(rankDiff)}`;
                             } else {
-                                // Not in previous week = new or re-entry (handled by fixEncodingIssues)
-                                if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
-                                    currentWrestler.change = 'RE-ENTRY';
-                                } else {
-                                    currentWrestler.change = 'NEW';
-                                }
+                                // No change
+                                currentWrestler.change = '—';
+                            }
+                        } else {
+                            // Not in previous week = new or re-entry
+                            if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
+                                currentWrestler.change = 'RE-ENTRY';
+                            } else {
+                                currentWrestler.change = 'NEW';
                             }
                         }
                     });
@@ -1271,6 +1278,13 @@ let visibleColumns = {
                     previousWrestlers.forEach(prevWrestler => {
                         const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
                         
+                        // DEBUG: Log Johnny TV specifically
+                        if (prevWrestler.name === 'Johnny TV') {
+                            console.log(`Johnny TV in previous week: rank ${prevWrestler.rank}, rating ${prevWrestler.rating}`);
+                            console.log(`Johnny TV still ranked in current? ${!!stillRanked}`);
+                            console.log(`Johnny TV in inactive list? ${!!inactiveWrestlers[prevWrestler.name]}`);
+                        }
+                        
                         // Only add to dropped out if:
                         // 1. Not currently ranked
                         // 2. NOT in the inactive list (those are handled separately)
@@ -1280,6 +1294,11 @@ let visibleColumns = {
                                 lastRank: prevWrestler.rank,
                                 lastRating: prevWrestler.rating
                             });
+                            
+                            // DEBUG: Log when we add to dropped out
+                            if (prevWrestler.name === 'Johnny TV') {
+                                console.log(`ADDING Johnny TV to dropped out`);
+                            }
                         }
                     });
                     
