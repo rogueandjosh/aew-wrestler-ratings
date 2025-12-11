@@ -852,22 +852,16 @@
                             
                             // NEW: Only add to newly inactive if EXACTLY 12 weeks (not 13, 14, 15+)
                             if (unchangedWeeks === INACTIVITY_WEEKS) {
-                                // DEBUG: Log who we're adding
-                                console.log(`Adding ${name} as newly inactive (exactly ${unchangedWeeks} weeks)`);
                                 newlyInactiveByDivision[division].push({
                                     name: name,
                                     lastRank: lastKnownRank,
                                     lastRating: lastKnownRating
                                 });
-                            } else if (unchangedWeeks > INACTIVITY_WEEKS) {
-                                // DEBUG: Log who we're NOT adding
-                                console.log(`NOT adding ${name} - already inactive for ${unchangedWeeks} weeks`);
                             }
                         }
                     });
                 });
 
-                console.log(`Found ${Object.keys(inactiveWrestlers).length} inactive wrestlers (${Object.values(newlyInactiveByDivision).flat().length} newly inactive this week)`);
                 return { inactiveWrestlers, inactiveByDivision, newlyInactiveByDivision };
 
             } catch (error) {
@@ -941,7 +935,6 @@
                             newlyInactive.forEach(wrestler => {
                                 // CHECK 1: Was this wrestler already inactive last week?
                                 if (previousWeekInactiveWrestlers[wrestler.name]) {
-                                    console.log(`SKIPPING ${wrestler.name} - was already inactive last week`);
                                     return; // Skip this wrestler
                                 }
                                 
@@ -949,11 +942,8 @@
                                 // If not, they dropped out in a previous week, not this one
                                 const inCurrentWeek = currentDivisionUnfiltered.some(w => w.name === wrestler.name);
                                 if (!inCurrentWeek) {
-                                    console.log(`SKIPPING ${wrestler.name} - not in current week (dropped earlier)`);
                                     return; // Skip this wrestler
                                 }
-                                
-                                console.log(`ADDING ${wrestler.name} - truly newly inactive this week`);
                                 
                                 // First try to find in filtered data (most accurate)
                                 let lastWeekData = prevDivisionFiltered.find(w => w.name === wrestler.name);
@@ -1184,23 +1174,32 @@ let visibleColumns = {
             
             try {
                 const response = await fetch(previousWeekUrl);
-                const previousData = await response.json();
+                const previousDataRaw = await response.json();
                 
-                // DON'T filter - use raw ranks from previous week
-                // This gives accurate "you moved from #20 to #13" even if people dropped between
+                // Get previous week's inactive list so we can filter it
+                let previousDataFiltered = previousDataRaw;
+                if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length >= 3) {
+                    const prevWeekArchive = {
+                        weeks: archiveIndex.weeks.slice(2) // Slice from position 2 for previous week's perspective
+                    };
+                    
+                    const prevWeekInactive = await checkInactiveWrestlers(previousDataRaw, prevWeekArchive);
+                    previousDataFiltered = filterInactiveWrestlers(previousDataRaw, prevWeekInactive.inactiveWrestlers);
+                }
                 
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                 
                 divisions.forEach(division => {
                     const currentWrestlers = currentData[division] || [];
-                    const previousWrestlers = previousData[division] || [];
+                    const previousWrestlersFiltered = previousDataFiltered[division] || [];
                     
                     currentWrestlers.forEach(currentWrestler => {
-                        // ALWAYS recalculate arrows from raw previous data
-                        const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
+                        // Find this wrestler in FILTERED previous week data
+                        const previousWrestler = previousWrestlersFiltered.find(p => p.name === currentWrestler.name);
                         
                         if (previousWrestler) {
-                            // Calculate rank change from RAW ranks (before filtering)
+                            // Compare: FILTERED previous rank vs FILTERED current rank
+                            // Both have been re-ranked after removing inactive wrestlers
                             const rankDiff = previousWrestler.rank - currentWrestler.rank;
                             
                             if (rankDiff > 0) {
@@ -1266,14 +1265,6 @@ let visibleColumns = {
                     previousWrestlers.forEach(prevWrestler => {
                         const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
                         
-                        // DEBUG: Log Johnny TV and Tetsuya Naito specifically
-                        if (prevWrestler.name === 'Johnny TV' || prevWrestler.name === 'Tetsuya Naito') {
-                            console.log(`${prevWrestler.name} in previous week: rank ${prevWrestler.rank}, rating ${prevWrestler.rating}`);
-                            console.log(`  Still ranked in current? ${!!stillRanked}`);
-                            console.log(`  In current inactive list? ${!!inactiveWrestlers[prevWrestler.name]}`);
-                            console.log(`  Was inactive LAST week? ${!!previousWeekInactiveWrestlers[prevWrestler.name]}`);
-                        }
-                        
                         // Only add to dropped out if:
                         // 1. Not currently ranked
                         // 2. NOT in current week's inactive list (those are handled separately)
@@ -1287,11 +1278,6 @@ let visibleColumns = {
                                 lastRank: prevWrestler.rank,
                                 lastRating: prevWrestler.rating
                             });
-                            
-                            // DEBUG: Log when we add to dropped out
-                            if (prevWrestler.name === 'Johnny TV' || prevWrestler.name === 'Tetsuya Naito') {
-                                console.log(`  ADDING ${prevWrestler.name} to dropped out`);
-                            }
                         }
                     });
                     
