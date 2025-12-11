@@ -914,21 +914,30 @@ let visibleColumns = {
                         if (wrestler.change && typeof wrestler.change === 'string') {
                             // Fix the encoding issues with em dash and question marks
                             wrestler.change = wrestler.change.replace(/�/g, '—');
-                            wrestler.change = wrestler.change.replace(/\?/g, '—');
-                            // Fix any weird question mark variants
-                            wrestler.change = wrestler.change.replace(/\?\d+/g, match => {
-                                // Extract the number after ?
-                                const num = match.replace('?', '');
-                                return '—'; // Just use em dash if it's ?number format
-                            });
-                            wrestler.change = wrestler.change.replace(/\?↑/g, '↑');
-                            wrestler.change = wrestler.change.replace(/\?↓/g, '↓');
+                            wrestler.change = wrestler.change.replace(/\?/g, '');
+                            
+                            // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
+                            wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            
+                            // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
+                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            
+                            // If it's just empty or standalone dash, make it em dash
+                            if (wrestler.change === '' || wrestler.change === '-') {
+                                wrestler.change = '—';
+                            }
                         } else if (wrestler.change === null || wrestler.change === undefined) {
                             // If change is missing, set to em dash
                             wrestler.change = '—';
                         } else if (typeof wrestler.change !== 'string') {
-                            // If it's a number or other type, convert to string
+                            // If it's a number or other type, convert to string first
                             wrestler.change = String(wrestler.change);
+                            // Then apply same arrow logic
+                            if (wrestler.change.startsWith('-')) {
+                                wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            } else if (/^\d+$/.test(wrestler.change)) {
+                                wrestler.change = '↑' + wrestler.change;
+                            }
                         }
                         
                         // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
