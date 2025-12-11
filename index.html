@@ -1184,18 +1184,10 @@ let visibleColumns = {
             
             try {
                 const response = await fetch(previousWeekUrl);
-                let previousData = await response.json();
+                const previousData = await response.json();
                 
-                // CRITICAL: Filter previous week's inactive wrestlers too for accurate comparison
-                // Check if we have archive index to determine previous week's inactive list
-                if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length >= 3) {
-                    const prevWeekArchive = {
-                        weeks: archiveIndex.weeks.slice(2) // Previous week's perspective
-                    };
-                    
-                    const prevWeekInactive = await checkInactiveWrestlers(previousData, prevWeekArchive);
-                    previousData = filterInactiveWrestlers(previousData, prevWeekInactive.inactiveWrestlers);
-                }
+                // DON'T filter - use raw ranks from previous week
+                // This gives accurate "you moved from #20 to #13" even if people dropped between
                 
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                 
@@ -1204,22 +1196,18 @@ let visibleColumns = {
                     const previousWrestlers = previousData[division] || [];
                     
                     currentWrestlers.forEach(currentWrestler => {
-                        // ALWAYS recalculate arrows from filtered data
-                        // Find this wrestler in previous week
+                        // ALWAYS recalculate arrows from raw previous data
                         const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
                         
                         if (previousWrestler) {
-                            // Calculate actual rank change from FILTERED data
+                            // Calculate rank change from RAW ranks (before filtering)
                             const rankDiff = previousWrestler.rank - currentWrestler.rank;
                             
                             if (rankDiff > 0) {
-                                // Rank decreased (e.g., from 23 to 20) = moved UP
                                 currentWrestler.change = `↑${Math.abs(rankDiff)}`;
                             } else if (rankDiff < 0) {
-                                // Rank increased (e.g., from 17 to 20) = moved DOWN
                                 currentWrestler.change = `↓${Math.abs(rankDiff)}`;
                             } else {
-                                // No change
                                 currentWrestler.change = '—';
                             }
                         } else {
@@ -1254,17 +1242,17 @@ let visibleColumns = {
             
             try {
                 const response = await fetch(previousWeekInfo.url);
-                let previousData = await response.json();
+                const previousData = await response.json();
                 
-                // CRITICAL: Filter inactive wrestlers from PREVIOUS week too
-                // Otherwise we compare against wrestlers who were already invisible last week
+                // Get previous week's inactive list (but DON'T filter the data)
+                let previousWeekInactiveWrestlers = {};
                 if (archiveIndex.weeks.length >= 3) {
                     const prevWeekArchive = {
                         weeks: archiveIndex.weeks.slice(1)
                     };
                     
                     const prevWeekInactive = await checkInactiveWrestlers(previousData, prevWeekArchive);
-                    previousData = filterInactiveWrestlers(previousData, prevWeekInactive.inactiveWrestlers);
+                    previousWeekInactiveWrestlers = prevWeekInactive.inactiveWrestlers;
                 }
                 
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
@@ -1278,17 +1266,22 @@ let visibleColumns = {
                     previousWrestlers.forEach(prevWrestler => {
                         const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
                         
-                        // DEBUG: Log Johnny TV specifically
-                        if (prevWrestler.name === 'Johnny TV') {
-                            console.log(`Johnny TV in previous week: rank ${prevWrestler.rank}, rating ${prevWrestler.rating}`);
-                            console.log(`Johnny TV still ranked in current? ${!!stillRanked}`);
-                            console.log(`Johnny TV in inactive list? ${!!inactiveWrestlers[prevWrestler.name]}`);
+                        // DEBUG: Log Johnny TV and Tetsuya Naito specifically
+                        if (prevWrestler.name === 'Johnny TV' || prevWrestler.name === 'Tetsuya Naito') {
+                            console.log(`${prevWrestler.name} in previous week: rank ${prevWrestler.rank}, rating ${prevWrestler.rating}`);
+                            console.log(`  Still ranked in current? ${!!stillRanked}`);
+                            console.log(`  In current inactive list? ${!!inactiveWrestlers[prevWrestler.name]}`);
+                            console.log(`  Was inactive LAST week? ${!!previousWeekInactiveWrestlers[prevWrestler.name]}`);
                         }
                         
                         // Only add to dropped out if:
                         // 1. Not currently ranked
-                        // 2. NOT in the inactive list (those are handled separately)
-                        if (!stillRanked && !inactiveWrestlers[prevWrestler.name]) {
+                        // 2. NOT in current week's inactive list (those are handled separately)
+                        // 3. Was NOT already inactive last week (they were visible last week)
+                        if (!stillRanked && 
+                            !inactiveWrestlers[prevWrestler.name] && 
+                            !previousWeekInactiveWrestlers[prevWrestler.name]) {
+                            
                             droppedOut.push({
                                 name: prevWrestler.name,
                                 lastRank: prevWrestler.rank,
@@ -1296,8 +1289,8 @@ let visibleColumns = {
                             });
                             
                             // DEBUG: Log when we add to dropped out
-                            if (prevWrestler.name === 'Johnny TV') {
-                                console.log(`ADDING Johnny TV to dropped out`);
+                            if (prevWrestler.name === 'Johnny TV' || prevWrestler.name === 'Tetsuya Naito') {
+                                console.log(`  ADDING ${prevWrestler.name} to dropped out`);
                             }
                         }
                     });
