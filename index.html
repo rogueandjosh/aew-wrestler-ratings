@@ -1247,7 +1247,18 @@ let visibleColumns = {
             
             try {
                 const response = await fetch(previousWeekInfo.url);
-                const previousData = await response.json();
+                let previousData = await response.json();
+                
+                // CRITICAL: Filter inactive wrestlers from PREVIOUS week too
+                // Otherwise we compare against wrestlers who were already invisible last week
+                if (archiveIndex.weeks.length >= 3) {
+                    const prevWeekArchive = {
+                        weeks: archiveIndex.weeks.slice(1)
+                    };
+                    
+                    const prevWeekInactive = await checkInactiveWrestlers(previousData, prevWeekArchive);
+                    previousData = filterInactiveWrestlers(previousData, prevWeekInactive.inactiveWrestlers);
+                }
                 
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                 
