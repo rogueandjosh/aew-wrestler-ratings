@@ -1007,6 +1007,46 @@ let visibleColumns = {
             // Dropped out is now handled by Google Sheets
             return currentData;
         }
+        
+        // Fix incorrect inactive wrestler ranks by looking them up in previous week
+        async function fixInactiveRanks(currentData, previousWeekUrl) {
+            if (!previousWeekUrl) return currentData;
+            
+            try {
+                const response = await fetch(previousWeekUrl);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const droppedOutKey = division + 'DroppedOut';
+                    const droppedOut = currentData[droppedOutKey] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    droppedOut.forEach(dropped => {
+                        // Only fix inactive wrestlers (those with "(Inactive)" in name)
+                        if (dropped.name.includes('(Inactive)')) {
+                            // Remove "(Inactive)" to find the actual name
+                            const actualName = dropped.name.replace(' (Inactive)', '');
+                            
+                            // Find this wrestler in previous week's rankings
+                            const prevWrestler = previousWrestlers.find(w => w.name === actualName);
+                            
+                            if (prevWrestler) {
+                                // Update with the correct filtered rank from previous week
+                                dropped.lastRank = prevWrestler.rank;
+                                dropped.lastRating = prevWrestler.rating;
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.log('Could not fix inactive ranks:', error);
+            }
+            
+            return currentData;
+        }
 
         // Load archive index, current rankings, statistics, and team members on page load
         Promise.all([
@@ -1033,6 +1073,9 @@ let visibleColumns = {
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                 const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
                 ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                
+                // Fix inactive wrestler ranks using previous week data
+                ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
             }
 
             // Load statistics if available
@@ -1130,6 +1173,9 @@ let visibleColumns = {
                                 if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
                                     const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
                                     ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                                    
+                                    // Fix inactive wrestler ranks using previous week data
+                                    ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
                                 }
                             }
 
