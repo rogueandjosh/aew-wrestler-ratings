@@ -896,7 +896,7 @@
         async function addInactiveToDroppedOut(data, newlyInactiveByDivision, archiveIndex) {
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
-            // We need previous week data to get their last visible rank
+            // We need previous week data to check if they were VISIBLE last week
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
                 return data;
             }
@@ -904,33 +904,80 @@
             try {
                 const previousWeekInfo = archiveIndex.weeks[1];
                 const prevResponse = await fetch(previousWeekInfo.url);
-                const previousData = await prevResponse.json();
+                const previousWeekRawData = await prevResponse.json();
 
-                divisions.forEach(division => {
-                    const newlyInactive = newlyInactiveByDivision[division] || [];
-                    const previousDivisionData = previousData[division] || [];
+                // CRITICAL: We need to check if they were in the UNFILTERED data last week
+                // If they weren't visible last week (already filtered out), they're not newly inactive
+                
+                // Get the previous week's inactive list to filter out already-inactive wrestlers
+                if (archiveIndex.weeks.length >= 3) {
+                    const twoWeeksAgoInfo = archiveIndex.weeks[2];
+                    const prevPrevResponse = await fetch(twoWeeksAgoInfo.url);
+                    const twoWeeksAgoData = await prevPrevResponse.json();
                     
-                    if (newlyInactive.length > 0) {
-                        // Initialize droppedOut array if it doesn't exist
-                        if (!data[division + 'DroppedOut']) {
-                            data[division + 'DroppedOut'] = [];
-                        }
-
-                        // Add each newly inactive wrestler
-                        newlyInactive.forEach(wrestler => {
-                            // Get their rank from last week (when they were last visible)
-                            const lastWeekData = previousDivisionData.find(w => w.name === wrestler.name);
-                            
-                            if (lastWeekData) {
-                                data[division + 'DroppedOut'].push({
-                                    name: wrestler.name + ' (Inactive)',
-                                    lastRank: lastWeekData.rank,
-                                    lastRating: lastWeekData.rating
-                                });
+                    // Create temp archive index for previous week
+                    const prevWeekArchive = {
+                        weeks: archiveIndex.weeks.slice(1)
+                    };
+                    
+                    const prevWeekInactive = await checkInactiveWrestlers(previousWeekRawData, prevWeekArchive);
+                    
+                    divisions.forEach(division => {
+                        const newlyInactive = newlyInactiveByDivision[division] || [];
+                        const prevDivisionData = previousWeekRawData[division] || [];
+                        
+                        if (newlyInactive.length > 0) {
+                            // Initialize droppedOut array if it doesn't exist
+                            if (!data[division + 'DroppedOut']) {
+                                data[division + 'DroppedOut'] = [];
                             }
-                        });
-                    }
-                });
+
+                            // Add each newly inactive wrestler IF they were NOT already inactive last week
+                            newlyInactive.forEach(wrestler => {
+                                // Check if this wrestler was VISIBLE last week (not in previous week's inactive list)
+                                const wasInactivePrevWeek = prevWeekInactive.inactiveWrestlers[wrestler.name];
+                                
+                                if (!wasInactivePrevWeek) {
+                                    // They were visible last week, now newly inactive
+                                    const lastWeekData = prevDivisionData.find(w => w.name === wrestler.name);
+                                    
+                                    if (lastWeekData) {
+                                        data[division + 'DroppedOut'].push({
+                                            name: wrestler.name + ' (Inactive)',
+                                            lastRank: lastWeekData.rank,
+                                            lastRating: lastWeekData.rating
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    
+                } else {
+                    // Not enough history to check - just add all newly inactive
+                    divisions.forEach(division => {
+                        const newlyInactive = newlyInactiveByDivision[division] || [];
+                        const prevDivisionData = previousWeekRawData[division] || [];
+                        
+                        if (newlyInactive.length > 0) {
+                            if (!data[division + 'DroppedOut']) {
+                                data[division + 'DroppedOut'] = [];
+                            }
+
+                            newlyInactive.forEach(wrestler => {
+                                const lastWeekData = prevDivisionData.find(w => w.name === wrestler.name);
+                                
+                                if (lastWeekData) {
+                                    data[division + 'DroppedOut'].push({
+                                        name: wrestler.name + ' (Inactive)',
+                                        lastRank: lastWeekData.rank,
+                                        lastRating: lastWeekData.rating
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
 
                 return data;
 
