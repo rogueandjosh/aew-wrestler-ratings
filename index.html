@@ -942,7 +942,7 @@ let visibleColumns = {
         }
 
         // Helper function to calculate dropped out wrestlers from previous week
-        async function calculateDroppedOut(currentData, archiveIndex, inactiveWrestlers = {}) {
+        async function calculateDroppedOut(currentData, archiveIndex) {
             // Dropped out is now handled by Google Sheets
             return currentData;
         }
@@ -972,13 +972,8 @@ let visibleColumns = {
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                 const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
             }
-            if (archiveIndex) {
-            }
-            if (archiveIndex) {
-            }
-            if (archiveIndex && Object.keys(inactiveWrestlers).length > 0) {
-                // Save unfiltered data BEFORE filtering (for checking who's actually in current week)
-            }
+            
+            
             
             // Load statistics if available
             if (statsResponse) {
@@ -1040,10 +1035,8 @@ let visibleColumns = {
                         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                             const previousWeekUrl = archiveIndex.weeks[1].url;
                         }
-                        if (archiveIndex) {
-                        }
-                        if (archiveIndex) {
-                        }
+                        
+                        
                         
                         
                         if (ratingsData.dateRange) {
@@ -1090,8 +1083,8 @@ let visibleColumns = {
                                     weeks: archiveIndex.weeks.slice(currentIndex)
                                 };
                                 
-                                const { inactiveWrestlers, inactiveByDivision, newlyInactiveByDivision } = await checkInactiveWrestlers(ratingsData, tempArchiveIndex);
-                                inactiveWrestlersInArchive = inactiveWrestlers;
+                                
+                                
                             }
                             if (archiveIndex && archiveIndex.weeks) {
                                 const currentFilename = selectedValue.replace('archive/', '');
@@ -1112,7 +1105,7 @@ let visibleColumns = {
                                             previousWrestlers.forEach(prevWrestler => {
                                                 const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
                                                 // Don't add if inactive - they're handled separately
-                                                if (!stillRanked && !inactiveWrestlersInArchive[prevWrestler.name]) {
+                                                if (!stillRanked ) {
                                                     droppedOut.push({
                                                         name: prevWrestler.name,
                                                         lastRank: prevWrestler.rank,
@@ -1130,14 +1123,7 @@ let visibleColumns = {
                                         console.log('Could not calculate dropped out:', error);
                                     }
                                 }
-                            }
-                            if (archiveIndex && archiveIndex.weeks && Object.keys(inactiveWrestlersInArchive).length > 0) {
-                                const currentFilename = selectedValue.replace('archive/', '');
-                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                                
-                                const tempArchiveIndex = {
-                                    weeks: archiveIndex.weeks.slice(currentIndex)
-                                };
+                            };
                             }
                             
                             if (ratingsData.dateRange) {
