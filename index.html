@@ -914,13 +914,13 @@ let visibleColumns = {
                         if (wrestler.change && typeof wrestler.change === 'string') {
                             // Fix the encoding issues with em dash and question marks
                             wrestler.change = wrestler.change.replace(/�/g, '—');
-                            wrestler.change = wrestler.change.replace(/\?/g, '');
+                           wrestler.change = wrestler.change.replace(/\?/g, '');
                             
                             // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
-                            wrestler.change = wrestler.change.replace(/^+?(\d+)$/, '↓$1');
+                            wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
                             
                             // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
-                            wrestler.change = wrestler.change.replace(/^\-?(\d-)$/, '↑$1');
+                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
                             
                             // If it's just empty or standalone dash, make it em dash
                             if (wrestler.change === '' || wrestler.change === '-') {
