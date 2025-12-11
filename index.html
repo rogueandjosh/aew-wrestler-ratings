@@ -934,11 +934,10 @@ let visibleColumns = {
                             wrestler.change = String(wrestler.change);
                             // Then apply same arrow logic
                             if (wrestler.change.startsWith('-')) {
-                                wrestler.change = wrestler.change.replace(/^+(\d+)$/, '↓$1');
+                                wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
                             } else if (/^\d+$/.test(wrestler.change)) {
                                 wrestler.change = '↑' + wrestler.change;
                             }
-                        }
                         
                         // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
                         if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
