@@ -1009,6 +1009,7 @@ let visibleColumns = {
         }
         
         // Fix incorrect inactive wrestler ranks by looking them up in previous week
+        // Also remove wrestlers from dropped out if they weren't even in previous week
         async function fixInactiveRanks(currentData, previousWeekUrl) {
             if (!previousWeekUrl) return currentData;
             
@@ -1023,22 +1024,28 @@ let visibleColumns = {
                     const droppedOut = currentData[droppedOutKey] || [];
                     const previousWrestlers = previousData[division] || [];
                     
+                    // Filter dropped out to only include wrestlers who were actually in previous week
+                    const fixedDroppedOut = [];
+                    
                     droppedOut.forEach(dropped => {
-                        // Only fix inactive wrestlers (those with "(Inactive)" in name)
-                        if (dropped.name.includes('(Inactive)')) {
-                            // Remove "(Inactive)" to find the actual name
-                            const actualName = dropped.name.replace(' (Inactive)', '');
-                            
-                            // Find this wrestler in previous week's rankings
-                            const prevWrestler = previousWrestlers.find(w => w.name === actualName);
-                            
-                            if (prevWrestler) {
-                                // Update with the correct filtered rank from previous week
-                                dropped.lastRank = prevWrestler.rank;
-                                dropped.lastRating = prevWrestler.rating;
-                            }
+                        // Get actual name (remove "(Inactive)" if present)
+                        const actualName = dropped.name.replace(' (Inactive)', '');
+                        
+                        // Find this wrestler in previous week's rankings
+                        const prevWrestler = previousWrestlers.find(w => w.name === actualName);
+                        
+                        if (prevWrestler) {
+                            // Wrestler was in previous week - update with correct rank and keep them
+                            fixedDroppedOut.push({
+                                name: dropped.name,  // Keep "(Inactive)" if it was there
+                                lastRank: prevWrestler.rank,
+                                lastRating: prevWrestler.rating
+                            });
                         }
+                        // If not in previous week, don't add to fixedDroppedOut (removes them)
                     });
+                    
+                    currentData[droppedOutKey] = fixedDroppedOut;
                 });
                 
             } catch (error) {
