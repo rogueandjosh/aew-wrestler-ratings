@@ -929,6 +929,7 @@
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionFiltered = filteredPrevWeekData[division] || [];
                         const prevDivisionRaw = previousWeekRawData[division] || [];
+                        const currentDivisionRaw = data[division] || [];
                         
                         if (newlyInactive.length > 0) {
                             if (!data[division + 'DroppedOut']) {
@@ -937,9 +938,17 @@
 
                             // Add each newly inactive wrestler ONLY if they weren't already inactive last week
                             newlyInactive.forEach(wrestler => {
-                                // CRITICAL CHECK: Was this wrestler already inactive last week?
+                                // CHECK 1: Was this wrestler already inactive last week?
                                 if (previousWeekInactiveWrestlers[wrestler.name]) {
                                     console.log(`SKIPPING ${wrestler.name} - was already inactive last week`);
+                                    return; // Skip this wrestler
+                                }
+                                
+                                // CHECK 2: Is this wrestler in the current week's raw data at all?
+                                // If not, they dropped out in a previous week, not this one
+                                const inCurrentWeek = currentDivisionRaw.some(w => w.name === wrestler.name);
+                                if (!inCurrentWeek) {
+                                    console.log(`SKIPPING ${wrestler.name} - not in current week (dropped earlier)`);
                                     return; // Skip this wrestler
                                 }
                                 
