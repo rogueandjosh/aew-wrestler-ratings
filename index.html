@@ -1179,45 +1179,6 @@ let visibleColumns = {
                                 }
                             }
 
-                            if (archiveIndex && archiveIndex.weeks) {
-                                const currentFilename = selectedValue.replace('archive/', '');
-                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                                
-                                if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
-                                    const previousWeekInfo = archiveIndex.weeks[currentIndex + 1];
-                                    try {
-                                        const prevResponse = await fetch(previousWeekInfo.url);
-                                        const previousData = await prevResponse.json();
-                                        
-                                        const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                                        divisions.forEach(division => {
-                                            const currentWrestlers = ratingsData[division] || [];
-                                            const previousWrestlers = previousData[division] || [];
-                                            
-                                            const droppedOut = [];
-                                            previousWrestlers.forEach(prevWrestler => {
-                                                const stillRanked = currentWrestlers.find(curr => curr.name === prevWrestler.name);
-                                                // Don't add if inactive - they're handled separately
-                                                if (!stillRanked ) {
-                                                    droppedOut.push({
-                                                        name: prevWrestler.name,
-                                                        lastRank: prevWrestler.rank,
-                                                        lastRating: prevWrestler.rating
-                                                    });
-                                                }
-                                            });
-                                            
-                                            const droppedKey = division + 'DroppedOut';
-                                            if (!ratingsData[droppedKey] || ratingsData[droppedKey].length === 0) {
-                                                ratingsData[droppedKey] = droppedOut;
-                                            }
-                                        });
-                                    } catch (error) {
-                                        console.log('Could not calculate dropped out:', error);
-                                    }
-                                }
-                            }
-                            
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
                             } else {
