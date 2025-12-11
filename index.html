@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +15,7 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Overlock', 'Arial', sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #e0e0e0;
             min-height: 100vh;
@@ -245,6 +248,49 @@
             min-width: 50px;
         }
 
+        .rating-range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .rating-range-sliders {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .max-button {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .max-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .max-button.active {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+
         .toggle-container {
             display: flex;
             align-items: center;
@@ -405,6 +451,15 @@
         .name {
             font-weight: bold;
             color: #fff;
+        }
+
+        .team-members {
+            font-size: 0.75em;
+            color: #b8b8b8;
+            font-weight: normal;
+            margin-top: 3px;
+            font-style: italic;
+            display: block;
         }
 
         .rating {
@@ -596,7 +651,8 @@
     <div class="container">
         <header>
             <h1>AEW Wrestler Ratings</h1>
-            <p class="subtitle">Wrestler Ratings based on Match Performances, not Wins and Losses</p>
+            <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
+            <p class="subtitle">Performance-based rankings, not wins and losses</p>
             <div class="week-selector">
                 <label for="weekSelect">View Week:</label>
                 <select id="weekSelect" onchange="loadSelectedWeek()">
@@ -608,8 +664,8 @@
         </header>
 
         <div class="tabs">
-            <button class="tab active" onclick="showDivision('mens')">Men's Singles</button>
-            <button class="tab" onclick="showDivision('womens')">Women's Singles</button>
+            <button class="tab active" onclick="showDivision('mens')">Men</button>
+            <button class="tab" onclick="showDivision('womens')">Women</button>
             <button class="tab" onclick="showDivision('menstag')">Men's Tag Teams</button>
             <button class="tab" onclick="showDivision('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="showDivision('trios')">Trios</button>
@@ -674,6 +730,7 @@
         let currentStatsDivision = 'mens';
         let currentSortColumn = 'peak';
         let nameChangesData = null;
+        let teamMembersData = null;
 
         // Load name changes data
         async function loadNameChanges() {
@@ -688,6 +745,22 @@
                 console.warn('⚠️ Name changes file not found, names will not be merged');
                 nameChangesData = { changes: [] };
                 return nameChangesData;
+            }
+        }
+
+        // Load team members data
+        async function loadTeamMembers() {
+            if (teamMembersData) return teamMembersData;
+            
+            try {
+                const response = await fetch('team-members.json');
+                teamMembersData = await response.json();
+                console.log('✅ Loaded team members:', teamMembersData.totalTeams);
+                return teamMembersData;
+            } catch (error) {
+                console.warn('⚠️ Team members file not found, team members will not be shown');
+                teamMembersData = { teams: {} };
+                return teamMembersData;
             }
         }
 
@@ -965,13 +1038,16 @@ let visibleColumns = {
             return currentData;
         }
 
-        // Load archive index, current rankings, and statistics on page load
+        // Load archive index, current rankings, statistics, and team members on page load
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
             fetch('current-rankings.json'),
             fetch('statistics.json').catch(() => null)
         ])
         .then(async ([archiveResponse, currentResponse, statsResponse]) => {
+            // Load team members data (don't block on failure)
+            loadTeamMembers();
+            
             // Load archive index
             if (archiveResponse.weeks) {
                 archiveIndex = archiveResponse;
@@ -1204,16 +1280,42 @@ let visibleColumns = {
                                    oninput="applyFilters('${division}')">
                         </div>
                         <div class="filter-group">
-                            <label for="rating-${division}">⭐ Minimum Rating: <span class="slider-value" id="rating-value-${division}">0</span></label>
-                            <input type="range" 
-                                   id="rating-${division}" 
-                                   class="rating-slider" 
-                                   min="0" 
-                                   max="200" 
-                                   step="1" 
-                                   value="0"
-                                   oninput="updateRatingValue('${division}'); applyFilters('${division}')"
-                                   onchange="applyFilters('${division}', true)">
+                            <label>⭐ Rating Range</label>
+                            <div class="rating-range-container">
+                                <div class="rating-range-sliders">
+                                    <div class="slider-row">
+                                        <span style="color: #ffd700; min-width: 35px;">Min:</span>
+                                        <input type="range" 
+                                               id="rating-min-${division}" 
+                                               class="rating-slider" 
+                                               min="0" 
+                                               max="200" 
+                                               step="1" 
+                                               value="0"
+                                               oninput="updateRatingRange('${division}')" 
+                                               onchange="applyFilters('${division}', true)">
+                                        <span class="slider-value" id="rating-min-value-${division}">0</span>
+                                    </div>
+                                    <div class="slider-row">
+                                        <span style="color: #ffd700; min-width: 35px;">Max:</span>
+                                        <input type="range" 
+                                               id="rating-max-${division}" 
+                                               class="rating-slider" 
+                                               min="0" 
+                                               max="200" 
+                                               step="1" 
+                                               value="200"
+                                               oninput="updateRatingRange('${division}')" 
+                                               onchange="applyFilters('${division}', true)">
+                                        <span class="slider-value" id="rating-max-value-${division}">200</span>
+                                    </div>
+                                </div>
+                                <button class="max-button active" 
+                                        id="max-button-${division}"
+                                        onclick="toggleMaxRating('${division}')">
+                                    MAX
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="filter-row">
@@ -1252,14 +1354,15 @@ let visibleColumns = {
         function updateDivisionData(division, data) {
             // Get filter values
             const searchTerm = document.getElementById('search-' + division)?.value.toLowerCase() || '';
-            const minRating = parseInt(document.getElementById('rating-' + division)?.value || 0);
+            const minRating = parseInt(document.getElementById('rating-min-' + division)?.value || 0);
+            const maxRating = parseInt(document.getElementById('rating-max-' + division)?.value || 200);
             const showDropped = document.getElementById('show-dropped-' + division)?.checked !== false;
 
             // Apply filters - optimized for performance
             let filteredData = [];
             for (let i = 0; i < data.length; i++) {
                 const wrestler = data[i];
-                if (wrestler.rating >= minRating && wrestler.name.toLowerCase().includes(searchTerm)) {
+                if (wrestler.rating >= minRating && wrestler.rating <= maxRating && wrestler.name.toLowerCase().includes(searchTerm)) {
                     filteredData.push(wrestler);
                 }
             }
@@ -1310,11 +1413,12 @@ let visibleColumns = {
                 const ratingClass = getRatingClass(wrestler.rating);
                 const changeClass = getChangeClass(wrestler.change);
                 const changeSymbol = getChangeSymbol(wrestler.change);
+                const teamMembers = getTeamMembers(wrestler.name, division);
 
                 rows.push(`
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
-                        <td class="name">${wrestler.name}</td>
+                        <td class="name">${wrestler.name}${teamMembers}</td>
                         <td class="rating ${ratingClass}">${wrestler.rating.toFixed(2)}</td>
                         <td class="change ${changeClass}">${changeSymbol}</td>
                         <td>${wrestler.matches}</td>
@@ -1392,7 +1496,27 @@ let visibleColumns = {
         // Debounce timer for search
         let filterDebounceTimer = null;
 
-        function applyFilters(division, immediate = false) {
+        function getTeamMembers(teamName, division) {
+            // Only show members for tag teams and trios
+            if (division !== 'menstag' && division !== 'womenstag' && division !== 'trios') {
+                return '';
+            }
+            
+            // If we don't have team members data loaded, return empty
+            if (!teamMembersData || !teamMembersData.teams) {
+                return '';
+            }
+            
+            // Look up team members
+            const members = teamMembersData.teams[teamName];
+            
+            if (members && members.length > 0) {
+                return `<span class="team-members">${members.join(' & ')}</span>`;
+            }
+            
+            // No data found for this team
+            return '';
+        }
             if (immediate) {
                 // For checkbox/slider release - apply immediately
                 if (window.currentDivisionData) {
@@ -1409,11 +1533,58 @@ let visibleColumns = {
             }
         }
 
-        function updateRatingValue(division) {
-            const slider = document.getElementById('rating-' + division);
-            const display = document.getElementById('rating-value-' + division);
-            if (slider && display) {
-                display.textContent = slider.value;
+        function updateRatingRange(division) {
+            const minSlider = document.getElementById('rating-min-' + division);
+            const maxSlider = document.getElementById('rating-max-' + division);
+            const minDisplay = document.getElementById('rating-min-value-' + division);
+            const maxDisplay = document.getElementById('rating-max-value-' + division);
+            const maxButton = document.getElementById('max-button-' + division);
+            
+            if (minSlider && maxSlider && minDisplay && maxDisplay) {
+                let minVal = parseInt(minSlider.value);
+                let maxVal = parseInt(maxSlider.value);
+                
+                // Ensure min doesn't exceed max
+                if (minVal > maxVal) {
+                    minSlider.value = maxVal;
+                    minVal = maxVal;
+                }
+                
+                // Ensure max doesn't go below min
+                if (maxVal < minVal) {
+                    maxSlider.value = minVal;
+                    maxVal = minVal;
+                }
+                
+                minDisplay.textContent = minVal;
+                maxDisplay.textContent = maxVal;
+                
+                // Update max button state
+                if (maxVal === 200) {
+                    maxButton.classList.add('active');
+                } else {
+                    maxButton.classList.remove('active');
+                }
+                
+                applyFilters(division);
+            }
+        }
+
+        function toggleMaxRating(division) {
+            const maxSlider = document.getElementById('rating-max-' + division);
+            const maxButton = document.getElementById('max-button-' + division);
+            
+            if (maxSlider && maxButton) {
+                if (maxSlider.value === '200') {
+                    // Already at max, do nothing or could toggle to some lower value
+                    return;
+                } else {
+                    // Set to max
+                    maxSlider.value = 200;
+                    maxButton.classList.add('active');
+                    updateRatingRange(division);
+                    applyFilters(division, true);
+                }
             }
         }
 
@@ -1465,8 +1636,8 @@ let visibleColumns = {
             }
 
             const divisionNames = {
-                'mens': "Men's Singles",
-                'womens': "Women's Singles",
+                'mens': "Men",
+                'womens': "Women",
                 'menstag': "Men's Tag Teams",
                 'womenstag': "Women's Tag Teams",
                 'trios': "Trios"
@@ -1862,8 +2033,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
     const divisionData = statisticsData[division];
     
     const divisionNames = {
-        'mens': "Men's Singles",
-        'womens': "Women's Singles",
+        'mens': "Men",
+        'womens': "Women",
         'menstag': "Men's Tag Teams",
         'womenstag': "Women's Tag Teams",
         'trios': "Trios"
@@ -1887,8 +2058,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         </div>
 
         <div class="tabs" style="margin-bottom: 20px;">
-            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
-            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
+            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men</button>
+            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women</button>
             <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
             <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
             <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
