@@ -834,7 +834,7 @@
         async function buildRecentlyDroppedSection(division) {
             const section = document.getElementById(`recentlyDroppedSection_${division}`);
             
-            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 5) {
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
                 section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
                 return;
             }
@@ -851,7 +851,7 @@
                 currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
             }
             
-            // Get 4 weeks starting from the current viewed week
+            // Get 4 weeks starting from the current viewed week (not including it, starting from next)
             const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
             
             if (weeksToCheck.length < 2) {
@@ -861,35 +861,48 @@
             
             const recentlyDropped = {};
             
-            // Load each week and collect dropped out wrestlers for THIS division only
+            // Load each week and collect ONLY wrestlers who were in the previous week's visible rankings
             for (let i = 0; i < weeksToCheck.length - 1; i++) {
                 try {
                     const weekData = await fetch(weeksToCheck[i].url).then(r => r.json());
                     const weekLabel = weeksToCheck[i].label;
                     
+                    // Get previous week's data to verify wrestler was actually there
+                    let previousWeekWrestlers = new Set();
+                    if (i + 1 < weeksToCheck.length) {
+                        const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
+                        const prevRoster = prevWeekData[division] || [];
+                        previousWeekWrestlers = new Set(prevRoster.map(w => w.name));
+                    }
+                    
                     const droppedKey = division + 'DroppedOut';
                     const dropped = weekData[droppedKey] || [];
                     
                     dropped.forEach(wrestler => {
-                        const key = wrestler.name;
-                        if (!recentlyDropped[key]) {
-                            const isInactive = wrestler.name.includes('(Inactive)');
-                            let displayRating;
-                            
-                            if (isInactive) {
-                                // For inactive wrestlers, show their last rating when they went inactive
-                                displayRating = wrestler.lastRating;
-                            } else {
-                                // For natural drops (rating hit 100.00), show exactly 100.00
-                                displayRating = 100.00;
+                        const actualName = wrestler.name.replace(' (Inactive)', '');
+                        
+                        // ONLY include if they were actually in previous week's visible rankings
+                        if (previousWeekWrestlers.has(actualName)) {
+                            const key = wrestler.name;
+                            if (!recentlyDropped[key]) {
+                                const isInactive = wrestler.name.includes('(Inactive)');
+                                let displayRating;
+                                
+                                if (isInactive) {
+                                    // For inactive wrestlers, show their last rating when they went inactive
+                                    displayRating = wrestler.lastRating;
+                                } else {
+                                    // For natural drops (rating hit 100.00), show exactly 100.00
+                                    displayRating = 100.00;
+                                }
+                                
+                                recentlyDropped[key] = {
+                                    name: wrestler.name,
+                                    rating: displayRating,
+                                    lastSeen: weekLabel,
+                                    isInactive: isInactive
+                                };
                             }
-                            
-                            recentlyDropped[key] = {
-                                name: wrestler.name,
-                                rating: displayRating,
-                                lastSeen: weekLabel,
-                                isInactive: isInactive
-                            };
                         }
                     });
                 } catch (error) {
