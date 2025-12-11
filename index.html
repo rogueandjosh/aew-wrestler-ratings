@@ -972,9 +972,7 @@ let visibleColumns = {
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                 const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
             }
-            
-            
-            
+
             // Load statistics if available
             if (statsResponse) {
                 statisticsData = await statsResponse.json();
@@ -1035,10 +1033,7 @@ let visibleColumns = {
                         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                             const previousWeekUrl = archiveIndex.weeks[1].url;
                         }
-                        
-                        
-                        
-                        
+
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
                         } else {
@@ -1074,17 +1069,8 @@ let visibleColumns = {
                                     const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
                                 }
                             }
-                            if (archiveIndex && archiveIndex.weeks) {
-                                const currentFilename = selectedValue.replace('archive/', '');
-                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                                
-                                // Create a temporary archiveIndex starting from this week
-                                const tempArchiveIndex = {
-                                    weeks: archiveIndex.weeks.slice(currentIndex)
-                                };
-                                
-                                
-                                
+                            ;
+
                             }
                             if (archiveIndex && archiveIndex.weeks) {
                                 const currentFilename = selectedValue.replace('archive/', '');
@@ -1123,7 +1109,6 @@ let visibleColumns = {
                                         console.log('Could not calculate dropped out:', error);
                                     }
                                 }
-                            };
                             }
                             
                             if (ratingsData.dateRange) {
