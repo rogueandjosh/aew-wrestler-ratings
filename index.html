@@ -912,8 +912,17 @@ let visibleColumns = {
                     data[division] = data[division].map(wrestler => {
                         // Ensure change is a string before processing
                         if (wrestler.change && typeof wrestler.change === 'string') {
-                            // Fix the encoding issue with em dash
+                            // Fix the encoding issues with em dash and question marks
                             wrestler.change = wrestler.change.replace(/�/g, '—');
+                            wrestler.change = wrestler.change.replace(/\?/g, '—');
+                            // Fix any weird question mark variants
+                            wrestler.change = wrestler.change.replace(/\?\d+/g, match => {
+                                // Extract the number after ?
+                                const num = match.replace('?', '');
+                                return '—'; // Just use em dash if it's ?number format
+                            });
+                            wrestler.change = wrestler.change.replace(/\?↑/g, '↑');
+                            wrestler.change = wrestler.change.replace(/\?↓/g, '↓');
                         } else if (wrestler.change === null || wrestler.change === undefined) {
                             // If change is missing, set to em dash
                             wrestler.change = '—';
@@ -1322,7 +1331,7 @@ let visibleColumns = {
                                 <div class="dropped-wrestler">
                                     <div class="dropped-wrestler-name">${wrestler.name}</div>
                                     <div class="dropped-wrestler-info">
-                                        Was #${wrestler.lastRank} • $${wrestler.lastRating.toFixed(2)}
+                                        Was #${wrestler.lastRank} • ${wrestler.lastRating.toFixed(2)}
                                     </div>
                                 </div>
                             `);
