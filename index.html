@@ -914,7 +914,7 @@ let visibleColumns = {
                         if (wrestler.change && typeof wrestler.change === 'string') {
                             // Fix the encoding issues with em dash and question marks
                             wrestler.change = wrestler.change.replace(/�/g, '—');
-                           wrestler.change = wrestler.change.replace(/\?/g, '');
+                            wrestler.change = wrestler.change.replace(/\?/g, '');
                             
                             // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
                             wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
@@ -925,7 +925,7 @@ let visibleColumns = {
                             // If it's just empty or standalone dash, make it em dash
                             if (wrestler.change === '' || wrestler.change === '-') {
                                 wrestler.change = '—';
-                            }
+                            }  
                         } else if (wrestler.change === null || wrestler.change === undefined) {
                             // If change is missing, set to em dash
                             wrestler.change = '—';
@@ -938,7 +938,7 @@ let visibleColumns = {
                             } else if (/^\d+$/.test(wrestler.change)) {
                                 wrestler.change = '↑' + wrestler.change;
                             }
-                        
+                        }
                         // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
                         if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
                             wrestler.change = 'RE-ENTRY';
