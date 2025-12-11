@@ -901,7 +901,7 @@
         async function addInactiveToDroppedOut(data, newlyInactiveByDivision, archiveIndex) {
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
-            // We need previous week data to get their last visible rank
+            // We need previous week data to check if they were ALREADY inactive
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
                 return data;
             }
@@ -911,13 +911,18 @@
                 const prevResponse = await fetch(previousWeekInfo.url);
                 const previousWeekRawData = await prevResponse.json();
 
-                // Apply inactive filtering to previous week to get accurate ranks
+                // Get previous week's inactive list
+                let previousWeekInactiveWrestlers = {};
+                
                 if (archiveIndex.weeks.length >= 3) {
                     const prevWeekArchive = {
                         weeks: archiveIndex.weeks.slice(1)
                     };
                     
                     const prevWeekInactive = await checkInactiveWrestlers(previousWeekRawData, prevWeekArchive);
+                    previousWeekInactiveWrestlers = prevWeekInactive.inactiveWrestlers;
+                    
+                    // Filter previous week's data to get accurate ranks
                     const filteredPrevWeekData = filterInactiveWrestlers(previousWeekRawData, prevWeekInactive.inactiveWrestlers);
                     
                     divisions.forEach(division => {
@@ -930,12 +935,20 @@
                                 data[division + 'DroppedOut'] = [];
                             }
 
-                            // Add each newly inactive wrestler
+                            // Add each newly inactive wrestler ONLY if they weren't already inactive last week
                             newlyInactive.forEach(wrestler => {
+                                // CRITICAL CHECK: Was this wrestler already inactive last week?
+                                if (previousWeekInactiveWrestlers[wrestler.name]) {
+                                    console.log(`SKIPPING ${wrestler.name} - was already inactive last week`);
+                                    return; // Skip this wrestler
+                                }
+                                
+                                console.log(`ADDING ${wrestler.name} - truly newly inactive this week`);
+                                
                                 // First try to find in filtered data (most accurate)
                                 let lastWeekData = prevDivisionFiltered.find(w => w.name === wrestler.name);
                                 
-                                // If not in filtered data, try raw data (they might have just dropped)
+                                // If not in filtered data, try raw data
                                 if (!lastWeekData) {
                                     lastWeekData = prevDivisionRaw.find(w => w.name === wrestler.name);
                                 }
@@ -952,7 +965,7 @@
                     });
                     
                 } else {
-                    // Not enough history - just use raw data from previous week
+                    // Not enough history - just add all newly inactive
                     divisions.forEach(division => {
                         const newlyInactive = newlyInactiveByDivision[division] || [];
                         const prevDivisionData = previousWeekRawData[division] || [];
