@@ -921,10 +921,10 @@
             // Load name merges to detect name changes
             let nameMerges = {};
             try {
-                const mergesResponse = await fetch('name-merges.json');
+                const mergesResponse = await fetch('name-changes.json');
                 nameMerges = await mergesResponse.json();
             } catch (error) {
-                console.log('Could not load name merges:', error);
+                console.log('Could not load name changes:', error);
             }
             
             let html = '<div class="recently-dropped-grid">';
@@ -1623,24 +1623,24 @@ let visibleColumns = {
                     } else {
                         droppedEl.innerHTML = '';
                     }
-                    
-                    // Always add the 4-week toggle after the dropped out section (even if empty)
-                    const toggleHtml = `
-                        <div class="recently-dropped-toggle" style="margin-top: 20px;">
-                            <label>
-                                <input type="checkbox" id="recentlyDroppedToggle_${division}" onchange="toggleRecentlyDropped('${division}')">
-                                Show All Recently Dropped (Last 4 Weeks)
-                            </label>
-                        </div>
-                        
-                        <div id="recentlyDroppedSection_${division}" class="recently-dropped-section">
-                            <!-- Content will be populated by JavaScript -->
-                        </div>
-                    `;
-                    droppedEl.innerHTML += toggleHtml;
                 } else {
                     droppedEl.innerHTML = '';
                 }
+                
+                // Always add the 4-week toggle after the dropped out section (even if empty)
+                const toggleHtml = `
+                    <div class="recently-dropped-toggle" style="margin-top: 20px;">
+                        <label>
+                            <input type="checkbox" id="recentlyDroppedToggle_${division}" onchange="toggleRecentlyDropped('${division}')">
+                            Show All Recently Dropped (Last 4 Weeks)
+                        </label>
+                    </div>
+                    
+                    <div id="recentlyDroppedSection_${division}" class="recently-dropped-section">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                `;
+                droppedEl.innerHTML += toggleHtml;
             } else if (droppedEl) {
                 droppedEl.innerHTML = '';
             }
