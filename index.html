@@ -1517,6 +1517,8 @@ let visibleColumns = {
             // No data found for this team
             return '';
         }
+
+        function applyFilters(division, immediate = false) {
             if (immediate) {
                 // For checkbox/slider release - apply immediately
                 if (window.currentDivisionData) {
