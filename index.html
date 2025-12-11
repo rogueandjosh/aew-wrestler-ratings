@@ -841,8 +841,24 @@
             
             section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
             
-            // Get last 4 weeks (index 0-3 in archive, since 0 is current)
-            const weeksToCheck = archiveIndex.weeks.slice(0, Math.min(5, archiveIndex.weeks.length));
+            // Determine which week we're viewing
+            const select = document.getElementById('weekSelect');
+            const selectedValue = select.value;
+            let currentWeekIndex = 0;
+            
+            if (selectedValue !== 'current') {
+                const currentFilename = selectedValue.replace('archive/', '');
+                currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+            }
+            
+            // Get 4 weeks starting from the current viewed week
+            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
+            
+            if (weeksToCheck.length < 2) {
+                section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
+                return;
+            }
+            
             const recentlyDropped = {};
             
             // Load each week and collect dropped out wrestlers for THIS division only
@@ -857,11 +873,22 @@
                     dropped.forEach(wrestler => {
                         const key = wrestler.name;
                         if (!recentlyDropped[key]) {
+                            const isInactive = wrestler.name.includes('(Inactive)');
+                            let displayRating;
+                            
+                            if (isInactive) {
+                                // For inactive wrestlers, show their last rating when they went inactive
+                                displayRating = wrestler.lastRating;
+                            } else {
+                                // For natural drops (rating hit 100.00), show exactly 100.00
+                                displayRating = 100.00;
+                            }
+                            
                             recentlyDropped[key] = {
                                 name: wrestler.name,
-                                rating: wrestler.lastRating,
+                                rating: displayRating,
                                 lastSeen: weekLabel,
-                                isInactive: wrestler.name.includes('(Inactive)')
+                                isInactive: isInactive
                             };
                         }
                     });
@@ -878,17 +905,32 @@
                 return;
             }
             
+            // Load name merges to detect name changes
+            let nameMerges = {};
+            try {
+                const mergesResponse = await fetch('name-merges.json');
+                nameMerges = await mergesResponse.json();
+            } catch (error) {
+                console.log('Could not load name merges:', error);
+            }
+            
             let html = '<div class="recently-dropped-grid">';
             
             wrestlers.forEach(wrestler => {
                 const inactiveClass = wrestler.isInactive ? 'inactive' : '';
-                const status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                let status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                
+                // Check for name change using name-merges.json
+                if (!wrestler.isInactive && nameMerges[wrestler.name]) {
+                    status = 'Name Change';
+                }
+                
                 html += `
                     <div class="recently-dropped-item ${inactiveClass}">
                         <div class="recently-dropped-name">${wrestler.name.replace(' (Inactive)', '')}</div>
                         <div class="recently-dropped-details">
                             Status: ${status}<br>
-                            Rating: ${wrestler.rating.toFixed(2)}<br>
+                            Last Rating: ${wrestler.rating.toFixed(2)}<br>
                             Last Seen: ${wrestler.lastSeen}
                         </div>
                     </div>
