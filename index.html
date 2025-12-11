@@ -731,6 +731,7 @@
         let currentSortColumn = 'peak';
         let nameChangesData = null;
         let teamMembersData = null;
+        const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
 
         // Load name changes data
         async function loadNameChanges() {
@@ -762,6 +763,149 @@
                 teamMembersData = { teams: {} };
                 return teamMembersData;
             }
+        }
+
+        // Check for inactive wrestlers (no new matches in past 12 weeks)
+        async function checkInactiveWrestlers(currentData, archiveIndex) {
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < INACTIVITY_WEEKS) {
+                // Not enough historical data to check inactivity
+                return { inactiveWrestlers: {}, inactiveByDivision: {} };
+            }
+
+            const inactiveWrestlers = {}; // Map of wrestler name -> { division, lastRank, lastRating, weeksSinceActive }
+            const inactiveByDivision = { mens: [], womens: [], menstag: [], womenstag: [], trios: [] };
+
+            try {
+                // Load the past 12 weeks
+                const weeksToCheck = Math.min(INACTIVITY_WEEKS, archiveIndex.weeks.length);
+                const historicalWeeks = [];
+
+                for (let i = 0; i < weeksToCheck; i++) {
+                    const weekInfo = archiveIndex.weeks[i];
+                    if (!weekInfo) continue;
+
+                    try {
+                        const response = await fetch(weekInfo.url);
+                        const weekData = await response.json();
+                        historicalWeeks.push(weekData);
+                    } catch (error) {
+                        console.warn(`Could not load week ${weekInfo.label}:`, error);
+                    }
+                }
+
+                if (historicalWeeks.length < 2) {
+                    return { inactiveWrestlers, inactiveByDivision };
+                }
+
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+
+                // Check each division
+                divisions.forEach(division => {
+                    const currentDivisionData = currentData[division] || [];
+
+                    currentDivisionData.forEach(wrestler => {
+                        const name = wrestler.name;
+                        const currentMatches = wrestler.matches;
+
+                        // Check if this wrestler has had the same match count for all past weeks
+                        let unchangedWeeks = 0;
+                        let lastKnownRank = wrestler.rank;
+                        let lastKnownRating = wrestler.rating;
+
+                        for (let i = 0; i < historicalWeeks.length; i++) {
+                            const historicalData = historicalWeeks[i][division] || [];
+                            const historicalWrestler = historicalData.find(w => w.name === name);
+
+                            if (historicalWrestler) {
+                                lastKnownRank = historicalWrestler.rank;
+                                lastKnownRating = historicalWrestler.rating;
+
+                                if (historicalWrestler.matches === currentMatches) {
+                                    unchangedWeeks++;
+                                } else {
+                                    // Match count changed, wrestler is active
+                                    break;
+                                }
+                            } else {
+                                // Wrestler not in this historical week
+                                break;
+                            }
+                        }
+
+                        // If match count unchanged for 12+ weeks, mark as inactive
+                        if (unchangedWeeks >= INACTIVITY_WEEKS) {
+                            inactiveWrestlers[name] = {
+                                division: division,
+                                lastRank: lastKnownRank,
+                                lastRating: lastKnownRating,
+                                weeksSinceActive: unchangedWeeks,
+                                matches: currentMatches
+                            };
+
+                            inactiveByDivision[division].push({
+                                name: name,
+                                lastRank: lastKnownRank,
+                                lastRating: lastKnownRating
+                            });
+                        }
+                    });
+                });
+
+                console.log(`Found ${Object.keys(inactiveWrestlers).length} inactive wrestlers`);
+                return { inactiveWrestlers, inactiveByDivision };
+
+            } catch (error) {
+                console.warn('Error checking inactive wrestlers:', error);
+                return { inactiveWrestlers: {}, inactiveByDivision: {} };
+            }
+        }
+
+        // Filter inactive wrestlers from rankings data
+        function filterInactiveWrestlers(data, inactiveWrestlers) {
+            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+            const filteredData = { ...data };
+
+            divisions.forEach(division => {
+                if (filteredData[division]) {
+                    filteredData[division] = filteredData[division].filter(wrestler => {
+                        return !inactiveWrestlers[wrestler.name];
+                    });
+
+                    // Re-rank after filtering
+                    filteredData[division].forEach((wrestler, index) => {
+                        wrestler.rank = index + 1;
+                    });
+                }
+            });
+
+            return filteredData;
+        }
+
+        // Add inactive wrestlers to the dropped out section
+        function addInactiveToDroppedOut(data, inactiveByDivision) {
+            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+
+            divisions.forEach(division => {
+                const inactive = inactiveByDivision[division] || [];
+                
+                if (inactive.length > 0 && data[division]) {
+                    // Initialize droppedOut array if it doesn't exist
+                    if (!data[division + 'DroppedOut']) {
+                        data[division + 'DroppedOut'] = [];
+                    }
+
+                    // Add inactive wrestlers to dropped out with (Inactive) marker
+                    inactive.forEach(wrestler => {
+                        data[division + 'DroppedOut'].push({
+                            name: wrestler.name + ' (Inactive)',
+                            lastRank: wrestler.lastRank,
+                            lastRating: wrestler.lastRating
+                        });
+                    });
+                }
+            });
+
+            return data;
         }
 
         // Get the correct name for a wrestler at a specific week
@@ -1070,6 +1214,19 @@ let visibleColumns = {
                 ratingsData = await calculateDroppedOut(ratingsData, archiveIndex);
             }
             
+            // Check for inactive wrestlers and filter them out
+            if (archiveIndex) {
+                const { inactiveWrestlers, inactiveByDivision } = await checkInactiveWrestlers(ratingsData, archiveIndex);
+                window.inactiveWrestlers = inactiveWrestlers;
+                window.inactiveByDivision = inactiveByDivision;
+                
+                // Filter out inactive wrestlers from rankings
+                ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlers);
+                
+                // Add inactive wrestlers to dropped out section
+                ratingsData = addInactiveToDroppedOut(ratingsData, inactiveByDivision);
+            }
+            
             // Load statistics if available
             if (statsResponse) {
                 statisticsData = await statsResponse.json();
@@ -1135,6 +1292,16 @@ let visibleColumns = {
                         // Calculate dropped out from previous week
                         if (archiveIndex) {
                             ratingsData = await calculateDroppedOut(ratingsData, archiveIndex);
+                        }
+                        
+                        // Check for inactive wrestlers and filter them out
+                        if (archiveIndex) {
+                            const { inactiveWrestlers, inactiveByDivision } = await checkInactiveWrestlers(ratingsData, archiveIndex);
+                            window.inactiveWrestlers = inactiveWrestlers;
+                            window.inactiveByDivision = inactiveByDivision;
+                            
+                            ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlers);
+                            ratingsData = addInactiveToDroppedOut(ratingsData, inactiveByDivision);
                         }
                         
                         if (ratingsData.dateRange) {
@@ -1213,6 +1380,24 @@ let visibleColumns = {
                                 }
                             }
                             
+                            // Check for inactive wrestlers in archived week
+                            if (archiveIndex && archiveIndex.weeks) {
+                                const currentFilename = selectedValue.replace('archive/', '');
+                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                                
+                                // Create a temporary archiveIndex starting from this week
+                                const tempArchiveIndex = {
+                                    weeks: archiveIndex.weeks.slice(currentIndex)
+                                };
+                                
+                                const { inactiveWrestlers, inactiveByDivision } = await checkInactiveWrestlers(ratingsData, tempArchiveIndex);
+                                window.inactiveWrestlers = inactiveWrestlers;
+                                window.inactiveByDivision = inactiveByDivision;
+                                
+                                ratingsData = filterInactiveWrestlers(ratingsData, inactiveWrestlers);
+                                ratingsData = addInactiveToDroppedOut(ratingsData, inactiveByDivision);
+                            }
+                            
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
                             } else {
@@ -1279,44 +1464,6 @@ let visibleColumns = {
                                    placeholder="Type wrestler name..."
                                    oninput="applyFilters('${division}')">
                         </div>
-                        <div class="filter-group">
-                            <label>⭐ Rating Range</label>
-                            <div class="rating-range-container">
-                                <div class="rating-range-sliders">
-                                    <div class="slider-row">
-                                        <span style="color: #ffd700; min-width: 35px;">Min:</span>
-                                        <input type="range" 
-                                               id="rating-min-${division}" 
-                                               class="rating-slider" 
-                                               min="0" 
-                                               max="200" 
-                                               step="1" 
-                                               value="0"
-                                               oninput="updateRatingRange('${division}')" 
-                                               onchange="applyFilters('${division}', true)">
-                                        <span class="slider-value" id="rating-min-value-${division}">0</span>
-                                    </div>
-                                    <div class="slider-row">
-                                        <span style="color: #ffd700; min-width: 35px;">Max:</span>
-                                        <input type="range" 
-                                               id="rating-max-${division}" 
-                                               class="rating-slider" 
-                                               min="0" 
-                                               max="200" 
-                                               step="1" 
-                                               value="200"
-                                               oninput="updateRatingRange('${division}')" 
-                                               onchange="applyFilters('${division}', true)">
-                                        <span class="slider-value" id="rating-max-value-${division}">200</span>
-                                    </div>
-                                </div>
-                                <button class="max-button active" 
-                                        id="max-button-${division}"
-                                        onclick="toggleMaxRating('${division}')">
-                                    MAX
-                                </button>
-                            </div>
-                        </div>
                     </div>
                     <div class="filter-row">
                         <div class="toggle-container">
@@ -1354,15 +1501,13 @@ let visibleColumns = {
         function updateDivisionData(division, data) {
             // Get filter values
             const searchTerm = document.getElementById('search-' + division)?.value.toLowerCase() || '';
-            const minRating = parseInt(document.getElementById('rating-min-' + division)?.value || 0);
-            const maxRating = parseInt(document.getElementById('rating-max-' + division)?.value || 200);
             const showDropped = document.getElementById('show-dropped-' + division)?.checked !== false;
 
             // Apply filters - optimized for performance
             let filteredData = [];
             for (let i = 0; i < data.length; i++) {
                 const wrestler = data[i];
-                if (wrestler.rating >= minRating && wrestler.rating <= maxRating && wrestler.name.toLowerCase().includes(searchTerm)) {
+                if (wrestler.name.toLowerCase().includes(searchTerm)) {
                     filteredData.push(wrestler);
                 }
             }
@@ -1535,61 +1680,6 @@ let visibleColumns = {
             }
         }
 
-        function updateRatingRange(division) {
-            const minSlider = document.getElementById('rating-min-' + division);
-            const maxSlider = document.getElementById('rating-max-' + division);
-            const minDisplay = document.getElementById('rating-min-value-' + division);
-            const maxDisplay = document.getElementById('rating-max-value-' + division);
-            const maxButton = document.getElementById('max-button-' + division);
-            
-            if (minSlider && maxSlider && minDisplay && maxDisplay) {
-                let minVal = parseInt(minSlider.value);
-                let maxVal = parseInt(maxSlider.value);
-                
-                // Ensure min doesn't exceed max
-                if (minVal > maxVal) {
-                    minSlider.value = maxVal;
-                    minVal = maxVal;
-                }
-                
-                // Ensure max doesn't go below min
-                if (maxVal < minVal) {
-                    maxSlider.value = minVal;
-                    maxVal = minVal;
-                }
-                
-                minDisplay.textContent = minVal;
-                maxDisplay.textContent = maxVal;
-                
-                // Update max button state
-                if (maxVal === 200) {
-                    maxButton.classList.add('active');
-                } else {
-                    maxButton.classList.remove('active');
-                }
-                
-                applyFilters(division);
-            }
-        }
-
-        function toggleMaxRating(division) {
-            const maxSlider = document.getElementById('rating-max-' + division);
-            const maxButton = document.getElementById('max-button-' + division);
-            
-            if (maxSlider && maxButton) {
-                if (maxSlider.value === '200') {
-                    // Already at max, do nothing or could toggle to some lower value
-                    return;
-                } else {
-                    // Set to max
-                    maxSlider.value = 200;
-                    maxButton.classList.add('active');
-                    updateRatingRange(division);
-                    applyFilters(division, true);
-                }
-            }
-        }
-
        async function showStatistics(division) {
     currentView = 'statistics';
     currentDivision = 'statistics'; // Remember we're in statistics
@@ -1712,6 +1802,53 @@ let visibleColumns = {
 
             // Update sorted column styling
             updateSortedColumnStyle();
+        }
+
+        function filterStatistics(division) {
+            const searchTerm = document.getElementById('stats-search-' + division)?.value.toLowerCase() || '';
+            const allData = window.statsData?.[division] || [];
+            
+            // Filter the data
+            const filteredData = allData.filter(wrestler => 
+                wrestler.name.toLowerCase().includes(searchTerm)
+            );
+            
+            // Re-render the table with filtered data
+            renderStatisticsTable(division, filteredData);
+        }
+
+        function renderStatisticsTable(division, divisionData) {
+            // Get the table container
+            const tableContainer = document.querySelector('.table-container table');
+            if (!tableContainer) return;
+            
+            // Build table rows
+            const rows = divisionData.map((wrestler, index) => {
+                const rank = index + 1;
+                return buildStatisticsRow(wrestler, rank);
+            }).join('');
+            
+            // Update only the tbody
+            const tbody = tableContainer.querySelector('tbody');
+            if (tbody) {
+                tbody.innerHTML = rows;
+            }
+        }
+
+        function buildStatisticsRow(wrestler, rank) {
+            return `
+                <tr>
+                    ${visibleColumns.rank ? `<td>${rank}</td>` : ''}
+                    ${visibleColumns.name ? `<td class="name">${wrestler.name}</td>` : ''}
+                    ${visibleColumns.current ? `<td>${wrestler.current.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.peak ? `<td>${wrestler.peak.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.peakWeek ? `<td>${wrestler.peakWeek}</td>` : ''}
+                    ${visibleColumns.floor ? `<td>${wrestler.floor.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.floorWeek ? `<td>${wrestler.floorWeek}</td>` : ''}
+                    ${visibleColumns.average ? `<td>${wrestler.average.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.weeksAtNumber1 ? `<td>${wrestler.weeksAtNumber1}</td>` : ''}
+                </tr>
+            `;
         }
 
         function sortStatistics(column) {
@@ -2034,6 +2171,12 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         function renderDynamicStatistics(division, statisticsData, selectedWeekLabel) {
     const divisionData = statisticsData[division];
     
+    // Store the full data for filtering
+    if (!window.statsData) window.statsData = {};
+    window.statsData[division] = divisionData ? [...divisionData] : [];
+    window.currentStatsDivision = division;
+    window.selectedWeekLabel = selectedWeekLabel;
+    
     const divisionNames = {
         'mens': "Men",
         'womens': "Women",
@@ -2081,6 +2224,17 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
     }
 
     html += `
+        <div class="filter-controls" style="margin-bottom: 20px;">
+            <div class="filter-group">
+                <label for="stats-search-${division}">🔍 Search Wrestlers</label>
+                <input type="text" 
+                       id="stats-search-${division}" 
+                       class="search-box" 
+                       placeholder="Type wrestler name..."
+                       oninput="filterStatistics('${division}')">
+            </div>
+        </div>
+        
         <div class="table-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #ffd700; margin: 0;">📊 ${divisionNames[division]}</h2>
