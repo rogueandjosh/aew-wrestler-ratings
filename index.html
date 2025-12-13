@@ -1191,6 +1191,11 @@ let visibleColumns = {
                     currentIndex = prevIndex > 0 ? prevIndex - 1 : 0; // Current is one before previous
                     // Check if in first 20 weeks of all time
                     isVeryEarlyWeek = currentIndex >= archiveIndex.weeks.length - 20;
+                    
+                    // Debug log for early weeks
+                    if (isVeryEarlyWeek) {
+                        console.log(`Early week detected: index ${currentIndex} of ${archiveIndex.weeks.length} total weeks`);
+                    }
                 }
             }
             
