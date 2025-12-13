@@ -1558,7 +1558,7 @@ let visibleColumns = {
             // Populate week dropdown
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="${week.url}">${week.label}</option>`;
+                weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
         }
         
@@ -1573,7 +1573,8 @@ let visibleColumns = {
             if (currentValue === 'current') {
                 currentIndex = -1; // Before first archive week
             } else {
-                currentIndex = archiveIndex.weeks.findIndex(w => w.url === currentValue);
+                const filename = currentValue.replace('archive/', '');
+                currentIndex = archiveIndex.weeks.findIndex(w => w.filename === filename);
             }
             
             // Calculate new index
@@ -1588,7 +1589,7 @@ let visibleColumns = {
             if (newIndex === -1) {
                 weekSelect.value = 'current';
             } else {
-                weekSelect.value = archiveIndex.weeks[newIndex].url;
+                weekSelect.value = `archive/${archiveIndex.weeks[newIndex].filename}`;
                 
                 // Update year/month dropdowns to match
                 const weekLabel = archiveIndex.weeks[newIndex].label;
@@ -1618,7 +1619,8 @@ let visibleColumns = {
             if (currentValue === 'current') {
                 currentIndex = -1;
             } else {
-                currentIndex = archiveIndex.weeks.findIndex(w => w.url === currentValue);
+                const filename = currentValue.replace('archive/', '');
+                currentIndex = archiveIndex.weeks.findIndex(w => w.filename === filename);
             }
             
             // Disable prev if at current week
