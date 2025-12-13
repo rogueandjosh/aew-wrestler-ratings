@@ -1200,11 +1200,12 @@ let visibleColumns = {
                     currentIndex = prevIndex > 0 ? prevIndex - 1 : 0; // Current is one before previous
                     console.log('Current index:', currentIndex);
                     console.log('Total weeks:', archiveIndex.weeks.length);
-                    console.log('Cutoff for early (length - 20):', archiveIndex.weeks.length - 20);
+                    console.log('Early week threshold (last 20):', archiveIndex.weeks.length - 20);
                     
                     // Check if in first 20 weeks of all time
+                    // Since archive is NEWEST FIRST, early weeks have HIGH index numbers
                     isVeryEarlyWeek = currentIndex >= archiveIndex.weeks.length - 20;
-                    console.log('Is very early week?', isVeryEarlyWeek);
+                    console.log('Is very early week?', isVeryEarlyWeek, `(${currentIndex} >= ${archiveIndex.weeks.length - 20})`);
                     
                     // Debug log for early weeks
                     if (isVeryEarlyWeek) {
@@ -1494,12 +1495,16 @@ let visibleColumns = {
                                 const currentFilename = selectedValue.replace('archive/', '');
                                 const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
                                 
+                                // Only reconstruct if there IS a previous week (not the first week ever)
                                 if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
                                     const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
                                     ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
                                     
                                     // Fix inactive wrestler ranks using previous week data
                                     ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
+                                } else if (currentIndex === archiveIndex.weeks.length - 1) {
+                                    // This is the very first week - no previous week exists
+                                    console.log('This is the first week ever - no previous week to compare');
                                 }
                             }
 
@@ -2085,11 +2090,24 @@ let visibleColumns = {
             
             const changeStr = String(change);
 
-            if (changeStr === 'RE-ENTRY') {
+            // For the first 12 weeks of all archive data, convert RE-ENTRY to NEW
+            if (changeStr === 'RE-ENTRY' && archiveIndex && archiveIndex.weeks) {
+                // Get current week from ratingsData
+                const currentWeekName = ratingsData?.currentWeek;
+                if (currentWeekName) {
+                    const currentWeekIndex = archiveIndex.weeks.findIndex(w => 
+                        w.label === currentWeekName || w.filename?.includes(currentWeekName.replace(/['\s]/g, '-').toLowerCase())
+                    );
+                    
+                    // If in the last 12 weeks of the archive (earliest weeks), show NEW instead
+                    if (currentWeekIndex >= archiveIndex.weeks.length - 12) {
+                        return 'NEW';
+                    }
+                }
                 return 'RE-ENTRY';
             }
             
-            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW') {
+            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW' || changeStr === 'NAME CHANGE') {
                 return changeStr;
             }
             
