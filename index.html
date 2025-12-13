@@ -750,14 +750,16 @@
             <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
             <p class="subtitle">Performance-based rankings, not wins and losses</p>
             <div class="week-selector">
-                <label>View Week:</label>
                 <button id="prevWeekBtn" onclick="navigateWeek(-1)" title="Previous Week">◄</button>
-                <select id="yearSelect" onchange="updateMonthDropdown()">
-                    <option value="">Loading...</option>
+                <label>Year:</label>
+                <select id="yearFilter" onchange="filterWeeks()">
+                    <option value="">All</option>
                 </select>
-                <select id="monthSelect" onchange="updateWeekDropdown()">
-                    <option value="">Select Month</option>
+                <label>Month:</label>
+                <select id="monthFilter" onchange="filterWeeks()">
+                    <option value="">All</option>
                 </select>
+                <label>Week:</label>
                 <select id="weekSelect" onchange="loadSelectedWeek()">
                     <option value="current">Current Week</option>
                 </select>
@@ -1480,9 +1482,10 @@ let visibleColumns = {
             currentOption.textContent = `Current (${ratingsData.currentWeek})`;
             select.appendChild(currentOption);
             
-            // Add archived weeks and populate year dropdown
+            // Add archived weeks and populate filter dropdowns
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
                 const years = new Set();
+                const months = new Set();
                 
                 archiveIndex.weeks.forEach(week => {
                     const option = document.createElement('option');
@@ -1490,17 +1493,26 @@ let visibleColumns = {
                     option.textContent = week.label;
                     select.appendChild(option);
                     
-                    // Extract year for year dropdown
-                    const year = week.label.split("'")[1];
+                    // Extract year and month
+                    const year = week.label.match(/'(\d+)/)?.[1];
+                    const month = week.label.split(' ')[0];
                     if (year) years.add(year);
+                    if (month) months.add(month);
                 });
                 
-                // Populate year dropdown (newest first)
-                const yearSelect = document.getElementById('yearSelect');
-                yearSelect.innerHTML = '<option value="">All Years</option>';
+                // Populate year filter (2025, 2024, etc.)
+                const yearFilter = document.getElementById('yearFilter');
                 const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
                 sortedYears.forEach(year => {
-                    yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+                    yearFilter.innerHTML += `<option value="${year}">20${year}</option>`;
+                });
+                
+                // Populate month filter
+                const monthFilter = document.getElementById('monthFilter');
+                const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const sortedMonths = Array.from(months).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+                sortedMonths.forEach(month => {
+                    monthFilter.innerHTML += `<option value="${month}">${month}</option>`;
                 });
                 
                 // Initialize navigation buttons
@@ -1508,50 +1520,17 @@ let visibleColumns = {
             }
         }
 
-        function updateMonthDropdown() {
-            const yearSelect = document.getElementById('yearSelect');
-            const monthSelect = document.getElementById('monthSelect');
+        function filterWeeks() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
             const weekSelect = document.getElementById('weekSelect');
-            
-            const selectedYear = yearSelect.value;
-            if (!selectedYear || !archiveIndex) return;
-            
-            // Get unique months for this year
-            const months = new Set();
-            archiveIndex.weeks.forEach(week => {
-                if (week.label.includes(selectedYear)) {
-                    const month = week.label.split(' ')[0];
-                    months.add(month);
-                }
-            });
-            
-            // Populate month dropdown
-            monthSelect.innerHTML = '<option value="">All Weeks</option>';
-            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const sortedMonths = Array.from(months).sort((a, b) => monthOrder.indexOf(b) - monthOrder.indexOf(a));
-            
-            sortedMonths.forEach(month => {
-                monthSelect.innerHTML += `<option value="${month}">${month}</option>`;
-            });
-            
-            updateWeekDropdown();
-        }
-        
-        function updateWeekDropdown() {
-            const yearSelect = document.getElementById('yearSelect');
-            const monthSelect = document.getElementById('monthSelect');
-            const weekSelect = document.getElementById('weekSelect');
-            
-            const selectedYear = yearSelect.value;
-            const selectedMonth = monthSelect.value;
             
             if (!archiveIndex) return;
             
-            // Filter weeks by year and month
+            // Filter weeks
             const filteredWeeks = archiveIndex.weeks.filter(week => {
-                if (!selectedYear) return true;
-                if (!week.label.includes(selectedYear)) return false;
-                if (selectedMonth && !week.label.startsWith(selectedMonth)) return false;
+                if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
+                if (monthFilter && !week.label.startsWith(monthFilter)) return false;
                 return true;
             });
             
@@ -1568,42 +1547,40 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Find current index
-            let currentIndex = -1;
-            if (currentValue === 'current') {
-                currentIndex = -1; // Before first archive week
-            } else {
-                const filename = currentValue.replace('archive/', '');
-                currentIndex = archiveIndex.weeks.findIndex(w => w.filename === filename);
-            }
+            // Get ALL weeks (ignore filters for navigation)
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            const currentIndex = allWeeks.indexOf(currentValue);
             
-            // Calculate new index
-            const newIndex = currentIndex - direction; // -1 = forward, +1 = back
+            if (currentIndex === -1) return;
+            
+            const newIndex = currentIndex + direction;
             
             // Check bounds
-            if (newIndex < -1 || newIndex >= archiveIndex.weeks.length) {
-                return; // Can't navigate further
-            }
+            if (newIndex < 0 || newIndex >= allWeeks.length) return;
             
-            // Update selection
-            if (newIndex === -1) {
-                weekSelect.value = 'current';
+            // Set new week
+            weekSelect.value = allWeeks[newIndex];
+            
+            // Update filters to match
+            if (allWeeks[newIndex] !== 'current') {
+                const filename = allWeeks[newIndex].replace('archive/', '');
+                const week = archiveIndex.weeks.find(w => w.filename === filename);
+                if (week) {
+                    const year = week.label.match(/'(\d+)/)?.[1];
+                    const month = week.label.split(' ')[0];
+                    
+                    document.getElementById('yearFilter').value = year || '';
+                    document.getElementById('monthFilter').value = month || '';
+                    filterWeeks();
+                    weekSelect.value = allWeeks[newIndex]; // Re-set after filter
+                }
             } else {
-                weekSelect.value = `archive/${archiveIndex.weeks[newIndex].filename}`;
-                
-                // Update year/month dropdowns to match
-                const weekLabel = archiveIndex.weeks[newIndex].label;
-                const year = weekLabel.split("'")[1];
-                const month = weekLabel.split(' ')[0];
-                
-                document.getElementById('yearSelect').value = year;
-                updateMonthDropdown();
-                document.getElementById('monthSelect').value = month;
-                updateWeekDropdown();
+                document.getElementById('yearFilter').value = '';
+                document.getElementById('monthFilter').value = '';
+                filterWeeks();
             }
             
             loadSelectedWeek();
-            updateNavigationButtons();
         }
         
         function updateNavigationButtons() {
@@ -1614,20 +1591,11 @@ let visibleColumns = {
             if (!archiveIndex) return;
             
             const currentValue = weekSelect.value;
-            let currentIndex = -1;
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            const currentIndex = allWeeks.indexOf(currentValue);
             
-            if (currentValue === 'current') {
-                currentIndex = -1;
-            } else {
-                const filename = currentValue.replace('archive/', '');
-                currentIndex = archiveIndex.weeks.findIndex(w => w.filename === filename);
-            }
-            
-            // Disable prev if at current week
-            prevBtn.disabled = (currentIndex === -1);
-            
-            // Disable next if at last archive week
-            nextBtn.disabled = (currentIndex >= archiveIndex.weeks.length - 1);
+            prevBtn.disabled = (currentIndex <= 0);
+            nextBtn.disabled = (currentIndex >= allWeeks.length - 1);
         }
 
         function loadSelectedWeek() {
