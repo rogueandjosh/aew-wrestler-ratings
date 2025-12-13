@@ -1722,6 +1722,13 @@ let visibleColumns = {
                             const actualName = wrestler.name.replace(' (Inactive)', '');
                             const isNameChange = !isInactive && nameChanges[actualName];
                             
+                            // Debug logging for Matt/Nick Jackson
+                            if (actualName.includes('Jackson')) {
+                                console.log(`Dropped wrestler: ${actualName}`);
+                                console.log(`Is name change? ${isNameChange}`);
+                                console.log(`nameChanges[${actualName}] = ${nameChanges[actualName]}`);
+                            }
+                            
                             let displayName = wrestler.name;
                             if (isNameChange) {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
