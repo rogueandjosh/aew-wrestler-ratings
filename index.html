@@ -750,7 +750,7 @@
             <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
             <p class="subtitle">Performance-based rankings, not wins and losses</p>
             <div class="week-selector">
-                <button id="prevWeekBtn" onclick="navigateWeek(-1)" title="Previous Week">◄</button>
+                <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Previous Week (Older)">◄</button>
                 <label>Year:</label>
                 <select id="yearFilter" onchange="filterWeeks()">
                     <option value="">All</option>
@@ -763,7 +763,7 @@
                 <select id="weekSelect" onchange="loadSelectedWeek()">
                     <option value="current">Current Week</option>
                 </select>
-                <button id="nextWeekBtn" onclick="navigateWeek(1)" title="Next Week">►</button>
+                <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Next Week (Newer)">►</button>
             </div>
             <p class="date-range" id="dateRange">Loading...</p>
             <p class="last-updated" id="lastUpdated">Loading...</p>
