@@ -2090,19 +2090,11 @@ let visibleColumns = {
             
             const changeStr = String(change);
 
-            // For the first 12 weeks of all archive data, convert RE-ENTRY to NEW
-            if (changeStr === 'RE-ENTRY' && archiveIndex && archiveIndex.weeks) {
-                // Get current week from ratingsData
+            // For Jun '19 weeks only, convert RE-ENTRY to NEW
+            if (changeStr === 'RE-ENTRY') {
                 const currentWeekName = ratingsData?.currentWeek;
-                if (currentWeekName) {
-                    const currentWeekIndex = archiveIndex.weeks.findIndex(w => 
-                        w.label === currentWeekName || w.filename?.includes(currentWeekName.replace(/['\s]/g, '-').toLowerCase())
-                    );
-                    
-                    // If in the last 12 weeks of the archive (earliest weeks), show NEW instead
-                    if (currentWeekIndex >= archiveIndex.weeks.length - 12) {
-                        return 'NEW';
-                    }
+                if (currentWeekName && currentWeekName.includes("Jun '19")) {
+                    return 'NEW';
                 }
                 return 'RE-ENTRY';
             }
