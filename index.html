@@ -879,7 +879,9 @@
                     const droppedKey = division + 'DroppedOut';
                     const dropped = weekData[droppedKey] || [];
                     
-                    dropped.forEach(wrestler => {
+                    // Use for loop instead of forEach to allow await
+                    for (let d = 0; d < dropped.length; d++) {
+                        const wrestler = dropped[d];
                         const actualName = wrestler.name.replace(' (Inactive)', '');
                         
                         // ONLY include if they were actually in previous week's visible rankings
@@ -927,7 +929,7 @@
                                 };
                             }
                         }
-                    });
+                    }
                 } catch (error) {
                     console.log('Error loading week for recently dropped:', error);
                 }
