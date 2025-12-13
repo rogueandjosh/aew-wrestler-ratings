@@ -1339,20 +1339,25 @@ let visibleColumns = {
             // Load name changes (don't block on failure)
             try {
                 const nameChangesResponse = await fetch('name-changes.json');
-                const nameChangesArray = await nameChangesResponse.json();
+                const nameChangesData = await nameChangesResponse.json();
                 
-                // Convert array format to simple mapping: { "Old Name": "New Name" }
+                // Convert to simple mapping: { "Old Name": "New Name" }
                 nameChanges = {};
-                if (Array.isArray(nameChangesArray)) {
-                    nameChangesArray.forEach(change => {
+                
+                // Handle nested structure with "changes" array
+                const changesArray = nameChangesData.changes || nameChangesData;
+                
+                if (Array.isArray(changesArray)) {
+                    changesArray.forEach(change => {
                         if (change.oldName && change.newName) {
                             nameChanges[change.oldName] = change.newName;
                         }
                     });
                     console.log('Loaded ' + Object.keys(nameChanges).length + ' name changes');
+                    console.log('Name changes:', nameChanges);
                 } else {
-                    // If it's already an object, use it directly
-                    nameChanges = nameChangesArray;
+                    // If it's already an object mapping, use it directly
+                    nameChanges = changesArray;
                 }
             } catch (error) {
                 console.log('Could not load name changes:', error);
