@@ -54,7 +54,7 @@
         }
 
         .rank-reentry {
-            color: #3b82f6;
+            color: #b8b8b8;
             font-weight: 600;
         }
 
@@ -2058,10 +2058,16 @@ let visibleColumns = {
                 return 'no-change';
             }
             
-            const changeStr = String(change);
+            let changeStr = String(change);
             
+            // For Jun '19 weeks, convert RE-ENTRY to NEW
             if (changeStr === 'RE-ENTRY') {
-                return 'rank-reentry';
+                const currentWeekName = ratingsData?.currentWeek;
+                if (currentWeekName && currentWeekName.includes("Jun '19")) {
+                    changeStr = 'NEW';
+                } else {
+                    return 'rank-reentry';
+                }
             }
             
             if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW' || changeStr === 'NAME CHANGE') {
