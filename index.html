@@ -1180,23 +1180,41 @@ let visibleColumns = {
         async function reconstructArrows(currentData, previousWeekUrl) {
             if (!previousWeekUrl) return currentData;
             
+            console.log('=== RECONSTRUCT ARROWS ===');
+            console.log('Previous week URL:', previousWeekUrl);
+            console.log('Archive index exists?', !!archiveIndex);
+            console.log('Archive weeks count:', archiveIndex?.weeks?.length);
+            
             // Calculate current week index for early week detection FIRST
             let currentIndex = 0;
             let isVeryEarlyWeek = false;
             
             if (archiveIndex && archiveIndex.weeks && previousWeekUrl) {
                 const prevFilename = previousWeekUrl.replace('archive/', '');
+                console.log('Looking for prev filename:', prevFilename);
+                
                 const prevIndex = archiveIndex.weeks.findIndex(w => w.url === previousWeekUrl || w.filename === prevFilename);
+                console.log('Found prev at index:', prevIndex);
+                
                 if (prevIndex >= 0) {
                     currentIndex = prevIndex > 0 ? prevIndex - 1 : 0; // Current is one before previous
+                    console.log('Current index:', currentIndex);
+                    console.log('Total weeks:', archiveIndex.weeks.length);
+                    console.log('Cutoff for early (length - 20):', archiveIndex.weeks.length - 20);
+                    
                     // Check if in first 20 weeks of all time
                     isVeryEarlyWeek = currentIndex >= archiveIndex.weeks.length - 20;
+                    console.log('Is very early week?', isVeryEarlyWeek);
                     
                     // Debug log for early weeks
                     if (isVeryEarlyWeek) {
-                        console.log(`Early week detected: index ${currentIndex} of ${archiveIndex.weeks.length} total weeks`);
+                        console.log(`✓ EARLY WEEK DETECTED: index ${currentIndex} of ${archiveIndex.weeks.length} total weeks`);
                     }
+                } else {
+                    console.log('WARNING: Could not find previous week in archive index');
                 }
+            } else {
+                console.log('WARNING: Missing archiveIndex or weeks or previousWeekUrl');
             }
             
             try {
