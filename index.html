@@ -54,7 +54,7 @@
         }
 
         .rank-reentry {
-            color: #b8b8b8;
+            color: #3b82f6;
             font-weight: 600;
         }
 
@@ -935,8 +935,17 @@
                 }
             }
             
-            // Build HTML
-            const wrestlers = Object.values(recentlyDropped);
+            // Get currently ranked wrestlers to filter out re-entries
+            const currentWeekData = await fetch(weeksToCheck[0].url).then(r => r.json());
+            const currentRoster = currentWeekData[division] || [];
+            const currentlyRanked = new Set(currentRoster.map(w => w.name));
+            
+            // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
+            const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
+                const actualName = wrestler.name.replace(' (Inactive)', '');
+                // Keep only if NOT currently ranked
+                return !currentlyRanked.has(actualName);
+            });
             
             if (wrestlers.length === 0) {
                 section.innerHTML = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
@@ -1462,6 +1471,7 @@ let visibleColumns = {
                         // Reconstruct arrows from previous week if corrupted
                         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
                             const previousWeekUrl = archiveIndex.weeks[1].url;
+                            ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
                         }
 
                         if (ratingsData.dateRange) {
