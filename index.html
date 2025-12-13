@@ -794,6 +794,7 @@
         let ratingsData = null;
         let statisticsData = null;
         let archiveIndex = null;
+        let nameChanges = {}; // Global name changes mapping
         let currentWeek = 'current';
         let currentView = 'rankings'; // 'rankings' or 'statistics'
         let currentDivision = 'mens'; // Track which division/view is active
@@ -886,21 +887,43 @@
                             const key = wrestler.name;
                             if (!recentlyDropped[key]) {
                                 const isInactive = wrestler.name.includes('(Inactive)');
+                                const isNameChange = !isInactive && nameChanges[actualName];
                                 let displayRating;
                                 
                                 if (isInactive) {
                                     // For inactive wrestlers, show their last rating when they went inactive
+                                    displayRating = wrestler.lastRating;
+                                } else if (isNameChange) {
+                                    // For name changes, show their actual last rating (NOT 100.00)
                                     displayRating = wrestler.lastRating;
                                 } else {
                                     // For natural drops (rating hit 100.00), show exactly 100.00
                                     displayRating = 100.00;
                                 }
                                 
+                                // Find LAST time they were actually RANKED (not in dropped out)
+                                let lastRankedWeek = weekLabel;
+                                for (let j = i + 1; j < weeksToCheck.length; j++) {
+                                    try {
+                                        const checkWeekData = await fetch(weeksToCheck[j].url).then(r => r.json());
+                                        const checkRoster = checkWeekData[division] || [];
+                                        const wasRanked = checkRoster.find(w => w.name === actualName);
+                                        if (wasRanked) {
+                                            lastRankedWeek = weeksToCheck[j].label;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('Error checking week:', e);
+                                    }
+                                }
+                                
                                 recentlyDropped[key] = {
                                     name: wrestler.name,
                                     rating: displayRating,
-                                    lastSeen: weekLabel,
-                                    isInactive: isInactive
+                                    lastSeen: lastRankedWeek,
+                                    isInactive: isInactive,
+                                    isNameChange: isNameChange,
+                                    newName: isNameChange ? nameChanges[actualName] : null
                                 };
                             }
                         }
@@ -918,29 +941,22 @@
                 return;
             }
             
-            // Load name merges to detect name changes
-            let nameMerges = {};
-            try {
-                const mergesResponse = await fetch('name-changes.json');
-                nameMerges = await mergesResponse.json();
-            } catch (error) {
-                console.log('Could not load name changes:', error);
-            }
-            
             let html = '<div class="recently-dropped-grid">';
             
             wrestlers.forEach(wrestler => {
                 const inactiveClass = wrestler.isInactive ? 'inactive' : '';
                 let status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                let displayName = wrestler.name.replace(' (Inactive)', '');
                 
-                // Check for name change using name-merges.json
-                if (!wrestler.isInactive && nameMerges[wrestler.name]) {
+                // Check for name change
+                if (wrestler.isNameChange) {
                     status = 'Name Change';
+                    displayName += ` → ${wrestler.newName}`;
                 }
                 
                 html += `
                     <div class="recently-dropped-item ${inactiveClass}">
-                        <div class="recently-dropped-name">${wrestler.name.replace(' (Inactive)', '')}</div>
+                        <div class="recently-dropped-name">${displayName}</div>
                         <div class="recently-dropped-details">
                             Status: ${status}<br>
                             Last Rating: ${wrestler.rating.toFixed(2)}<br>
@@ -1190,11 +1206,30 @@ let visibleColumns = {
                                 currentWrestler.change = '—';
                             }
                         } else {
-                            // Not in previous week = new or re-entry
-                            if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
-                                currentWrestler.change = 'RE-ENTRY';
+                            // Not in previous week = new, re-entry, or name change
+                            
+                            // Check if this is a name change (old name in dropped out, new name here)
+                            const droppedKey = division + 'DroppedOut';
+                            const droppedOut = previousData[droppedKey] || [];
+                            const isNameChange = droppedOut.some(dropped => {
+                                const oldName = dropped.name.replace(' (Inactive)', '');
+                                return nameChanges[oldName] === currentWrestler.name;
+                            });
+                            
+                            if (isNameChange) {
+                                currentWrestler.change = 'NAME CHANGE';
                             } else {
-                                currentWrestler.change = 'NEW';
+                                // For early weeks in the archive (first 20 weeks), always use NEW
+                                const isEarlyWeek = archiveIndex && archiveIndex.weeks && 
+                                                   currentIndex >= archiveIndex.weeks.length - 20;
+                                
+                                if (isEarlyWeek) {
+                                    currentWrestler.change = 'NEW';
+                                } else if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
+                                    currentWrestler.change = 'RE-ENTRY';
+                                } else {
+                                    currentWrestler.change = 'NEW';
+                                }
                             }
                         }
                     });
@@ -1269,6 +1304,15 @@ let visibleColumns = {
         .then(async ([archiveResponse, currentResponse, statsResponse]) => {
             // Load team members data (don't block on failure)
             loadTeamMembers();
+            
+            // Load name changes (don't block on failure)
+            try {
+                const nameChangesResponse = await fetch('name-changes.json');
+                nameChanges = await nameChangesResponse.json();
+            } catch (error) {
+                console.log('Could not load name changes:', error);
+                nameChanges = {};
+            }
             
             // Load archive index
             if (archiveResponse.weeks) {
@@ -1600,9 +1644,18 @@ let visibleColumns = {
                     for (let i = 0; i < droppedOut.length; i++) {
                         const wrestler = droppedOut[i];
                         if (wrestler.name.toLowerCase().includes(searchTerm)) {
+                            const isInactive = wrestler.name.includes('(Inactive)');
+                            const actualName = wrestler.name.replace(' (Inactive)', '');
+                            const isNameChange = !isInactive && nameChanges[actualName];
+                            
+                            let displayName = wrestler.name;
+                            if (isNameChange) {
+                                displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
+                            }
+                            
                             droppedRows.push(`
                                 <div class="dropped-wrestler">
-                                    <div class="dropped-wrestler-name">${wrestler.name}</div>
+                                    <div class="dropped-wrestler-name">${displayName}</div>
                                     <div class="dropped-wrestler-info">
                                         Was #${wrestler.lastRank} • ${wrestler.lastRating.toFixed(2)}
                                     </div>
