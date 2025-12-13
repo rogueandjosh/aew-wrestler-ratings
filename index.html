@@ -1257,25 +1257,16 @@ let visibleColumns = {
                         } else {
                             // Not in previous week = new, re-entry, or name change
                             
-                            // Check if this is a name change (old name in dropped out, new name here)
+                            // Check if this is a name change (old name in dropped out)
+                            // Check BOTH previous week AND current week dropped out lists
                             const droppedKey = division + 'DroppedOut';
-                            const droppedOut = previousData[droppedKey] || [];
+                            const prevDroppedOut = previousData[droppedKey] || [];
+                            const currentDroppedOut = currentData[droppedKey] || [];
+                            const allDroppedOut = [...prevDroppedOut, ...currentDroppedOut];
                             
-                            // Debug: Log to console to verify nameChanges is loaded
-                            if (Object.keys(nameChanges).length === 0 && currentWrestler.name === 'The MegaProblems') {
-                                console.log('WARNING: nameChanges is empty but checking The MegaProblems');
-                            }
-                            
-                            const isNameChange = droppedOut.some(dropped => {
+                            const isNameChange = allDroppedOut.some(dropped => {
                                 const oldName = dropped.name.replace(' (Inactive)', '');
-                                const matches = nameChanges[oldName] === currentWrestler.name;
-                                
-                                // Debug logging
-                                if (currentWrestler.name === 'The MegaProblems' && oldName.includes('Bayne')) {
-                                    console.log(`Checking: ${oldName} → ${nameChanges[oldName]} === ${currentWrestler.name}? ${matches}`);
-                                }
-                                
-                                return matches;
+                                return nameChanges[oldName] === currentWrestler.name;
                             });
                             
                             if (isNameChange) {
