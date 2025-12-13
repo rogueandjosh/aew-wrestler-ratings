@@ -1334,7 +1334,21 @@ let visibleColumns = {
             // Load name changes (don't block on failure)
             try {
                 const nameChangesResponse = await fetch('name-changes.json');
-                nameChanges = await nameChangesResponse.json();
+                const nameChangesArray = await nameChangesResponse.json();
+                
+                // Convert array format to simple mapping: { "Old Name": "New Name" }
+                nameChanges = {};
+                if (Array.isArray(nameChangesArray)) {
+                    nameChangesArray.forEach(change => {
+                        if (change.oldName && change.newName) {
+                            nameChanges[change.oldName] = change.newName;
+                        }
+                    });
+                    console.log('Loaded ' + Object.keys(nameChanges).length + ' name changes');
+                } else {
+                    // If it's already an object, use it directly
+                    nameChanges = nameChangesArray;
+                }
             } catch (error) {
                 console.log('Could not load name changes:', error);
                 nameChanges = {};
