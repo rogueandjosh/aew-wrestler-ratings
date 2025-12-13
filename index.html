@@ -1594,8 +1594,10 @@ let visibleColumns = {
             const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
-            prevBtn.disabled = (currentIndex <= 0);
-            nextBtn.disabled = (currentIndex >= allWeeks.length - 1);
+            // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
+            // At oldest week (last index): can go forward (right/next) but NOT back (left/prev)
+            prevBtn.disabled = (currentIndex >= allWeeks.length - 1); // Disable left at oldest
+            nextBtn.disabled = (currentIndex <= 0); // Disable right at current
         }
 
         function loadSelectedWeek() {
