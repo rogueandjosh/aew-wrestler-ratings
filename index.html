@@ -84,28 +84,69 @@
             margin-top: 20px;
             margin-bottom: 10px;
             display: flex;
+            flex-direction: column;
             align-items: center;
+            gap: 15px;
+        }
+
+        .selector-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filters-group {
+            display: flex;
             gap: 10px;
+            align-items: flex-end;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        .week-selector label {
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 100px;
+        }
+
+        .week-item {
+            min-width: 180px;
+        }
+
+        .filter-item label {
             color: #ffd700;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 0.9em;
+            text-align: center;
         }
 
         .week-selector button {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
             color: #ffd700;
-            padding: 8px 15px;
+            padding: 10px 15px;
             border-radius: 5px;
-            font-size: 1.2em;
+            font-size: 1em;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .week-selector button .arrow {
+            font-size: 1.2em;
+        }
+
+        .week-selector button .btn-label {
+            font-size: 0.9em;
         }
 
         .week-selector button:hover:not(:disabled) {
@@ -118,14 +159,55 @@
             cursor: not-allowed;
         }
 
+        .reset-btn {
+            background: rgba(255, 215, 0, 0.15) !important;
+            border-color: #ffd700 !important;
+            font-size: 0.95em !important;
+            padding: 8px 20px !important;
+        }
+
+        .reset-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.3) !important;
+        }
+
         .week-selector select {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
             color: #e0e0e0;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             font-size: 1em;
             cursor: pointer;
+            width: 100%;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .selector-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filters-group {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .filter-item,
+            .week-item {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .week-selector button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .reset-btn {
+                width: 100%;
+            }
+        }
             min-width: 200px;
         }
 
@@ -750,20 +832,44 @@
             <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
             <p class="subtitle">Performance-based rankings, not wins and losses</p>
             <div class="week-selector">
-                <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Previous Week (Older)">◄</button>
-                <label>Year:</label>
-                <select id="yearFilter" onchange="filterWeeks()">
-                    <option value="">All</option>
-                </select>
-                <label>Month:</label>
-                <select id="monthFilter" onchange="filterWeeks()">
-                    <option value="">All</option>
-                </select>
-                <label>Week:</label>
-                <select id="weekSelect" onchange="loadSelectedWeek()">
-                    <option value="current">Current Week</option>
-                </select>
-                <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Next Week (Newer)">►</button>
+                <div class="selector-row">
+                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
+                        <span class="arrow">◄</span>
+                        <span class="btn-label">Older</span>
+                    </button>
+                    
+                    <div class="filters-group">
+                        <div class="filter-item">
+                            <label>Year</label>
+                            <select id="yearFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label>Month</label>
+                            <select id="monthFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item week-item">
+                            <label>Week</label>
+                            <select id="weekSelect" onchange="loadSelectedWeek()">
+                                <option value="current">Current Week</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
+                        <span class="btn-label">Newer</span>
+                        <span class="arrow">►</span>
+                    </button>
+                </div>
+                
+                <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                    ↻ Current Week
+                </button>
             </div>
             <p class="date-range" id="dateRange">Loading...</p>
             <p class="last-updated" id="lastUpdated">Loading...</p>
@@ -1534,11 +1640,34 @@ let visibleColumns = {
                 return true;
             });
             
+            // Store current selection
+            const currentSelection = weekSelect.value;
+            
             // Populate week dropdown
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
+            
+            // Try to restore selection, or auto-select Week 1 if month changed
+            if (filteredWeeks.find(w => `archive/${w.filename}` === currentSelection)) {
+                weekSelect.value = currentSelection;
+            } else if (monthFilter) {
+                // Month changed - auto-select first week of that month
+                const week1 = filteredWeeks.find(w => w.label.includes('Week 1'));
+                if (week1) {
+                    weekSelect.value = `archive/${week1.filename}`;
+                    loadSelectedWeek();
+                }
+            }
+        }
+        
+        function resetToCurrent() {
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+            document.getElementById('weekSelect').value = 'current';
+            filterWeeks();
+            loadSelectedWeek();
         }
         
         function navigateWeek(direction) {
