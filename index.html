@@ -2170,46 +2170,90 @@ let visibleColumns = {
     }
 }
 
-        function renderStatistics(division) {
-            const divisionData = statisticsData[division];
-            
-            if (!divisionData || divisionData.length === 0) {
-                document.getElementById('content').innerHTML = '<div class="error">No statistics available for this division.</div>';
-                return;
-            }
+    function renderStatistics(division) {
+    const divisionData = statisticsData[division];
+    
+    if (!divisionData || divisionData.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="error">No statistics available for this division.</div>';
+        return;
+    }
 
-            const divisionNames = {
-                'mens': "Men",
-                'womens': "Women",
-                'menstag': "Men's Tag Teams",
-                'womenstag': "Women's Tag Teams",
-                'trios': "Trios"
-            };
+    const divisionNames = {
+        'mens': "Men",
+        'womens': "Women",
+        'menstag': "Men's Tag Teams",
+        'womenstag': "Women's Tag Teams",
+        'trios': "Trios"
+    };
 
-           html += `
+    // Create tabs for divisions
+    let html = `
+        <div class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-number">${divisionData.length}</div>
+                <div class="stat-label">Total Wrestlers</div>
+            </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom: 20px;">
+            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
+            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
+            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
+            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
+            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
+        </div>
+
+        <div class="table-container">
+            <h2 style="color: #ffd700; margin-bottom: 20px;">📊 All-Time Statistics - ${divisionNames[division]}</h2>
+            <table>
+                <thead>
                     <tr>
-                        <td class="rank">${index + 1}</td>
-                        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>
-                        <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
-                        <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
-                        <td class="rating">${wrestler.floor.toFixed(2)}</td>
-                        <td class="rating">${wrestler.average.toFixed(2)}</td>
-                        <td>${wrestler.peakWeek}</td>
-                        <td>${wrestler.weeksAtNumber1}</td>
+                        <th class="no-sort">#</th>
+                        <th class="sortable" onclick="sortStatistics('name')">Name</th>
+                        <th class="sortable" onclick="sortStatistics('current')">Current</th>
+                        <th class="sortable" onclick="sortStatistics('peak')">Peak</th>
+                        <th class="sortable" onclick="sortStatistics('floor')">Floor</th>
+                        <th class="sortable" onclick="sortStatistics('average')">Average</th>
+                        <th class="sortable" onclick="sortStatistics('peakWeek')">Peak Week</th>
+                        <th class="sortable" onclick="sortStatistics('weeksAtNumber1')">Weeks at #1</th>
                     </tr>
-                `;
+                </thead>
+                <tbody>
+    `;
 
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
+    // Sort data
+    const sortedData = [...divisionData];
+    sortData(sortedData, currentSortColumn, currentSortDirection);
 
-            document.getElementById('content').innerHTML = html;
+    sortedData.forEach((wrestler, index) => {
+        const ratingClass = getRatingClass(wrestler.current);
+        const peakClass = getRatingClass(wrestler.peak);
+        
+        html += `
+            <tr>
+                <td class="rank">${index + 1}</td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>
+                <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
+                <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
+                <td class="rating">${wrestler.floor.toFixed(2)}</td>
+                <td class="rating">${wrestler.average.toFixed(2)}</td>
+                <td>${wrestler.peakWeek}</td>
+                <td>${wrestler.weeksAtNumber1}</td>
+            </tr>
+        `;
+    });
 
-            // Update sorted column styling
-            updateSortedColumnStyle();
-        }
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    document.getElementById('content').innerHTML = html;
+
+    // Update sorted column styling
+    updateSortedColumnStyle();
+}
             
         function filterStatistics(division) {
             const searchTerm = document.getElementById('stats-search-' + division)?.value.toLowerCase() || '';
