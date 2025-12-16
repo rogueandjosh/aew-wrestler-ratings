@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .rank-up {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .rank-down {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .rank-reentry {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .no-change {
+            color: #9ca3af;
+        }
+
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1.1em;
+        }
+
+        .last-updated {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .date-range {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .week-selector {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .selector-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filters-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 100px;
+        }
+
+        .week-item {
+            min-width: 180px;
+        }
+
+        .filter-item label {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .week-selector button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .week-selector button .arrow {
+            font-size: 1.2em;
+        }
+
+        .week-selector button .btn-label {
+            font-size: 0.9em;
+        }
+
+        .week-selector button:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .week-selector button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background: rgba(255, 215, 0, 0.15) !important;
+            border-color: #ffd700 !important;
+            font-size: 0.95em !important;
+            padding: 8px 20px !important;
+        }
+
+        .reset-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.3) !important;
+        }
+
+        .week-selector select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .selector-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filters-group {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .filter-item,
+            .week-item {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .week-selector button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .reset-btn {
+                width: 100%;
+            }
+        }
+            min-width: 200px;
+        }
+
+        .week-selector select:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .week-selector select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .division-content {
+            display: none;
+        }
+
+        .division-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-controls {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
+        .rating-slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .rating-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+
+        .rating-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #ffd700;
+            font-weight: 600;
+            min-width: 50px;
+        }
+
+        .rating-range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .rating-range-sliders {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .max-button {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .max-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .max-button.active {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #ffd700;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .filter-label {
+            color: #e0e0e0;
+            font-size: 0.95em;
+        }
+
+        .active-count {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #b8b8b8;
+            margin-top: 5px;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ffd700;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+        }
+
+        th.sorted-asc::after {
+            content: ' ▲';
+            opacity: 1;
+        }
+
+        th.sorted-desc::after {
+            content: ' ▼';
+            opacity: 1;
+        }
+
+        th.no-sort {
+            cursor: default;
+        }
+
+        th.no-sort::after {
+            content: '';
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+
+        .name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .team-members {
+            font-size: 0.75em;
+            color: #b8b8b8;
+            font-weight: normal;
+            margin-top: 3px;
+            font-: italic;
+            display: block;
+        }
+
+        .rating {
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .rating-excellent { color: #4ade80; }
+        .rating-great { color: #86efac; }
+        .rating-good { color: #a3e635; }
+        .rating-average { color: #fbbf24; }
+        .rating-below { color: #fb923c; }
+        .rating-poor { color: #f87171; }
+
+        .change {
+            font-weight: bold;
+        }
+
+        .change-up { color: #4ade80; }
+        .change-down { color: #f87171; }
+        .change-new { color: #ffd700; }
+        .change-same { color: #888; }
+
+        .dropped-out {
+            margin-top: 30px;
+            background: rgba(255, 100, 100, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .dropped-out h3 {
+            color: #fb923c;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .dropped-out-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .dropped-wrestler {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 3px solid #fb923c;
+        }
+
+        .dropped-wrestler-name {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .dropped-wrestler-info {
+            font-size: 0.85em;
+            color: #b8b8b8;
+        }
+        
+        .recently-dropped-toggle {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid #ffd700;
+        }
+        
+        .recently-dropped-toggle label {
+            color: #ffd700;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recently-dropped-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .recently-dropped-section {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .recently-dropped-section.visible {
+            display: block;
+        }
+        
+        .recently-dropped-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .recently-dropped-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .recently-dropped-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border-left: 3px solid #ef4444;
+        }
+        
+        .recently-dropped-item.inactive {
+            border-left-color: #fbbf24;
+        }
+        
+        .recently-dropped-name {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+        }
+        
+        .recently-dropped-details {
+            font-size: 0.85em;
+            color: #b8b8b8;
+        }
+
+        .about {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .about h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .about h3 {
+            color: #ffd700;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .about ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .about li {
+            margin-bottom: 10px;
+        }
+
+        .about p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: #b8b8b8;
+        }
+
+        .find-out-more {
+            margin-top: 30px;
+        }
+
+        .expand-btn {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .expand-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .expand-btn:active {
+            transform: translateY(0);
+        }
+
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            margin-top: 20px;
+        }
+
+        .details-content.expanded {
+            max-height: 2000px;
+        }
+
+        .details-content h3 {
+            color: #ffd700;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .details-content p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+            }
+
+            .stats-summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #ffd700;
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.1em;
+            color: #f87171;
+        }
+        /* Clickable wrestler links */
+        .wrestler-link {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .wrestler-link:hover {
+            color: #ffd700;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AEW Wrestler Ratings</h1>
+            <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
+            <p class="subtitle">Performance-based rankings, not wins and losses</p>
+            <div class="week-selector">
+                <div class="selector-row">
+                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
+                        <span class="arrow">◄</span>
+                        <span class="btn-label">Older</span>
+                    </button>
+                    
+                    <div class="filters-group">
+                        <div class="filter-item">
+                            <label>Year</label>
+                            <select id="yearFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label>Month</label>
+                            <select id="monthFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item week-item">
+                            <label>Week</label>
+                            <select id="weekSelect" onchange="loadSelectedWeek()">
+                                <option value="current">Current Week</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
+                        <span class="btn-label">Newer</span>
+                        <span class="arrow">►</span>
+                    </button>
+                </div>
+                
+                <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                    ↻ Current Week
+                </button>
+            </div>
+            <p class="date-range" id="dateRange">Loading...</p>
+            <p class="last-updated" id="lastUpdated">Loading...</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showDivision('mens')">Men</button>
+            <button class="tab" onclick="showDivision('womens')">Women</button>
+            <button class="tab" onclick="showDivision('menstag')">Men's Tag Teams</button>
+            <button class="tab" onclick="showDivision('womenstag')">Women's Tag Teams</button>
+            <button class="tab" onclick="showDivision('trios')">Trios</button>
+            <button class="tab" onclick="showStatistics('mens')">📊 Statistics</button>
+        </div>
+
+        <div id="content">
+            <div class="loading">Loading rankings data...</div>
+        </div>
+
+        <section class="about">
+            <h2>About the Ratings</h2>
+            <p>Wrestling is all about feelings, emotions and opinions. It will never be possible to completely accurately compare wrestlers' current form - there are so many factors to consider. However, this system takes account of multiple factors so that wrestlers can be directly compared and tracked over time. It equates them to a numerical value where '100' is average.</p>
+            
+            <p>The ratings are based on match performances from the excellent Cagematch.net site - not wins and losses, but how fans have received and rated each AEW wrestler's match.</p>
+
+            <h3>Key Points:</h3>
+            <ul>
+                <li>All wrestlers start at 100 - points gained/lost based on Cagematch match ratings and votes</li>
+                <li>Factors include: current rating, opponent quality, show type, and match stakes</li>
+                <li>Five divisions: Men's, Women's, Men's Tag, Women's Tag, and Trios (crossover allowed)</li>
+                <li>Minimum 2 matches required to appear in rankings</li>
+                <li>Ratings degrade over time toward 100 - wrestlers drop out when they reach 100</li>
+            </ul>
+
+            <div class="find-out-more">
+                <button class="expand-btn" onclick="toggleDetails()">Find out more ▼</button>
+                
+                <div id="moreDetails" class="details-content">
+                    <h3>📌 Important Context</h3>
+                    <p>This rating system does NOT account for intangibles like charisma or promo ability - it is purely based on match performance from Cagematch. It reflects both how well wrestlers have performed AND how well they are being booked (not for wins, but for opportunities to perform).</p>
+
+                    <h3>🎯 How Ratings Work</h3>
+                    <p>All wrestlers start at 100 (average). Points are gained and lost depending on Cagematch match ratings and votes, plus show ratings and votes.</p>
+
+                    <h3>⚙️ Factors Affecting Rating Changes</h3>
+                    <p>Multiple factors determine how much is gained or lost: the wrestler's rating before the match, opponent quality, the show type, match stakes, and other considerations.</p>
+
+                    <h3>🏆 The Five Divisions</h3>
+                    <p>Men's, Women's, Men's Tag, Women's Tag, and Trios. There is crossover - for example, a male wrestler in a trios team would contribute to both Men's ratings and potentially Men's Tag if part of a tag team within the trio.</p>
+
+                    <h3>✅ Entry Requirements</h3>
+                    <p>Two matches are needed to gain a ranking.</p>
+
+                    <h3>⏳ Time Degradation</h3>
+                    <p>Rating points gained degrade over time; rating points lost are gradually recovered. Eventually, after weeks, months, or possibly years, a wrestler/team's rating returns to 100. Once a rating reaches 100, the wrestler/team drops out of the rankings.</p>
+
+                    <h3>📅 Update Schedule</h3>
+                    <p>Rankings refresh each Wednesday before Dynamite.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let ratingsData = null;
+        let statisticsData = null;
+        let archiveIndex = null;
+        let nameChanges = {}; // Global name changes mapping
+        let currentWeek = 'current';
+        let currentView = 'rankings'; // 'rankings' or 'statistics'
+        let currentDivision = 'mens'; // Track which division/view is active
+        let currentStatsDivision = 'mens';
+        let currentSortColumn = 'peak';
+        let nameChangesData = null;
+        let teamMembersData = null;
+        const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
+
+        // Load name changes data
+        async function loadNameChanges() {
+            if (nameChangesData) return nameChangesData;
+            
+            try {
+                const response = await fetch('name-changes.json');
+                nameChangesData = await response.json();
+                console.log('✅ Loaded name changes:', nameChangesData.totalChanges);
+                return nameChangesData;
+            } catch (error) {
+                console.warn('⚠️ Name changes file not found, names will not be merged');
+                nameChangesData = { changes: [] };
+                return nameChangesData;
+            }
+        }
+
+        function toggleRecentlyDropped(division) {
+            const checkbox = document.getElementById(`recentlyDroppedToggle_${division}`);
+            const section = document.getElementById(`recentlyDroppedSection_${division}`);
+            
+            if (checkbox.checked) {
+                section.classList.add('visible');
+                buildRecentlyDroppedSection(division);
+            } else {
+                section.classList.remove('visible');
+            }
+        }
+        
+        async function buildRecentlyDroppedSection(division) {
+            const section = document.getElementById(`recentlyDroppedSection_${division}`);
+            
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
+                section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
+                return;
+            }
+            
+            section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
+            
+            // Determine which week we're viewing
+            const select = document.getElementById('weekSelect');
+            const selectedValue = select.value;
+            let currentWeekIndex = 0;
+            
+            if (selectedValue !== 'current') {
+                const currentFilename = selectedValue.replace('archive/', '');
+                currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+            }
+            
+            // Get 4 weeks starting from the current viewed week (not including it, starting from next)
+            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
+            
+            if (weeksToCheck.length < 2) {
+                section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
+                return;
+            }
+            
+            const recentlyDropped = {};
+            
+            // Load each week and collect ONLY wrestlers who were in the previous week's visible rankings
+            for (let i = 0; i < weeksToCheck.length - 1; i++) {
+                try {
+                    const weekData = await fetch(weeksToCheck[i].url).then(r => r.json());
+                    const weekLabel = weeksToCheck[i].label;
+                    
+                    // Get previous week's data to verify wrestler was actually there
+                    let previousWeekWrestlers = new Set();
+                    if (i + 1 < weeksToCheck.length) {
+                        const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
+                        const prevRoster = prevWeekData[division] || [];
+                        previousWeekWrestlers = new Set(prevRoster.map(w => w.name));
+                    }
+                    
+                    const droppedKey = division + 'DroppedOut';
+                    const dropped = weekData[droppedKey] || [];
+                    
+                    // Use for loop instead of forEach to allow await
+                    for (let d = 0; d < dropped.length; d++) {
+                        const wrestler = dropped[d];
+                        const actualName = wrestler.name.replace(' (Inactive)', '');
+                        
+                        // ONLY include if they were actually in previous week's visible rankings
+                        if (previousWeekWrestlers.has(actualName)) {
+                            const key = wrestler.name;
+                            if (!recentlyDropped[key]) {
+                                const isInactive = wrestler.name.includes('(Inactive)');
+                                const isNameChange = !isInactive && nameChanges[actualName];
+                                
+                                // Debug for Jackson names
+                                if (actualName.includes('Jackson')) {
+                                    console.log(`[Recently Dropped] ${actualName}:`);
+                                    console.log(`  isInactive: ${isInactive}`);
+                                    console.log(`  nameChanges[${actualName}]: ${nameChanges[actualName]}`);
+                                    console.log(`  isNameChange: ${isNameChange}`);
+                                }
+                                
+                                let displayRating;
+                                
+                                if (isInactive) {
+                                    // For inactive wrestlers, show their last rating when they went inactive
+                                    displayRating = wrestler.lastRating;
+                                } else if (isNameChange) {
+                                    // For name changes, show their actual last rating (NOT 100.00)
+                                    displayRating = wrestler.lastRating;
+                                } else {
+                                    // For natural drops (rating hit 100.00), show exactly 100.00
+                                    displayRating = 100.00;
+                                }
+                                
+                                // Find LAST time they were actually RANKED (not in dropped out)
+                                let lastRankedWeek = weekLabel;
+                                for (let j = i + 1; j < weeksToCheck.length; j++) {
+                                    try {
+                                        const checkWeekData = await fetch(weeksToCheck[j].url).then(r => r.json());
+                                        const checkRoster = checkWeekData[division] || [];
+                                        const wasRanked = checkRoster.find(w => w.name === actualName);
+                                        if (wasRanked) {
+                                            lastRankedWeek = weeksToCheck[j].label;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('Error checking week:', e);
+                                    }
+                                }
+                                
+                                recentlyDropped[key] = {
+                                    name: wrestler.name,
+                                    rating: displayRating,
+                                    lastSeen: lastRankedWeek,
+                                    isInactive: isInactive,
+                                    isNameChange: isNameChange,
+                                    newName: isNameChange ? nameChanges[actualName] : null
+                                };
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log('Error loading week for recently dropped:', error);
+                }
+            }
+            
+            // Get currently ranked wrestlers to filter out re-entries
+            const currentWeekData = await fetch(weeksToCheck[0].url).then(r => r.json());
+            const currentRoster = currentWeekData[division] || [];
+            const currentlyRanked = new Set(currentRoster.map(w => w.name));
+            
+            // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
+            const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
+                const actualName = wrestler.name.replace(' (Inactive)', '');
+                // Keep only if NOT currently ranked
+                return !currentlyRanked.has(actualName);
+            });
+            
+            if (wrestlers.length === 0) {
+                section.innerHTML = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
+                return;
+            }
+            
+            let html = '<div class="recently-dropped-grid">';
+            
+            wrestlers.forEach(wrestler => {
+                const inactiveClass = wrestler.isInactive ? 'inactive' : '';
+                let status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                let displayName = wrestler.name.replace(' (Inactive)', '');
+                
+                // Check for name change
+                if (wrestler.isNameChange) {
+                    status = 'Name Change';
+                    displayName += ` → ${wrestler.newName}`;
+                }
+                
+                html += `
+                    <div class="recently-dropped-item ${inactiveClass}">
+                        <div class="recently-dropped-name">${displayName}</div>
+                        <div class="recently-dropped-details">
+                            Status: ${status}<br>
+                            Last Rating: ${wrestler.rating.toFixed(2)}<br>
+                            Last Seen: ${wrestler.lastSeen}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            section.innerHTML = html;
+        }
+
+        // Load team members data
+        async function loadTeamMembers() {
+            if (teamMembersData) return teamMembersData;
+            
+            try {
+                const response = await fetch('team-members.json');
+                teamMembersData = await response.json();
+                console.log('✅ Loaded team members:', teamMembersData.totalTeams);
+                return teamMembersData;
+            } catch (error) {
+                console.warn('⚠️ Team members file not found, team members will not be shown');
+                teamMembersData = { teams: {} };
+                return teamMembersData;
+            }
+        }
+        // Create URL slug from wrestler name
+        function createSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        // Get the correct name for a wrestler at a specific week
+        function getCanonicalNameAtWeek(canonicalName, weekLabel, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return canonicalName;
+            
+            // Find all changes related to this canonical name (trace the complete history)
+            const relatedChanges = nameChanges.filter(change => 
+                change.oldName === canonicalName || change.newName === canonicalName
+            );
+            
+            if (relatedChanges.length === 0) return canonicalName;
+            
+            // Sort by match ID to get chronological order
+            relatedChanges.sort((a, b) => a.matchId - b.matchId);
+            
+            // Build a map of all names in this wrestler's history
+            const nameChain = new Set();
+            relatedChanges.forEach(change => {
+                nameChain.add(change.oldName);
+                nameChain.add(change.newName);
+            });
+            
+            // Find the earliest name by checking which name never appears as a "new name"
+            let earliestName = canonicalName;
+            for (const name of nameChain) {
+                const isEverNew = relatedChanges.some(change => change.newName === name && compareWeeks(change.effectiveWeek, weekLabel) <= 0);
+                const isEverOld = relatedChanges.some(change => change.oldName === name);
+                
+                if (isEverOld && !isEverNew) {
+                    earliestName = name;
+                    break;
+                }
+            }
+            
+            // If we couldn't find earliest, try working backward from canonical name
+            if (earliestName === canonicalName) {
+                for (const change of [...relatedChanges].reverse()) {
+                    if (change.newName === earliestName) {
+                        earliestName = change.oldName;
+                    }
+                }
+            }
+            
+            // Now trace forward through time up to the selected week
+            let currentName = earliestName;
+            for (const change of relatedChanges) {
+                // Only apply changes that happened before or at the selected week
+                if (compareWeeks(change.effectiveWeek, weekLabel) <= 0) {
+                    if (currentName === change.oldName) {
+                        currentName = change.newName;
+                    }
+                }
+            }
+            
+            return currentName;
+        }
+
+        // Get the absolute most recent name (for grouping stats)
+        function getCanonicalName(anyName, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return anyName;
+            
+            // Find all changes related to this name
+            const relatedChanges = nameChanges.filter(change => 
+                change.oldName === anyName || change.newName === anyName
+            );
+            
+            if (relatedChanges.length === 0) return anyName;
+            
+            // Sort by match ID to get chronological order
+            relatedChanges.sort((a, b) => a.matchId - b.matchId);
+            
+            // Build complete chain of names
+            let earliestName = anyName;
+            for (const change of relatedChanges) {
+                if (change.newName === earliestName) {
+                    earliestName = change.oldName;
+                }
+            }
+            
+            // Trace through ALL changes to get the final name
+            let currentName = earliestName;
+            for (const change of relatedChanges) {
+                if (currentName === change.oldName) {
+                    currentName = change.newName;
+                }
+            }
+            
+            return currentName;
+        }
+
+        // Compare two week labels (e.g., "Jun '19 Week 1" vs "Nov '25 Week 5")
+        function compareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            if (week1 === 'current') return 1;
+            if (week2 === 'current') return -1;
+            
+            // Parse week format: "MMM 'YY Week N"
+            const parseWeek = (week) => {
+                const match = week.match(/(\w+)\s+'(\d+)\s+Week\s+(\d+)/);
+                if (!match) return null;
+                
+                const monthMap = {
+                    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+                };
+                
+                const month = monthMap[match[1]];
+                const year = 2000 + parseInt(match[2]);
+                const weekNum = parseInt(match[3]);
+                
+                return { year, month, weekNum };
+            };
+            
+            const w1 = parseWeek(week1);
+            const w2 = parseWeek(week2);
+            
+            if (!w1 || !w2) return 0;
+            
+            if (w1.year !== w2.year) return w1.year - w2.year;
+            if (w1.month !== w2.month) return w1.month - w2.month;
+            return w1.weekNum - w2.weekNum;
+        }
+        let currentSortDirection = 'desc';
+        let weekDataCache = {};
+let statisticsCache = {};
+let visibleColumns = {
+    rank: true,
+    name: true,
+    current: true,
+    peak: true,
+    floor: false,
+    average: true,
+    peakWeek: false,
+    floorWeek: false,
+    weeksAtNumber1: true
+};
+
+        // Helper function to fix encoding issues in JSON data
+        function fixEncodingIssues(data) {
+            if (!data) return data;
+            
+            // Fix divisions
+            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+            divisions.forEach(division => {
+                if (data[division]) {
+                    data[division] = data[division].map(wrestler => {
+                        // Ensure change is a string before processing
+                        if (wrestler.change && typeof wrestler.change === 'string') {
+                            // Fix the encoding issues with em dash and question marks
+                            wrestler.change = wrestler.change.replace(/�/g, '—');
+                            wrestler.change = wrestler.change.replace(/\?/g, '');
+                            
+                            // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
+                            wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            
+                            // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
+                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            
+                            // If it's just empty or standalone dash, make it em dash
+                            if (wrestler.change === '' || wrestler.change === '-') {
+                                wrestler.change = '—';
+                            }
+                        } else if (wrestler.change === null || wrestler.change === undefined) {
+                            // If change is missing, set to em dash
+                            wrestler.change = '—';
+                        } else if (typeof wrestler.change !== 'string') {
+                            // If it's a number or other type, convert to string first
+                            wrestler.change = String(wrestler.change);
+                            // Then apply same arrow logic
+                            if (wrestler.change.startsWith('-')) {
+                                wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            } else if (/^\d+$/.test(wrestler.change)) {
+                                wrestler.change = '↑' + wrestler.change;
+                            }
+                        }
+                        
+                        // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
+                        if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
+                            wrestler.change = 'RE-ENTRY';
+                        }
+                        
+                        return wrestler;
+                    });
+                }
+            });
+            
+            return data;
+        }
+
+        // Helper function to reconstruct arrows from rank changes by comparing with previous week
+        async function reconstructArrows(currentData, previousWeekUrl) {
+            if (!previousWeekUrl) return currentData;
+            
+            console.log('=== RECONSTRUCT ARROWS ===');
+            console.log('Previous week URL:', previousWeekUrl);
+            console.log('Archive index exists?', !!archiveIndex);
+            console.log('Archive weeks count:', archiveIndex?.weeks?.length);
+            
+            // Calculate current week index for early week detection FIRST
+            let currentIndex = 0;
+            let isVeryEarlyWeek = false;
+            
+            if (archiveIndex && archiveIndex.weeks && previousWeekUrl) {
+                const prevFilename = previousWeekUrl.replace('archive/', '');
+                console.log('Looking for prev filename:', prevFilename);
+                
+                const prevIndex = archiveIndex.weeks.findIndex(w => w.url === previousWeekUrl || w.filename === prevFilename);
+                console.log('Found prev at index:', prevIndex);
+                
+                if (prevIndex >= 0) {
+                    currentIndex = prevIndex > 0 ? prevIndex - 1 : 0; // Current is one before previous
+                    console.log('Current index:', currentIndex);
+                    console.log('Total weeks:', archiveIndex.weeks.length);
+                    console.log('Early week threshold (last 20):', archiveIndex.weeks.length - 20);
+                    
+                    // Check if in first 20 weeks of all time
+                    // Since archive is NEWEST FIRST, early weeks have HIGH index numbers
+                    isVeryEarlyWeek = currentIndex >= archiveIndex.weeks.length - 20;
+                    console.log('Is very early week?', isVeryEarlyWeek, `(${currentIndex} >= ${archiveIndex.weeks.length - 20})`);
+                    
+                    // Debug log for early weeks
+                    if (isVeryEarlyWeek) {
+                        console.log(`✓ EARLY WEEK DETECTED: index ${currentIndex} of ${archiveIndex.weeks.length} total weeks`);
+                    }
+                } else {
+                    console.log('WARNING: Could not find previous week in archive index');
+                }
+            } else {
+                console.log('WARNING: Missing archiveIndex or weeks or previousWeekUrl');
+            }
+            
+            try {
+                const response = await fetch(previousWeekUrl);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const currentWrestlers = currentData[division] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    currentWrestlers.forEach(currentWrestler => {
+                        const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
+                        
+                        if (previousWrestler) {
+                            // Calculate rank change: prevRank - currentRank
+                            const rankDiff = previousWrestler.rank - currentWrestler.rank;
+                            
+                            if (rankDiff > 0) {
+                                // Moved up (better rank)
+                                currentWrestler.change = rankDiff >= 5 ? `⬆${rankDiff}` : `↑${rankDiff}`;
+                            } else if (rankDiff < 0) {
+                                // Moved down (worse rank)
+                                const absChange = Math.abs(rankDiff);
+                                currentWrestler.change = absChange >= 5 ? `⬇${absChange}` : `↓${absChange}`;
+                            } else {
+                                currentWrestler.change = '—';
+                            }
+                        } else {
+                            // Not in previous week = new, re-entry, or name change
+                            
+                            // Check if this is a name change (old name in dropped out)
+                            // Check BOTH previous week AND current week dropped out lists
+                            const droppedKey = division + 'DroppedOut';
+                            const prevDroppedOut = previousData[droppedKey] || [];
+                            const currentDroppedOut = currentData[droppedKey] || [];
+                            const allDroppedOut = [...prevDroppedOut, ...currentDroppedOut];
+                            
+                            const isNameChange = allDroppedOut.some(dropped => {
+                                const oldName = dropped.name.replace(' (Inactive)', '');
+                                return nameChanges[oldName] === currentWrestler.name;
+                            });
+                            
+                            if (isNameChange) {
+                                currentWrestler.change = 'NAME CHANGE';
+                            } else {
+                                // For early weeks in the archive (first 20 weeks), always use NEW
+                                if (isVeryEarlyWeek) {
+                                    currentWrestler.change = 'NEW';
+                                } else if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
+                                    currentWrestler.change = 'RE-ENTRY';
+                                } else {
+                                    currentWrestler.change = 'NEW';
+                                }
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.log('Could not reconstruct arrows from previous week:', error);
+            }
+            
+            return currentData;
+        }
+
+        // Helper function to calculate dropped out wrestlers from previous week
+        async function calculateDroppedOut(currentData, archiveIndex) {
+            // Dropped out is now handled by Google Sheets
+            return currentData;
+        }
+        
+        // Fix incorrect inactive wrestler ranks by looking them up in previous week
+        // Also remove wrestlers from dropped out if they weren't even in previous week
+        async function fixInactiveRanks(currentData, previousWeekUrl) {
+            if (!previousWeekUrl) return currentData;
+            
+            try {
+                const response = await fetch(previousWeekUrl);
+                const previousData = await response.json();
+                
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                
+                divisions.forEach(division => {
+                    const droppedOutKey = division + 'DroppedOut';
+                    const droppedOut = currentData[droppedOutKey] || [];
+                    const previousWrestlers = previousData[division] || [];
+                    
+                    // Filter dropped out to only include wrestlers who were actually in previous week
+                    const fixedDroppedOut = [];
+                    
+                    droppedOut.forEach(dropped => {
+                        // Get actual name (remove "(Inactive)" if present)
+                        const actualName = dropped.name.replace(' (Inactive)', '');
+                        
+                        // Find this wrestler in previous week's rankings
+                        const prevWrestler = previousWrestlers.find(w => w.name === actualName);
+                        
+                        if (prevWrestler) {
+                            // Wrestler was in previous week - update with correct rank and keep them
+                            fixedDroppedOut.push({
+                                name: dropped.name,  // Keep "(Inactive)" if it was there
+                                lastRank: prevWrestler.rank,
+                                lastRating: prevWrestler.rating
+                            });
+                        }
+                        // If not in previous week, don't add to fixedDroppedOut (removes them)
+                    });
+                    
+                    currentData[droppedOutKey] = fixedDroppedOut;
+                });
+                
+            } catch (error) {
+                console.log('Could not fix inactive ranks:', error);
+            }
+            
+            return currentData;
+        }
+
+        // Load archive index, current rankings, statistics, and team members on page load
+        Promise.all([
+            fetch('archive/index.json').catch(() => ({ weeks: [] })),
+            fetch('current-rankings.json'),
+            fetch('statistics.json').catch(() => null)
+        ])
+        .then(async ([archiveResponse, currentResponse, statsResponse]) => {
+            // Load team members data (don't block on failure)
+            loadTeamMembers();
+            
+            // Load name changes (don't block on failure)
+            try {
+                const nameChangesResponse = await fetch('name-changes.json');
+                const nameChangesData = await nameChangesResponse.json();
+                
+                // Convert to simple mapping: { "Old Name": "New Name" }
+                nameChanges = {};
+                
+                // Handle nested structure with "changes" array
+                const changesArray = nameChangesData.changes || nameChangesData;
+                
+                if (Array.isArray(changesArray)) {
+                    changesArray.forEach(change => {
+                        if (change.oldName && change.newName) {
+                            nameChanges[change.oldName] = change.newName;
+                        }
+                    });
+                    console.log('Loaded ' + Object.keys(nameChanges).length + ' name changes');
+                    console.log('Name changes:', nameChanges);
+                } else {
+                    // If it's already an object mapping, use it directly
+                    nameChanges = changesArray;
+                }
+            } catch (error) {
+                console.log('Could not load name changes:', error);
+                nameChanges = {};
+            }
+            
+            // Load archive index
+            if (archiveResponse.weeks) {
+                archiveIndex = archiveResponse;
+            } else {
+                archiveIndex = await archiveResponse.json().catch(() => ({ weeks: [] }));
+            }
+            
+            // Load current rankings
+            ratingsData = await currentResponse.json();
+            ratingsData = fixEncodingIssues(ratingsData);
+            
+            // Reconstruct arrows from previous week if corrupted
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
+                const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
+                ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                
+                // Fix inactive wrestler ranks using previous week data
+                ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
+            }
+
+            // Load statistics if available
+            if (statsResponse) {
+                statisticsData = await statsResponse.json();
+            }
+            
+            // Populate week selector
+            populateWeekSelector();
+            
+            // Update date range and last updated
+            if (ratingsData.dateRange) {
+                document.getElementById('dateRange').textContent = ratingsData.dateRange;
+            } else {
+                document.getElementById('dateRange').textContent = '';
+            }
+            document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+            
+            // Show current week
+            showDivision('mens');
+        })
+        .catch(error => {
+            document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
+            console.error('Error loading data:', error);
+        });
+
+        function populateWeekSelector() {
+            const select = document.getElementById('weekSelect');
+            select.innerHTML = '';
+            
+            // Add current week option
+            const currentOption = document.createElement('option');
+            currentOption.value = 'current';
+            currentOption.textContent = `Current (${ratingsData.currentWeek})`;
+            select.appendChild(currentOption);
+            
+            // Add archived weeks and populate filter dropdowns
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
+                const years = new Set();
+                const months = new Set();
+                
+                archiveIndex.weeks.forEach(week => {
+                    const option = document.createElement('option');
+                    option.value = `archive/${week.filename}`;
+                    option.textContent = week.label;
+                    select.appendChild(option);
+                    
+                    // Extract year and month
+                    const year = week.label.match(/'(\d+)/)?.[1];
+                    const month = week.label.split(' ')[0];
+                    if (year) years.add(year);
+                    if (month) months.add(month);
+                });
+                
+                // Populate year filter (2025, 2024, etc.)
+                const yearFilter = document.getElementById('yearFilter');
+                const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
+                sortedYears.forEach(year => {
+                    yearFilter.innerHTML += `<option value="${year}">20${year}</option>`;
+                });
+                
+                // Populate month filter
+                const monthFilter = document.getElementById('monthFilter');
+                const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const sortedMonths = Array.from(months).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+                sortedMonths.forEach(month => {
+                    monthFilter.innerHTML += `<option value="${month}">${month}</option>`;
+                });
+                
+                // Initialize navigation buttons
+                updateNavigationButtons();
+            }
+        }
+
+        function filterWeeks() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            const weekSelect = document.getElementById('weekSelect');
+            
+            if (!archiveIndex) return;
+            
+            // Filter weeks
+            const filteredWeeks = archiveIndex.weeks.filter(week => {
+                if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
+                if (monthFilter && !week.label.startsWith(monthFilter)) return false;
+                return true;
+            });
+            
+            // Store current selection
+            const currentSelection = weekSelect.value;
+            
+            // Populate week dropdown
+            weekSelect.innerHTML = '<option value="current">Current Week</option>';
+            filteredWeeks.forEach(week => {
+                weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
+            });
+            
+            // Try to restore selection, or auto-select Week 1 if month changed
+            if (filteredWeeks.find(w => `archive/${w.filename}` === currentSelection)) {
+                weekSelect.value = currentSelection;
+            } else if (monthFilter) {
+                // Month changed - auto-select first week of that month
+                const week1 = filteredWeeks.find(w => w.label.includes('Week 1'));
+                if (week1) {
+                    weekSelect.value = `archive/${week1.filename}`;
+                    loadSelectedWeek();
+                }
+            }
+        }
+        
+        function resetToCurrent() {
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+            document.getElementById('weekSelect').value = 'current';
+            filterWeeks();
+            loadSelectedWeek();
+        }
+        
+        function navigateWeek(direction) {
+            const weekSelect = document.getElementById('weekSelect');
+            const currentValue = weekSelect.value;
+            
+            if (!archiveIndex) return;
+            
+            // Get ALL weeks (ignore filters for navigation)
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            const currentIndex = allWeeks.indexOf(currentValue);
+            
+            if (currentIndex === -1) return;
+            
+            const newIndex = currentIndex + direction;
+            
+            // Check bounds
+            if (newIndex < 0 || newIndex >= allWeeks.length) return;
+            
+            // Set new week
+            weekSelect.value = allWeeks[newIndex];
+            
+            // Update filters to match
+            if (allWeeks[newIndex] !== 'current') {
+                const filename = allWeeks[newIndex].replace('archive/', '');
+                const week = archiveIndex.weeks.find(w => w.filename === filename);
+                if (week) {
+                    const year = week.label.match(/'(\d+)/)?.[1];
+                    const month = week.label.split(' ')[0];
+                    
+                    document.getElementById('yearFilter').value = year || '';
+                    document.getElementById('monthFilter').value = month || '';
+                    filterWeeks();
+                    weekSelect.value = allWeeks[newIndex]; // Re-set after filter
+                }
+            } else {
+                document.getElementById('yearFilter').value = '';
+                document.getElementById('monthFilter').value = '';
+                filterWeeks();
+            }
+            
+            loadSelectedWeek();
+        }
+        
+        function updateNavigationButtons() {
+            const weekSelect = document.getElementById('weekSelect');
+            const prevBtn = document.getElementById('prevWeekBtn');
+            const nextBtn = document.getElementById('nextWeekBtn');
+            
+            if (!archiveIndex) return;
+            
+            const currentValue = weekSelect.value;
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            const currentIndex = allWeeks.indexOf(currentValue);
+            
+            // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
+            // At oldest week (last index): can go forward (right/next) but NOT back (left/prev)
+            prevBtn.disabled = (currentIndex >= allWeeks.length - 1); // Disable left at oldest
+            nextBtn.disabled = (currentIndex <= 0); // Disable right at current
+        }
+
+        function loadSelectedWeek() {
+            const select = document.getElementById('weekSelect');
+            const selectedValue = select.value;
+            
+            if (selectedValue === 'current') {
+                // Reload current rankings
+                fetch('current-rankings.json')
+                    .then(response => response.json())
+                    .then(async data => {
+                        ratingsData = fixEncodingIssues(data);
+                        
+                        // Reconstruct arrows from previous week if corrupted
+                        if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
+                            const previousWeekUrl = archiveIndex.weeks[1].url;
+                            ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                        }
+
+                        if (ratingsData.dateRange) {
+                            document.getElementById('dateRange').textContent = ratingsData.dateRange;
+                        } else {
+                            document.getElementById('dateRange').textContent = '';
+                        }
+                        document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+                        
+                        // Restore the previous view instead of always showing Men's
+                        if (currentView === 'statistics') {
+                            showStatistics(currentStatsDivision);
+                        } else {
+                            showDivision(currentDivision);
+                        }
+                        
+                        // Update navigation button states
+                        updateNavigationButtons();
+                    })
+                    .catch(error => {
+                        console.error('Error loading current rankings:', error);
+                        document.getElementById('content').innerHTML = '<div class="error">Error loading current rankings.</div>';
+                    });
+            } else {
+                // Load archived week
+                fetch(selectedValue)
+                    .then(response => response.json())
+                    .then(async data => {
+                        try {
+                            ratingsData = fixEncodingIssues(data);
+                            
+                            // Reconstruct arrows from previous week in archive
+                            if (archiveIndex && archiveIndex.weeks) {
+                                const currentFilename = selectedValue.replace('archive/', '');
+                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                                
+                                // Only reconstruct if there IS a previous week (not the first week ever)
+                                if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
+                                    const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                                    ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
+                                    
+                                    // Fix inactive wrestler ranks using previous week data
+                                    ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
+                                } else if (currentIndex === archiveIndex.weeks.length - 1) {
+                                    // This is the very first week - no previous week exists
+                                    console.log('This is the first week ever - no previous week to compare');
+                                }
+                            }
+
+                            if (ratingsData.dateRange) {
+                                document.getElementById('dateRange').textContent = ratingsData.dateRange;
+                            } else {
+                                document.getElementById('dateRange').textContent = '';
+                            }
+                            document.getElementById('lastUpdated').textContent = `Week: ${ratingsData.currentWeek} (Archived)`;
+                            
+                            // Restore the previous view instead of always showing Men's
+                            if (currentView === 'statistics') {
+                                showStatistics(currentStatsDivision);
+                            } else {
+                                showDivision(currentDivision);
+                            }
+                            
+                            // Update navigation button states
+                            updateNavigationButtons();
+                        } catch (error) {
+                            console.error('Error processing archived week:', error);
+                            document.getElementById('content').innerHTML = '<div class="error">Error loading archived rankings. Please try another week.</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading archived week:', error);
+                        document.getElementById('content').innerHTML = '<div class="error">Error loading archived rankings.</div>';
+                    });
+            }
+        }
+
+        function showDivision(division) {
+            currentView = 'rankings';
+            currentDivision = division; // Remember which division we're on
+            
+            if (!ratingsData) return;
+
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().includes(division.replace('tag', ' tag'))) {
+                    tab.classList.add('active');
+                }
+            });
+
+            const divisionData = ratingsData[division];
+            if (!divisionData || divisionData.length === 0) {
+                document.getElementById('content').innerHTML = '<div class="error">No data available for this division.</div>';
+                return;
+            }
+
+            // Store current division for filtering
+            window.currentDivision = division;
+            window.currentDivisionData = [...divisionData];
+            
+            // Render initial structure with filters
+            renderDivisionStructure(division, divisionData);
+        }
+
+        function renderDivisionStructure(division, data) {
+            // Build the STATIC structure with filter controls (only rendered once)
+            let html = `
+                <div class="filter-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="search-${division}">🔍 Search Wrestlers</label>
+                            <input type="text" 
+                                   id="search-${division}" 
+                                   class="search-box" 
+                                   placeholder="Type wrestler name..."
+                                   oninput="applyFilters('${division}')">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                       id="show-dropped-${division}" 
+                                       checked
+                                       onchange="applyFilters('${division}', true)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="filter-label">Show Dropped Out Wrestlers</span>
+                        </div>
+                        <div class="active-count" id="active-count-${division}">
+                            Showing ${data.length} of ${data.length} wrestlers
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-summary" id="stats-${division}">
+                </div>
+
+                <div class="table-container" id="table-${division}">
+                </div>
+
+                <div id="dropped-${division}">
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+            
+            // Now render the data (without touching the filters)
+            updateDivisionData(division, data);
+        }
+
+        function updateDivisionData(division, data) {
+            // Get filter values
+            const searchTerm = document.getElementById('search-' + division)?.value.toLowerCase() || '';
+            const showDropped = document.getElementById('show-dropped-' + division)?.checked !== false;
+
+            // Apply filters - optimized for performance
+            let filteredData = [];
+            for (let i = 0; i < data.length; i++) {
+                const wrestler = data[i];
+                if (wrestler.name.toLowerCase().includes(searchTerm)) {
+                    filteredData.push(wrestler);
+                }
+            }
+
+            // Calculate stats efficiently
+            const totalWrestlers = filteredData.length;
+            let avgRating = '0.00';
+            let totalMatches = 0;
+            
+            if (totalWrestlers > 0) {
+                let ratingSum = 0;
+                for (let i = 0; i < filteredData.length; i++) {
+                    ratingSum += filteredData[i].rating;
+                    totalMatches += filteredData[i].matches;
+                }
+                avgRating = (ratingSum / totalWrestlers).toFixed(2);
+            }
+
+            // Update active count
+            const countEl = document.getElementById('active-count-' + division);
+            if (countEl) {
+                countEl.textContent = `Showing ${totalWrestlers} of ${data.length} wrestlers`;
+            }
+
+            // Update stats
+            const statsEl = document.getElementById('stats-' + division);
+            if (statsEl) {
+                statsEl.innerHTML = `
+                    <div class="stat-box">
+                        <div class="stat-number">${totalWrestlers}</div>
+                        <div class="stat-label">Filtered Wrestlers</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">${avgRating}</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">${totalMatches}</div>
+                        <div class="stat-label">Total Matches</div>
+                    </div>
+                `;
+            }
+
+            // Build table rows efficiently
+            const rows = [];
+            for (let i = 0; i < filteredData.length; i++) {
+                const wrestler = filteredData[i];
+                const ratingClass = getRatingClass(wrestler.rating);
+                const changeClass = getChangeClass(wrestler.change);
+                const changeSymbol = getChangeSymbol(wrestler.change);
+                const teamMembers = getTeamMembers(wrestler.name, division);
+
+              rows.push(`
+                    <tr>
+                        <td class="rank">${wrestler.rank}</td>
+                        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
+                        <td class="rating ${ratingClass}">${wrestler.rating.toFixed(2)}</td>
+                        <td class="change ${changeClass}">${changeSymbol}</td>
+                        <td>${wrestler.matches}</td>
+                        <td>${wrestler.peak.toFixed(2)}</td>
+                        <td>${wrestler.floor.toFixed(2)}</td>
+                    </tr>
+                `);
+            }
+
+            // Update table
+            const tableEl = document.getElementById('table-' + division);
+            if (tableEl) {
+                tableEl.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Rating</th>
+                                <th>Change</th>
+                                <th>Matches</th>
+                                <th>Peak</th>
+                                <th>Floor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Update dropped out section
+            const droppedEl = document.getElementById('dropped-' + division);
+            if (droppedEl && showDropped) {
+                const droppedOutKey = division + 'DroppedOut';
+                const droppedOut = ratingsData[droppedOutKey];
+                
+                if (droppedOut && droppedOut.length > 0) {
+                    const droppedRows = [];
+                    for (let i = 0; i < droppedOut.length; i++) {
+                        const wrestler = droppedOut[i];
+                        if (wrestler.name.toLowerCase().includes(searchTerm)) {
+                            const isInactive = wrestler.name.includes('(Inactive)');
+                            const actualName = wrestler.name.replace(' (Inactive)', '');
+                            const isNameChange = !isInactive && nameChanges[actualName];
+                            
+                            // Debug logging for Matt/Nick Jackson
+                            if (actualName.includes('Jackson')) {
+                                console.log(`Dropped wrestler: ${actualName}`);
+                                console.log(`Is name change? ${isNameChange}`);
+                                console.log(`nameChanges[${actualName}] = ${nameChanges[actualName]}`);
+                            }
+                            
+                            let displayName = wrestler.name;
+                            if (isNameChange) {
+                                displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
+                            }
+                            
+                            droppedRows.push(`
+                                <div class="dropped-wrestler">
+                                    <div class="dropped-wrestler-name">${displayName}</div>
+                                    <div class="dropped-wrestler-info">
+                                        Was #${wrestler.lastRank} • ${wrestler.lastRating.toFixed(2)}
+                                    </div>
+                                </div>
+                            `);
+                        }
+                    }
+
+                    if (droppedRows.length > 0) {
+                        droppedEl.innerHTML = `
+                            <div class="dropped-out">
+                                <h3>⬇️ Recently Dropped From Rankings (${droppedRows.length})</h3>
+                                <div class="dropped-out-list">
+                                    ${droppedRows.join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        droppedEl.innerHTML = '';
+                    }
+                } else {
+                    droppedEl.innerHTML = '';
+                }
+                
+                // Always add the 4-week toggle after the dropped out section (even if empty)
+                const toggleHtml = `
+                    <div class="recently-dropped-toggle" style="margin-top: 20px;">
+                        <label>
+                            <input type="checkbox" id="recentlyDroppedToggle_${division}" onchange="toggleRecentlyDropped('${division}')">
+                            Show All Recently Dropped (Last 4 Weeks)
+                        </label>
+                    </div>
+                    
+                    <div id="recentlyDroppedSection_${division}" class="recently-dropped-section">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                `;
+                droppedEl.innerHTML += toggleHtml;
+            } else if (droppedEl) {
+                droppedEl.innerHTML = '';
+            }
+        }
+
+        // Debounce timer for search
+        let filterDebounceTimer = null;
+
+        function getTeamMembers(teamName, division) {
+            // Only show members for tag teams and trios
+            if (division !== 'menstag' && division !== 'womenstag' && division !== 'trios') {
+                return '';
+            }
+            
+            // If we don't have team members data loaded, return empty
+            if (!teamMembersData || !teamMembersData.teams) {
+                return '';
+            }
+            
+            // Look up team members
+            const members = teamMembersData.teams[teamName];
+            
+            if (members && members.length > 0) {
+                return `<span class="team-members">${members.join(' & ')}</span>`;
+            }
+            
+            // No data found for this team
+            return '';
+        }
+
+        function applyFilters(division, immediate = false) {
+            if (immediate) {
+                // For checkbox/slider release - apply immediately
+                if (window.currentDivisionData) {
+                    updateDivisionData(division, window.currentDivisionData);
+                }
+            } else {
+                // For search/slider drag - debounce
+                clearTimeout(filterDebounceTimer);
+                filterDebounceTimer = setTimeout(() => {
+                    if (window.currentDivisionData) {
+                        updateDivisionData(division, window.currentDivisionData);
+                    }
+                }, 150); // Wait 150ms after user stops typing/sliding
+            }
+        }
+
+       async function showStatistics(division) {
+    currentView = 'statistics';
+    currentDivision = 'statistics'; // Remember we're in statistics
+    currentStatsDivision = division;
+    currentSortColumn = 'peak';
+    currentSortDirection = 'desc';
+
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.includes('Statistics')) {
+            tab.classList.add('active');
+        }
+    });
+
+    document.getElementById('content').innerHTML = '<div class="loading">📊 Calculating statistics... This may take 5-10 seconds...</div>';
+
+    try {
+        const select = document.getElementById('weekSelect');
+        let selectedWeekLabel = 'current';
+        
+        if (select.value !== 'current') {
+            const selectedFilename = select.value.replace('archive/', '');
+            const weekInfo = archiveIndex.weeks.find(w => w.filename === selectedFilename);
+            if (weekInfo) {
+                selectedWeekLabel = weekInfo.label;
+            }
+        } else if (ratingsData && ratingsData.currentWeek) {
+            selectedWeekLabel = ratingsData.currentWeek;
+        }
+
+        const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
+        renderDynamicStatistics(division, dynamicStats, selectedWeekLabel);
+
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        document.getElementById('content').innerHTML = '<div class="error">Error calculating statistics. Please try again.</div>';
+    }
+}
+
+function renderStatistics(division) {
+    const divisionData = statisticsData[division];
+    
+    if (!divisionData || divisionData.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="error">No statistics available for this division.</div>';
+        return;
+    }
+
+    const divisionNames = {
+        'mens': "Men",
+        'womens': "Women",
+        'menstag': "Men's Tag Teams",
+        'womenstag': "Women's Tag Teams",
+        'trios': "Trios"
+    };
+
+    // Create tabs for divisions
+    let html = `
+        <div class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-number">${divisionData.length}</div>
+                <div class="stat-label">Total Wrestlers</div>
+            </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom: 20px;">
+            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
+            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
+            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
+            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
+            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
+        </div>
+
+        <div class="table-container">
+            <h2 style="color: #ffd700; margin-bottom: 20px;">📊 All-Time Statistics - ${divisionNames[division]}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="no-sort">#</th>
+                        <th class="sortable" onclick="sortStatistics('name')">Name</th>
+                        <th class="sortable" onclick="sortStatistics('current')">Current</th>
+                        <th class="sortable" onclick="sortStatistics('peak')">Peak</th>
+                        <th class="sortable" onclick="sortStatistics('floor')">Floor</th>
+                        <th class="sortable" onclick="sortStatistics('average')">Average</th>
+                        <th class="sortable" onclick="sortStatistics('peakWeek')">Peak Week</th>
+                        <th class="sortable" onclick="sortStatistics('weeksAtNumber1')">Weeks at #1</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    // Sort data
+    const sortedData = [...divisionData];
+    sortData(sortedData, currentSortColumn, currentSortDirection);
+
+    sortedData.forEach((wrestler, index) => {
+        const ratingClass = getRatingClass(wrestler.current);
+        const peakClass = getRatingClass(wrestler.peak);
+        
+        html += `
+            <tr>
+                <td class="rank">${index + 1}</td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>
+                <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
+                <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
+                <td class="rating">${wrestler.floor.toFixed(2)}</td>
+                <td class="rating">${wrestler.average.toFixed(2)}</td>
+                <td>${wrestler.peakWeek}</td>
+                <td>${wrestler.weeksAtNumber1}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    document.getElementById('content').innerHTML = html;
+
+    // Update sorted column styling
+    updateSortedColumnStyle();
+}
+            
+        function filterStatistics(division) {
+            const searchTerm = document.getElementById('stats-search-' + division)?.value.toLowerCase() || '';
+            const allData = window.statsData?.[division] || [];
+            
+            // Filter the data
+            const filteredData = allData.filter(wrestler => 
+                wrestler.name.toLowerCase().includes(searchTerm)
+            );
+            
+            // Re-render the table with filtered data
+            renderStatisticsTable(division, filteredData);
+        }
+
+        function renderStatisticsTable(division, divisionData) {
+            // Get the table container
+            const tableContainer = document.querySelector('.table-container table');
+            if (!tableContainer) return;
+            
+            // Build table rows
+            const rows = divisionData.map((wrestler, index) => {
+                const rank = index + 1;
+                return buildStatisticsRow(wrestler, rank);
+            }).join('');
+            
+            // Update only the tbody
+            const tbody = tableContainer.querySelector('tbody');
+            if (tbody) {
+                tbody.innerHTML = rows;
+            }
+        }
+
+        function buildStatisticsRow(wrestler, rank) {
+            return `
+                <tr>
+                    ${visibleColumns.rank ? `<td>${rank}</td>` : ''}
+                    ${visibleColumns.name ? `<td class="name">${wrestler.name}</td>` : ''}
+                    ${visibleColumns.current ? `<td>${wrestler.current.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.peak ? `<td>${wrestler.peak.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.peakWeek ? `<td>${wrestler.peakWeek}</td>` : ''}
+                    ${visibleColumns.floor ? `<td>${wrestler.floor.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.floorWeek ? `<td>${wrestler.floorWeek}</td>` : ''}
+                    ${visibleColumns.average ? `<td>${wrestler.average.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.weeksAtNumber1 ? `<td>${wrestler.weeksAtNumber1}</td>` : ''}
+                </tr>
+            `;
+        }
+
+        function sortStatistics(column) {
+            if (currentSortColumn === column) {
+                // Toggle direction
+                currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+            } else {
+                // New column, default to desc for numbers, asc for text
+                currentSortColumn = column;
+                currentSortDirection = (column === 'name' || column === 'peakWeek') ? 'asc' : 'desc';
+            }
+
+            renderStatistics(currentStatsDivision);
+        }
+
+        function sortData(data, column, direction) {
+            data.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                // Handle special cases
+                if (column === 'name' || column === 'peakWeek') {
+                    valA = valA.toString().toLowerCase();
+                    valB = valB.toString().toLowerCase();
+                    return direction === 'asc' 
+                        ? valA.localeCompare(valB)
+                        : valB.localeCompare(valA);
+                } else {
+                    // Numeric sorting
+                    return direction === 'desc' 
+                        ? valB - valA
+                        : valA - valB;
+                }
+            });
+        }
+
+        function updateSortedColumnStyle() {
+            // Remove all sorted classes
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+            });
+
+            // Add sorted class to current column
+            const columnIndex = {
+                'name': 1,
+                'current': 2,
+                'peak': 3,
+                'floor': 4,
+                'average': 5,
+                'peakWeek': 6,
+                'weeksAtNumber1': 7
+            }[currentSortColumn];
+
+            if (columnIndex !== undefined) {
+                const th = document.querySelectorAll('th')[columnIndex];
+                if (th) {
+                    th.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            }
+        }
+
+        function getRatingClass(rating) {
+            if (rating >= 110) return 'rating-excellent';
+            if (rating >= 105) return 'rating-great';
+            if (rating >= 100) return 'rating-good';
+            if (rating >= 95) return 'rating-average';
+            if (rating >= 90) return 'rating-below';
+            return 'rating-poor';
+        }
+
+        function getChangeClass(change) {
+            if (!change && change !== 0) {
+                return 'no-change';
+            }
+            
+            let changeStr = String(change);
+            
+            // For Jun '19 weeks, convert RE-ENTRY to NEW
+            if (changeStr === 'RE-ENTRY') {
+                const currentWeekName = ratingsData?.currentWeek;
+                if (currentWeekName && currentWeekName.includes("Jun '19")) {
+                    changeStr = 'NEW';
+                } else {
+                    return 'rank-reentry';
+                }
+            }
+            
+            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW' || changeStr === 'NAME CHANGE') {
+                return 'no-change';
+            }
+            
+            if (changeStr.includes('↑') || changeStr.includes('⬆') || changeStr.startsWith('+')) {
+                return 'rank-up';
+            }
+            
+            if (changeStr.includes('↓') || changeStr.includes('⬇') || changeStr.startsWith('-')) {
+                return 'rank-down';
+            }
+            
+            const numericChange = parseFloat(changeStr);
+            if (!isNaN(numericChange)) {
+                if (numericChange > 0) return 'rank-up';
+                if (numericChange < 0) return 'rank-down';
+            }
+            
+            return 'no-change';
+        }
+
+        function getChangeSymbol(change) {
+            if (!change && change !== 0) return '—';
+            
+            const changeStr = String(change);
+
+            // For Jun '19 weeks only, convert RE-ENTRY to NEW
+            if (changeStr === 'RE-ENTRY') {
+                const currentWeekName = ratingsData?.currentWeek;
+                if (currentWeekName && currentWeekName.includes("Jun '19")) {
+                    return 'NEW';
+                }
+                return 'RE-ENTRY';
+            }
+            
+            if (changeStr === '—' || changeStr === '-' || changeStr === '' || changeStr === 'NEW' || changeStr === 'NAME CHANGE') {
+                return changeStr;
+            }
+            
+            if (changeStr.includes('↑') || changeStr.includes('↓') || 
+                changeStr.includes('⬆') || changeStr.includes('⬇')) {
+                return changeStr;
+            }
+            
+            let numericChange = parseFloat(changeStr.replace('+', ''));
+            if (isNaN(numericChange)) return changeStr;
+            
+            const absChange = Math.abs(numericChange);
+            let arrow = '';
+            
+            if (numericChange > 0) {
+                arrow = absChange >= 10 ? '⬆' : '↑';
+                return `${arrow}${absChange}`;
+            } else if (numericChange < 0) {
+                arrow = absChange >= 10 ? '⬇' : '↓';
+                return `${arrow}${absChange}`;
+            }
+            
+            return '—';
+        }
+        
+        function toggleDetails() {
+            const details = document.getElementById('moreDetails');
+            const btn = document.querySelector('.expand-btn');
+            
+            if (details.classList.contains('expanded')) {
+                details.classList.remove('expanded');
+                btn.textContent = 'Find out more ▼';
+            } else {
+                details.classList.add('expanded');
+                btn.textContent = 'Show less ▲';
+            }
+        }
+        
+async function loadDynamicStatistics(selectedWeek, archiveIndex) {
+    const cacheKey = selectedWeek;
+    if (statisticsCache[cacheKey]) {
+        return statisticsCache[cacheKey];
+    }
+
+    const weeksToLoad = [];
+    
+    if (selectedWeek === 'current') {
+        archiveIndex.weeks.forEach(w => {
+            weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
+        });
+    } else {
+        const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeek);
+        
+        if (selectedIndex === -1) {
+            archiveIndex.weeks.forEach(w => {
+                weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
+            });
+        } else {
+            for (let i = archiveIndex.weeks.length - 1; i >= selectedIndex; i--) {
+                const week = archiveIndex.weeks[i];
+                weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
+            }
+        }
+    }
+
+    const weekDataArray = [];
+    
+    // Load all weeks in PARALLEL for massive speed boost
+    const fetchPromises = weeksToLoad.map(weekInfo => {
+        if (weekDataCache[weekInfo.url]) {
+            return Promise.resolve({ ...weekDataCache[weekInfo.url], weekLabel: weekInfo.label });
+        } else {
+            return fetch(weekInfo.url)
+                .then(response => response.json())
+                .then(data => {
+                    weekDataCache[weekInfo.url] = data;
+                    return { ...data, weekLabel: weekInfo.label };
+                })
+                .catch(error => {
+                    console.error(`Error loading ${weekInfo.url}:`, error);
+                    return null;
+                });
+        }
+    });
+
+    const loadedData = await Promise.all(fetchPromises);
+    weekDataArray.push(...loadedData.filter(data => data !== null));
+
+    // Load name changes data
+    const nameChangesInfo = await loadNameChanges();
+    const nameChanges = nameChangesInfo.changes || [];
+
+    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek, nameChanges);
+    statisticsCache[cacheKey] = statistics;
+    return statistics;
+}
+
+function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges = []) {
+    const statistics = { mens: {}, womens: {}, menstag: {}, womenstag: {}, trios: {} };
+    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+
+    weekDataArray.forEach((weekData, weekIndex) => {
+        if (!weekData) return;
+        const weekLabel = weekData.weekLabel || weekData.currentWeek;
+
+        divisions.forEach(divKey => {
+            const divisionData = weekData[divKey] || [];
+            divisionData.forEach((wrestler, index) => {
+                const rank = index + 1;
+                const originalName = wrestler.name;
+                const rating = wrestler.rating;
+
+                // Get the canonical name (most recent name for this wrestler)
+                const canonicalName = getCanonicalName(originalName, nameChanges);
+
+                if (!statistics[divKey][canonicalName]) {
+                    statistics[divKey][canonicalName] = {
+                        name: canonicalName,
+                        ratings: [],
+                        weeks: [],
+                        ranks: [],
+                        weeksAtNumber1: 0,
+                        currentRating: null,
+                        inSelectedWeek: false
+                    };
+                }
+
+                const ws = statistics[divKey][canonicalName];
+                ws.ratings.push(rating);
+                ws.weeks.push(weekLabel);
+                ws.ranks.push(rank);
+
+                if (rank === 1) ws.weeksAtNumber1++;
+
+                if (weekLabel === selectedWeekLabel || 
+                    (selectedWeekLabel === 'current' && weekIndex === weekDataArray.length - 1)) {
+                    ws.currentRating = rating;
+                    ws.inSelectedWeek = true;
+                }
+            });
+        });
+    });
+
+    const finalStatistics = { 
+        mens: [], 
+        womens: [], 
+        menstag: [], 
+        womenstag: [], 
+        trios: [],
+        totalWeeks: { mens: 0, womens: 0, menstag: 0, womenstag: 0, trios: 0 }
+    };
+
+    // Calculate total weeks for each division (weeks with at least one wrestler/team)
+    divisions.forEach(divKey => {
+        const divisionWeeks = new Set();
+        
+        weekDataArray.forEach(weekData => {
+            if (!weekData) return;
+            const weekLabel = weekData.weekLabel || weekData.currentWeek || 'current';
+            
+            // Only count week if there are wrestlers in this division
+            if (weekData[divKey] && weekData[divKey].length > 0) {
+                divisionWeeks.add(weekLabel);
+            }
+        });
+        
+        finalStatistics.totalWeeks[divKey] = divisionWeeks.size;
+    });
+
+    divisions.forEach(divKey => {
+        Object.keys(statistics[divKey]).forEach(canonicalName => {
+            const wrestler = statistics[divKey][canonicalName];
+            if (wrestler.ratings.length === 0) return;
+
+            const peak = Math.max(...wrestler.ratings);
+            const peakIndex = wrestler.ratings.indexOf(peak);
+            const peakWeek = wrestler.weeks[peakIndex];
+            
+            const floor = Math.min(...wrestler.ratings);
+            const floorIndex = wrestler.ratings.indexOf(floor);
+            const floorWeek = wrestler.weeks[floorIndex];
+            
+            const sum = wrestler.ratings.reduce((a, b) => a + b, 0);
+            const average = sum / wrestler.ratings.length;
+            const current = wrestler.inSelectedWeek && wrestler.currentRating !== null ? wrestler.currentRating : 100.00;
+
+            // Get the display name for the selected week
+            const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
+
+            finalStatistics[divKey].push({
+                name: displayName,  // Show name as it was at selected week
+                canonicalName: canonicalName,  // Keep for grouping
+                current: current,
+                peak: peak,
+                floor: floor,
+                average: average,
+                peakWeek: peakWeek,
+                floorWeek: floorWeek,
+                weeksAtNumber1: wrestler.weeksAtNumber1
+            });
+        });
+
+        finalStatistics[divKey].sort((a, b) => b.peak - a.peak);
+    });
+
+    return finalStatistics;
+}
+        function renderDynamicStatistics(division, statisticsData, selectedWeekLabel) {
+    const divisionData = statisticsData[division];
+    
+    // Store the full data for filtering
+    if (!window.statsData) window.statsData = {};
+    window.statsData[division] = divisionData ? [...divisionData] : [];
+    window.currentStatsDivision = division;
+    window.selectedWeekLabel = selectedWeekLabel;
+    
+    const divisionNames = {
+        'mens': "Men",
+        'womens': "Women",
+        'menstag': "Men's Tag Teams",
+        'womenstag': "Women's Tag Teams",
+        'trios': "Trios"
+    };
+
+    // Always show the division tabs even if no data
+    let html = `
+        <div class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-number">${divisionData?.length || 0}</div>
+                <div class="stat-label">Total Wrestlers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">${statisticsData.totalWeeks?.[division] || 0}</div>
+                <div class="stat-label">Total Weeks</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">${selectedWeekLabel}</div>
+                <div class="stat-label">Statistics Through</div>
+            </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom: 20px;">
+            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men</button>
+            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women</button>
+            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
+            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
+            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
+        </div>
+    `;
+    
+    if (!divisionData || divisionData.length === 0) {
+        html += `
+            <div class="error" style="text-align: center; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,215,0,0.3);">
+                <div style="font-size: 3em; margin-bottom: 10px;">📊</div>
+                <div style="font-size: 1.2em; color: #ffd700; margin-bottom: 10px;">No Statistics Available</div>
+                <div style="color: #b8b8b8;">There is no data for ${divisionNames[division]} in this time period.</div>
+            </div>
+        `;
+        document.getElementById('content').innerHTML = html;
+        return;
+    }
+
+    html += `
+        <div class="filter-controls" style="margin-bottom: 20px;">
+            <div class="filter-group">
+                <label for="stats-search-${division}">🔍 Search Wrestlers</label>
+                <input type="text" 
+                       id="stats-search-${division}" 
+                       class="search-box" 
+                       placeholder="Type wrestler name..."
+                       oninput="filterStatistics('${division}')">
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #ffd700; margin: 0;">📊 ${divisionNames[division]}</h2>
+                <button onclick="toggleColumnSelector()" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    ⚙️ Customize Columns
+                </button>
+            </div>
+            
+            <div id="columnSelector" style="display: none; background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.rank ? 'checked' : ''} onchange="toggleColumn('rank', this.checked)"> #
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" checked disabled> Name (required)
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.current ? 'checked' : ''} onchange="toggleColumn('current', this.checked)"> Current
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.peak ? 'checked' : ''} onchange="toggleColumn('peak', this.checked)"> Peak
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.floor ? 'checked' : ''} onchange="toggleColumn('floor', this.checked)"> Floor
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.average ? 'checked' : ''} onchange="toggleColumn('average', this.checked)"> Average
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.peakWeek ? 'checked' : ''} onchange="toggleColumn('peakWeek', this.checked)"> Peak Week
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.floorWeek ? 'checked' : ''} onchange="toggleColumn('floorWeek', this.checked)"> Floor Week
+                    </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.weeksAtNumber1 ? 'checked' : ''} onchange="toggleColumn('weeksAtNumber1', this.checked)"> Weeks at #1
+                    </label>
+                </div>
+            </div>
+            
+            <p style="color: #b8b8b8; margin-bottom: 15px;">Through <strong style="color: #ffd700;">${selectedWeekLabel}</strong></p>
+            <table>
+                <thead><tr>
+                        ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
+                        <th class="sortable" onclick="sortStatsData('name')">Name</th>
+                        ${visibleColumns.current ? '<th class="sortable" onclick="sortStatsData(\'current\')">Current</th>' : ''}
+                        ${visibleColumns.peak ? '<th class="sortable" onclick="sortStatsData(\'peak\')">Peak</th>' : ''}
+                        ${visibleColumns.floor ? '<th class="sortable" onclick="sortStatsData(\'floor\')">Floor</th>' : ''}
+                        ${visibleColumns.average ? '<th class="sortable" onclick="sortStatsData(\'average\')">Average</th>' : ''}
+                        ${visibleColumns.peakWeek ? '<th class="sortable" onclick="sortStatsData(\'peakWeek\')">Peak Week</th>' : ''}
+                        ${visibleColumns.floorWeek ? '<th class="sortable" onclick="sortStatsData(\'floorWeek\')">Floor Week</th>' : ''}
+                        ${visibleColumns.weeksAtNumber1 ? '<th class="sortable" onclick="sortStatsData(\'weeksAtNumber1\')">Weeks at #1</th>' : ''}
+                    </tr></thead>
+                <tbody>
+    `;
+
+    const sortedData = [...divisionData];
+    sortData(sortedData, currentSortColumn, currentSortDirection);
+
+    sortedData.forEach((wrestler, index) => {
+        const ratingClass = getRatingClass(wrestler.current);
+        const peakClass = getRatingClass(wrestler.peak);
+        
+        html += '<tr>';
+        if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
+        html += `<td class="name">${wrestler.name}</td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>`;
+        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
+        if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
+        if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
+        if (visibleColumns.peakWeek) html += `<td>${wrestler.peakWeek}</td>`;
+        if (visibleColumns.floorWeek) html += `<td>${wrestler.floorWeek}</td>`;
+        if (visibleColumns.weeksAtNumber1) html += `<td>${wrestler.weeksAtNumber1}</td>`;
+        html += '</tr>';
+    });
+
+    html += `</tbody></table></div>`;
+    document.getElementById('content').innerHTML = html;
+
+    window.currentStatisticsData = statisticsData;
+    window.currentSelectedWeek = selectedWeekLabel;
+    updateSortedColumnStyle();
+}
+
+function toggleColumnSelector() {
+    const selector = document.getElementById('columnSelector');
+    selector.style.display = selector.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleColumn(column, checked) {
+    visibleColumns[column] = checked;
+    if (window.currentStatisticsData) {
+        renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
+    }
+}
+
+function sortStatsData(column) {
+    if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+    } else {
+        currentSortColumn = column;
+        currentSortDirection = (column === 'name' || column === 'peakWeek' || column === 'floorWeek') ? 'asc' : 'desc';
+    }
+
+    if (window.currentStatisticsData) {
+        renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
+    }
+}
+    </script>
+</body>
+</html>
