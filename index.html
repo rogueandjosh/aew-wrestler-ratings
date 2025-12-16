@@ -2780,7 +2780,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
     window.currentSelectedWeek = selectedWeekLabel;
     updateSortedColumnStyle();
 }
-        function toggleColumnSelector() {
+
+function toggleColumnSelector() {
     const selector = document.getElementById('columnSelector');
     selector.style.display = selector.style.display === 'none' ? 'block' : 'none';
 }
