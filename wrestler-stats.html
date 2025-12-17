@@ -30,16 +30,16 @@
 
         header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
+            margin-bottom: 30px;
+            padding: 25px 20px;
             background: rgba(255, 215, 0, 0.1);
-            border-radius: 15px;
+            border-radius: 10px;
             border: 2px solid #ffd700;
         }
 
         h1 {
             color: #ffd700;
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -48,12 +48,13 @@
             display: inline-block;
             color: #ffd700;
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: 2px solid #ffd700;
-            border-radius: 8px;
-            margin-top: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
             transition: all 0.3s;
             font-weight: 600;
+            font-size: 0.9em;
         }
 
         .back-link:hover {
@@ -65,11 +66,11 @@
         .wrestler-header {
             display: flex;
             align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
-            padding: 25px;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
             background: rgba(255, 215, 0, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 2px solid #ffd700;
         }
 
@@ -78,33 +79,36 @@
         }
 
         .wrestler-name {
-            font-size: 2.5em;
+            font-size: 2em;
             color: #ffd700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
         .former-names {
             color: #999;
             font-style: italic;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
         }
 
         .division-badge {
             display: inline-block;
-            padding: 6px 15px;
+            padding: 5px 12px;
             background-color: #ffd700;
             color: #1a1a2e;
-            border-radius: 6px;
+            border-radius: 5px;
             font-weight: bold;
+            font-size: 0.9em;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 6px 15px;
-            border-radius: 6px;
+            padding: 5px 12px;
+            border-radius: 5px;
             font-weight: bold;
-            margin-left: 10px;
+            margin-left: 8px;
+            font-size: 0.9em;
         }
 
         .status-active {
@@ -128,28 +132,28 @@
 
         .year-filter h2 {
             color: #ffd700;
-            margin-bottom: 12px;
-            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-size: 1.1em;
         }
 
         .year-buttons {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .year-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background-color: rgba(255, 215, 0, 0.1);
             color: #ffd700;
             border: 2px solid #ffd700;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
             font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .year-btn:hover {
@@ -163,150 +167,174 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
             margin-bottom: 25px;
         }
 
         .stat-card {
             background: rgba(255, 215, 0, 0.05);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             border: 2px solid #ffd700;
             text-align: center;
         }
 
         .stat-label {
             color: #999;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             text-transform: uppercase;
             font-weight: 600;
-            font-size: 0.8em;
+            font-size: 0.75em;
         }
 
         .stat-value {
-            font-size: 2em;
+            font-size: 1.8em;
             color: #ffd700;
             font-weight: 700;
         }
 
         .stat-subtext {
             color: #999;
-            margin-top: 4px;
-            font-size: 0.75em;
+            margin-top: 3px;
+            font-size: 0.7em;
         }
 
-        .chart-container {
-            background: rgba(255, 215, 0, 0.05);
-            padding: 20px;
-            border-radius: 10px;
+        .section {
             margin-bottom: 25px;
-            border: 2px solid #ffd700;
         }
 
-        .chart-container h2 {
+        .section-title {
             color: #ffd700;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.3em;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
-        .distribution-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .distribution-item {
+        /* Distribution Bar Chart */
+        .distribution-bars {
             background: rgba(255, 215, 0, 0.05);
             padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+            border-radius: 8px;
             border: 2px solid #ffd700;
         }
 
-        .distribution-label {
-            color: #999;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.8em;
-        }
-
-        .distribution-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #ffd700;
-        }
-
-        .match-section {
-            background: rgba(255, 215, 0, 0.05);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 2px solid #ffd700;
-        }
-
-        .match-section h2 {
-            color: #ffd700;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        /* Recent Ratings Heatmap */
-        .ratings-heatmap {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .ratings-heatmap-compact {
+        .bar-item {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
             gap: 10px;
         }
 
-        .rating-box {
+        .bar-label {
+            min-width: 80px;
+            color: #e0e0e0;
+            font-size: 0.85em;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transition: width 0.3s;
+        }
+
+        .bar-count {
+            min-width: 30px;
+            text-align: right;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        /* Recent matches horizontal list */
+        .recent-matches-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(255, 215, 0, 0.05);
             padding: 15px;
             border-radius: 8px;
-            text-align: center;
+            border: 2px solid #ffd700;
+        }
+
+        .match-rating-badge {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1em;
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .rating-box-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 3px;
+        /* Color scale from red (0) to dark green (10) */
+        .rating-0 { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fff; }
+        .rating-1 { background: linear-gradient(135deg, #991b1b, #b91c1c); color: #fff; }
+        .rating-2 { background: linear-gradient(135deg, #b91c1c, #dc2626); color: #fff; }
+        .rating-3 { background: linear-gradient(135deg, #dc2626, #ea580c); color: #fff; }
+        .rating-4 { background: linear-gradient(135deg, #ea580c, #f97316); color: #fff; }
+        .rating-5 { background: linear-gradient(135deg, #f97316, #fb923c); color: #000; }
+        .rating-6 { background: linear-gradient(135deg, #fb923c, #fbbf24); color: #000; }
+        .rating-7 { background: linear-gradient(135deg, #fbbf24, #facc15); color: #000; }
+        .rating-8 { background: linear-gradient(135deg, #84cc16, #65a30d); color: #fff; }
+        .rating-9 { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; }
+        .rating-10 { background: linear-gradient(135deg, #15803d, #14532d); color: #fff; }
+
+        /* Top/Bottom matches table */
+        .matches-tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .rating-box-date {
-            font-size: 0.8em;
-            color: #e0e0e0;
-            margin-bottom: 2px;
+        .match-table {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
         }
 
-        .rating-box-event {
-            font-size: 0.7em;
-            color: #999;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Heatmap colors - dark green to red */
-        .rating-9plus { background: linear-gradient(135deg, #064e3b, #065f46); }
-        .rating-8to9 { background: linear-gradient(135deg, #166534, #16a34a); }
-        .rating-7to8 { background: linear-gradient(135deg, #713f12, #ca8a04); }
-        .rating-6to7 { background: linear-gradient(135deg, #9a3412, #ea580c); }
-        .rating-below6 { background: linear-gradient(135deg, #7f1d1d, #dc2626); }
-
-        .section-label {
-            font-size: 0.95em;
+        .match-table h3 {
             color: #ffd700;
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-align: center;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .match-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .match-rating-col {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 50px;
+        }
+
+        .match-info-col {
+            flex: 1;
+            font-size: 0.85em;
+            color: #999;
+            text-align: right;
+        }
+
+        .chart-box {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
         }
 
         .loading {
@@ -335,7 +363,7 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .ratings-heatmap {
+            .matches-tables {
                 grid-template-columns: 1fr;
             }
         }
@@ -367,7 +395,7 @@
             <div class="year-filter">
                 <h2>Filter by Year</h2>
                 <div class="year-buttons">
-                    <button class="year-btn active" data-year="ALL">ALL YEARS</button>
+                    <button class="year-btn active" data-year="ALL">ALL</button>
                     <button class="year-btn" data-year="2025">2025</button>
                     <button class="year-btn" data-year="2024">2024</button>
                     <button class="year-btn" data-year="2023">2023</button>
@@ -380,34 +408,37 @@
 
             <div class="stats-grid" id="statsGrid"></div>
 
-            <div class="chart-container">
-                <h2>Rating History (Monthly Average)</h2>
-                <canvas id="ratingChart"></canvas>
+            <!-- Rating History Chart -->
+            <div class="section">
+                <div class="section-title">📈 Rating History</div>
+                <div class="chart-box">
+                    <canvas id="ratingChart"></canvas>
+                </div>
             </div>
 
-            <h2 style="color: #ffd700; text-align: center; margin-bottom: 15px;">Match Quality Distribution</h2>
-            <div class="distribution-grid" id="distributionGrid"></div>
+            <!-- Match Distribution Bar Chart -->
+            <div class="section">
+                <div class="section-title">📊 Match Quality Distribution</div>
+                <div class="distribution-bars" id="distributionBars"></div>
+            </div>
 
-            <div class="match-section">
-                <h2>Match Performance Overview</h2>
-                <div id="teamNote" style="display: none; text-align: center; color: #999; font-size: 0.9em; margin-bottom: 15px; font-style: italic;">
-                    Note: For teams, each entry represents a week's performance (not individual matches)
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                    <div>
-                        <div class="section-label">🔥 Recent 5</div>
-                        <div id="recent5Heatmap" class="ratings-heatmap-compact"></div>
+            <!-- Recent Matches -->
+            <div class="section">
+                <div class="section-title">🔥 Recent Match Ratings</div>
+                <div class="recent-matches-list" id="recentMatchesList"></div>
+            </div>
+
+            <!-- Top & Bottom Matches -->
+            <div class="section">
+                <div class="section-title">⭐ Best & Worst Performances</div>
+                <div class="matches-tables">
+                    <div class="match-table">
+                        <h3>Top 5 Matches</h3>
+                        <div id="topMatchesTable"></div>
                     </div>
-                    
-                    <div>
-                        <div class="section-label">⭐ Highest 3</div>
-                        <div id="highest3Heatmap" class="ratings-heatmap-compact"></div>
-                    </div>
-                    
-                    <div>
-                        <div class="section-label">📉 Lowest 3</div>
-                        <div id="lowest3Heatmap" class="ratings-heatmap-compact"></div>
+                    <div class="match-table">
+                        <h3>Bottom 5 Matches</h3>
+                        <div id="bottomMatchesTable"></div>
                     </div>
                 </div>
             </div>
@@ -459,11 +490,6 @@
                 formerNamesEl.style.display = 'block';
             }
 
-            // Show note for teams
-            if (wrestlerData.isTeam) {
-                document.getElementById('teamNote').style.display = 'block';
-            }
-
             updateAllSections();
             setupYearButtons();
         }
@@ -487,8 +513,9 @@
 
         function updateAllSections() {
             updateStatsGrid();
-            updateDistribution();
-            updateMatchHeatmaps();
+            updateDistributionBars();
+            updateRecentMatches();
+            updateTopBottomMatches();
             updateRatingChart();
         }
 
@@ -496,33 +523,30 @@
             const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
             const grid = document.getElementById('statsGrid');
             
-            // DYNAMIC: Current rating and rank change based on selected year
             let displayRating, displayRank, displaySubtext;
             
             if (currentYear === 'ALL') {
                 displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
-                displayRank = wrestlerData.currentRank ? `Rank #${wrestlerData.currentRank}` : '';
-                displaySubtext = 'Current (Latest)';
+                displayRank = wrestlerData.currentRank ? `#${wrestlerData.currentRank}` : '';
+                displaySubtext = 'Current';
             } else {
-                // Get rating at end of selected year
                 const yearEnd = getYearEndRating(currentYear);
                 displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
-                displayRank = yearEnd.rank ? `Rank #${yearEnd.rank}` : '';
-                displaySubtext = `End of ${currentYear}`;
+                displayRank = yearEnd.rank ? `#${yearEnd.rank}` : '';
+                displaySubtext = `End ${currentYear}`;
             }
             
-            // Peak rating - ALWAYS show all-time peak wrestler rating
             const peakRatingValue = wrestlerData.peakRating?.toFixed(2) || 'N/A';
-            const peakRank = wrestlerData.peakRank ? `#${wrestlerData.peakRank} all-time` : '';
-            const peakDate = wrestlerData.peakRatingDate ? formatDate(wrestlerData.peakRatingDate) : '';
+            const peakRank = wrestlerData.peakRank ? `#${wrestlerData.peakRank}` : '';
+            const peakDate = wrestlerData.peakRatingDate ? formatDateShort(wrestlerData.peakRatingDate) : '';
             const peakSubtext = peakDate + (peakRank ? ` • ${peakRank}` : '');
             
             const cards = [
                 { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
-                { label: 'Peak Rating', value: peakRatingValue, subtext: peakSubtext },
-                { label: 'Total Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
-                { label: 'Total Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
-                { label: 'Weeks in Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
+                { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
+                { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
+                { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
+                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
             ];
 
             grid.innerHTML = cards.map(card => `
@@ -532,6 +556,195 @@
                     ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
                 </div>
             `).join('');
+        }
+
+        function updateDistributionBars() {
+            const matches = getFilteredMatches();
+            
+            // Create granular distribution: 0-1, 1-2, 2-3, etc. up to 10
+            const distribution = {};
+            for (let i = 0; i <= 9; i++) {
+                distribution[i] = 0;
+            }
+            
+            matches.forEach(m => {
+                const bucket = Math.min(Math.floor(m.rating), 9);
+                distribution[bucket]++;
+            });
+            
+            const maxCount = Math.max(...Object.values(distribution), 1);
+            
+            const barsHtml = Object.entries(distribution).map(([range, count]) => {
+                const percentage = (count / maxCount) * 100;
+                const label = `${range}-${parseInt(range) + 1}`;
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">${label}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="bar-count">${count}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('distributionBars').innerHTML = barsHtml;
+        }
+
+        function updateRecentMatches() {
+            const matches = getFilteredMatches();
+            const recent = matches.slice(-10).reverse();
+            
+            const html = recent.map(m => {
+                const ratingClass = getRatingColorClass(m.rating);
+                return `<div class="match-rating-badge ${ratingClass}">${m.rating.toFixed(2)}</div>`;
+            }).join('');
+            
+            document.getElementById('recentMatchesList').innerHTML = html || '<div style="color: #999;">No matches in this period</div>';
+        }
+
+        function updateTopBottomMatches() {
+            const matches = getFilteredMatches();
+            const sorted = [...matches].sort((a, b) => b.rating - a.rating);
+            
+            const top5 = sorted.slice(0, Math.min(5, sorted.length));
+            const bottom5 = sorted.slice(-Math.min(5, sorted.length)).reverse();
+            
+            const topHtml = top5.map(m => {
+                const ratingClass = getRatingColorClass(m.rating);
+                return `
+                    <div class="match-row">
+                        <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            const bottomHtml = bottom5.map(m => {
+                const ratingClass = getRatingColorClass(m.rating);
+                return `
+                    <div class="match-row">
+                        <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('topMatchesTable').innerHTML = topHtml || '<div style="color: #999;">No matches</div>';
+            document.getElementById('bottomMatchesTable').innerHTML = bottomHtml || '<div style="color: #999;">No matches</div>';
+        }
+
+        function getRatingColorClass(rating) {
+            const bucket = Math.min(Math.floor(rating), 10);
+            return `rating-${bucket}`;
+        }
+
+        function updateRatingChart() {
+            const ctx = document.getElementById('ratingChart').getContext('2d');
+            
+            let historyData = wrestlerData.ratingHistory;
+            if (currentYear !== 'ALL') {
+                historyData = historyData.filter(h => {
+                    const year = new Date(h.date).getFullYear();
+                    return year === parseInt(currentYear);
+                });
+            }
+
+            const monthlyData = aggregateByMonth(historyData);
+
+            if (ratingChart) {
+                ratingChart.destroy();
+            }
+
+            ratingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.map(m => m.label),
+                    datasets: [{
+                        label: 'Rating',
+                        data: monthlyData.map(m => m.rating),
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Rating: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                font: { size: 10 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function aggregateByMonth(historyData) {
+            const monthlyMap = {};
+            
+            historyData.forEach(h => {
+                const date = new Date(h.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!monthlyMap[monthKey]) {
+                    monthlyMap[monthKey] = {
+                        label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+                        ratings: [],
+                        date: date
+                    };
+                }
+                monthlyMap[monthKey].ratings.push(h.rating);
+            });
+
+            const monthlyData = Object.values(monthlyMap).map(m => ({
+                label: m.label,
+                rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
+                date: m.date
+            }));
+
+            monthlyData.sort((a, b) => a.date - b.date);
+            return monthlyData;
+        }
+
+        function getFilteredMatches() {
+            if (currentYear === 'ALL') {
+                return wrestlerData.allMatches;
+            }
+            return wrestlerData.allMatches.filter(m => m.year === parseInt(currentYear));
         }
 
         function getYearEndRating(year) {
@@ -579,170 +792,9 @@
             return yearWeeks.length;
         }
 
-        function updateDistribution() {
-            const matches = getFilteredMatches();
-            const distribution = {
-                '9.0+': matches.filter(m => m.rating >= 9.0).length,
-                '8.0-8.99': matches.filter(m => m.rating >= 8.0 && m.rating < 9.0).length,
-                '7.0-7.99': matches.filter(m => m.rating >= 7.0 && m.rating < 8.0).length,
-                '6.0-6.99': matches.filter(m => m.rating >= 6.0 && m.rating < 7.0).length,
-                'Below 6.0': matches.filter(m => m.rating < 6.0).length
-            };
-
-            const grid = document.getElementById('distributionGrid');
-            grid.innerHTML = Object.entries(distribution).map(([range, count]) => `
-                <div class="distribution-item">
-                    <div class="distribution-label">${range}</div>
-                    <div class="distribution-value">${count}</div>
-                </div>
-            `).join('');
-        }
-
-        function updateMatchHeatmaps() {
-            const matches = getFilteredMatches();
-            
-            // Recent 5
-            const recent5 = matches.slice(-5).reverse();
-            document.getElementById('recent5Heatmap').innerHTML = recent5.map(m => createRatingBox(m)).join('');
-            
-            // Highest 3
-            const sorted = [...matches].sort((a, b) => b.rating - a.rating);
-            const highest3 = sorted.slice(0, 3);
-            document.getElementById('highest3Heatmap').innerHTML = highest3.map(m => createRatingBox(m)).join('');
-            
-            // Lowest 3
-            const lowest3 = sorted.slice(-3).reverse();
-            document.getElementById('lowest3Heatmap').innerHTML = lowest3.map(m => createRatingBox(m)).join('');
-        }
-
-        function createRatingBox(match) {
-            const ratingClass = getRatingHeatmapClass(match.rating);
-            return `
-                <div class="rating-box ${ratingClass}">
-                    <div class="rating-box-value">${match.rating.toFixed(2)}</div>
-                    <div class="rating-box-date">${formatDate(match.date)}</div>
-                    <div class="rating-box-event">${match.event}</div>
-                </div>
-            `;
-        }
-
-        function getRatingHeatmapClass(rating) {
-            if (rating >= 9.0) return 'rating-9plus';
-            if (rating >= 8.0) return 'rating-8to9';
-            if (rating >= 7.0) return 'rating-7to8';
-            if (rating >= 6.0) return 'rating-6to7';
-            return 'rating-below6';
-        }
-
-        function updateRatingChart() {
-            const ctx = document.getElementById('ratingChart').getContext('2d');
-            
-            let historyData = wrestlerData.ratingHistory;
-            if (currentYear !== 'ALL') {
-                historyData = historyData.filter(h => {
-                    const year = new Date(h.date).getFullYear();
-                    return year === parseInt(currentYear);
-                });
-            }
-
-            const monthlyData = aggregateByMonth(historyData);
-
-            if (ratingChart) {
-                ratingChart.destroy();
-            }
-
-            ratingChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: monthlyData.map(m => m.label),
-                    datasets: [{
-                        label: 'Rating',
-                        data: monthlyData.map(m => m.rating),
-                        borderColor: '#ffd700',
-                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Rating: ${context.parsed.y.toFixed(2)}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: 'rgba(255, 215, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#e0e0e0'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 215, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#e0e0e0',
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function aggregateByMonth(historyData) {
-            const monthlyMap = {};
-            
-            historyData.forEach(h => {
-                const date = new Date(h.date);
-                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                
-                if (!monthlyMap[monthKey]) {
-                    monthlyMap[monthKey] = {
-                        label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
-                        ratings: [],
-                        date: date
-                    };
-                }
-                monthlyMap[monthKey].ratings.push(h.rating);
-            });
-
-            const monthlyData = Object.values(monthlyMap).map(m => ({
-                label: m.label,
-                rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
-                date: m.date
-            }));
-
-            monthlyData.sort((a, b) => a.date - b.date);
-            return monthlyData;
-        }
-
-        function getFilteredMatches() {
-            if (currentYear === 'ALL') {
-                return wrestlerData.allMatches;
-            }
-            return wrestlerData.allMatches.filter(m => m.year === parseInt(currentYear));
-        }
-
-        function formatDate(dateStr) {
+        function formatDateShort(dateStr) {
             const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
         }
 
         function showError(message) {
