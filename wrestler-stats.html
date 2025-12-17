@@ -718,26 +718,49 @@
             
             historyData.forEach(h => {
                 const date = new Date(h.date);
-                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
                 
                 if (!monthlyMap[monthKey]) {
                     monthlyMap[monthKey] = {
                         label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
                         ratings: [],
-                        date: date
+                        date: new Date(year, month, 15), // Use mid-month for sorting
+                        year: year,
+                        month: month
                     };
                 }
                 monthlyMap[monthKey].ratings.push(h.rating);
             });
 
+            // Convert to array and sort chronologically
             const monthlyData = Object.values(monthlyMap).map(m => ({
                 label: m.label,
                 rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
-                date: m.date
+                date: m.date,
+                year: m.year,
+                month: m.month
             }));
 
-            monthlyData.sort((a, b) => a.date - b.date);
-            return monthlyData;
+            // Sort by date
+            monthlyData.sort((a, b) => {
+                if (a.year !== b.year) return a.year - b.year;
+                return a.month - b.month;
+            });
+            
+            // Filter out future months (beyond current month)
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            
+            const filtered = monthlyData.filter(m => {
+                if (m.year < currentYear) return true;
+                if (m.year === currentYear && m.month <= currentMonth) return true;
+                return false;
+            });
+            
+            return filtered;
         }
 
         function getFilteredMatches() {
