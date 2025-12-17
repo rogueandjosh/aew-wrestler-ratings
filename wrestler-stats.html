@@ -256,28 +256,37 @@
             margin-bottom: 20px;
         }
 
+        .ratings-heatmap-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         .rating-box {
-            padding: 20px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .rating-box-value {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .rating-box-date {
-            font-size: 0.85em;
-            color: #e0e0e0;
             margin-bottom: 3px;
         }
 
+        .rating-box-date {
+            font-size: 0.8em;
+            color: #e0e0e0;
+            margin-bottom: 2px;
+        }
+
         .rating-box-event {
-            font-size: 0.75em;
+            font-size: 0.7em;
             color: #999;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* Heatmap colors - dark green to red */
@@ -288,10 +297,10 @@
         .rating-below6 { background: linear-gradient(135deg, #7f1d1d, #dc2626); }
 
         .section-label {
-            font-size: 1.1em;
+            font-size: 0.95em;
             color: #ffd700;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
@@ -375,14 +384,27 @@
             <div class="distribution-grid" id="distributionGrid"></div>
 
             <div class="match-section">
-                <div class="section-label">🔥 Recent 5 Match Ratings</div>
-                <div id="recent5Heatmap" class="ratings-heatmap"></div>
+                <h2>Match Performance Overview</h2>
+                <div id="teamNote" style="display: none; text-align: center; color: #999; font-size: 0.9em; margin-bottom: 15px; font-style: italic;">
+                    Note: For teams, each entry represents a week's performance (not individual matches)
+                </div>
                 
-                <div class="section-label" style="margin-top: 30px;">⭐ Highest 3 Rated Matches</div>
-                <div id="highest3Heatmap" class="ratings-heatmap"></div>
-                
-                <div class="section-label" style="margin-top: 30px;">📉 Lowest 3 Rated Matches</div>
-                <div id="lowest3Heatmap" class="ratings-heatmap"></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div>
+                        <div class="section-label">🔥 Recent 5</div>
+                        <div id="recent5Heatmap" class="ratings-heatmap-compact"></div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-label">⭐ Highest 3</div>
+                        <div id="highest3Heatmap" class="ratings-heatmap-compact"></div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-label">📉 Lowest 3</div>
+                        <div id="lowest3Heatmap" class="ratings-heatmap-compact"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -432,6 +454,11 @@
                 formerNamesEl.style.display = 'block';
             }
 
+            // Show note for teams
+            if (wrestlerData.isTeam) {
+                document.getElementById('teamNote').style.display = 'block';
+            }
+
             updateAllSections();
             setupYearButtons();
         }
@@ -479,9 +506,15 @@
                 displaySubtext = `End of ${currentYear}`;
             }
             
+            // Peak rating - ALWAYS show all-time peak wrestler rating
+            const peakRatingValue = wrestlerData.peakRating?.toFixed(2) || 'N/A';
+            const peakRank = wrestlerData.peakRank ? `#${wrestlerData.peakRank} all-time` : '';
+            const peakDate = wrestlerData.peakRatingDate ? formatDate(wrestlerData.peakRatingDate) : '';
+            const peakSubtext = peakDate + (peakRank ? ` • ${peakRank}` : '');
+            
             const cards = [
                 { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
-                { label: 'Peak Rating', value: stats.highestRating?.toFixed(2) || 'N/A', subtext: currentYear === 'ALL' ? 'All-time' : currentYear },
+                { label: 'Peak Rating', value: peakRatingValue, subtext: peakSubtext },
                 { label: 'Total Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
                 { label: 'Total Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
                 { label: 'Weeks in Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
