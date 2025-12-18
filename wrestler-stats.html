@@ -1,151 +1,945 @@
-/**
- * FIXED HTML FUNCTIONS - Show all fields (even when "None")
- * Replace BOTH updateRecentMatches() and updateTopBottomMatches() in your HTML
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrestler Stats - AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-// ====================
-// RECENT MATCHES
-// ====================
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            line-height: 1.6;
+        }
 
-function updateRecentMatches() {
-    const matches = getFilteredMatches();
-    const recent = matches.slice(-10).reverse();
-    
-    const html = recent.map((m, index) => {
-        const ratingClass = getRatingColorClass(m.rating);
-        const matchId = `recent-match-${index}`;
-        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        
-        // Format opponents as horizontal list
-        const opponentsStr = m.opponents && m.opponents.length > 0 
-            ? m.opponents.join(', ') 
-            : 'N/A';
-        
-        return `
-            <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
-                <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
-                <div>
-                    <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
-                        ${m.rating.toFixed(2)}
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #ffd700;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 2px solid #ffd700;
+            border-radius: 6px;
+            margin-top: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .back-link:hover {
+            background-color: #ffd700;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        .wrestler-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+        }
+
+        .wrestler-info {
+            flex: 1;
+        }
+
+        .wrestler-name {
+            font-size: 2em;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .former-names {
+            color: #999;
+            font-style: italic;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .division-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #ffd700;
+            color: #1a1a2e;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+
+        .status-active {
+            background-color: #22c55e;
+            color: #fff;
+        }
+
+        .status-inactive {
+            background-color: #666;
+            color: #fff;
+        }
+
+        .year-filter {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+        }
+
+        .year-filter h2 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .year-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .year-btn {
+            padding: 6px 14px;
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.85em;
+        }
+
+        .year-btn:hover {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .year-btn.active {
+            background-color: #ffd700;
+            color: #1a1a2e;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #999;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.75em;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .stat-subtext {
+            color: #999;
+            margin-top: 3px;
+            font-size: 0.7em;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Distribution Bar Chart */
+        .distribution-bars {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        .bar-label {
+            min-width: 80px;
+            color: #e0e0e0;
+            font-size: 0.85em;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transition: width 0.3s;
+        }
+
+        .bar-count {
+            min-width: 30px;
+            text-align: right;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        /* Recent matches horizontal list */
+        .recent-matches-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .match-rating-badge {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1em;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Color scale from red (0) to dark green (10) */
+        .rating-0 { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fff; }
+        .rating-1 { background: linear-gradient(135deg, #991b1b, #b91c1c); color: #fff; }
+        .rating-2 { background: linear-gradient(135deg, #b91c1c, #dc2626); color: #fff; }
+        .rating-3 { background: linear-gradient(135deg, #dc2626, #ea580c); color: #fff; }
+        .rating-4 { background: linear-gradient(135deg, #ea580c, #f97316); color: #fff; }
+        .rating-5 { background: linear-gradient(135deg, #f97316, #fb923c); color: #000; }
+        .rating-6 { background: linear-gradient(135deg, #fb923c, #fbbf24); color: #000; }
+        .rating-7 { background: linear-gradient(135deg, #fbbf24, #facc15); color: #000; }
+        .rating-8 { background: linear-gradient(135deg, #84cc16, #65a30d); color: #fff; }
+        .rating-9 { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; }
+        .rating-10 { background: linear-gradient(135deg, #15803d, #14532d); color: #fff; }
+
+        /* Top/Bottom matches table */
+        .matches-tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .match-table {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .match-table h3 {
+            color: #ffd700;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .match-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .match-rating-col {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 50px;
+        }
+
+        .match-info-col {
+            flex: 1;
+            font-size: 0.85em;
+            color: #999;
+            text-align: right;
+        }
+
+        .chart-box {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ffd700;
+            font-size: 1.5em;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            border: 2px solid #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .wrestler-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .matches-tables {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AEW WRESTLER RATINGS</h1>
+            <a href="index.html" class="back-link">← Back to Rankings</a>
+        </header>
+
+        <div id="loading" class="loading">
+            Loading wrestler statistics...
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="wrestler-header">
+                <div class="wrestler-info">
+                    <h2 id="wrestlerName" class="wrestler-name"></h2>
+                    <div id="formerNames" class="former-names" style="display: none;"></div>
+                    <div>
+                        <span id="divisionBadge" class="division-badge"></span>
+                        <span id="statusBadge" class="status-badge"></span>
                     </div>
-                    <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 12px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); min-width: 250px; max-width: 400px;">
-                        <div style="color: #e0e0e0; margin-bottom: 6px;">
-                            <strong style="color: #ffd700;">Date:</strong> ${dateStr}
-                        </div>
-                        <div style="color: #e0e0e0; margin-bottom: 6px;">
-                            <strong style="color: #ffd700;">Event:</strong> ${m.event || 'N/A'}
-                        </div>
-                        <div style="color: #e0e0e0; margin-bottom: 6px;">
-                            <strong style="color: #ffd700;">Match Type:</strong> ${m.matchType || 'N/A'}
-                        </div>
-                        <div style="color: #e0e0e0; margin-bottom: 6px;">
-                            <strong style="color: #ffd700;">Stipulation:</strong> ${m.matchStipulation || 'N/A'}
-                        </div>
-                        <div style="color: #e0e0e0; margin-bottom: 6px;">
-                            <strong style="color: #ffd700;">Stakes:</strong> ${m.stakes || 'N/A'}
-                        </div>
-                        <div style="color: #e0e0e0;">
-                            <strong style="color: #ffd700;">Opponents:</strong> ${opponentsStr}
-                        </div>
+                </div>
+            </div>
+
+            <div class="year-filter">
+                <h2>Filter by Year</h2>
+                <div class="year-buttons">
+                    <button class="year-btn active" data-year="ALL">ALL</button>
+                    <button class="year-btn" data-year="2025">2025</button>
+                    <button class="year-btn" data-year="2024">2024</button>
+                    <button class="year-btn" data-year="2023">2023</button>
+                    <button class="year-btn" data-year="2022">2022</button>
+                    <button class="year-btn" data-year="2021">2021</button>
+                    <button class="year-btn" data-year="2020">2020</button>
+                    <button class="year-btn" data-year="2019">2019</button>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <!-- Rating History Chart -->
+            <div class="section">
+                <div class="section-title">📈 Rating History</div>
+                <div class="chart-box">
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Match Distribution Bar Chart -->
+            <div class="section">
+                <div class="section-title">📊 Match Quality Distribution</div>
+                <div class="distribution-bars" id="distributionBars"></div>
+            </div>
+
+            <!-- Recent Matches -->
+            <div class="section">
+                <div class="section-title">🔥 Recent Match Ratings</div>
+                <div class="recent-matches-list" id="recentMatchesList"></div>
+            </div>
+
+            <!-- Top & Bottom Matches -->
+            <div class="section">
+                <div class="section-title">⭐ Best & Worst Performances</div>
+                <div class="matches-tables">
+                    <div class="match-table">
+                        <h3>Top 5 Matches</h3>
+                        <div id="topMatchesTable"></div>
+                    </div>
+                    <div class="match-table">
+                        <h3>Bottom 5 Matches</h3>
+                        <div id="bottomMatchesTable"></div>
                     </div>
                 </div>
             </div>
-        `;
-    }).join('');
-    
-    document.getElementById('recentMatchesList').innerHTML = html || '<div style="color: #999;">No matches in this period</div>';
-}
+        </div>
 
+        <div id="error" style="display: none;"></div>
+    </div>
 
-// ====================
-// TOP/BOTTOM MATCHES
-// ====================
+    <script>
+        let wrestlerData = null;
+        let currentYear = 'ALL';
+        let ratingChart = null;
 
-function updateTopBottomMatches() {
-    const matches = getFilteredMatches();
-    const sorted = [...matches].sort((a, b) => b.rating - a.rating);
-    
-    const top5 = sorted.slice(0, Math.min(5, sorted.length));
-    const bottom5 = sorted.slice(-Math.min(5, sorted.length)).reverse();
-    
-    const topHtml = top5.map((m, index) => {
-        const ratingClass = getRatingColorClass(m.rating);
-        const matchId = `top-match-${index}`;
-        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        
-        // Format opponents
-        const opponentsStr = m.opponents && m.opponents.length > 0 
-            ? m.opponents.join(', ') 
-            : 'N/A';
-        
-        return `
-            <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
-                <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
-                <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
-            </div>
-            <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
-                <div style="margin-bottom: 6px;">
-                    <strong>Date:</strong> ${dateStr}
+        const urlParams = new URLSearchParams(window.location.search);
+        const wrestlerSlug = urlParams.get('wrestler');
+
+        if (!wrestlerSlug) {
+            showError('No wrestler specified. Please select a wrestler from the rankings page.');
+        } else {
+            loadWrestlerData(wrestlerSlug);
+        }
+
+        async function loadWrestlerData(slug) {
+            try {
+                const response = await fetch(`wrestlers/${slug}.json`);
+                if (!response.ok) {
+                    throw new Error('Wrestler not found');
+                }
+                wrestlerData = await response.json();
+                
+                // Check if this is a redirect to another wrestler
+                if (wrestlerData._redirect && wrestlerData.canonicalSlug) {
+                    console.log(`Redirecting to ${wrestlerData.canonicalSlug}`);
+                    return loadWrestlerData(wrestlerData.canonicalSlug);
+                }
+                
+                displayWrestlerData();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                showError(`Error loading wrestler data: ${error.message}`);
+            }
+        }
+
+        function displayWrestlerData() {
+            document.getElementById('wrestlerName').textContent = wrestlerData.name;
+            document.getElementById('divisionBadge').textContent = wrestlerData.division;
+            
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = wrestlerData.isActive ? 'ACTIVE' : 'INACTIVE';
+            statusBadge.className = wrestlerData.isActive ? 'status-badge status-active' : 'status-badge status-inactive';
+
+            if (wrestlerData.formerNames && wrestlerData.formerNames.length > 0) {
+                const formerNamesEl = document.getElementById('formerNames');
+                formerNamesEl.textContent = `Formerly: ${wrestlerData.formerNames.join(', ')}`;
+                formerNamesEl.style.display = 'block';
+            }
+
+            updateAllSections();
+            setupYearButtons();
+        }
+
+        function setupYearButtons() {
+            const buttons = document.querySelectorAll('.year-btn');
+            buttons.forEach(btn => {
+                const year = btn.dataset.year;
+                if (year !== 'ALL' && !wrestlerData.statsByYear[year]) {
+                    btn.style.display = 'none';
+                }
+
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentYear = year;
+                    updateAllSections();
+                });
+            });
+        }
+
+        function updateAllSections() {
+            updateStatsGrid();
+            updateDistributionBars();
+            updateRecentMatches();
+            updateTopBottomMatches();
+            updateRatingChart();
+        }
+
+        function updateStatsGrid() {
+            const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
+            const grid = document.getElementById('statsGrid');
+            
+            let displayRating, displayRank, displaySubtext;
+            
+            if (currentYear === 'ALL') {
+                displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
+                displayRank = wrestlerData.currentRank ? `#${wrestlerData.currentRank}` : '';
+                displaySubtext = 'Current';
+            } else {
+                const yearEnd = getYearEndRating(currentYear);
+                displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
+                displayRank = yearEnd.rank ? `#${yearEnd.rank}` : '';
+                displaySubtext = `End ${currentYear}`;
+            }
+            
+            const peakRatingValue = wrestlerData.peakRating?.toFixed(2) || 'N/A';
+            const peakRank = wrestlerData.peakRank ? `#${wrestlerData.peakRank}` : '';
+            const peakDate = wrestlerData.peakRatingDate ? formatDateShort(wrestlerData.peakRatingDate) : '';
+            const peakSubtext = peakDate + (peakRank ? ` • ${peakRank}` : '');
+            
+            const cards = [
+                { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
+                { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
+                { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
+                { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
+                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
+            ];
+
+            grid.innerHTML = cards.map(card => `
+                <div class="stat-card">
+                    <div class="stat-label">${card.label}</div>
+                    <div class="stat-value">${card.value}</div>
+                    ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
                 </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Event:</strong> ${m.event || 'N/A'}
+            `).join('');
+        }
+
+        function updateDistributionBars() {
+            const matches = getFilteredMatches();
+            
+            // Create granular distribution: 0-1, 1-2, 2-3, etc. up to 10
+            const distribution = {};
+            for (let i = 0; i <= 9; i++) {
+                distribution[i] = 0;
+            }
+            
+            matches.forEach(m => {
+                const bucket = Math.min(Math.floor(m.rating), 9);
+                distribution[bucket]++;
+            });
+            
+            const maxCount = Math.max(...Object.values(distribution), 1);
+            
+            const barsHtml = Object.entries(distribution).map(([range, count]) => {
+                const percentage = (count / maxCount) * 100;
+                const label = `${range}-${parseInt(range) + 1}`;
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">${label}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="bar-count">${count}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('distributionBars').innerHTML = barsHtml;
+        }
+
+        function updateRecentMatches() {
+            const matches = getFilteredMatches();
+            const recent = matches.slice(-10).reverse();
+            
+            const html = recent.map((m, index) => {
+                const ratingClass = getRatingColorClass(m.rating);
+                const matchId = `recent-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                // Format opponents as horizontal list
+                const opponentsStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
+                
+                return `
+                    <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
+                        <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
+                        <div>
+                            <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                                ${m.rating.toFixed(2)}
+                            </div>
+                            <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 12px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); min-width: 250px; max-width: 400px;">
+                                <div style="color: #e0e0e0; margin-bottom: 6px;">
+                                    <strong style="color: #ffd700;">Date:</strong> ${dateStr}
+                                </div>
+                                <div style="color: #e0e0e0; margin-bottom: 6px;">
+                                    <strong style="color: #ffd700;">Event:</strong> ${m.event || 'N/A'}
+                                </div>
+                                <div style="color: #e0e0e0; margin-bottom: 6px;">
+                                    <strong style="color: #ffd700;">Match Type:</strong> ${m.matchType || 'N/A'}
+                                </div>
+                                <div style="color: #e0e0e0; margin-bottom: 6px;">
+                                    <strong style="color: #ffd700;">Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                                </div>
+                                <div style="color: #e0e0e0; margin-bottom: 6px;">
+                                    <strong style="color: #ffd700;">Stakes:</strong> ${m.stakes || 'N/A'}
+                                </div>
+                                <div style="color: #e0e0e0;">
+                                    <strong style="color: #ffd700;">Opponents:</strong> ${opponentsStr}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('recentMatchesList').innerHTML = html || '<div style="color: #999;">No matches in this period</div>';
+        }
+
+        function updateTopBottomMatches() {
+            const matches = getFilteredMatches();
+            const sorted = [...matches].sort((a, b) => b.rating - a.rating);
+            
+            const top5 = sorted.slice(0, Math.min(5, sorted.length));
+            const bottom5 = sorted.slice(-Math.min(5, sorted.length)).reverse();
+            
+            const topHtml = top5.map((m, index) => {
+                const ratingClass = getRatingColorClass(m.rating);
+                const matchId = `top-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                // Format opponents
+                const opponentsStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
+                
+                return `
+                    <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                        <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
+                        <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                    <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                        <div style="margin-bottom: 6px;">
+                            <strong>Date:</strong> ${dateStr}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Event:</strong> ${m.event || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Match Type:</strong> ${m.matchType || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Stakes:</strong> ${m.stakes || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Opponents:</strong> ${opponentsStr}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            const bottomHtml = bottom5.map((m, index) => {
+                const ratingClass = getRatingColorClass(m.rating);
+                const matchId = `bottom-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                // Format opponents
+                const opponentsStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
+                
+                return `
+                    <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                        <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
+                        <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                    <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                        <div style="margin-bottom: 6px;">
+                            <strong>Date:</strong> ${dateStr}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Event:</strong> ${m.event || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Match Type:</strong> ${m.matchType || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 6px;">
+                            <strong>Stakes:</strong> ${m.stakes || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Opponents:</strong> ${opponentsStr}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('topMatchesTable').innerHTML = topHtml || '<div style="color: #999;">No matches</div>';
+            document.getElementById('bottomMatchesTable').innerHTML = bottomHtml || '<div style="color: #999;">No matches</div>';
+        }
+
+        function toggleMatchDetails(matchId) {
+            const details = document.getElementById(matchId);
+            if (details) {
+                if (details.style.display === 'none') {
+                    details.style.display = 'block';
+                } else {
+                    details.style.display = 'none';
+                }
+            }
+        }
+
+        function getRatingColorClass(rating) {
+            const bucket = Math.min(Math.floor(rating), 10);
+            return `rating-${bucket}`;
+        }
+
+        function updateRatingChart() {
+            const ctx = document.getElementById('ratingChart').getContext('2d');
+            
+            let historyData = wrestlerData.ratingHistory;
+            if (currentYear !== 'ALL') {
+                historyData = historyData.filter(h => {
+                    const year = new Date(h.date).getFullYear();
+                    return year === parseInt(currentYear);
+                });
+            }
+
+            const monthlyData = aggregateByMonth(historyData);
+
+            if (ratingChart) {
+                ratingChart.destroy();
+            }
+
+            ratingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.map(m => m.label),
+                    datasets: [{
+                        label: 'Rating',
+                        data: monthlyData.map(m => m.rating),
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Rating: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                font: { size: 10 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function aggregateByMonth(historyData) {
+            const monthlyMap = {};
+            
+            // HARDCODED: Only process data through November 2025
+            const cutoffDate = new Date(2025, 10, 30); // November 30, 2025
+            
+            historyData.forEach(h => {
+                const date = new Date(h.date);
+                
+                // Skip any data after November 2025
+                if (date > cutoffDate) return;
+                
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+                
+                if (!monthlyMap[monthKey]) {
+                    monthlyMap[monthKey] = {
+                        label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+                        ratings: [],
+                        date: new Date(year, month, 15),
+                        year: year,
+                        month: month
+                    };
+                }
+                monthlyMap[monthKey].ratings.push(h.rating);
+            });
+
+            // Convert to array and sort chronologically
+            const monthlyData = Object.values(monthlyMap).map(m => ({
+                label: m.label,
+                rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
+                date: m.date,
+                year: m.year,
+                month: m.month
+            }));
+
+            // Sort by date
+            monthlyData.sort((a, b) => {
+                if (a.year !== b.year) return a.year - b.year;
+                return a.month - b.month;
+            });
+            
+            return monthlyData;
+        }
+
+        function getFilteredMatches() {
+            if (currentYear === 'ALL') {
+                return wrestlerData.allMatches;
+            }
+            return wrestlerData.allMatches.filter(m => m.year === parseInt(currentYear));
+        }
+
+        function getYearEndRating(year) {
+            const yearApps = wrestlerData.ratingHistory.filter(h => {
+                const appYear = new Date(h.date).getFullYear();
+                return appYear === parseInt(year);
+            });
+            
+            if (yearApps.length === 0) return { rating: null, rank: null };
+            
+            const lastApp = yearApps[yearApps.length - 1];
+            return { rating: lastApp.rating, rank: lastApp.rank };
+        }
+
+        function getWeeksForYear(year) {
+            if (year === 'ALL') return wrestlerData.totalWeeks;
+            
+            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
+                const appYear = new Date(h.date).getFullYear();
+                return appYear === parseInt(year);
+            });
+            
+            return yearWeeks.length;
+        }
+
+        function getTop10WeeksForYear(year) {
+            if (year === 'ALL') return wrestlerData.weeksInTop10;
+            
+            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
+                const appYear = new Date(h.date).getFullYear();
+                return appYear === parseInt(year) && h.rank && h.rank <= 10;
+            });
+            
+            return yearWeeks.length;
+        }
+
+        function getTop20WeeksForYear(year) {
+            if (year === 'ALL') return wrestlerData.weeksInTop20;
+            
+            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
+                const appYear = new Date(h.date).getFullYear();
+                return appYear === parseInt(year) && h.rank && h.rank <= 20;
+            });
+            
+            return yearWeeks.length;
+        }
+
+        function formatDateShort(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerHTML = `
+                <div class="error">
+                    <h2>Error</h2>
+                    <p>${message}</p>
+                    <a href="index.html" class="back-link">← Back to Rankings</a>
                 </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Match Type:</strong> ${m.matchType || 'N/A'}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Stakes:</strong> ${m.stakes || 'N/A'}
-                </div>
-                <div>
-                    <strong>Opponents:</strong> ${opponentsStr}
-                </div>
-            </div>
-        `;
-    }).join('');
-    
-    const bottomHtml = bottom5.map((m, index) => {
-        const ratingClass = getRatingColorClass(m.rating);
-        const matchId = `bottom-match-${index}`;
-        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        
-        // Format opponents
-        const opponentsStr = m.opponents && m.opponents.length > 0 
-            ? m.opponents.join(', ') 
-            : 'N/A';
-        
-        return `
-            <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
-                <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
-                <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
-            </div>
-            <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
-                <div style="margin-bottom: 6px;">
-                    <strong>Date:</strong> ${dateStr}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Event:</strong> ${m.event || 'N/A'}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Match Type:</strong> ${m.matchType || 'N/A'}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <strong>Stakes:</strong> ${m.stakes || 'N/A'}
-                </div>
-                <div>
-                    <strong>Opponents:</strong> ${opponentsStr}
-                </div>
-            </div>
-        `;
-    }).join('');
-    
-    document.getElementById('topMatchesTable').innerHTML = topHtml || '<div style="color: #999;">No matches</div>';
-    document.getElementById('bottomMatchesTable').innerHTML = bottomHtml || '<div style="color: #999;">No matches</div>';
-}
+            `;
+        }
+    </script>
+</body>
+</html>
