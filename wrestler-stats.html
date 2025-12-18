@@ -468,6 +468,13 @@
                     throw new Error('Wrestler not found');
                 }
                 wrestlerData = await response.json();
+                
+                // Check if this is a redirect to another wrestler
+                if (wrestlerData._redirect && wrestlerData.canonicalSlug) {
+                    console.log(`Redirecting to ${wrestlerData.canonicalSlug}`);
+                    return loadWrestlerData(wrestlerData.canonicalSlug);
+                }
+                
                 displayWrestlerData();
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
