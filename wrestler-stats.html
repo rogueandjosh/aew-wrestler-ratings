@@ -600,12 +600,9 @@
 
         // Helper function to get team members from team name
         function getTeamMembers(teamName) {
-            // For teams, extract surnames from the team name
-            // Examples: "Young Bucks" -> ["Jackson"], "FTR" -> ["Harwood", "Wheeler"]
-            const members = [];
-            
             // Common team name patterns
             const patterns = {
+                'The Young Bucks': ['Matt Jackson', 'Matthew Jackson', 'Nick Jackson', 'Nicholas Jackson'],
                 'Young Bucks': ['Matt Jackson', 'Matthew Jackson', 'Nick Jackson', 'Nicholas Jackson'],
                 'FTR': ['Dax Harwood', 'Cash Wheeler'],
                 'The Acclaimed': ['Max Caster', 'Anthony Bowens'],
@@ -615,7 +612,7 @@
                 'Best Friends': ['Chuck Taylor', 'Trent Beretta', 'Trent'],
                 'Proud and Powerful': ['Santana', 'Ortiz'],
                 'Death Triangle': ['PAC', 'Rey Fenix', 'Penta El Zero M'],
-                'The Elite': ['Kenny Omega', 'Matt Jackson', 'Nick Jackson', 'Hangman Page', 'Adam Page']
+                'The Elite': ['Kenny Omega', 'Matt Jackson', 'Nick Jackson', 'Matthew Jackson', 'Nicholas Jackson', 'Hangman Page', 'Adam Page']
             };
             
             // Check if we have a known team
@@ -624,14 +621,20 @@
             }
             
             // For surname-based teams like "Gunn & Stokely", extract surnames
-            // This won't be perfect but will help
             const surnamePattern = /([A-Z][a-z]+)\s*&\s*([A-Z][a-z]+)/;
             const match = teamName.match(surnamePattern);
             if (match) {
                 return [match[1], match[2]];
             }
             
-            return members;
+            // For "A, B & C" format, extract all names
+            const triosPattern = /([A-Z][a-z]+)(?:,\s*([A-Z][a-z]+))?\s*&\s*([A-Z][a-z]+)/;
+            const triosMatch = teamName.match(triosPattern);
+            if (triosMatch) {
+                return triosMatch.slice(1).filter(Boolean);
+            }
+            
+            return [];
         }
 
         function updateRecentMatches() {
