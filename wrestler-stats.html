@@ -716,8 +716,15 @@
         function aggregateByMonth(historyData) {
             const monthlyMap = {};
             
+            // HARDCODED: Only process data through November 2025
+            const cutoffDate = new Date(2025, 10, 30); // November 30, 2025
+            
             historyData.forEach(h => {
                 const date = new Date(h.date);
+                
+                // Skip any data after November 2025
+                if (date > cutoffDate) return;
+                
                 const year = date.getFullYear();
                 const month = date.getMonth();
                 const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
@@ -726,7 +733,7 @@
                     monthlyMap[monthKey] = {
                         label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
                         ratings: [],
-                        date: new Date(year, month, 15), // Use mid-month for sorting
+                        date: new Date(year, month, 15),
                         year: year,
                         month: month
                     };
@@ -749,23 +756,7 @@
                 return a.month - b.month;
             });
             
-            // Filter to only show COMPLETE months (exclude current month)
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth();
-            
-            const completeMonths = monthlyData.filter(m => {
-                // Keep all months from previous years
-                if (m.year < currentYear) return true;
-                
-                // For current year, only keep months BEFORE current month
-                if (m.year === currentYear && m.month < currentMonth) return true;
-                
-                // Exclude current incomplete month
-                return false;
-            });
-            
-            return completeMonths;
+            return monthlyData;
         }
 
         function getFilteredMatches() {
