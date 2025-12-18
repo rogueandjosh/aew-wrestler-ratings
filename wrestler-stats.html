@@ -733,31 +733,6 @@
                 }
                 monthlyMap[monthKey].ratings.push(h.rating);
             });
-            
-            // Add current month if it's missing but wrestler is active
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth();
-            const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
-            
-            // If current month is missing and we have recent data, add it
-            if (!monthlyMap[currentMonthKey] && historyData.length > 0) {
-                const lastEntry = historyData[historyData.length - 1];
-                const lastDate = new Date(lastEntry.date);
-                
-                // Only add if last entry was within last 2 months (not inactive)
-                const monthsDiff = (currentYear - lastDate.getFullYear()) * 12 + (currentMonth - lastDate.getMonth());
-                
-                if (monthsDiff <= 1 && lastEntry.rating > 0) {
-                    monthlyMap[currentMonthKey] = {
-                        label: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
-                        ratings: [lastEntry.rating],
-                        date: new Date(currentYear, currentMonth, 15),
-                        year: currentYear,
-                        month: currentMonth
-                    };
-                }
-            }
 
             // Convert to array and sort chronologically
             const monthlyData = Object.values(monthlyMap).map(m => ({
@@ -774,7 +749,23 @@
                 return a.month - b.month;
             });
             
-            return monthlyData;
+            // Filter to only show COMPLETE months (exclude current month)
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            
+            const completeMonths = monthlyData.filter(m => {
+                // Keep all months from previous years
+                if (m.year < currentYear) return true;
+                
+                // For current year, only keep months BEFORE current month
+                if (m.year === currentYear && m.month < currentMonth) return true;
+                
+                // Exclude current incomplete month
+                return false;
+            });
+            
+            return completeMonths;
         }
 
         function getFilteredMatches() {
