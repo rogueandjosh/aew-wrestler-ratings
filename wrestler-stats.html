@@ -614,10 +614,10 @@
                             <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                                 ${m.rating.toFixed(2)}
                             </div>
-                            <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em; border: 2px solid #ffd700; border-radius: 8px; z-index: 10;">
-                                <div><strong>Date:</strong> ${dateStr}</div>
-                                <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
-                                <div><strong>Match Stipulation:</strong> ${m.division || 'N/A'}</div>
+                            <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 12px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); min-width: 200px;">
+                                <div style="color: #e0e0e0; margin-bottom: 6px;"><strong style="color: #ffd700;">Date:</strong> ${dateStr}</div>
+                                <div style="color: #e0e0e0; margin-bottom: 6px;"><strong style="color: #ffd700;">Event:</strong> ${m.event || 'N/A'}</div>
+                                <div style="color: #e0e0e0;"><strong style="color: #ffd700;">Match Stipulation:</strong> ${m.division || 'N/A'}</div>
                             </div>
                         </div>
                     </div>
