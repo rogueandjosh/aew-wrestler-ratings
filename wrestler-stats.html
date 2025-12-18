@@ -749,18 +749,7 @@
                 return a.month - b.month;
             });
             
-            // Filter out future months (beyond current month)
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth();
-            
-            const filtered = monthlyData.filter(m => {
-                if (m.year < currentYear) return true;
-                if (m.year === currentYear && m.month <= currentMonth) return true;
-                return false;
-            });
-            
-            return filtered;
+            return monthlyData;
         }
 
         function getFilteredMatches() {
