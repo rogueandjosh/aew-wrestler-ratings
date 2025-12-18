@@ -607,10 +607,11 @@
                 const matchId = `recent-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Format opponents as horizontal list
-                const opponentsStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Filter out current wrestler from opponents list
+                const otherWrestlers = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    : [];
+                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
                 return `
                     <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
@@ -636,7 +637,7 @@
                                     <strong style="color: #ffd700;">Stakes:</strong> ${m.stakes || 'N/A'}
                                 </div>
                                 <div style="color: #e0e0e0;">
-                                    <strong style="color: #ffd700;">Opponents:</strong> ${opponentsStr}
+                                    <strong style="color: #ffd700;">Other Wrestlers Involved:</strong> ${wrestlersStr}
                                 </div>
                             </div>
                         </div>
@@ -659,10 +660,11 @@
                 const matchId = `top-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Format opponents
-                const opponentsStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Filter out current wrestler from opponents list
+                const otherWrestlers = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    : [];
+                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -687,7 +689,7 @@
                             <strong>Stakes:</strong> ${m.stakes || 'N/A'}
                         </div>
                         <div>
-                            <strong>Opponents:</strong> ${opponentsStr}
+                            <strong>Other Wrestlers Involved:</strong> ${wrestlersStr}
                         </div>
                     </div>
                 `;
@@ -698,10 +700,11 @@
                 const matchId = `bottom-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Format opponents
-                const opponentsStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Filter out current wrestler from opponents list
+                const otherWrestlers = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    : [];
+                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -726,7 +729,7 @@
                             <strong>Stakes:</strong> ${m.stakes || 'N/A'}
                         </div>
                         <div>
-                            <strong>Opponents:</strong> ${opponentsStr}
+                            <strong>Other Wrestlers Involved:</strong> ${wrestlersStr}
                         </div>
                     </div>
                 `;
