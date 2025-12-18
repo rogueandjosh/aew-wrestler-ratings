@@ -608,13 +608,13 @@
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
                 return `
-                    <div class="match-item" style="margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                        <span style="color: #ffd700; font-weight: bold; font-size: 0.85em; min-width: 22px;">${index + 1}.</span>
-                        <div style="flex: 1;">
-                            <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer; width: 100%;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
+                        <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
+                        <div>
+                            <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                                 ${m.rating.toFixed(2)}
                             </div>
-                            <div id="${matchId}" class="match-details" style="display: none; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
+                            <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em; border: 2px solid #ffd700; border-radius: 8px; z-index: 10;">
                                 <div><strong>Date:</strong> ${dateStr}</div>
                                 <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
                                 <div><strong>Match Stipulation:</strong> ${m.division || 'N/A'}</div>
