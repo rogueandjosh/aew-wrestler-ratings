@@ -608,15 +608,19 @@
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
                 return `
-                    <div class="match-item" style="margin-bottom: 10px;">
-                        <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer; position: relative;">
-                            <span style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-size: 0.7em; opacity: 0.7;">${index + 1}.</span>
-                            ${m.rating.toFixed(2)}
-                        </div>
-                        <div id="${matchId}" class="match-details" style="display: none; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
-                            <div><strong>Date:</strong> ${dateStr}</div>
-                            <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
-                            <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
+                    <div class="match-item" style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #ffd700; font-weight: bold; font-size: 0.9em; min-width: 25px;">${index + 1}.</span>
+                        <div style="flex: 1;">
+                            <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer; width: 100%;">
+                                ${m.rating.toFixed(2)}
+                            </div>
+                            <div id="${matchId}" class="match-details" style="display: none; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
+                                <div><strong>Date:</strong> ${dateStr}</div>
+                                <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                                <div><strong>Match Stipulation:</strong> ${m.matchType || 'Standard Match'}</div>
+                                <div><strong>Opponents:</strong> ${m.opponents || 'N/A'}</div>
+                                <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -639,12 +643,15 @@
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                        <span style="color: #ffd700; font-weight: bold; margin-right: 10px;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
                         <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
                         <div><strong>Date:</strong> ${dateStr}</div>
                         <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                        <div><strong>Match Stipulation:</strong> ${m.matchType || 'Standard Match'}</div>
+                        <div><strong>Opponents:</strong> ${m.opponents || 'N/A'}</div>
                         <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
                     </div>
                 `;
@@ -657,12 +664,15 @@
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                        <span style="color: #ffd700; font-weight: bold; margin-right: 10px;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
                         <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
                         <div><strong>Date:</strong> ${dateStr}</div>
                         <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                        <div><strong>Match Stipulation:</strong> ${m.matchType || 'Standard Match'}</div>
+                        <div><strong>Opponents:</strong> ${m.opponents || 'N/A'}</div>
                         <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
                     </div>
                 `;
