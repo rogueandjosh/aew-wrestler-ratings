@@ -598,6 +598,42 @@
             document.getElementById('distributionBars').innerHTML = barsHtml;
         }
 
+        // Helper function to get team members from team name
+        function getTeamMembers(teamName) {
+            // For teams, extract surnames from the team name
+            // Examples: "Young Bucks" -> ["Jackson"], "FTR" -> ["Harwood", "Wheeler"]
+            const members = [];
+            
+            // Common team name patterns
+            const patterns = {
+                'Young Bucks': ['Matt Jackson', 'Matthew Jackson', 'Nick Jackson', 'Nicholas Jackson'],
+                'FTR': ['Dax Harwood', 'Cash Wheeler'],
+                'The Acclaimed': ['Max Caster', 'Anthony Bowens'],
+                'Lucha Brothers': ['Rey Fenix', 'Penta El Zero M', 'Pentagon Jr.', 'Penta Oscuro'],
+                'Private Party': ['Isiah Kassidy', 'Marq Quen', 'Zay', 'Quen'],
+                'Jurassic Express': ['Jungle Boy', 'Jack Perry', 'Luchasaurus'],
+                'Best Friends': ['Chuck Taylor', 'Trent Beretta', 'Trent'],
+                'Proud and Powerful': ['Santana', 'Ortiz'],
+                'Death Triangle': ['PAC', 'Rey Fenix', 'Penta El Zero M'],
+                'The Elite': ['Kenny Omega', 'Matt Jackson', 'Nick Jackson', 'Hangman Page', 'Adam Page']
+            };
+            
+            // Check if we have a known team
+            if (patterns[teamName]) {
+                return patterns[teamName];
+            }
+            
+            // For surname-based teams like "Gunn & Stokely", extract surnames
+            // This won't be perfect but will help
+            const surnamePattern = /([A-Z][a-z]+)\s*&\s*([A-Z][a-z]+)/;
+            const match = teamName.match(surnamePattern);
+            if (match) {
+                return [match[1], match[2]];
+            }
+            
+            return members;
+        }
+
         function updateRecentMatches() {
             const matches = getFilteredMatches();
             const recent = matches.slice(-10).reverse();
@@ -607,9 +643,28 @@
                 const matchId = `recent-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Filter out current wrestler from opponents list
+                // Get team members if this is a team
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name) : [];
+                
+                // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    ? m.opponents.filter(w => {
+                        // Exclude the main wrestler/team
+                        if (w === wrestlerData.name) return false;
+                        if (wrestlerData.formerNames.includes(w)) return false;
+                        
+                        // For teams, also exclude team members
+                        if (wrestlerData.isTeam && teamMembers.length > 0) {
+                            // Check if this opponent is a team member (surname match)
+                            for (const member of teamMembers) {
+                                if (w === member || w.includes(member) || member.includes(w)) {
+                                    return false;
+                                }
+                            }
+                        }
+                        
+                        return true;
+                    })
                     : [];
                 const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
@@ -660,9 +715,25 @@
                 const matchId = `top-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Filter out current wrestler from opponents list
+                // Get team members if this is a team
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name) : [];
+                
+                // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    ? m.opponents.filter(w => {
+                        if (w === wrestlerData.name) return false;
+                        if (wrestlerData.formerNames.includes(w)) return false;
+                        
+                        if (wrestlerData.isTeam && teamMembers.length > 0) {
+                            for (const member of teamMembers) {
+                                if (w === member || w.includes(member) || member.includes(w)) {
+                                    return false;
+                                }
+                            }
+                        }
+                        
+                        return true;
+                    })
                     : [];
                 const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
@@ -700,9 +771,25 @@
                 const matchId = `bottom-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Filter out current wrestler from opponents list
+                // Get team members if this is a team
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name) : [];
+                
+                // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => w !== wrestlerData.name && !wrestlerData.formerNames.includes(w))
+                    ? m.opponents.filter(w => {
+                        if (w === wrestlerData.name) return false;
+                        if (wrestlerData.formerNames.includes(w)) return false;
+                        
+                        if (wrestlerData.isTeam && teamMembers.length > 0) {
+                            for (const member of teamMembers) {
+                                if (w === member || w.includes(member) || member.includes(w)) {
+                                    return false;
+                                }
+                            }
+                        }
+                        
+                        return true;
+                    })
                     : [];
                 const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
                 
