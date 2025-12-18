@@ -595,9 +595,24 @@
             const matches = getFilteredMatches();
             const recent = matches.slice(-10).reverse();
             
-            const html = recent.map(m => {
+            const html = recent.map((m, index) => {
                 const ratingClass = getRatingColorClass(m.rating);
-                return `<div class="match-rating-badge ${ratingClass}">${m.rating.toFixed(2)}</div>`;
+                const matchId = `recent-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                return `
+                    <div class="match-item" style="margin-bottom: 10px;">
+                        <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer; position: relative;">
+                            <span style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-size: 0.7em; opacity: 0.7;">${index + 1}.</span>
+                            ${m.rating.toFixed(2)}
+                        </div>
+                        <div id="${matchId}" class="match-details" style="display: none; margin-top: 5px; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
+                            <div><strong>Date:</strong> ${dateStr}</div>
+                            <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                            <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
+                        </div>
+                    </div>
+                `;
             }).join('');
             
             document.getElementById('recentMatchesList').innerHTML = html || '<div style="color: #999;">No matches in this period</div>';
@@ -610,28 +625,55 @@
             const top5 = sorted.slice(0, Math.min(5, sorted.length));
             const bottom5 = sorted.slice(-Math.min(5, sorted.length)).reverse();
             
-            const topHtml = top5.map(m => {
+            const topHtml = top5.map((m, index) => {
                 const ratingClass = getRatingColorClass(m.rating);
+                const matchId = `top-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
                 return `
-                    <div class="match-row">
+                    <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
                         <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                    <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
+                        <div><strong>Date:</strong> ${dateStr}</div>
+                        <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                        <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
                     </div>
                 `;
             }).join('');
             
-            const bottomHtml = bottom5.map(m => {
+            const bottomHtml = bottom5.map((m, index) => {
                 const ratingClass = getRatingColorClass(m.rating);
+                const matchId = `bottom-match-${index}`;
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
                 return `
-                    <div class="match-row">
+                    <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
                         <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                    </div>
+                    <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; font-size: 0.9em;">
+                        <div><strong>Date:</strong> ${dateStr}</div>
+                        <div><strong>Event:</strong> ${m.event || 'N/A'}</div>
+                        <div><strong>Division:</strong> ${m.division || 'N/A'}</div>
                     </div>
                 `;
             }).join('');
             
             document.getElementById('topMatchesTable').innerHTML = topHtml || '<div style="color: #999;">No matches</div>';
             document.getElementById('bottomMatchesTable').innerHTML = bottomHtml || '<div style="color: #999;">No matches</div>';
+        }
+
+        function toggleMatchDetails(matchId) {
+            const details = document.getElementById(matchId);
+            if (details) {
+                if (details.style.display === 'none') {
+                    details.style.display = 'block';
+                } else {
+                    details.style.display = 'none';
+                }
+            }
         }
 
         function getRatingColorClass(rating) {
