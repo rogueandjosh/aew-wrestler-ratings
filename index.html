@@ -1589,8 +1589,20 @@ let visibleColumns = {
             }
             document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
             
-            // Show current week
-            showDivision('mens');
+            // Check for saved state from back button, otherwise show men's division
+            const savedState = sessionStorage.getItem('aew_previous_state');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                sessionStorage.removeItem('aew_previous_state');
+                
+                if (state.view === 'statistics') {
+                    showStatistics(state.division || 'mens');
+                } else {
+                    showDivision(state.division || 'mens');
+                }
+            } else {
+                showDivision('mens');
+            }
         })
         .catch(error => {
             document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
@@ -2812,22 +2824,6 @@ document.addEventListener('click', function(e) {
             week: document.getElementById('weekSelect')?.value || 'current'
         };
         sessionStorage.setItem('aew_previous_state', JSON.stringify(state));
-    }
-});
-
-// Restore state when page loads (for back button)
-window.addEventListener('pageshow', function() {
-    const savedState = sessionStorage.getItem('aew_previous_state');
-    if (savedState && window.location.pathname.includes('index.html')) {
-        const state = JSON.parse(savedState);
-        // Restore the view and division that was active
-        if (state.view === 'statistics' && state.division) {
-            currentStatsDivision = state.division;
-        } else if (state.division) {
-            currentDivision = state.division;
-        }
-        // Clear the saved state
-        sessionStorage.removeItem('aew_previous_state');
     }
 });
     </script>
