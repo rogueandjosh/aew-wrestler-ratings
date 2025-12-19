@@ -854,28 +854,6 @@ function updateTopBottomMatches() {
             
             document.getElementById('distributionBars').innerHTML = barsHtml;
         }
-
-        // Helper function to get team members - uses team-members.json
-        function getTeamMembers() {
-            if (!wrestlerData.isTeam) {
-                return [];
-            }
-            
-            const teamName = wrestlerData.name;
-            
-            // First, check team-members.json directly
-            if (allTeamMembers && allTeamMembers[teamName]) {
-                return allTeamMembers[teamName];
-            }
-            
-            // Check former names in case this is an old name
-            if (wrestlerData.formerNames && allTeamMembers) {
-                for (const formerName of wrestlerData.formerNames) {
-                    if (allTeamMembers[formerName]) {
-                        return allTeamMembers[formerName];
-                    }
-                }
-            }
             
             // Check name-changes.json to find if this team had a different name
             if (allNameChanges && allNameChanges.length > 0) {
