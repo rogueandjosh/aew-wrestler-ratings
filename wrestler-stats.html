@@ -373,7 +373,14 @@
     <div class="container">
         <header>
             <h1>AEW WRESTLER RATINGS</h1>
-            <a href="index.html" class="back-link">← Back to Rankings</a>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="goBack()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
+                    ← Back
+                </button>
+                <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block;">
+                    🏠 Home
+                </a>
+            </div>
         </header>
 
         <div id="loading" class="loading">
@@ -1106,6 +1113,11 @@
                     <a href="index.html" class="back-link">← Back to Rankings</a>
                 </div>
             `;
+        }
+
+        // Navigation function - goes back to previous page
+        function goBack() {
+            window.history.back();
         }
     </script>
 </body>
