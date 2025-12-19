@@ -2759,7 +2759,7 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
-        html += `<td class="name">${wrestler.name}</td>`;
+        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
         if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>`;
         if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
         if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
@@ -2802,6 +2802,34 @@ function sortStatsData(column) {
         renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
     }
 }
+
+// Save current view state when clicking wrestler links
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.wrestler-link')) {
+        const state = {
+            view: currentView,
+            division: currentView === 'statistics' ? currentStatsDivision : currentDivision,
+            week: document.getElementById('weekSelect')?.value || 'current'
+        };
+        sessionStorage.setItem('aew_previous_state', JSON.stringify(state));
+    }
+});
+
+// Restore state when page loads (for back button)
+window.addEventListener('pageshow', function() {
+    const savedState = sessionStorage.getItem('aew_previous_state');
+    if (savedState && window.location.pathname.includes('index.html')) {
+        const state = JSON.parse(savedState);
+        // Restore the view and division that was active
+        if (state.view === 'statistics' && state.division) {
+            currentStatsDivision = state.division;
+        } else if (state.division) {
+            currentDivision = state.division;
+        }
+        // Clear the saved state
+        sessionStorage.removeItem('aew_previous_state');
+    }
+});
     </script>
 </body>
 </html>
