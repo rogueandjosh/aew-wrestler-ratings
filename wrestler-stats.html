@@ -774,30 +774,10 @@
                 const matchId = `recent-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
-                
-                // Filter out current wrestler/team members from opponents list
-                const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => {
-                        // Exclude the main wrestler/team
-                        if (w === wrestlerData.name) return false;
-                        if (wrestlerData.formerNames.includes(w)) return false;
-                        
-                        // For teams, also exclude team members
-                        if (wrestlerData.isTeam && teamMembers.length > 0) {
-                            // Check if this opponent is a team member (surname match)
-                            for (const member of teamMembers) {
-                                if (w === member || w.includes(member) || member.includes(w)) {
-                                    return false;
-                                }
-                            }
-                        }
-                        
-                        return true;
-                    })
-                    : [];
-                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
+                // Show ALL wrestlers
+                const wrestlersStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
                 
                 return `
                     <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
@@ -823,7 +803,7 @@
                                     <strong style="color: #ffd700;">Stakes:</strong> ${m.stakes || 'N/A'}
                                 </div>
                                 <div style="color: #e0e0e0;">
-                                    <strong style="color: #ffd700;">Other Wrestlers Involved:</strong> ${wrestlersStr}
+                                    <strong style="color: #ffd700;">Wrestlers:</strong> ${wrestlersStr}
                                 </div>
                             </div>
                         </div>
@@ -846,27 +826,10 @@
                 const matchId = `top-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
-                
-                // Filter out current wrestler/team members from opponents list
-                const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => {
-                        if (w === wrestlerData.name) return false;
-                        if (wrestlerData.formerNames.includes(w)) return false;
-                        
-                        if (wrestlerData.isTeam && teamMembers.length > 0) {
-                            for (const member of teamMembers) {
-                                if (w === member || w.includes(member) || member.includes(w)) {
-                                    return false;
-                                }
-                            }
-                        }
-                        
-                        return true;
-                    })
-                    : [];
-                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
+                // Show ALL wrestlers
+                const wrestlersStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -891,7 +854,7 @@
                             <strong>Stakes:</strong> ${m.stakes || 'N/A'}
                         </div>
                         <div>
-                            <strong>Other Wrestlers Involved:</strong> ${wrestlersStr}
+                            <strong>Wrestlers:</strong> ${wrestlersStr}
                         </div>
                     </div>
                 `;
@@ -902,27 +865,10 @@
                 const matchId = `bottom-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
-                
-                // Filter out current wrestler/team members from opponents list
-                const otherWrestlers = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.filter(w => {
-                        if (w === wrestlerData.name) return false;
-                        if (wrestlerData.formerNames.includes(w)) return false;
-                        
-                        if (wrestlerData.isTeam && teamMembers.length > 0) {
-                            for (const member of teamMembers) {
-                                if (w === member || w.includes(member) || member.includes(w)) {
-                                    return false;
-                                }
-                            }
-                        }
-                        
-                        return true;
-                    })
-                    : [];
-                const wrestlersStr = otherWrestlers.length > 0 ? otherWrestlers.join(', ') : 'N/A';
+                // Show ALL wrestlers
+                const wrestlersStr = m.opponents && m.opponents.length > 0 
+                    ? m.opponents.join(', ') 
+                    : 'N/A';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -947,7 +893,7 @@
                             <strong>Stakes:</strong> ${m.stakes || 'N/A'}
                         </div>
                         <div>
-                            <strong>Other Wrestlers Involved:</strong> ${wrestlersStr}
+                            <strong>Wrestlers:</strong> ${wrestlersStr}
                         </div>
                     </div>
                 `;
