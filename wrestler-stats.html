@@ -555,44 +555,117 @@
             updateRatingChart();
         }
 
-        function updateStatsGrid() {
-            const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
-            const grid = document.getElementById('statsGrid');
-            
-            let displayRating, displayRank, displaySubtext;
-            
-            if (currentYear === 'ALL') {
-                displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
-                displayRank = wrestlerData.currentRank ? `#${wrestlerData.currentRank}` : '';
-                displaySubtext = 'Current';
-            } else {
-                const yearEnd = getYearEndRating(currentYear);
-                displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
-                displayRank = yearEnd.rank ? `#${yearEnd.rank}` : '';
-                displaySubtext = `End ${currentYear}`;
-            }
-            
-            const peakRatingValue = wrestlerData.peakRating?.toFixed(2) || 'N/A';
-            const peakRank = wrestlerData.peakRank ? `#${wrestlerData.peakRank}` : '';
-            const peakDate = wrestlerData.peakRatingDate ? formatDateShort(wrestlerData.peakRatingDate) : '';
-            const peakSubtext = peakDate + (peakRank ? ` • ${peakRank}` : '');
-            
-            const cards = [
-                { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
-                { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
-                { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
-                { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
-                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
-            ];
+        /**
+ * REPLACE your updateStatsGrid function with this updated version
+ */
 
-            grid.innerHTML = cards.map(card => `
-                <div class="stat-card">
-                    <div class="stat-label">${card.label}</div>
-                    <div class="stat-value">${card.value}</div>
-                    ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
-                </div>
-            `).join('');
+function updateStatsGrid() {
+    const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
+    const grid = document.getElementById('statsGrid');
+    
+    // Get filtered matches for year-specific peak rating
+    const matches = getFilteredMatches();
+    
+    // Calculate peak rating for selected year
+    let peakRatingForYear = 0;
+    let peakDateForYear = '';
+    let peakRankForYear = null;
+    
+    if (matches.length > 0) {
+        const sortedByRating = [...matches].sort((a, b) => b.rating - a.rating);
+        peakRatingForYear = sortedByRating[0].rating;
+        peakDateForYear = formatDateShort(sortedByRating[0].date);
+        // Note: Peak rank for specific year would need to be in the data
+    }
+    
+    // Calculate highest ranking for selected year (from weekly snapshots)
+    let highestRankForYear = null;
+    let weeksAtNumber1 = 0;
+    
+    if (wrestlerData.weeklySnapshots && wrestlerData.weeklySnapshots.length > 0) {
+        let filteredSnapshots = wrestlerData.weeklySnapshots;
+        
+        // Filter by year if not ALL
+        if (currentYear !== 'ALL') {
+            filteredSnapshots = wrestlerData.weeklySnapshots.filter(snap => {
+                const snapDate = new Date(snap.date);
+                return snapDate.getFullYear() === parseInt(currentYear);
+            });
         }
+        
+        // Find highest rank (lowest number)
+        filteredSnapshots.forEach(snap => {
+            if (snap.rank && (!highestRankForYear || snap.rank < highestRankForYear)) {
+                highestRankForYear = snap.rank;
+            }
+            if (snap.rank === 1) {
+                weeksAtNumber1++;
+            }
+        });
+    }
+    
+    // CURRENT RATING/RANK
+    let displayRating, displayRank, displaySubtext;
+    
+    if (currentYear === 'ALL') {
+        // Check if wrestler is currently active
+        const isActive = wrestlerData.currentRating && wrestlerData.currentRating > 0;
+        
+        displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
+        
+        if (isActive && wrestlerData.currentRank) {
+            displayRank = `#${wrestlerData.currentRank}`;
+            // Add current week/month/year
+            const now = new Date();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const currentWeekStr = `${monthNames[now.getMonth()]} '${now.getFullYear().toString().slice(-2)} Week ${Math.ceil(now.getDate() / 7)}`;
+            displaySubtext = `Current (${currentWeekStr})`;
+        } else {
+            displayRank = 'Inactive';
+            displaySubtext = 'Status';
+        }
+    } else {
+        const yearEnd = getYearEndRating(currentYear);
+        displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
+        displayRank = yearEnd.rank ? `#${yearEnd.rank}` : 'Inactive';
+        displaySubtext = `End ${currentYear}`;
+    }
+    
+    // PEAK RATING (year-specific)
+    const peakRatingValue = peakRatingForYear > 0 ? peakRatingForYear.toFixed(2) : 'N/A';
+    const peakSubtext = peakDateForYear;
+    
+    // HIGHEST RANKING (year-specific)
+    let highestRankValue, highestRankSubtext;
+    if (highestRankForYear) {
+        highestRankValue = `#${highestRankForYear}`;
+        if (highestRankForYear === 1 && weeksAtNumber1 > 0) {
+            highestRankSubtext = `${weeksAtNumber1} week${weeksAtNumber1 > 1 ? 's' : ''} at #1`;
+        } else {
+            highestRankSubtext = currentYear === 'ALL' ? 'Career best' : `Best in ${currentYear}`;
+        }
+    } else {
+        highestRankValue = 'N/A';
+        highestRankSubtext = 'Never ranked';
+    }
+    
+    const cards = [
+        { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
+        { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
+        { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
+        { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
+        { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
+        { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
+    ];
+
+    grid.innerHTML = cards.map(card => `
+        <div class="stat-card">
+            <div class="stat-label">${card.label}</div>
+            <div class="stat-value">${card.value}</div>
+            ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
+        </div>
+    `).join('');
+}
 
         function updateDistributionBars() {
             const matches = getFilteredMatches();
