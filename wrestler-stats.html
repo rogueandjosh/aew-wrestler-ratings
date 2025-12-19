@@ -449,17 +449,46 @@
 
     <script>
         let wrestlerData = null;
+        let allTeamMembers = null; // Will hold team-members.json data
+        let allNameChanges = null; // Will hold name-changes.json data
+
+        // Load team data files on page load
+        async function loadTeamData() {
+            try {
+                const [teamMembersResponse, nameChangesResponse] = await Promise.all([
+                    fetch('team-members.json'),
+                    fetch('name-changes.json')
+                ]);
+                
+                allTeamMembers = await teamMembersResponse.json();
+                allNameChanges = await nameChangesResponse.json();
+                
+                console.log('Loaded team data:', {
+                    teams: Object.keys(allTeamMembers).length,
+                    nameChanges: allNameChanges.length
+                });
+            } catch (error) {
+                console.error('Error loading team data:', error);
+                allTeamMembers = {};
+                allNameChanges = [];
+            }
+        }
         let currentYear = 'ALL';
         let ratingChart = null;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const wrestlerSlug = urlParams.get('wrestler');
+        // Load team data on page load
+        (async function() {
+            await loadTeamData();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const wrestlerSlug = urlParams.get('wrestler');
 
-        if (!wrestlerSlug) {
-            showError('No wrestler specified. Please select a wrestler from the rankings page.');
-        } else {
-            loadWrestlerData(wrestlerSlug);
-        }
+            if (!wrestlerSlug) {
+                showError('No wrestler specified. Please select a wrestler from the rankings page.');
+            } else {
+                loadWrestlerData(wrestlerSlug);
+            }
+        })();
 
         async function loadWrestlerData(slug) {
             try {
@@ -598,66 +627,59 @@
             document.getElementById('distributionBars').innerHTML = barsHtml;
         }
 
-        // Helper function to get team members from team name
-        function getTeamMembers(teamName, allOpponents = []) {
-            // Common team name patterns
-            const patterns = {
-                'The Young Bucks': ['Matt Jackson', 'Matthew Jackson', 'Nick Jackson', 'Nicholas Jackson'],
-                'Young Bucks': ['Matt Jackson', 'Matthew Jackson', 'Nick Jackson', 'Nicholas Jackson'],
-                'FTR': ['Dax Harwood', 'Cash Wheeler'],
-                'The Acclaimed': ['Max Caster', 'Anthony Bowens'],
-                'Lucha Brothers': ['Rey Fenix', 'Penta El Zero M', 'Pentagon Jr.', 'Penta Oscuro'],
-                'Private Party': ['Isiah Kassidy', 'Marq Quen', 'Zay', 'Quen'],
-                'Jurassic Express': ['Jungle Boy', 'Jack Perry', 'Luchasaurus'],
-                'Best Friends': ['Chuck Taylor', 'Trent Beretta', 'Trent'],
-                'Proud and Powerful': ['Santana', 'Ortiz'],
-                'Death Triangle': ['PAC', 'Rey Fenix', 'Penta El Zero M'],
-                'The Elite': ['Kenny Omega', 'Matt Jackson', 'Nick Jackson', 'Matthew Jackson', 'Nicholas Jackson', 'Hangman Page', 'Adam Page'],
-                'Brodido': ['Bandido', 'Brody King']
-            };
-            
-            // Check if we have a known team
-            if (patterns[teamName]) {
-                return patterns[teamName];
+        // Helper function to get team members - uses team-members.json
+        function getTeamMembers() {
+            if (!wrestlerData.isTeam) {
+                return [];
             }
             
-            // For surname-based teams like "Gunn & Stokely", extract surnames
+            const teamName = wrestlerData.name;
+            
+            // First, check team-members.json directly
+            if (allTeamMembers && allTeamMembers[teamName]) {
+                return allTeamMembers[teamName];
+            }
+            
+            // Check former names in case this is an old name
+            if (wrestlerData.formerNames && allTeamMembers) {
+                for (const formerName of wrestlerData.formerNames) {
+                    if (allTeamMembers[formerName]) {
+                        return allTeamMembers[formerName];
+                    }
+                }
+            }
+            
+            // Check name-changes.json to find if this team had a different name
+            if (allNameChanges && allNameChanges.length > 0) {
+                // Find any name change where current name is either oldName or newName
+                const nameChange = allNameChanges.find(nc => 
+                    nc.oldName === teamName || nc.newName === teamName
+                );
+                
+                if (nameChange) {
+                    // Try both old and new names
+                    if (allTeamMembers[nameChange.newName]) {
+                        return allTeamMembers[nameChange.newName];
+                    }
+                    if (allTeamMembers[nameChange.oldName]) {
+                        return allTeamMembers[nameChange.oldName];
+                    }
+                }
+            }
+            
+            // Fallback: Extract from team name format
+            // For "A & B" format
             const surnamePattern = /([A-Z][a-z]+)\s*&\s*([A-Z][a-z]+)/;
             const match = teamName.match(surnamePattern);
             if (match) {
                 return [match[1], match[2]];
             }
             
-            // For "A, B & C" format, extract all names
+            // For "A, B & C" format (trios)
             const triosPattern = /([A-Z][a-z]+)(?:,\s*([A-Z][a-z]+))?\s*&\s*([A-Z][a-z]+)/;
             const triosMatch = teamName.match(triosPattern);
             if (triosMatch) {
                 return triosMatch.slice(1).filter(Boolean);
-            }
-            
-            // For portmanteau/mashup names (like "Brodido"), try to find members by checking
-            // which opponents' names appear as substrings in the team name
-            if (allOpponents && allOpponents.length > 0) {
-                const members = [];
-                
-                // Check each opponent to see if their name (or surname) is in the team name
-                allOpponents.forEach(opponent => {
-                    const parts = opponent.split(' ');
-                    const surname = parts[parts.length - 1];
-                    const firstName = parts[0];
-                    
-                    // Check if any part of their name appears in the team name (case insensitive)
-                    const teamLower = teamName.toLowerCase();
-                    if (teamLower.includes(surname.toLowerCase()) || 
-                        teamLower.includes(firstName.toLowerCase())) {
-                        members.push(opponent);
-                    }
-                });
-                
-                // Only return if we found exactly 2 or 3 members (reasonable for a tag/trios team)
-                if (members.length >= 2 && members.length <= 3) {
-                    return members;
-                }
             }
             
             return [];
@@ -673,7 +695,7 @@
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
                 // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name, m.opponents) : [];
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
                 
                 // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
@@ -745,7 +767,7 @@
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
                 // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name, m.opponents) : [];
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
                 
                 // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
@@ -801,7 +823,7 @@
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
                 // Get team members if this is a team - pass opponents for dynamic detection
-                const teamMembers = wrestlerData.isTeam ? getTeamMembers(wrestlerData.name, m.opponents) : [];
+                const teamMembers = wrestlerData.isTeam ? getTeamMembers() : [];
                 
                 // Filter out current wrestler/team members from opponents list
                 const otherWrestlers = m.opponents && m.opponents.length > 0 
