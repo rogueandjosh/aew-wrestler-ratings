@@ -556,29 +556,38 @@
         }
 
         /**
- * REPLACE your updateStatsGrid function with this updated version
+ * COMPLETE FIX - Replace updateStatsGrid function
  */
 
 function updateStatsGrid() {
     const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
     const grid = document.getElementById('statsGrid');
     
-    // Get filtered matches for year-specific peak rating
-    const matches = getFilteredMatches();
-    
-    // Calculate peak rating for selected year
+    // PEAK RATING - From weekly snapshots, not match ratings
     let peakRatingForYear = 0;
     let peakDateForYear = '';
-    let peakRankForYear = null;
     
-    if (matches.length > 0) {
-        const sortedByRating = [...matches].sort((a, b) => b.rating - a.rating);
-        peakRatingForYear = sortedByRating[0].rating;
-        peakDateForYear = formatDateShort(sortedByRating[0].date);
-        // Note: Peak rank for specific year would need to be in the data
+    if (wrestlerData.weeklySnapshots && wrestlerData.weeklySnapshots.length > 0) {
+        let filteredSnapshots = wrestlerData.weeklySnapshots;
+        
+        // Filter by year if not ALL
+        if (currentYear !== 'ALL') {
+            filteredSnapshots = wrestlerData.weeklySnapshots.filter(snap => {
+                const snapDate = new Date(snap.date);
+                return snapDate.getFullYear() === parseInt(currentYear);
+            });
+        }
+        
+        // Find highest rating from snapshots
+        filteredSnapshots.forEach(snap => {
+            if (snap.rating && snap.rating > peakRatingForYear) {
+                peakRatingForYear = snap.rating;
+                peakDateForYear = snap.date;
+            }
+        });
     }
     
-    // Calculate highest ranking for selected year (from weekly snapshots)
+    // HIGHEST RANKING - From weekly snapshots
     let highestRankForYear = null;
     let weeksAtNumber1 = 0;
     
@@ -593,13 +602,15 @@ function updateStatsGrid() {
             });
         }
         
-        // Find highest rank (lowest number)
+        // Find highest rank (lowest number) and count weeks at #1
         filteredSnapshots.forEach(snap => {
-            if (snap.rank && (!highestRankForYear || snap.rank < highestRankForYear)) {
-                highestRankForYear = snap.rank;
-            }
-            if (snap.rank === 1) {
-                weeksAtNumber1++;
+            if (snap.rank) {
+                if (!highestRankForYear || snap.rank < highestRankForYear) {
+                    highestRankForYear = snap.rank;
+                }
+                if (snap.rank === 1) {
+                    weeksAtNumber1++;
+                }
             }
         });
     }
@@ -631,11 +642,11 @@ function updateStatsGrid() {
         displaySubtext = `End ${currentYear}`;
     }
     
-    // PEAK RATING (year-specific)
+    // Format peak rating
     const peakRatingValue = peakRatingForYear > 0 ? peakRatingForYear.toFixed(2) : 'N/A';
-    const peakSubtext = peakDateForYear;
+    const peakSubtext = peakDateForYear ? formatDateShort(peakDateForYear) : '';
     
-    // HIGHEST RANKING (year-specific)
+    // Format highest ranking
     let highestRankValue, highestRankSubtext;
     if (highestRankForYear) {
         highestRankValue = `#${highestRankForYear}`;
@@ -667,6 +678,150 @@ function updateStatsGrid() {
     `).join('');
 }
 
+/**
+ * SIMPLIFIED - Replace all three updateRecentMatches, updateTopBottomMatches functions
+ * Just show ALL wrestlers, no filtering
+ */
+
+function updateRecentMatches() {
+    const matches = getFilteredMatches();
+    const recent = matches.slice(-10).reverse();
+    
+    const html = recent.map((m, index) => {
+        const ratingClass = getRatingColorClass(m.rating);
+        const matchId = `recent-match-${index}`;
+        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        // Show ALL wrestlers
+        const wrestlersStr = m.opponents && m.opponents.length > 0 
+            ? m.opponents.join(', ') 
+            : 'N/A';
+        
+        return `
+            <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
+                <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
+                <div>
+                    <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                        ${m.rating.toFixed(2)}
+                    </div>
+                    <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 12px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); min-width: 250px; max-width: 400px;">
+                        <div style="color: #e0e0e0; margin-bottom: 6px;">
+                            <strong style="color: #ffd700;">Date:</strong> ${dateStr}
+                        </div>
+                        <div style="color: #e0e0e0; margin-bottom: 6px;">
+                            <strong style="color: #ffd700;">Event:</strong> ${m.event || 'N/A'}
+                        </div>
+                        <div style="color: #e0e0e0; margin-bottom: 6px;">
+                            <strong style="color: #ffd700;">Match Type:</strong> ${m.matchType || 'N/A'}
+                        </div>
+                        <div style="color: #e0e0e0; margin-bottom: 6px;">
+                            <strong style="color: #ffd700;">Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                        </div>
+                        <div style="color: #e0e0e0; margin-bottom: 6px;">
+                            <strong style="color: #ffd700;">Stakes:</strong> ${m.stakes || 'N/A'}
+                        </div>
+                        <div style="color: #e0e0e0;">
+                            <strong style="color: #ffd700;">Wrestlers:</strong> ${wrestlersStr}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('recentMatchesList').innerHTML = html || '<div style="color: #999;">No matches in this period</div>';
+}
+
+function updateTopBottomMatches() {
+    const matches = getFilteredMatches();
+    const sorted = [...matches].sort((a, b) => b.rating - a.rating);
+    
+    const top5 = sorted.slice(0, Math.min(5, sorted.length));
+    const bottom5 = sorted.slice(-Math.min(5, sorted.length)).reverse();
+    
+    const topHtml = top5.map((m, index) => {
+        const ratingClass = getRatingColorClass(m.rating);
+        const matchId = `top-match-${index}`;
+        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        // Show ALL wrestlers
+        const wrestlersStr = m.opponents && m.opponents.length > 0 
+            ? m.opponents.join(', ') 
+            : 'N/A';
+        
+        return `
+            <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
+                <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+            </div>
+            <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                <div style="margin-bottom: 6px;">
+                    <strong>Date:</strong> ${dateStr}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Event:</strong> ${m.event || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Match Type:</strong> ${m.matchType || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Stakes:</strong> ${m.stakes || 'N/A'}
+                </div>
+                <div>
+                    <strong>Wrestlers:</strong> ${wrestlersStr}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    const bottomHtml = bottom5.map((m, index) => {
+        const ratingClass = getRatingColorClass(m.rating);
+        const matchId = `bottom-match-${index}`;
+        const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        // Show ALL wrestlers
+        const wrestlersStr = m.opponents && m.opponents.length > 0 
+            ? m.opponents.join(', ') 
+            : 'N/A';
+        
+        return `
+            <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
+                <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
+                <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
+                <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+            </div>
+            <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                <div style="margin-bottom: 6px;">
+                    <strong>Date:</strong> ${dateStr}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Event:</strong> ${m.event || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Match Type:</strong> ${m.matchType || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Stipulation:</strong> ${m.matchStipulation || 'N/A'}
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <strong>Stakes:</strong> ${m.stakes || 'N/A'}
+                </div>
+                <div>
+                    <strong>Wrestlers:</strong> ${wrestlersStr}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('topMatchesTable').innerHTML = topHtml || '<div style="color: #999;">No matches</div>';
+    document.getElementById('bottomMatchesTable').innerHTML = bottomHtml || '<div style="color: #999;">No matches</div>';
+}
+        
+ 
         function updateDistributionBars() {
             const matches = getFilteredMatches();
             
