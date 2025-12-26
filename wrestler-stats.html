@@ -622,13 +622,41 @@
             let displayRating, displayRank, displaySubtext;
             
             if (currentYear === 'ALL') {
+                // Load current rating/rank from current-rankings.json (same source as main page)
+                let currentRating = 0;
+                let currentRank = null;
+
+                try {
+                    const currentResponse = await fetch('current-rankings.json');
+                    if (currentResponse.ok) {
+                        const currentData = await currentResponse.json();
+                        
+                        // Find wrestler in current rankings
+                        const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                        for (const div of divisions) {
+                            if (currentData[div]) {
+                                const found = currentData[div].find(w => w.name === wrestlerData.name);
+                                if (found) {
+                                    currentRating = found.rating;
+                                    currentRank = found.rank;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load current rankings, using wrestler data');
+                    currentRating = wrestlerData.currentRating || 0;
+                    currentRank = wrestlerData.currentRank;
+                }
+
                 // Check if wrestler is currently active
-                const isActive = wrestlerData.currentRating && wrestlerData.currentRating > 0;
+                const isActive = currentRating && currentRating > 0;
                 
-                displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
+                displayRating = currentRating?.toFixed(2) || 'N/A';
                 
-                if (isActive && wrestlerData.currentRank) {
-                    displayRank = `#${wrestlerData.currentRank}`;
+                if (isActive && currentRank) {
+                    displayRank = `#${currentRank}`;
                     // Add current week/month/year
                     const now = new Date();
                     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
