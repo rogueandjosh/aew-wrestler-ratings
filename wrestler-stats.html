@@ -456,6 +456,24 @@
 
     <script>
         let wrestlerData = null;
+        let currentRankingsData = null;  // ADD THIS LINE
+
+        // Load current rankings data once at page load
+        async function loadCurrentRankings() {
+            try {
+                const response = await fetch('current-rankings.json');
+                if (response.ok) {
+                    currentRankingsData = await response.json();
+                    console.log('✅ Loaded current rankings data');
+                }
+            } catch (error) {
+                console.warn('Could not load current rankings:', error);
+            }
+        }
+
+        // Call it immediately
+        loadCurrentRankings();
+        let wrestlerData = null;
         let allTeamMembers = null; // Will hold team-members.json data
         let allNameChanges = null; // Will hold name-changes.json data
 
@@ -511,6 +529,22 @@
                     return loadWrestlerData(wrestlerData.canonicalSlug);
                 }
                 
+                // Override with correct current rating/rank from current-rankings.json
+                if (currentRankingsData) {
+                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                    for (const div of divisions) {
+                        if (currentRankingsData[div]) {
+                            const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+                            if (found) {
+                                wrestlerData.currentRating = found.rating;
+                                wrestlerData.currentRank = found.rank;
+                                console.log(`✅ Updated ${wrestlerData.name}: rating=${found.rating.toFixed(2)}, rank=${found.rank}`);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 displayWrestlerData();
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
@@ -518,7 +552,7 @@
                 showError(`Error loading wrestler data: ${error.message}`);
             }
         }
-
+        
         function displayWrestlerData() {
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
