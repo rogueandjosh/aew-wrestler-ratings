@@ -958,6 +958,31 @@
         let teamMembersData = null;
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
 
+        function expandMonthName(weekLabel) {
+            const monthMap = {
+                'Jan': 'January',
+                'Feb': 'February',
+                'Mar': 'March',
+                'Apr': 'April',
+                'May': 'May',
+                'Jun': 'June',
+                'Jul': 'July',
+                'Aug': 'August',
+                'Sep': 'September',
+                'Oct': 'October',
+                'Nov': 'November',
+                'Dec': 'December'
+            };
+            
+            // Replace abbreviated month with full name
+            for (const [abbr, full] of Object.entries(monthMap)) {
+                if (weekLabel.startsWith(abbr + ' ')) {
+                    return weekLabel.replace(abbr, full);
+                }
+            }
+            return weekLabel;
+        }
+
         // Load name changes data
         async function loadNameChanges() {
             if (nameChangesData) return nameChangesData;
@@ -1613,10 +1638,10 @@ let visibleColumns = {
             const select = document.getElementById('weekSelect');
             select.innerHTML = '';
             
-            // Add current week option
+            // Add current week option with full month name
             const currentOption = document.createElement('option');
             currentOption.value = 'current';
-            currentOption.textContent = `Current (${ratingsData.currentWeek})`;
+            currentOption.textContent = `Current (${expandMonthName(ratingsData.currentWeek)})`;
             select.appendChild(currentOption);
             
             // Add archived weeks and populate filter dropdowns
@@ -1627,7 +1652,7 @@ let visibleColumns = {
                 archiveIndex.weeks.forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
-                    option.textContent = week.label;
+                    option.textContent = expandMonthName(week.label);
                     select.appendChild(option);
                     
                     // Extract year and month
@@ -1644,19 +1669,21 @@ let visibleColumns = {
                     yearFilter.innerHTML += `<option value="${year}">20${year}</option>`;
                 });
                 
-                // Populate month filter
+                // Populate month filter with full names
                 const monthFilter = document.getElementById('monthFilter');
                 const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                 const sortedMonths = Array.from(months).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
                 sortedMonths.forEach(month => {
-                    monthFilter.innerHTML += `<option value="${month}">${month}</option>`;
+                    const fullName = monthNames[monthOrder.indexOf(month)];
+                    monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
                 });
                 
                 // Initialize navigation buttons
                 updateNavigationButtons();
             }
         }
-
+        
         function filterWeeks() {
             const yearFilter = document.getElementById('yearFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
