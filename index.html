@@ -1923,63 +1923,50 @@ let visibleColumns = {
         }
 
 
-        // Badge System Functions
-        function getInitials(name) {
-            const specialCases = {
-                'MJF': 'MJF',
-                'FTR': 'FTR',
-                'AEW': 'AEW',
-                'PAC': 'PAC',
-                'LFI': 'LFI'
-            };
+        // === BADGE FUNCTIONS ===
+        function getWrestlerInitials(name) {
+            var specials = {'MJF':'MJF','FTR':'FTR','AEW':'AEW','PAC':'PAC','LFI':'LFI'};
+            if (specials[name]) return specials[name];
             
-            if (specialCases[name]) {
-                return specialCases[name];
-            }
+            var words = name.split(' ').filter(function(w){return w.length>0;});
+            if (words[0] && words[0].toLowerCase()==='the') words.shift();
             
-            const words = name.split(' ').filter(w => w.length > 0);
-            
-            if (words[0] && words[0].toLowerCase() === 'the') {
-                words.shift();
-            }
-            
-            if (words.length >= 2) {
-                return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-            } else if (words.length === 1 && words[0].length > 0) {
-                return words[0].substring(0, 2).toUpperCase();
-            }
-            
+            if (words.length>=2) return (words[0][0]+words[words.length-1][0]).toUpperCase();
+            if (words.length===1 && words[0].length>0) return words[0].substring(0,2).toUpperCase();
             return '?';
         }
-
-        function createWrestlerBadge(name) {
-            const initials = getInitials(name);
-            return '<span class="wrestler-badge">' + initials + '</span>';
+        
+        function makeWrestlerBadge(name) {
+            var init = getWrestlerInitials(name);
+            return '<span class="wrestler-badge">'+init+'</span>';
         }
-
-        function createTeamBadges(teamName) {
-            if (typeof teamMembers !== 'undefined' && teamMembers[teamName]) {
-                const members = teamMembers[teamName];
-                if (members.length > 1) {
-                    const badges = members.map(member => createWrestlerBadge(member)).join('');
-                    return '<span class="team-badges">' + badges + '</span>';
+        
+        function makeTeamBadges(teamName) {
+            if (typeof teamMembers!=='undefined' && teamMembers[teamName]) {
+                var members = teamMembers[teamName];
+                if (members.length>1) {
+                    var html = '<span class="team-badges">';
+                    for(var i=0;i<members.length;i++) {
+                        html += makeWrestlerBadge(members[i]);
+                    }
+                    html += '</span>';
+                    return html;
                 }
             }
-            
-            return createWrestlerBadge(teamName);
+            return makeWrestlerBadge(teamName);
         }
-
-        function renderWrestlerName(name, rank, isTeam) {
-            if (rank <= 20) {
-                const badge = isTeam ? createTeamBadges(name) : createWrestlerBadge(name);
-                return '<span class="wrestler-name-with-badge">' + badge + name + '</span>';
-            } else {
-                return name;
+        
+        function showNameWithBadge(name, rank, isTeam) {
+            if (rank<=20) {
+                var badge = isTeam ? makeTeamBadges(name) : makeWrestlerBadge(name);
+                return '<span class="wrestler-name-with-badge">'+badge+name+'</span>';
             }
+            return name;
         }
+        // === END BADGE FUNCTIONS ===
 
         function renderDivisionStructure(division, data) {
-            const isTeamDivision = (division === 'menstag' || division === 'womenstag' || division === 'trios');
+            var isTeamDiv = (division==='menstag'||division==='womenstag'||division==='trios');
             // Build the STATIC structure with filter controls (only rendered once)
             let html = `
                 <div class="filter-controls">
@@ -2091,7 +2078,7 @@ let visibleColumns = {
               rows.push(`
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
-                        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</a>${teamMembers}</td>
+                        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${showNameWithBadge(wrestler.name,wrestler.rank,isTeamDiv)}</a>${teamMembers}</td>
                         <td class="rating ${ratingClass}">${wrestler.rating.toFixed(2)}</td>
                         <td class="change ${changeClass}">${changeSymbol}</td>
                         <td>${wrestler.matches}</td>
@@ -2340,7 +2327,7 @@ function renderStatistics(division) {
         html += `
             <tr>
                 <td class="rank">${index + 1}</td>
-                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</a></td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${showNameWithBadge(wrestler.name,wrestler.rank,isTeamDiv)}</a></td>
                 <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
                 <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
                 <td class="rating">${wrestler.floor.toFixed(2)}</td>
@@ -2398,7 +2385,7 @@ function renderStatistics(division) {
             return `
                 <tr>
                     ${visibleColumns.rank ? `<td>${rank}</td>` : ''}
-                    ${visibleColumns.name ? `<td class="name">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</td>` : ''}
+                    ${visibleColumns.name ? `<td class="name">${showNameWithBadge(wrestler.name,wrestler.rank,isTeamDiv)}</td>` : ''}
                     ${visibleColumns.current ? `<td>${wrestler.current.toFixed(2)}</td>` : ''}
                     ${visibleColumns.peak ? `<td>${wrestler.peak.toFixed(2)}</td>` : ''}
                     ${visibleColumns.peakWeek ? `<td>${wrestler.peakWeek}</td>` : ''}
@@ -2870,7 +2857,7 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
-        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</a></td>`;
+        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${showNameWithBadge(wrestler.name,wrestler.rank,isTeamDiv)}</a></td>`;
         if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>`;
         if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
         if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
