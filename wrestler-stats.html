@@ -455,8 +455,13 @@
     </div>
 
     <script>
+        // Global variables
         let wrestlerData = null;
-        let currentRankingsData = null;  // ADD THIS LINE
+        let currentRankingsData = null;
+        let allTeamMembers = null;
+        let allNameChanges = null;
+        let currentYear = 'ALL';
+        let ratingChart = null;
 
         // Load current rankings data once at page load
         async function loadCurrentRankings() {
@@ -470,11 +475,6 @@
                 console.warn('Could not load current rankings:', error);
             }
         }
-
-        // Call it immediately
-        loadCurrentRankings();
-        let allTeamMembers = null; // Will hold team-members.json data
-        let allNameChanges = null; // Will hold name-changes.json data
 
         // Load team data files on page load
         async function loadTeamData() {
@@ -497,22 +497,10 @@
                 allNameChanges = [];
             }
         }
-        let currentYear = 'ALL';
-        let ratingChart = null;
 
-        // Load team data on page load
+        // Load both data sources on page load
         (async function() {
-            await loadTeamData();
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const wrestlerSlug = urlParams.get('wrestler');
-
-            if (!wrestlerSlug) {
-                showError('No wrestler specified. Please select a wrestler from the rankings page.');
-            } else {
-                loadWrestlerData(wrestlerSlug);
-            }
-        })();
+            await Promise.all([loadCurrentRankings(), loadTeamData()]);
 
         async function loadWrestlerData(slug) {
             try {
