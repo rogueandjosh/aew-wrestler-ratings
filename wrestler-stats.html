@@ -663,9 +663,16 @@
                 if (isActive && wrestlerData.currentRank) {
                     displayRank = `#${wrestlerData.currentRank}`;
                     // Add current week/month/year
-                    const now = new Date();
-                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const currentWeekStr = `${monthNames[now.getMonth()]} '${now.getFullYear().toString().slice(-2)} Week ${Math.ceil(now.getDate() / 7)}`;
+                    // Use actual current week from current-rankings.json if available
+                    let currentWeekStr;
+                    if (currentRankingsData && currentRankingsData.currentWeek) {
+                    currentWeekStr = currentRankingsData.currentWeek;
+                } else {
+                // Fallback to calculated week
+                const now = new Date();
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                currentWeekStr = `${monthNames[now.getMonth()]} '${now.getFullYear().toString().slice(-2)} Week ${Math.ceil(now.getDate() / 7)}`;
+                }
                     displaySubtext = `Current (${currentWeekStr})`;
                 } else {
                     displayRank = 'Inactive';
