@@ -1923,8 +1923,8 @@ let visibleColumns = {
         }
 
 
+        // Badge System Functions
         function getInitials(name) {
-            // Handle special cases first
             const specialCases = {
                 'MJF': 'MJF',
                 'FTR': 'FTR',
@@ -1937,19 +1937,15 @@ let visibleColumns = {
                 return specialCases[name];
             }
             
-            // Split name and get first letter of each word
             const words = name.split(' ').filter(w => w.length > 0);
             
-            // Handle names with "The" at start
             if (words[0] && words[0].toLowerCase() === 'the') {
-                words.shift(); // Remove "The"
+                words.shift();
             }
             
-            // Get initials (max 2 letters)
             if (words.length >= 2) {
                 return (words[0][0] + words[words.length - 1][0]).toUpperCase();
             } else if (words.length === 1 && words[0].length > 0) {
-                // Single word - use first 2 letters
                 return words[0].substring(0, 2).toUpperCase();
             }
             
@@ -1958,36 +1954,32 @@ let visibleColumns = {
 
         function createWrestlerBadge(name) {
             const initials = getInitials(name);
-            return `<span class="wrestler-badge">${initials}</span>`;
+            return '<span class="wrestler-badge">' + initials + '</span>';
         }
 
         function createTeamBadges(teamName) {
-            // Check if we have team members data
             if (typeof teamMembers !== 'undefined' && teamMembers[teamName]) {
                 const members = teamMembers[teamName];
                 if (members.length > 1) {
-                    // Show individual badges for each team member
                     const badges = members.map(member => createWrestlerBadge(member)).join('');
-                    return `<span class="team-badges">${badges}</span>`;
+                    return '<span class="team-badges">' + badges + '</span>';
                 }
             }
             
-            // Fallback to team name initials
             return createWrestlerBadge(teamName);
         }
 
-        function renderWrestlerName(name, rank, isTeam = false) {
-            // Only show badges for top 20
+        function renderWrestlerName(name, rank, isTeam) {
             if (rank <= 20) {
                 const badge = isTeam ? createTeamBadges(name) : createWrestlerBadge(name);
-                return `<span class="wrestler-name-with-badge">${badge}${name}</span>`;
+                return '<span class="wrestler-name-with-badge">' + badge + name + '</span>';
             } else {
                 return name;
             }
         }
 
         function renderDivisionStructure(division, data) {
-            const isTeamDivision = (division === "menstag" || division === "womenstag" || division === "trios");
+            const isTeamDivision = (division === 'menstag' || division === 'womenstag' || division === 'trios');
             // Build the STATIC structure with filter controls (only rendered once)
             let html = `
                 <div class="filter-controls">
@@ -2406,7 +2398,7 @@ function renderStatistics(division) {
             return `
                 <tr>
                     ${visibleColumns.rank ? `<td>${rank}</td>` : ''}
-                    ${visibleColumns.name ? `<td class="name">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</td>` : \'\'}
+                    ${visibleColumns.name ? `<td class="name">${renderWrestlerName(wrestler.name, wrestler.rank, isTeamDivision)}</td>` : ''}
                     ${visibleColumns.current ? `<td>${wrestler.current.toFixed(2)}</td>` : ''}
                     ${visibleColumns.peak ? `<td>${wrestler.peak.toFixed(2)}</td>` : ''}
                     ${visibleColumns.peakWeek ? `<td>${wrestler.peakWeek}</td>` : ''}
