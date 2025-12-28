@@ -523,33 +523,28 @@
                 wrestlerData = await response.json();
                 
                 // Override with correct current rating/rank from current-rankings.json
+                let foundInCurrentRankings = false;
                 if (currentRankingsData) {
-                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                for (const div of divisions) {
-                    if (currentRankingsData[div]) {
-                        const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
-                        if (found) {
-                            wrestlerData.currentRating = found.rating;
-                            wrestlerData.currentRank = found.rank;
-                            console.log(`✅ Updated current rating: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
-                            break;
+                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                    for (const div of divisions) {
+                        if (currentRankingsData[div]) {
+                            const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+                            if (found) {
+                                wrestlerData.currentRating = found.rating;
+                                wrestlerData.currentRank = found.rank;
+                                foundInCurrentRankings = true;
+                                console.log(`✅ Updated current rating: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-// Round ratings very close to 100 to exactly 100
-if (wrestlerData.currentRating >= 99.95 && wrestlerData.currentRating <= 100.05) {
-    wrestlerData.currentRating = 100.00;
-    console.log(`✅ Rounded to 100.00 (was ${wrestlerData.currentRating})`);
-}
-
-            // If not in current rankings, they've dropped to 100.00
-            if (!foundInCurrentRankings) {
-                wrestlerData.currentRating = 100.00;
-                wrestlerData.currentRank = null;
-                console.log(`✅ Not in current rankings - set to 100.00`);
-            }
+                // If NOT in current rankings and rating is at/near 100, show exactly 100.00
+                if (!foundInCurrentRankings && wrestlerData.currentRating >= 99.95 && wrestlerData.currentRating <= 100.05) {
+                    wrestlerData.currentRating = 100.00;
+                    console.log(`✅ Not in rankings and at 100 - set to 100.00`);
+                }
                 
                 // Check if this is a redirect to another wrestler
                 if (wrestlerData._redirect && wrestlerData.canonicalSlug) {
