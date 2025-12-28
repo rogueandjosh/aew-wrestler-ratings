@@ -2645,36 +2645,47 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             const average = sum / wrestler.ratings.length;
             // Use actual current rating if available, otherwise use most recent rating, default to 100
             // Check if we have pre-loaded statistics.json with correct current values
-            let current = 100.00;
-            if (statisticsData && statisticsData[divKey]) {
-                const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
-                if (preCalculated && preCalculated.current !== undefined) {
-                    current = preCalculated.current;
-                } else if (wrestler.currentRating !== null) {
-                    current = wrestler.currentRating;
-                } else if (wrestler.ratings.length > 0) {
-                    current = wrestler.ratings[wrestler.ratings.length - 1];
-                }
-            } else if (wrestler.currentRating !== null) {
-                    current = wrestler.currentRating;
-            } else if (wrestler.ratings.length > 0) {
-                current = wrestler.ratings[wrestler.ratings.length - 1];
-            }
+let current = 100.00;
+if (statisticsData && statisticsData[divKey]) {
+    const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
+    if (preCalculated && preCalculated.current !== undefined) {
+        current = preCalculated.current;
+    } else if (wrestler.currentRating !== null) {
+        current = wrestler.currentRating;
+    } else if (wrestler.ratings.length > 0) {
+        current = wrestler.ratings[wrestler.ratings.length - 1];
+    }
+} else if (wrestler.currentRating !== null) {
+    current = wrestler.currentRating;
+} else if (wrestler.ratings.length > 0) {
+    current = wrestler.ratings[wrestler.ratings.length - 1];
+}
 
-            // Check if wrestler is in current rankings (use canonicalName since displayName not defined yet)
-            let inCurrentRankings = false;
-            if (ratingsData && ratingsData[divKey]) {
-                inCurrentRankings = ratingsData[divKey].some(w => w.name === canonicalName);
-            }
+// Check if wrestler is in current rankings
+let inCurrentRankings = false;
+if (ratingsData && ratingsData[divKey]) {
+    inCurrentRankings = ratingsData[divKey].some(w => w.name === canonicalName);
+}
 
-            // ONLY round if NOT in current rankings AND at/near 100 (naturally degraded)
-            if (!inCurrentRankings && current >= 99.95 && current <= 100.05) {
-                current = 100.00;
-            }
+// Debug for CM Punk
+if (canonicalName.includes('Punk')) {
+    console.log('CM Punk Debug:');
+    console.log('  Current before rounding:', current);
+    console.log('  In current rankings?', inCurrentRankings);
+    console.log('  Between 99.95-100.05?', current >= 99.95 && current <= 100.05);
+}
 
-            // Get the display name for the selected week (this comes AFTER current calculation)
-            const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
+// ONLY round if NOT in current rankings AND at/near 100
+if (!inCurrentRankings && current >= 99.95 && current <= 100.05) {
+    current = 100.00;
+    if (canonicalName.includes('Punk')) {
+        console.log('  Current after rounding:', current);
+    }
+}
 
+// Get the display name for the selected week
+const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
+            
             finalStatistics[divKey].push({
                 name: displayName,  // Show name as it was at selected week
                 canonicalName: canonicalName,  // Keep for grouping
