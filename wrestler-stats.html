@@ -522,29 +522,53 @@
                 }
                 wrestlerData = await response.json();
                 
-                // Override with correct current rating/rank from current-rankings.json
-                let foundInCurrentRankings = false;
-                if (currentRankingsData) {
-                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                    for (const div of divisions) {
-                        if (currentRankingsData[div]) {
-                            const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
-                            if (found) {
-                                wrestlerData.currentRating = found.rating;
-                                wrestlerData.currentRank = found.rank;
-                                foundInCurrentRankings = true;
-                                console.log(`✅ In current rankings: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
-                                break;
-                            }
-                        }
-                    }
-                }
+                // Check if wrestler is in current rankings (active or dropped out)
+let foundInCurrentRankings = false;
+let foundInDroppedOut = false;
 
-                // If NOT in current rankings AND their rating is at/near 100, show exactly 100.00
-                if (!foundInCurrentRankings && wrestlerData.currentRating >= 99.95 && wrestlerData.currentRating <= 100.05) {
-                    wrestlerData.currentRating = 100.00;
-                    console.log(`✅ Not in rankings, degraded to 100.00`);
+if (currentRankingsData) {
+    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+    
+    // Check active rankings
+    for (const div of divisions) {
+        if (currentRankingsData[div]) {
+            const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+            if (found) {
+                wrestlerData.currentRating = found.rating;
+                wrestlerData.currentRank = found.rank;
+                foundInCurrentRankings = true;
+                console.log(`✅ In current rankings: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
+                break;
+            }
+        }
+    }
+    
+    // If not in active, check dropped out
+    if (!foundInCurrentRankings) {
+        for (const div of divisions) {
+            const droppedKey = div + 'DroppedOut';
+            if (currentRankingsData[droppedKey]) {
+                const found = currentRankingsData[droppedKey].find(w => 
+                    w.name === wrestlerData.name || w.name.includes(wrestlerData.name)
+                );
+                if (found) {
+                    wrestlerData.currentRating = found.lastRating || wrestlerData.currentRating;
+                    wrestlerData.currentRank = null;
+                    foundInDroppedOut = true;
+                    console.log(`✅ In dropped out: ${wrestlerData.currentRating.toFixed(2)}`);
+                    break;
                 }
+            }
+        }
+    }
+}
+
+// If NOT in current data at all, set to N/A
+if (!foundInCurrentRankings && !foundInDroppedOut) {
+    wrestlerData.currentRating = 'N/A';
+    wrestlerData.currentRank = null;
+    console.log(`✅ Not in current data - set to N/A`);
+}
                 // Otherwise keep their raw rating (e.g., Will Ospreay at 143.28)
                 
                 // Check if this is a redirect to another wrestler
