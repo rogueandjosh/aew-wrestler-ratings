@@ -2643,8 +2643,9 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             
             const sum = wrestler.ratings.reduce((a, b) => a + b, 0);
             const average = sum / wrestler.ratings.length;
-            const current = wrestler.inSelectedWeek && wrestler.currentRating !== null ? wrestler.currentRating : 100.00;
-
+            // Use actual current rating if available, otherwise use most recent rating, default to 100
+            const current = wrestler.currentRating !== null ? wrestler.currentRating : 
+                (wrestler.ratings.length > 0 ? wrestler.ratings[wrestler.ratings.length - 1] : 100.00);
             // Get the display name for the selected week
             const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
 
