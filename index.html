@@ -2197,7 +2197,11 @@ let visibleColumns = {
             selectedWeekLabel = ratingsData.currentWeek;
         }
 
-        const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
+        console.log('=== STATISTICS DEBUG ===');
+console.log('Selected week value:', select.value);
+console.log('Selected week label:', selectedWeekLabel);
+const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
+console.log('Stats loaded for:', selectedWeekLabel);
         renderDynamicStatistics(division, dynamicStats, selectedWeekLabel);
 
     } catch (error) {
