@@ -2646,8 +2646,9 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             // Use actual current rating if available, otherwise use most recent rating, default to 100
             // Check if we have pre-loaded statistics.json with correct current values
             let current = 100.00;
-                if (statisticsData && statisticsData[divKey]) {
-                const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === displayName);
+            if (statisticsData && statisticsData[divKey]) {
+                // Use canonicalName (which exists at this point)
+                const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
                 if (preCalculated && preCalculated.current !== undefined) {
                     current = preCalculated.current;
                 } else if (wrestler.currentRating !== null) {
@@ -2660,7 +2661,8 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             } else if (wrestler.ratings.length > 0) {
                 current = wrestler.ratings[wrestler.ratings.length - 1];
             }
-            // Get the display name for the selected week
+
+            // Get the display name for the selected week (this comes AFTER current calculation)
             const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
 
             finalStatistics[divKey].push({
