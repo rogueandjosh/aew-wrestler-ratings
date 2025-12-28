@@ -2300,12 +2300,33 @@ function renderStatistics(division) {
         wrestler.name.toLowerCase().includes(searchTerm)
     );
     
-    // Create filtered statistics object
-    const filteredStats = { ...window.currentStatisticsData };
-    filteredStats[division] = filteredData;
+    // Sort the filtered data
+    const sortedData = [...filteredData];
+    sortData(sortedData, currentSortColumn, currentSortDirection);
     
-    // Re-render with filtered data
-    renderDynamicStatistics(division, filteredStats, window.currentSelectedWeek);
+    // Rebuild ONLY the table body (not the whole page)
+    const tbody = document.querySelector('.table-container table tbody');
+    if (!tbody) return;
+    
+    let html = '';
+    sortedData.forEach((wrestler, index) => {
+        const ratingClass = getRatingClass(wrestler.current);
+        const peakClass = getRatingClass(wrestler.peak);
+        
+        html += '<tr>';
+        if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
+        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? wrestler.current.toFixed(2) : wrestler.current}</td>`;
+        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
+        if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
+        if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
+        if (visibleColumns.peakWeek) html += `<td>${wrestler.peakWeek}</td>`;
+        if (visibleColumns.floorWeek) html += `<td>${wrestler.floorWeek}</td>`;
+        if (visibleColumns.weeksAtNumber1) html += `<td>${wrestler.weeksAtNumber1}</td>`;
+        html += '</tr>';
+    });
+    
+    tbody.innerHTML = html;
 }
 
         function renderStatisticsTable(division, divisionData) {
