@@ -1452,6 +1452,9 @@ let visibleColumns = {
                         } else {
                             // Not in previous week = new, re-entry, or name change
                             
+                            // PRESERVE original label if it's already NEW (from JSON export)
+                            const originalChange = currentWrestler.change;
+                            
                             // Check if this is a name change (old name in dropped out)
                             // Check BOTH previous week AND current week dropped out lists
                             const droppedKey = division + 'DroppedOut';
@@ -1466,7 +1469,14 @@ let visibleColumns = {
                             
                             if (isNameChange) {
                                 currentWrestler.change = 'NAME CHANGE';
+                            } else if (originalChange === 'NEW') {
+                                // PRESERVE "NEW" label from JSON export (it's correct)
+                                currentWrestler.change = 'NEW';
+                            } else if (originalChange === 'RE-ENTRY' || originalChange === '↵') {
+                                // PRESERVE "RE-ENTRY" label from JSON export
+                                currentWrestler.change = originalChange;
                             } else {
+                                // Only recalculate if label is missing/corrupted
                                 // For early weeks in the archive (first 20 weeks), always use NEW
                                 if (isVeryEarlyWeek) {
                                     currentWrestler.change = 'NEW';
@@ -1788,35 +1798,31 @@ let visibleColumns = {
         }
 
         /**
-         * Filter out ghost re-entries
-         * Ghost = marked RE-ENTRY but only 2 matches (no actual new activity)
+         * Filter out ghost re-entries using the same inactive logic as the export script
+         * If someone is marked "(Inactive)" in droppedOut, they shouldn't appear in active rankings
          */
         function filterGhostReentries(divisionData, droppedOutData) {
             if (!divisionData || !Array.isArray(divisionData)) return divisionData;
             
-            // Build map of dropped out wrestlers
-            const droppedOutMap = new Map();
+            // Build set of inactive wrestlers (those with "(Inactive)" suffix in droppedOut)
+            const inactiveWrestlers = new Set();
             if (droppedOutData && Array.isArray(droppedOutData)) {
-                droppedOutData.forEach(w => droppedOutMap.set(w.name, w));
+                droppedOutData.forEach(w => {
+                    if (w.name.includes('(Inactive)')) {
+                        // Extract the clean name without suffix
+                        const cleanName = w.name.replace(' (Inactive)', '');
+                        inactiveWrestlers.add(cleanName);
+                    }
+                });
             }
             
-            // Filter out ghosts
+            // Filter out anyone who's marked as inactive
             return divisionData.filter(wrestler => {
-                const isReentry = wrestler.change === '↵' || wrestler.change === 'RE-ENTRY';
-                
-                if (!isReentry) return true; // Not a re-entry, keep it
-                
-                // Check if they were in droppedOut
-                const droppedOutInfo = droppedOutMap.get(wrestler.name);
-                if (!droppedOutInfo) return true; // Not in droppedOut, genuine re-entry
-                
-                // If match count is exactly 2 (minimum), likely a ghost
-                if (wrestler.matches === 2) {
-                    console.log(`🚫 Filtered ghost re-entry: ${wrestler.name} (only 2 matches, was in droppedOut)`);
+                if (inactiveWrestlers.has(wrestler.name)) {
+                    console.log(`🚫 Filtered inactive wrestler: ${wrestler.name} (marked inactive in droppedOut)`);
                     return false;
                 }
-                
-                return true; // Keep it
+                return true;
             });
         }
         
