@@ -718,8 +718,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 // Check if wrestler is currently active
                 const isActive = wrestlerData.currentRating && wrestlerData.currentRating > 0;
                 
-                displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
-                
+                displayRating = (typeof wrestlerData.currentRating === 'number') ? wrestlerData.currentRating.toFixed(2) : wrestlerData.currentRating || 'N/A';                
                 // Check if in current rankings
             let isCurrentlyActive = false;
             if (currentRankingsData) {
@@ -779,7 +778,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
             
             const cards = [
-                { label: 'Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
+                { label: 'Current Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
                 { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
                 { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
                 { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
