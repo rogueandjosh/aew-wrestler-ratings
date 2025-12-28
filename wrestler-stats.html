@@ -533,11 +533,24 @@
                                 wrestlerData.currentRating = found.rating;
                                 wrestlerData.currentRank = found.rank;
                                 foundInCurrentRankings = true;
-                                console.log(`✅ Updated current rating: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
+                                console.log(`✅ In current rankings: ${found.rating.toFixed(2)}, rank: ${found.rank}`);
                                 break;
                             }
                         }
                     }
+                }
+
+                // If NOT in current rankings AND their rating is at/near 100, show exactly 100.00
+                if (!foundInCurrentRankings && wrestlerData.currentRating >= 99.95 && wrestlerData.currentRating <= 100.05) {
+                    wrestlerData.currentRating = 100.00;
+                    console.log(`✅ Not in rankings, degraded to 100.00`);
+                }
+                // Otherwise keep their raw rating (e.g., Will Ospreay at 143.28)
+                
+                // Check if this is a redirect to another wrestler
+                if (wrestlerData._redirect && wrestlerData.canonicalSlug) {
+                    console.log(`Redirecting to ${wrestlerData.canonicalSlug}`);
+                    return loadWrestlerData(wrestlerData.canonicalSlug);
                 }
 
                 // If NOT in current rankings and rating is at/near 100, show exactly 100.00
