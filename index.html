@@ -2661,31 +2661,35 @@ if (statisticsData && statisticsData[divKey]) {
     current = wrestler.ratings[wrestler.ratings.length - 1];
 }
 
-// Check if wrestler is in current rankings
+// Check if wrestler is in current rankings OR dropped out section
 let inCurrentRankings = false;
 if (ratingsData && ratingsData[divKey]) {
+    // Check active rankings
     inCurrentRankings = ratingsData[divKey].some(w => w.name === canonicalName);
+    
+    // Also check dropped out section
+    if (!inCurrentRankings) {
+        const droppedKey = divKey + 'DroppedOut';
+        if (ratingsData[droppedKey] && ratingsData[droppedKey].length > 0) {
+            inCurrentRankings = ratingsData[droppedKey].some(w => w.name === canonicalName || w.name.includes(canonicalName));
+        }
+    }
 }
 
-// Debug for CM Punk
-if (canonicalName.includes('Punk')) {
-    console.log('CM Punk Debug:');
-    console.log('  Current before rounding:', current);
-    console.log('  In current rankings?', inCurrentRankings);
-    console.log('  Between 99.9-100.1?', current >= 99.9 && current <= 100.1);
-}
-
-// ONLY round if NOT in current rankings AND at/near 100
-if (!inCurrentRankings && current >= 99.9 && current <= 100.1) {
-    current = 100.00;
-    if (canonicalName.includes('Punk')) {
-        console.log('  Current after rounding:', current);
+// If NOT in current rankings AND not in dropped out, check when they last appeared
+if (!inCurrentRankings && wrestler.weeks && wrestler.weeks.length > 0) {
+    const lastWeek = wrestler.weeks[wrestler.weeks.length - 1];
+    const currentWeekIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeekLabel);
+    const lastWeekIndex = archiveIndex.weeks.findIndex(w => w.label === lastWeek);
+    
+    // If they haven't appeared in 2+ weeks, set to 100
+    if (lastWeekIndex === -1 || currentWeekIndex - lastWeekIndex >= 2) {
+        current = 100.00;
     }
 }
 
 // Get the display name for the selected week
 const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nameChanges);
-            
             finalStatistics[divKey].push({
                 name: displayName,  // Show name as it was at selected week
                 canonicalName: canonicalName,  // Keep for grouping
