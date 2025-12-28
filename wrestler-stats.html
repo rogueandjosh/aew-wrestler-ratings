@@ -675,7 +675,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 
                 displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
                 
-                if (isActive && wrestlerData.currentRank) {
+                if (isCurrentlyActive && wrestlerData.currentRank) {
                     displayRank = `#${wrestlerData.currentRank}`;
                     // Add current week/month/year
                     // Use actual current week from current-rankings.json if available
