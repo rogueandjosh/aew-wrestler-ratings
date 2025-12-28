@@ -2738,9 +2738,33 @@ if (isViewingCurrentWeek) {
         }
     }
 } else {
-    // For ARCHIVE weeks, only show rating if they were actually in that week
+    // For ARCHIVE weeks, check if they were genuinely active
     if (wrestler.inSelectedWeek && wrestler.currentRating !== null) {
-        current = wrestler.currentRating;
+        // Additional check: Find their last appearance before this week
+        const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeekLabel);
+        
+        // Check if they appeared in previous 4 weeks
+        let appearedRecently = false;
+        if (selectedIndex !== -1 && wrestler.weeks && wrestler.weeks.length > 0) {
+            // Get weeks 1-4 before selected week
+            for (let i = 1; i <= 4; i++) {
+                const checkIndex = selectedIndex + i;
+                if (checkIndex < archiveIndex.weeks.length) {
+                    const checkWeekLabel = archiveIndex.weeks[checkIndex].label;
+                    if (wrestler.weeks.includes(checkWeekLabel)) {
+                        appearedRecently = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Only show rating if they appeared in previous 4 weeks (genuine re-entry)
+        if (appearedRecently) {
+            current = wrestler.currentRating;
+        } else {
+            current = 'N/A';
+        }
     } else {
         current = 'N/A';
     }
