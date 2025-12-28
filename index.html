@@ -2717,11 +2717,9 @@ if (isViewingCurrentWeek) {
         }
     }
 } else {
-    // For ARCHIVE weeks, use dynamically calculated currentRating
-    if (wrestler.currentRating !== null) {
+    // For ARCHIVE weeks, only show rating if they were actually in that week
+    if (wrestler.inSelectedWeek && wrestler.currentRating !== null) {
         current = wrestler.currentRating;
-    } else if (wrestler.ratings.length > 0) {
-        current = wrestler.ratings[wrestler.ratings.length - 1];
     } else {
         current = 'N/A';
     }
