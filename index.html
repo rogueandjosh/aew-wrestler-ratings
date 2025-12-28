@@ -2842,7 +2842,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
         html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
-        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? wrestler.current.toFixed(2) : wrestler.current}</td>`;
         if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
         if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
         if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
