@@ -2684,8 +2684,11 @@ if (ratingsData && ratingsData[divKey]) {
 // Default current value
 let current = 100.00;
 
+// Determine if we're viewing the actual current week (not an archive)
+const isViewingCurrentWeek = (selectedWeekLabel === 'current');
+
 // For CURRENT week view, use statistics.json + current-rankings logic
-if (selectedWeekLabel === 'current' || selectedWeekLabel === ratingsData?.currentWeek) {
+if (isViewingCurrentWeek) {
     if (statisticsData && statisticsData[divKey]) {
         const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
         if (preCalculated && preCalculated.current !== undefined) {
