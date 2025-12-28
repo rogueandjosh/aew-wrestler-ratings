@@ -2672,11 +2672,11 @@ if (canonicalName.includes('Punk')) {
     console.log('CM Punk Debug:');
     console.log('  Current before rounding:', current);
     console.log('  In current rankings?', inCurrentRankings);
-    console.log('  Between 99.95-100.05?', current >= 99.95 && current <= 100.05);
+    console.log('  Between 99.9-100.1?', current >= 99.9 && current <= 100.1);
 }
 
 // ONLY round if NOT in current rankings AND at/near 100
-if (!inCurrentRankings && current >= 99.95 && current <= 100.05) {
+if (!inCurrentRankings && current >= 99.9 && current <= 100.1) {
     current = 100.00;
     if (canonicalName.includes('Punk')) {
         console.log('  Current after rounding:', current);
