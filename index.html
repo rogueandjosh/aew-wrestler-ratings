@@ -2684,27 +2684,8 @@ if (ratingsData && ratingsData[divKey]) {
 // Default current value
 let current = 100.00;
 
-// If NOT in current active rankings, check dropped out or set N/A
-if (!inCurrentRankings) {
-    // Check if they're in current week's dropped out (recently inactive)
-    const droppedKey = divKey + 'DroppedOut';
-    const inCurrentDroppedOut = ratingsData && ratingsData[droppedKey] && 
-        ratingsData[droppedKey].some(w => w.name === canonicalName || w.name.includes(canonicalName));
-    
-    // If in current dropped out, use statistics.json value
-    if (inCurrentDroppedOut) {
-        if (statisticsData && statisticsData[divKey]) {
-            const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
-            if (preCalculated && preCalculated.current !== undefined) {
-                current = preCalculated.current;
-            }
-        }
-    } else {
-        // NOT in current data at all - set to N/A
-        current = 'N/A';
-    }
-} else {
-    // In current rankings - get the value
+// For CURRENT week view, use statistics.json + current-rankings logic
+if (selectedWeekLabel === 'current' || selectedWeekLabel === ratingsData?.currentWeek) {
     if (statisticsData && statisticsData[divKey]) {
         const preCalculated = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
         if (preCalculated && preCalculated.current !== undefined) {
@@ -2714,6 +2695,32 @@ if (!inCurrentRankings) {
         }
     } else if (wrestler.currentRating !== null) {
         current = wrestler.currentRating;
+    }
+
+    // Check if wrestler is in current rankings
+    let inCurrentRankings = false;
+    if (ratingsData && ratingsData[divKey]) {
+        inCurrentRankings = ratingsData[divKey].some(w => w.name === canonicalName);
+    }
+
+    // If NOT in current active rankings, check dropped out or set N/A
+    if (!inCurrentRankings) {
+        const droppedKey = divKey + 'DroppedOut';
+        const inCurrentDroppedOut = ratingsData && ratingsData[droppedKey] && 
+            ratingsData[droppedKey].some(w => w.name === canonicalName || w.name.includes(canonicalName));
+        
+        if (!inCurrentDroppedOut) {
+            current = 'N/A';
+        }
+    }
+} else {
+    // For ARCHIVE weeks, use dynamically calculated currentRating
+    if (wrestler.currentRating !== null) {
+        current = wrestler.currentRating;
+    } else if (wrestler.ratings.length > 0) {
+        current = wrestler.ratings[wrestler.ratings.length - 1];
+    } else {
+        current = 'N/A';
     }
 }
 
