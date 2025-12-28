@@ -1787,6 +1787,39 @@ let visibleColumns = {
             nextBtn.disabled = (currentIndex <= 0); // Disable right at current
         }
 
+        /**
+         * Filter out ghost re-entries
+         * Ghost = marked RE-ENTRY but only 2 matches (no actual new activity)
+         */
+        function filterGhostReentries(divisionData, droppedOutData) {
+            if (!divisionData || !Array.isArray(divisionData)) return divisionData;
+            
+            // Build map of dropped out wrestlers
+            const droppedOutMap = new Map();
+            if (droppedOutData && Array.isArray(droppedOutData)) {
+                droppedOutData.forEach(w => droppedOutMap.set(w.name, w));
+            }
+            
+            // Filter out ghosts
+            return divisionData.filter(wrestler => {
+                const isReentry = wrestler.change === '↵' || wrestler.change === 'RE-ENTRY';
+                
+                if (!isReentry) return true; // Not a re-entry, keep it
+                
+                // Check if they were in droppedOut
+                const droppedOutInfo = droppedOutMap.get(wrestler.name);
+                if (!droppedOutInfo) return true; // Not in droppedOut, genuine re-entry
+                
+                // If match count is exactly 2 (minimum), likely a ghost
+                if (wrestler.matches === 2) {
+                    console.log(`🚫 Filtered ghost re-entry: ${wrestler.name} (only 2 matches, was in droppedOut)`);
+                    return false;
+                }
+                
+                return true; // Keep it
+            });
+        }
+        
         function loadSelectedWeek() {
             const select = document.getElementById('weekSelect');
             const selectedValue = select.value;
@@ -1803,6 +1836,20 @@ let visibleColumns = {
                             const previousWeekUrl = archiveIndex.weeks[1].url;
                             ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
                         }
+                        
+                        // Filter ghost re-entries (safety net)
+                        const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                        divisions.forEach(div => {
+                            const droppedKey = div + 'DroppedOut';
+                            ratingsData[div] = filterGhostReentries(ratingsData[div], ratingsData[droppedKey]);
+                            
+                            // Recalculate ranks after filtering
+                            if (ratingsData[div]) {
+                                ratingsData[div].forEach((wrestler, index) => {
+                                    wrestler.rank = index + 1;
+                                });
+                            }
+                        });
 
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
@@ -1850,6 +1897,20 @@ let visibleColumns = {
                                     console.log('This is the first week ever - no previous week to compare');
                                 }
                             }
+                            
+                            // Filter ghost re-entries (safety net)
+                            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                            divisions.forEach(div => {
+                                const droppedKey = div + 'DroppedOut';
+                                ratingsData[div] = filterGhostReentries(ratingsData[div], ratingsData[droppedKey]);
+                                
+                                // Recalculate ranks after filtering
+                                if (ratingsData[div]) {
+                                    ratingsData[div].forEach((wrestler, index) => {
+                                        wrestler.rank = index + 1;
+                                    });
+                                }
+                            });
 
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
