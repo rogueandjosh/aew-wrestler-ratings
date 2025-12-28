@@ -675,7 +675,22 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 
                 displayRating = wrestlerData.currentRating?.toFixed(2) || 'N/A';
                 
-                if (isCurrentlyActive && wrestlerData.currentRank) {
+                // Check if in current rankings
+            let isCurrentlyActive = false;
+            if (currentRankingsData) {
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                for (const div of divisions) {
+                    if (currentRankingsData[div]) {
+                        const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+                        if (found) {
+                            isCurrentlyActive = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isCurrentlyActive && wrestlerData.currentRank) {
                     displayRank = `#${wrestlerData.currentRank}`;
                     // Add current week/month/year
                     // Use actual current week from current-rankings.json if available
