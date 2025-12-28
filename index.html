@@ -2627,6 +2627,27 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
                     ws.currentRating = rating;
                     ws.inSelectedWeek = true;
                 }
+
+                // Debug for Bryan Danielson and Mariah May
+if (canonicalName.includes('Danielson') || canonicalName.includes('Mariah')) {
+    console.log(`${canonicalName} in week ${weekLabel}:`, {
+        selectedWeek: selectedWeekLabel,
+        rating: rating,
+        matches: weekLabel === selectedWeekLabel,
+        weekIndex: weekIndex,
+        totalWeeks: weekDataArray.length
+    });
+}
+
+if (weekLabel === selectedWeekLabel || 
+    (selectedWeekLabel === 'current' && weekIndex === weekDataArray.length - 1)) {
+    ws.currentRating = rating;
+    ws.inSelectedWeek = true;
+    
+    if (canonicalName.includes('Danielson') || canonicalName.includes('Mariah')) {
+        console.log(`  ✅ SET inSelectedWeek = true for ${canonicalName}`);
+    }
+}
             });
         });
     });
