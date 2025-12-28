@@ -556,9 +556,24 @@
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
             
-            const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = wrestlerData.isActive ? 'ACTIVE' : 'INACTIVE';
-            statusBadge.className = wrestlerData.isActive ? 'status-badge status-active' : 'status-badge status-inactive';
+            // Check if wrestler is in current rankings (truly active)
+            let isCurrentlyActive = false;
+            if (currentRankingsData) {
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                for (const div of divisions) {
+                    if (currentRankingsData[div]) {
+                        const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+                        if (found) {
+                            isCurrentlyActive = true;
+                                break;
+                        }
+                    }
+                }
+            }
+
+const statusBadge = document.getElementById('statusBadge');
+statusBadge.textContent = isCurrentlyActive ? 'ACTIVE' : 'INACTIVE';
+statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'status-badge status-inactive';
 
             if (wrestlerData.formerNames && wrestlerData.formerNames.length > 0) {
                 const formerNamesEl = document.getElementById('formerNames');
