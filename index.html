@@ -1801,19 +1801,33 @@ let visibleColumns = {
          * Remove wrestlers (NEW or RE-ENTRY) whose matches haven't increased from previous week
          */
         async function filterGhostReentries(divisionData, division, previousWeekUrl) {
-            if (!divisionData || !Array.isArray(divisionData)) return divisionData;
-            if (!previousWeekUrl) return divisionData;
+            console.log(`\n🔍 === FILTER: ${division} ===`);
+            console.log(`  Data count: ${divisionData?.length || 0}`);
+            console.log(`  Previous URL: ${previousWeekUrl}`);
+            
+            if (!divisionData || !Array.isArray(divisionData)) {
+                console.log('  ⚠️ No data array - returning');
+                return divisionData;
+            }
+            if (!previousWeekUrl) {
+                console.log('  ⚠️ No previous URL - returning');
+                return divisionData;
+            }
             
             try {
+                console.log(`  📥 Fetching previous week...`);
                 const response = await fetch(previousWeekUrl);
                 const previousData = await response.json();
+                console.log(`  ✅ Previous week loaded`);
                 
                 const prevMatches = new Map();
                 if (previousData[division]) {
                     previousData[division].forEach(w => prevMatches.set(w.name, w.matches));
+                    console.log(`  📊 Previous week had ${prevMatches.size} wrestlers`);
                 }
                 
-                return divisionData.filter(wrestler => {
+                let removedCount = 0;
+                const filtered = divisionData.filter(wrestler => {
                     // Check if marked as NEW or RE-ENTRY
                     const isNewOrReentry = wrestler.change === 'NEW' || 
                                            wrestler.change === '↵' || 
@@ -1825,19 +1839,26 @@ let visibleColumns = {
                     
                     if (prevCount === undefined) {
                         // Not in previous week at all - genuine NEW entry
+                        console.log(`  ✅ ${wrestler.name}: NEW (not in prev week)`);
                         return true;
                     }
                     
                     // Compare match counts
                     if (wrestler.matches <= prevCount) {
-                        console.log(`🚫 GHOST: ${wrestler.name} (${prevCount} → ${wrestler.matches} matches)`);
+                        console.log(`  🚫 ${wrestler.name}: GHOST (${prevCount} → ${wrestler.matches})`);
+                        removedCount++;
                         return false; // REMOVE!
                     }
                     
+                    console.log(`  ✅ ${wrestler.name}: OK (${prevCount} → ${wrestler.matches})`);
                     return true; // Keep - matches increased
                 });
+                
+                console.log(`  🎯 Result: Removed ${removedCount} ghosts\n`);
+                return filtered;
+                
             } catch (error) {
-                console.error('Filter error:', error);
+                console.error(`  ❌ Filter error:`, error);
                 return divisionData;
             }
         }
@@ -1848,20 +1869,39 @@ let visibleColumns = {
             
             if (selectedValue === 'current') {
                 // Reload current rankings
+                console.log('🟢 === LOADING CURRENT WEEK ===');
                 fetch('current-rankings.json')
                     .then(response => response.json())
                     .then(async data => {
+                        console.log('🟢 Data loaded successfully');
                         ratingsData = fixEncodingIssues(data);
+                        console.log('🟢 Encoding fixed');
                         
                         // DON'T reconstruct arrows for current week - JSON from export is correct
                         // Only filter ghosts
                         
                         // Filter ghost re-entries (safety net)
+                        console.log('🟢 Starting ghost filter process...');
                         const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                         const previousWeekUrl = archiveIndex?.weeks?.[0]?.url;
                         
+                        console.log('🟢 Previous week URL:', previousWeekUrl);
+                        console.log('🟢 Archive index exists?', !!archiveIndex);
+                        console.log('🟢 Weeks array exists?', !!archiveIndex?.weeks);
+                        console.log('🟢 Weeks count:', archiveIndex?.weeks?.length);
+                        
+                        if (!previousWeekUrl) {
+                            console.log('🔴 NO PREVIOUS WEEK URL - SKIPPING FILTER!');
+                        }
+                        
                         for (const div of divisions) {
+                            const beforeCount = ratingsData[div]?.length || 0;
+                            console.log(`🟢 Processing ${div}: ${beforeCount} wrestlers before filter`);
+                            
                             ratingsData[div] = await filterGhostReentries(ratingsData[div], div, previousWeekUrl);
+                            
+                            const afterCount = ratingsData[div]?.length || 0;
+                            console.log(`🟢 ${div}: ${beforeCount} → ${afterCount} (removed ${beforeCount - afterCount})`);
                             
                             // Recalculate ranks after filtering
                             if (ratingsData[div]) {
@@ -1870,6 +1910,8 @@ let visibleColumns = {
                                 });
                             }
                         }
+                        
+                        console.log('🟢 Ghost filter complete!');
                         
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
