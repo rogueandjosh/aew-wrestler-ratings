@@ -1798,7 +1798,7 @@ let visibleColumns = {
         }
 
         /**
-         * SIMPLE: Remove RE-ENTRY if matches didn't increase from previous week
+         * Remove wrestlers (NEW or RE-ENTRY) whose matches haven't increased from previous week
          */
         async function filterGhostReentries(divisionData, division, previousWeekUrl) {
             if (!divisionData || !Array.isArray(divisionData)) return divisionData;
@@ -1814,19 +1814,30 @@ let visibleColumns = {
                 }
                 
                 return divisionData.filter(wrestler => {
-                    const isReentry = wrestler.change === '↵' || wrestler.change === 'RE-ENTRY';
-                    if (!isReentry) return true;
+                    // Check if marked as NEW or RE-ENTRY
+                    const isNewOrReentry = wrestler.change === 'NEW' || 
+                                           wrestler.change === '↵' || 
+                                           wrestler.change === 'RE-ENTRY';
+                    
+                    if (!isNewOrReentry) return true; // Keep all arrows (↑↓—)
                     
                     const prevCount = prevMatches.get(wrestler.name);
-                    if (prevCount === undefined) return true;
                     
-                    if (wrestler.matches <= prevCount) {
-                        console.log(`🚫 ${wrestler.name}: ${prevCount} → ${wrestler.matches} (GHOST)`);
-                        return false;
+                    if (prevCount === undefined) {
+                        // Not in previous week at all - genuine NEW entry
+                        return true;
                     }
-                    return true;
+                    
+                    // Compare match counts
+                    if (wrestler.matches <= prevCount) {
+                        console.log(`🚫 GHOST: ${wrestler.name} (${prevCount} → ${wrestler.matches} matches)`);
+                        return false; // REMOVE!
+                    }
+                    
+                    return true; // Keep - matches increased
                 });
             } catch (error) {
+                console.error('Filter error:', error);
                 return divisionData;
             }
         }
@@ -1842,11 +1853,8 @@ let visibleColumns = {
                     .then(async data => {
                         ratingsData = fixEncodingIssues(data);
                         
-                        // Reconstruct arrows from previous week if corrupted
-                        if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
-                            const previousWeekUrl = archiveIndex.weeks[1].url;
-                            ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
-                        }
+                        // DON'T reconstruct arrows for current week - JSON from export is correct
+                        // Only filter ghosts
                         
                         // Filter ghost re-entries (safety net)
                         const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
