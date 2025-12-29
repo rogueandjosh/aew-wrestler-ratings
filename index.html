@@ -1798,30 +1798,102 @@ let visibleColumns = {
         }
 
         /**
-         * Filter out ghost re-entries using the same inactive logic as the export script
-         * If someone is marked "(Inactive)" in droppedOut, they shouldn't appear in active rankings
+         * Filter out ghost re-entries by comparing match counts to LAST appearance
+         * Searches backwards up to 40 weeks through archive to find wrestler's last recorded match count
          */
-        function filterGhostReentries(divisionData, droppedOutData) {
+        async function filterGhostReentries(divisionData, droppedOutData, currentWeekUrl) {
             if (!divisionData || !Array.isArray(divisionData)) return divisionData;
+            if (!archiveIndex || !archiveIndex.weeks) return divisionData;
             
-            // Build set of inactive wrestlers (those with "(Inactive)" suffix in droppedOut)
-            const inactiveWrestlers = new Set();
-            if (droppedOutData && Array.isArray(droppedOutData)) {
-                droppedOutData.forEach(w => {
-                    if (w.name.includes('(Inactive)')) {
-                        // Extract the clean name without suffix
-                        const cleanName = w.name.replace(' (Inactive)', '');
-                        inactiveWrestlers.add(cleanName);
-                    }
-                });
+            // Find current week index
+            let currentIndex = -1;
+            if (currentWeekUrl && currentWeekUrl !== 'current' && currentWeekUrl.includes('archive/')) {
+                const currentFilename = currentWeekUrl.replace('archive/', '');
+                currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename || w.url === currentWeekUrl);
+            } else {
+                // Current week = index 0
+                currentIndex = 0;
             }
             
-            // Filter out anyone who's marked as inactive
+            if (currentIndex === -1) return divisionData;
+            
+            // Build a cache of last known match counts by searching backwards
+            const lastKnownMatches = new Map();
+            
+            // Get list of wrestlers marked RE-ENTRY
+            const reentryWrestlers = divisionData
+                .filter(w => w.change === '↵' || w.change === 'RE-ENTRY')
+                .map(w => w.name);
+            
+            if (reentryWrestlers.length === 0) return divisionData; // No re-entries to check
+            
+            console.log(`🔍 Checking ${reentryWrestlers.length} re-entries for match count changes`);
+            
+            // Search backwards through archive weeks (starting from week before current)
+            const maxWeeksBack = 40;
+            for (let i = currentIndex + 1; i < archiveIndex.weeks.length && i < currentIndex + maxWeeksBack && lastKnownMatches.size < reentryWrestlers.length; i++) {
+                const weekUrl = archiveIndex.weeks[i].url;
+                
+                try {
+                    const response = await fetch(weekUrl);
+                    const weekData = await response.json();
+                    
+                    // Check all divisions for these wrestlers
+                    ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(div => {
+                        // Check active rankings
+                        if (weekData[div]) {
+                            weekData[div].forEach(w => {
+                                if (reentryWrestlers.includes(w.name) && !lastKnownMatches.has(w.name)) {
+                                    lastKnownMatches.set(w.name, {
+                                        matches: w.matches,
+                                        week: archiveIndex.weeks[i].label
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Stop if we found all wrestlers
+                    if (lastKnownMatches.size >= reentryWrestlers.length) {
+                        console.log(`✅ Found all ${reentryWrestlers.length} wrestlers in previous weeks`);
+                        break;
+                    }
+                    
+                } catch (error) {
+                    console.log(`Could not load week ${archiveIndex.weeks[i].label}:`, error);
+                    continue; // Try next week
+                }
+            }
+            
+            if (lastKnownMatches.size > 0) {
+                console.log(`📊 Found ${lastKnownMatches.size} of ${reentryWrestlers.length} wrestlers in archive (searched ${Math.min(maxWeeksBack, archiveIndex.weeks.length - currentIndex - 1)} weeks back)`);
+            }
+            
+            // Now filter based on match count comparison
             return divisionData.filter(wrestler => {
-                if (inactiveWrestlers.has(wrestler.name)) {
-                    console.log(`🚫 Filtered inactive wrestler: ${wrestler.name} (marked inactive in droppedOut)`);
+                const isReentry = wrestler.change === '↵' || wrestler.change === 'RE-ENTRY';
+                
+                if (!isReentry) return true; // Not a re-entry, keep it
+                
+                const lastKnown = lastKnownMatches.get(wrestler.name);
+                
+                if (!lastKnown) {
+                    // Never found them in previous weeks - might be genuinely new (mislabeled)
+                    // OR they're from too far back (40+ weeks)
+                    // Keep them to be safe
+                    console.log(`⚠️ ${wrestler.name}: No previous appearance found in last 40 weeks (keeping)`);
+                    return true;
+                }
+                
+                // Compare match counts
+                if (wrestler.matches <= lastKnown.matches) {
+                    // Match count hasn't increased = GHOST!
+                    console.log(`🚫 Filtered ghost re-entry: ${wrestler.name} (${lastKnown.matches} matches in ${lastKnown.week} → ${wrestler.matches} now, no increase)`);
                     return false;
                 }
+                
+                // Match count increased = legitimate re-entry
+                console.log(`✅ ${wrestler.name}: Legitimate re-entry (${lastKnown.matches} in ${lastKnown.week} → ${wrestler.matches} now)`);
                 return true;
             });
         }
@@ -1845,9 +1917,9 @@ let visibleColumns = {
                         
                         // Filter ghost re-entries (safety net)
                         const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                        divisions.forEach(div => {
+                        for (const div of divisions) {
                             const droppedKey = div + 'DroppedOut';
-                            ratingsData[div] = filterGhostReentries(ratingsData[div], ratingsData[droppedKey]);
+                            ratingsData[div] = await filterGhostReentries(ratingsData[div], ratingsData[droppedKey], 'current');
                             
                             // Recalculate ranks after filtering
                             if (ratingsData[div]) {
@@ -1855,8 +1927,8 @@ let visibleColumns = {
                                     wrestler.rank = index + 1;
                                 });
                             }
-                        });
-
+                        }
+                        
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
                         } else {
@@ -1906,9 +1978,9 @@ let visibleColumns = {
                             
                             // Filter ghost re-entries (safety net)
                             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                            divisions.forEach(div => {
+                            for (const div of divisions) {
                                 const droppedKey = div + 'DroppedOut';
-                                ratingsData[div] = filterGhostReentries(ratingsData[div], ratingsData[droppedKey]);
+                                ratingsData[div] = await filterGhostReentries(ratingsData[div], ratingsData[droppedKey], selectedValue);
                                 
                                 // Recalculate ranks after filtering
                                 if (ratingsData[div]) {
@@ -1916,7 +1988,7 @@ let visibleColumns = {
                                         wrestler.rank = index + 1;
                                     });
                                 }
-                            });
+                            }
 
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
