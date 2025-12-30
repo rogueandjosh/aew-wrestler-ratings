@@ -2334,15 +2334,27 @@ if (!isNameChange) {
             }
             
             // Look up team members
-            const members = teamMembersData.teams[teamName];
-            
-            if (members && members.length > 0) {
-                return `<span class="team-members">${members.join(' & ')}</span>`;
-            }
-            
-            // No data found for this team
-            return '';
-        }
+let members = teamMembersData.teams[teamName];
+
+// If not found, check if this is a renamed team (look for old name)
+if (!members && nameChanges) {
+    // Check if teamName is a NEW name (find its old name)
+    const oldNameEntry = Object.keys(nameChanges).find(oldName => 
+        nameChanges[oldName] === teamName
+    );
+    
+    if (oldNameEntry) {
+        // Try looking up with old name
+        members = teamMembersData.teams[oldNameEntry];
+    }
+}
+
+if (members && members.length > 0) {
+    return `<span class="team-members">${members.join(' & ')}</span>`;
+}
+
+// No data found for this team
+return '';
 
         function applyFilters(division, immediate = false) {
             if (immediate) {
