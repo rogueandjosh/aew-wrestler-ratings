@@ -1455,17 +1455,29 @@ let visibleColumns = {
                             // PRESERVE original label if it's already NEW (from JSON export)
                             const originalChange = currentWrestler.change;
                             
-                            // Check if this is a name change (old name in dropped out)
-                            // Check BOTH previous week AND current week dropped out lists
-                            const droppedKey = division + 'DroppedOut';
-                            const prevDroppedOut = previousData[droppedKey] || [];
-                            const currentDroppedOut = currentData[droppedKey] || [];
-                            const allDroppedOut = [...prevDroppedOut, ...currentDroppedOut];
-                            
-                            const isNameChange = allDroppedOut.some(dropped => {
-                                const oldName = dropped.name.replace(' (Inactive)', '');
-                                return nameChanges[oldName] === currentWrestler.name;
-                            });
+                            // Check if this is a name change
+// Look for old name either in dropped out OR in previous week rankings
+const droppedKey = division + 'DroppedOut';
+const prevDroppedOut = previousData[droppedKey] || [];
+const currentDroppedOut = currentData[droppedKey] || [];
+const prevRankings = previousData[division] || [];
+
+// Check dropped out lists
+let isNameChange = [...prevDroppedOut, ...currentDroppedOut].some(dropped => {
+    const oldName = dropped.name.replace(' (Inactive)', '');
+    return nameChanges[oldName] === currentWrestler.name;
+});
+
+// Also check if old name was in previous week rankings (renamed but still active)
+if (!isNameChange) {
+    isNameChange = Object.keys(nameChanges).some(oldName => {
+        if (nameChanges[oldName] === currentWrestler.name) {
+            // Check if old name was in previous week
+            return prevRankings.some(prev => prev.name === oldName);
+        }
+        return false;
+    });
+}
                             
                             if (isNameChange) {
                                 currentWrestler.change = 'NAME CHANGE';
