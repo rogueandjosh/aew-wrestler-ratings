@@ -1820,56 +1820,85 @@ let visibleColumns = {
         const previousData = await response.json();
         console.log(`  ✅ Previous week loaded`);
         
-        const prevMatches = new Map();
-        const prevRankings = new Set(); // Track who was in rankings
+        const prevRankings = new Set();
         
         if (previousData[division]) {
             previousData[division].forEach(w => {
-                prevMatches.set(w.name, w.matches);
-                prevRankings.add(w.name); // Remember they were ranked
+                prevRankings.add(w.name);
             });
-            console.log(`  📊 Previous week had ${prevMatches.size} wrestlers`);
+            console.log(`  📊 Previous week had ${prevRankings.size} wrestlers`);
+        }
+        
+        // Helper function to find last appearance
+        async function findLastMatchCount(wrestlerName) {
+            // Search backwards through last 20 archived weeks
+            const maxWeeksToSearch = 20;
+            const archiveWeeks = archiveIndex?.weeks || [];
+            
+            for (let i = 0; i < Math.min(maxWeeksToSearch, archiveWeeks.length); i++) {
+                try {
+                    const weekUrl = archiveWeeks[i].url;
+                    const weekResponse = await fetch(weekUrl);
+                    const weekData = await weekResponse.json();
+                    
+                    if (weekData[division]) {
+                        const foundWrestler = weekData[division].find(w => w.name === wrestlerName);
+                        if (foundWrestler) {
+                            console.log(`    📜 Found ${wrestlerName} in ${archiveWeeks[i].label}: ${foundWrestler.matches} matches`);
+                            return foundWrestler.matches;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`    ⚠️ Error fetching week ${i}: ${error.message}`);
+                }
+            }
+            
+            console.log(`    🔍 ${wrestlerName} not found in last ${maxWeeksToSearch} weeks`);
+            return null;
         }
         
         let removedCount = 0;
-        const filtered = divisionData.filter(wrestler => {
+        const filtered = [];
+        
+        for (const wrestler of divisionData) {
+            // If they were in rankings last week, ALWAYS keep them
+            if (prevRankings.has(wrestler.name)) {
+                console.log(`  ✅ ${wrestler.name}: Keep (was in prev rankings)`);
+                filtered.push(wrestler);
+                continue;
+            }
+            
             // Check if marked as NEW or RE-ENTRY
             const isNewOrReentry = wrestler.change === 'NEW' || 
                                    wrestler.change === '↵' || 
                                    wrestler.change === 'RE-ENTRY';
             
-            // If they were already in rankings last week, ALWAYS keep them
-            if (prevRankings.has(wrestler.name)) {
-                console.log(`  ✅ ${wrestler.name}: Keep (was in prev rankings)`);
-                return true;
-            }
-            
-            // They were NOT in prev rankings - check if genuine new entry
             if (!isNewOrReentry) {
-                // Not marked as new but not in prev rankings? Keep for now
-                console.log(`  ⚠️ ${wrestler.name}: Keep (not in prev, not marked new)`);
-                return true;
+                // Not marked as new, keep them
+                console.log(`  ⚠️ ${wrestler.name}: Keep (not marked as new)`);
+                filtered.push(wrestler);
+                continue;
             }
             
-            // Marked as NEW/RE-ENTRY and wasn't in prev rankings
-            const prevCount = prevMatches.get(wrestler.name);
+            // Marked as NEW/RE-ENTRY and wasn't in last week
+            // Search backwards to find their last appearance
+            console.log(`  🔎 ${wrestler.name}: Checking if genuine new entry...`);
+            const lastMatchCount = await findLastMatchCount(wrestler.name);
             
-            if (prevCount === undefined) {
-                // Never seen before - genuine NEW entry
-                console.log(`  ✅ ${wrestler.name}: NEW (first time ever)`);
-                return true;
-            }
-            
-            // Was inactive, now returning - check match count
-            if (wrestler.matches <= prevCount) {
-                console.log(`  🚫 ${wrestler.name}: GHOST (inactive re-entry: ${prevCount} → ${wrestler.matches})`);
+            if (lastMatchCount === null) {
+                // Genuinely never seen before
+                console.log(`  ✅ ${wrestler.name}: NEW (genuine first appearance)`);
+                filtered.push(wrestler);
+            } else if (wrestler.matches > lastMatchCount) {
+                // Match count increased - they wrestled
+                console.log(`  ✅ ${wrestler.name}: OK (${lastMatchCount} → ${wrestler.matches})`);
+                filtered.push(wrestler);
+            } else {
+                // Match count same or lower - GHOST!
+                console.log(`  🚫 ${wrestler.name}: GHOST (${lastMatchCount} → ${wrestler.matches})`);
                 removedCount++;
-                return false; // REMOVE!
             }
-            
-            console.log(`  ✅ ${wrestler.name}: OK (wrestled: ${prevCount} → ${wrestler.matches})`);
-            return true;
-        });
+        }
         
         console.log(`  🎯 Result: Removed ${removedCount} ghosts\n`);
         return filtered;
