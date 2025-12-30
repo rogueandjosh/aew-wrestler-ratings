@@ -1801,73 +1801,84 @@ let visibleColumns = {
          * Remove wrestlers (NEW or RE-ENTRY) whose matches haven't increased from previous week
          */
         async function filterGhostReentries(divisionData, division, previousWeekUrl) {
-            console.log(`\n🔍 === FILTER: ${division} ===`);
-            console.log(`  Data count: ${divisionData?.length || 0}`);
-            console.log(`  Previous URL: ${previousWeekUrl}`);
-            
-            if (!divisionData || !Array.isArray(divisionData)) {
-                console.log('  ⚠️ No data array - returning');
-                return divisionData;
-            }
-            if (!previousWeekUrl) {
-                console.log('  ⚠️ No previous URL - returning');
-                return divisionData;
-            }
-            
-            try {
-                console.log(`  📥 Fetching previous week...`);
-                const response = await fetch(previousWeekUrl);
-                const previousData = await response.json();
-                console.log(`  ✅ Previous week loaded`);
-                
-                const prevMatches = new Map();
-                if (previousData[division]) {
-                    previousData[division].forEach(w => prevMatches.set(w.name, w.matches));
-                    console.log(`  📊 Previous week had ${prevMatches.size} wrestlers`);
-                }
-                
-                let removedCount = 0;
-const filtered = divisionData.filter(wrestler => {
-    const prevCount = prevMatches.get(wrestler.name);
+    console.log(`\n🔍 === FILTER: ${division} ===`);
+    console.log(`  Data count: ${divisionData?.length || 0}`);
+    console.log(`  Previous URL: ${previousWeekUrl}`);
     
-    // If not in previous week at all, check if genuinely NEW
-    if (prevCount === undefined) {
-        const isMarkedAsNew = wrestler.change === 'NEW' || 
-                              wrestler.change === '↵' || 
-                              wrestler.change === 'RE-ENTRY';
+    if (!divisionData || !Array.isArray(divisionData)) {
+        console.log('  ⚠️ No data array - returning');
+        return divisionData;
+    }
+    if (!previousWeekUrl) {
+        console.log('  ⚠️ No previous URL - returning');
+        return divisionData;
+    }
+    
+    try {
+        console.log(`  📥 Fetching previous week...`);
+        const response = await fetch(previousWeekUrl);
+        const previousData = await response.json();
+        console.log(`  ✅ Previous week loaded`);
         
-        if (isMarkedAsNew) {
-            console.log(`  ✅ ${wrestler.name}: NEW (not in prev week)`);
-            return true; // Genuine new entry
-        } else {
-            // Marked with arrow but wasn't in prev week? Suspicious, but keep for now
-            console.log(`  ⚠️ ${wrestler.name}: In current but not prev, marked as ${wrestler.change}`);
+        const prevMatches = new Map();
+        const prevRankings = new Set(); // Track who was in rankings
+        
+        if (previousData[division]) {
+            previousData[division].forEach(w => {
+                prevMatches.set(w.name, w.matches);
+                prevRankings.add(w.name); // Remember they were ranked
+            });
+            console.log(`  📊 Previous week had ${prevMatches.size} wrestlers`);
+        }
+        
+        let removedCount = 0;
+        const filtered = divisionData.filter(wrestler => {
+            // Check if marked as NEW or RE-ENTRY
+            const isNewOrReentry = wrestler.change === 'NEW' || 
+                                   wrestler.change === '↵' || 
+                                   wrestler.change === 'RE-ENTRY';
+            
+            // If they were already in rankings last week, ALWAYS keep them
+            if (prevRankings.has(wrestler.name)) {
+                console.log(`  ✅ ${wrestler.name}: Keep (was in prev rankings)`);
+                return true;
+            }
+            
+            // They were NOT in prev rankings - check if genuine new entry
+            if (!isNewOrReentry) {
+                // Not marked as new but not in prev rankings? Keep for now
+                console.log(`  ⚠️ ${wrestler.name}: Keep (not in prev, not marked new)`);
+                return true;
+            }
+            
+            // Marked as NEW/RE-ENTRY and wasn't in prev rankings
+            const prevCount = prevMatches.get(wrestler.name);
+            
+            if (prevCount === undefined) {
+                // Never seen before - genuine NEW entry
+                console.log(`  ✅ ${wrestler.name}: NEW (first time ever)`);
+                return true;
+            }
+            
+            // Was inactive, now returning - check match count
+            if (wrestler.matches <= prevCount) {
+                console.log(`  🚫 ${wrestler.name}: GHOST (inactive re-entry: ${prevCount} → ${wrestler.matches})`);
+                removedCount++;
+                return false; // REMOVE!
+            }
+            
+            console.log(`  ✅ ${wrestler.name}: OK (wrestled: ${prevCount} → ${wrestler.matches})`);
             return true;
-        }
-    }
-    
-    // Wrestler WAS in previous week - compare match counts
-    if (wrestler.matches <= prevCount) {
-        // Match count hasn't increased - this is a GHOST (regardless of change indicator)
-        console.log(`  🚫 ${wrestler.name}: GHOST (${prevCount} → ${wrestler.matches}, change: ${wrestler.change})`);
-        removedCount++;
-        return false; // REMOVE!
-    }
-    
-    // Match count increased - they wrestled, keep them
-    console.log(`  ✅ ${wrestler.name}: OK (${prevCount} → ${wrestler.matches}, change: ${wrestler.change})`);
-    return true;
-});
-                
-                console.log(`  🎯 Result: Removed ${removedCount} ghosts\n`);
-                return filtered;
-                
-            } catch (error) {
-                console.error(`  ❌ Filter error:`, error);
-                return divisionData;
-            }
-        }
+        });
         
+        console.log(`  🎯 Result: Removed ${removedCount} ghosts\n`);
+        return filtered;
+        
+    } catch (error) {
+        console.error(`  ❌ Filter error:`, error);
+        return divisionData;
+    }
+}
         function loadSelectedWeek() {
             const select = document.getElementById('weekSelect');
             const selectedValue = select.value;
