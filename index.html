@@ -1861,24 +1861,17 @@ let visibleColumns = {
         const filtered = [];
         
         for (const wrestler of divisionData) {
-            // If they were in rankings last week, ALWAYS keep them
-            if (prevRankings.has(wrestler.name)) {
-                console.log(`  ✅ ${wrestler.name}: Keep (was in prev rankings)`);
-                filtered.push(wrestler);
-                continue;
-            }
-            
-            // Check if marked as NEW or RE-ENTRY
-            const isNewOrReentry = wrestler.change === 'NEW' || 
-                                   wrestler.change === '↵' || 
-                                   wrestler.change === 'RE-ENTRY';
-            
-            if (!isNewOrReentry) {
-                // Not marked as new, keep them
-                console.log(`  ⚠️ ${wrestler.name}: Keep (not marked as new)`);
-                filtered.push(wrestler);
-                continue;
-            }
+    // Check if marked as NEW or RE-ENTRY first
+    const isNewOrReentry = wrestler.change === 'NEW' || 
+                           wrestler.change === '↵' || 
+                           wrestler.change === 'RE-ENTRY';
+    
+    // If they were in rankings last week AND not marked new, keep them
+    if (prevRankings.has(wrestler.name) && !isNewOrReentry) {
+        console.log(`  ✅ ${wrestler.name}: Keep (was in prev rankings)`);
+        filtered.push(wrestler);
+        continue;
+    }
             
             // Marked as NEW/RE-ENTRY and wasn't in last week
             // Search backwards to find their last appearance
