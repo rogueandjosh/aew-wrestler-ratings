@@ -1827,32 +1827,37 @@ let visibleColumns = {
                 }
                 
                 let removedCount = 0;
-                const filtered = divisionData.filter(wrestler => {
-                    // Check if marked as NEW or RE-ENTRY
-                    const isNewOrReentry = wrestler.change === 'NEW' || 
-                                           wrestler.change === '↵' || 
-                                           wrestler.change === 'RE-ENTRY';
-                    
-                    if (!isNewOrReentry) return true; // Keep all arrows (↑↓—)
-                    
-                    const prevCount = prevMatches.get(wrestler.name);
-                    
-                    if (prevCount === undefined) {
-                        // Not in previous week at all - genuine NEW entry
-                        console.log(`  ✅ ${wrestler.name}: NEW (not in prev week)`);
-                        return true;
-                    }
-                    
-                    // Compare match counts
-                    if (wrestler.matches <= prevCount) {
-                        console.log(`  🚫 ${wrestler.name}: GHOST (${prevCount} → ${wrestler.matches})`);
-                        removedCount++;
-                        return false; // REMOVE!
-                    }
-                    
-                    console.log(`  ✅ ${wrestler.name}: OK (${prevCount} → ${wrestler.matches})`);
-                    return true; // Keep - matches increased
-                });
+const filtered = divisionData.filter(wrestler => {
+    const prevCount = prevMatches.get(wrestler.name);
+    
+    // If not in previous week at all, check if genuinely NEW
+    if (prevCount === undefined) {
+        const isMarkedAsNew = wrestler.change === 'NEW' || 
+                              wrestler.change === '↵' || 
+                              wrestler.change === 'RE-ENTRY';
+        
+        if (isMarkedAsNew) {
+            console.log(`  ✅ ${wrestler.name}: NEW (not in prev week)`);
+            return true; // Genuine new entry
+        } else {
+            // Marked with arrow but wasn't in prev week? Suspicious, but keep for now
+            console.log(`  ⚠️ ${wrestler.name}: In current but not prev, marked as ${wrestler.change}`);
+            return true;
+        }
+    }
+    
+    // Wrestler WAS in previous week - compare match counts
+    if (wrestler.matches <= prevCount) {
+        // Match count hasn't increased - this is a GHOST (regardless of change indicator)
+        console.log(`  🚫 ${wrestler.name}: GHOST (${prevCount} → ${wrestler.matches}, change: ${wrestler.change})`);
+        removedCount++;
+        return false; // REMOVE!
+    }
+    
+    // Match count increased - they wrestled, keep them
+    console.log(`  ✅ ${wrestler.name}: OK (${prevCount} → ${wrestler.matches}, change: ${wrestler.change})`);
+    return true;
+});
                 
                 console.log(`  🎯 Result: Removed ${removedCount} ghosts\n`);
                 return filtered;
