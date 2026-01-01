@@ -1366,11 +1366,6 @@ let visibleColumns = {
                             }
                         }
                         
-                        // Fix RE-ENTRY logic: if peak exists and is different from rating, it's a re-entry not NEW
-                        if (wrestler.change === 'NEW' && wrestler.peak && wrestler.peak !== wrestler.rating) {
-                            wrestler.change = 'RE-ENTRY';
-                        }
-                        
                         return wrestler;
                     });
                 }
@@ -1379,132 +1374,9 @@ let visibleColumns = {
             return data;
         }
 
-        // Helper function to reconstruct arrows from rank changes by comparing with previous week
+        // Helper function - no longer needed, just return data as-is from JSON
         async function reconstructArrows(currentData, previousWeekUrl) {
-            if (!previousWeekUrl) return currentData;
-            
-            console.log('=== RECONSTRUCT ARROWS ===');
-            console.log('Previous week URL:', previousWeekUrl);
-            console.log('Archive index exists?', !!archiveIndex);
-            console.log('Archive weeks count:', archiveIndex?.weeks?.length);
-            
-            // Calculate current week index for early week detection FIRST
-            let currentIndex = 0;
-            let isVeryEarlyWeek = false;
-            
-            if (archiveIndex && archiveIndex.weeks && previousWeekUrl) {
-                const prevFilename = previousWeekUrl.replace('archive/', '');
-                console.log('Looking for prev filename:', prevFilename);
-                
-                const prevIndex = archiveIndex.weeks.findIndex(w => w.url === previousWeekUrl || w.filename === prevFilename);
-                console.log('Found prev at index:', prevIndex);
-                
-                if (prevIndex >= 0) {
-                    currentIndex = prevIndex > 0 ? prevIndex - 1 : 0; // Current is one before previous
-                    console.log('Current index:', currentIndex);
-                    console.log('Total weeks:', archiveIndex.weeks.length);
-                    console.log('Early week threshold (last 20):', archiveIndex.weeks.length - 20);
-                    
-                    // Check if in first 20 weeks of all time
-                    // Since archive is NEWEST FIRST, early weeks have HIGH index numbers
-                    isVeryEarlyWeek = currentIndex >= archiveIndex.weeks.length - 20;
-                    console.log('Is very early week?', isVeryEarlyWeek, `(${currentIndex} >= ${archiveIndex.weeks.length - 20})`);
-                    
-                    // Debug log for early weeks
-                    if (isVeryEarlyWeek) {
-                        console.log(`✓ EARLY WEEK DETECTED: index ${currentIndex} of ${archiveIndex.weeks.length} total weeks`);
-                    }
-                } else {
-                    console.log('WARNING: Could not find previous week in archive index');
-                }
-            } else {
-                console.log('WARNING: Missing archiveIndex or weeks or previousWeekUrl');
-            }
-            
-            try {
-                const response = await fetch(previousWeekUrl);
-                const previousData = await response.json();
-                
-                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                
-                divisions.forEach(division => {
-                    const currentWrestlers = currentData[division] || [];
-                    const previousWrestlers = previousData[division] || [];
-                    
-                    currentWrestlers.forEach(currentWrestler => {
-                        const previousWrestler = previousWrestlers.find(p => p.name === currentWrestler.name);
-                        
-                        if (previousWrestler) {
-                            // Calculate rank change: prevRank - currentRank
-                            const rankDiff = previousWrestler.rank - currentWrestler.rank;
-                            
-                            if (rankDiff > 0) {
-                                // Moved up (better rank)
-                                currentWrestler.change = rankDiff >= 5 ? `⬆${rankDiff}` : `↑${rankDiff}`;
-                            } else if (rankDiff < 0) {
-                                // Moved down (worse rank)
-                                const absChange = Math.abs(rankDiff);
-                                currentWrestler.change = absChange >= 5 ? `⬇${absChange}` : `↓${absChange}`;
-                            } else {
-                                currentWrestler.change = '—';
-                            }
-                        } else {
-                            // Not in previous week = new, re-entry, or name change
-                            
-                            // PRESERVE original label if it's already NEW (from JSON export)
-                            const originalChange = currentWrestler.change;
-                            
-                            // Check if this is a name change
-// Look for old name either in dropped out OR in previous week rankings
-const droppedKey = division + 'DroppedOut';
-const prevDroppedOut = previousData[droppedKey] || [];
-const currentDroppedOut = currentData[droppedKey] || [];
-const prevRankings = previousData[division] || [];
-
-// Check dropped out lists
-let isNameChange = [...prevDroppedOut, ...currentDroppedOut].some(dropped => {
-    const oldName = dropped.name.replace(' (Inactive)', '');
-    return nameChanges[oldName] === currentWrestler.name;
-});
-
-// Also check if old name was in previous week rankings (renamed but still active)
-if (!isNameChange) {
-    isNameChange = Object.keys(nameChanges).some(oldName => {
-        if (nameChanges[oldName] === currentWrestler.name) {
-            // Check if old name was in previous week
-            return prevRankings.some(prev => prev.name === oldName);
-        }
-        return false;
-    });
-}
-                            
-                            if (isNameChange) {
-                                currentWrestler.change = 'NAME CHANGE';
-                            } else if (originalChange === 'NEW') {
-                                // PRESERVE "NEW" label from JSON export (it's correct)
-                                currentWrestler.change = 'NEW';
-                            } else if (originalChange === 'RE-ENTRY' || originalChange === '↵') {
-                                // PRESERVE "RE-ENTRY" label from JSON export
-                                currentWrestler.change = originalChange;
-                            } else {
-                                // Only recalculate if label is missing/corrupted
-                                // For early weeks in the archive (first 20 weeks), always use NEW
-                                if (isVeryEarlyWeek) {
-                                    currentWrestler.change = 'NEW';
-                                } else if (currentWrestler.peak && currentWrestler.peak !== currentWrestler.rating) {
-                                    currentWrestler.change = 'RE-ENTRY';
-                                } else {
-                                    currentWrestler.change = 'NEW';
-                                }
-                            }
-                        }
-                    });
-                });
-                
-            } catch (error) {
-                console.log('Could not reconstruct arrows from previous week:', error);
-            }
-            
+            // Trust the arrows from Google Sheets JSON export
             return currentData;
         }
 
@@ -1514,8 +1386,8 @@ if (!isNameChange) {
             return currentData;
         }
         
-        // Fix incorrect inactive wrestler ranks by looking them up in previous week
-        // Also remove wrestlers from dropped out if they weren't even in previous week
+        // Filter dropped out section to only show wrestlers who JUST dropped out this week
+        // (were in previous week, not in current week)
         async function fixInactiveRanks(currentData, previousWeekUrl) {
             if (!previousWeekUrl) return currentData;
             
@@ -1529,33 +1401,40 @@ if (!isNameChange) {
                     const droppedOutKey = division + 'DroppedOut';
                     const droppedOut = currentData[droppedOutKey] || [];
                     const previousWrestlers = previousData[division] || [];
+                    const previousDroppedOut = previousData[droppedOutKey] || [];
                     
-                    // Filter dropped out to only include wrestlers who were actually in previous week
-                    const fixedDroppedOut = [];
+                    // Only show wrestlers who:
+                    // 1. Are in current dropped out list
+                    // 2. Were in previous week's ACTIVE rankings (not already dropped out)
+                    const newlyDroppedOut = [];
                     
                     droppedOut.forEach(dropped => {
-                        // Get actual name (remove "(Inactive)" if present)
-                        const actualName = dropped.name.replace(' (Inactive)', '');
+                        const actualName = dropped.name.replace(' (Inactive)', '').replace(' (Name change)', '');
                         
-                        // Find this wrestler in previous week's rankings
-                        const prevWrestler = previousWrestlers.find(w => w.name === actualName);
+                        // Check if they were in previous week's ACTIVE rankings
+                        const wasActive = previousWrestlers.find(w => w.name === actualName);
                         
-                        if (prevWrestler) {
-                            // Wrestler was in previous week - update with correct rank and keep them
-                            fixedDroppedOut.push({
-                                name: dropped.name,  // Keep "(Inactive)" if it was there
-                                lastRank: prevWrestler.rank,
-                                lastRating: prevWrestler.rating
+                        // Check if they were already in previous week's dropped out
+                        const wasAlreadyDropped = previousDroppedOut.some(prev => {
+                            const prevName = prev.name.replace(' (Inactive)', '').replace(' (Name change)', '');
+                            return prevName === actualName;
+                        });
+                        
+                        // Only include if they were active last week and NOT already dropped out
+                        if (wasActive && !wasAlreadyDropped) {
+                            newlyDroppedOut.push({
+                                name: dropped.name,
+                                lastRank: wasActive.rank,  // Use rank from previous week
+                                lastRating: wasActive.rating
                             });
                         }
-                        // If not in previous week, don't add to fixedDroppedOut (removes them)
                     });
                     
-                    currentData[droppedOutKey] = fixedDroppedOut;
+                    currentData[droppedOutKey] = newlyDroppedOut;
                 });
                 
             } catch (error) {
-                console.log('Could not fix inactive ranks:', error);
+                console.log('Could not filter dropped out:', error);
             }
             
             return currentData;
