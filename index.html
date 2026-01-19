@@ -1423,14 +1423,6 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
-            // Reconstruct arrows from previous week if corrupted
-            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 1) {
-                const previousWeekUrl = archiveIndex.weeks[1].url; // Index 1 is previous week
-                ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
-                
-                // Fix inactive wrestler ranks using previous week data
-                ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
-            }
 
             // Load statistics if available
             if (statsResponse) {
