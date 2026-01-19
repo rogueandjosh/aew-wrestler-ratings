@@ -1374,60 +1374,6 @@ let visibleColumns = {
             return data;
         }
         
-        // Filter dropped out section to only show wrestlers who JUST dropped out this week
-        // (were in previous week, not in current week)
-        async function fixInactiveRanks(currentData, previousWeekUrl) {
-            if (!previousWeekUrl) return currentData;
-            
-            try {
-                const response = await fetch(previousWeekUrl);
-                const previousData = await response.json();
-                
-                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                
-                divisions.forEach(division => {
-                    const droppedOutKey = division + 'DroppedOut';
-                    const droppedOut = currentData[droppedOutKey] || [];
-                    const previousWrestlers = previousData[division] || [];
-                    const previousDroppedOut = previousData[droppedOutKey] || [];
-                    
-                    // Only show wrestlers who:
-                    // 1. Are in current dropped out list
-                    // 2. Were in previous week's ACTIVE rankings (not already dropped out)
-                    const newlyDroppedOut = [];
-                    
-                    droppedOut.forEach(dropped => {
-                        const actualName = dropped.name.replace(' (Inactive)', '').replace(' (Name change)', '');
-                        
-                        // Check if they were in previous week's ACTIVE rankings
-                        const wasActive = previousWrestlers.find(w => w.name === actualName);
-                        
-                        // Check if they were already in previous week's dropped out
-                        const wasAlreadyDropped = previousDroppedOut.some(prev => {
-                            const prevName = prev.name.replace(' (Inactive)', '').replace(' (Name change)', '');
-                            return prevName === actualName;
-                        });
-                        
-                        // Only include if they were active last week and NOT already dropped out
-                        if (wasActive && !wasAlreadyDropped) {
-                            newlyDroppedOut.push({
-                                name: dropped.name,
-                                lastRank: wasActive.rank,  // Use rank from previous week
-                                lastRating: wasActive.rating
-                            });
-                        }
-                    });
-                    
-                    currentData[droppedOutKey] = newlyDroppedOut;
-                });
-                
-            } catch (error) {
-                console.log('Could not filter dropped out:', error);
-            }
-            
-            return currentData;
-        }
-
         // Load archive index, current rankings, statistics, and team members on page load
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
