@@ -1628,10 +1628,7 @@ let visibleColumns = {
                         console.log('🟢 Encoding fixed');
                         
                         // DON'T reconstruct arrows for current week - JSON from export is correct
-                        // Only filter ghosts
                         
-                        // Filter ghost re-entries (safety net)
-                        console.log('🟢 Starting ghost filter process...');
                         const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                         const previousWeekUrl = archiveIndex?.weeks?.[0]?.url;
                         
