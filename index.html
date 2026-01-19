@@ -1374,12 +1374,6 @@ let visibleColumns = {
             return data;
         }
 
-        // Helper function - no longer needed, just return data as-is from JSON
-        async function reconstructArrows(currentData, previousWeekUrl) {
-            // Trust the arrows from Google Sheets JSON export
-            return currentData;
-        }
-
         // Helper function to calculate dropped out wrestlers from previous week
         async function calculateDroppedOut(currentData, archiveIndex) {
             // Dropped out is now handled by Google Sheets
