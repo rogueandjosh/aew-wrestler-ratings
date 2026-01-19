@@ -1157,7 +1157,7 @@
                         <div class="recently-dropped-name">${displayName}</div>
                         <div class="recently-dropped-details">
                             Status: ${status}<br>
-                            Last Rating: ${wrestler.rating.toFixed(2)}<br>
+                            Last Rating: ${(wrestler.rating || 100).toFixed(2)}<br>
                             Last Seen: ${wrestler.lastSeen}
                         </div>
                     </div>
@@ -1858,11 +1858,11 @@ let visibleColumns = {
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
                         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
-                        <td class="rating ${ratingClass}">${wrestler.rating.toFixed(2)}</td>
+                        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
                         <td class="change ${changeClass}">${changeSymbol}</td>
                         <td>${wrestler.matches}</td>
-                        <td>${wrestler.peak.toFixed(2)}</td>
-                        <td>${wrestler.floor.toFixed(2)}</td>
+                        <td>${(wrestler.peak || 100).toFixed(2)}</td>
+                        <td>${(wrestler.floor || 100).toFixed(2)}</td>
                     </tr>
                 `);
             }
@@ -1921,7 +1921,7 @@ let visibleColumns = {
                                 <div class="dropped-wrestler">
                                     <div class="dropped-wrestler-name">${displayName}</div>
                                     <div class="dropped-wrestler-info">
-                                        Was #${wrestler.lastRank} • ${wrestler.lastRating.toFixed(2)}
+                                        Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}
                                     </div>
                                 </div>
                             `);
@@ -2123,10 +2123,10 @@ function renderStatistics(division) {
             <tr>
                 <td class="rank">${index + 1}</td>
                 <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>
-                <td class="rating ${ratingClass}">${wrestler.current.toFixed(2)}</td>
-                <td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>
-                <td class="rating">${wrestler.floor.toFixed(2)}</td>
-                <td class="rating">${wrestler.average.toFixed(2)}</td>
+                <td class="rating ${ratingClass}">${(wrestler.current || 100).toFixed(2)}</td>
+                <td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>
+                <td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>
+                <td class="rating">${(wrestler.average || 100).toFixed(2)}</td>
                 <td>${wrestler.peakWeek}</td>
                 <td>${wrestler.weeksAtNumber1}</td>
             </tr>
@@ -2170,10 +2170,10 @@ function renderStatistics(division) {
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
         html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
-        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? wrestler.current.toFixed(2) : wrestler.current}</td>`;
-        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
-        if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
-        if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
+        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
+        if (visibleColumns.floor) html += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
+        if (visibleColumns.average) html += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
         if (visibleColumns.peakWeek) html += `<td>${wrestler.peakWeek}</td>`;
         if (visibleColumns.floorWeek) html += `<td>${wrestler.floorWeek}</td>`;
         if (visibleColumns.weeksAtNumber1) html += `<td>${wrestler.weeksAtNumber1}</td>`;
@@ -2206,12 +2206,12 @@ function renderStatistics(division) {
                 <tr>
                     ${visibleColumns.rank ? `<td>${rank}</td>` : ''}
                     ${visibleColumns.name ? `<td class="name">${wrestler.name}</td>` : ''}
-                    ${visibleColumns.current ? `<td>${wrestler.current.toFixed(2)}</td>` : ''}
-                    ${visibleColumns.peak ? `<td>${wrestler.peak.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.current ? `<td>${(wrestler.current || 100).toFixed(2)}</td>` : ''}
+                    ${visibleColumns.peak ? `<td>${(wrestler.peak || 100).toFixed(2)}</td>` : ''}
                     ${visibleColumns.peakWeek ? `<td>${wrestler.peakWeek}</td>` : ''}
-                    ${visibleColumns.floor ? `<td>${wrestler.floor.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.floor ? `<td>${(wrestler.floor || 100).toFixed(2)}</td>` : ''}
                     ${visibleColumns.floorWeek ? `<td>${wrestler.floorWeek}</td>` : ''}
-                    ${visibleColumns.average ? `<td>${wrestler.average.toFixed(2)}</td>` : ''}
+                    ${visibleColumns.average ? `<td>${(wrestler.average || 100).toFixed(2)}</td>` : ''}
                     ${visibleColumns.weeksAtNumber1 ? `<td>${wrestler.weeksAtNumber1}</td>` : ''}
                 </tr>
             `;
@@ -2774,9 +2774,9 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
         html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
-        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? wrestler.current.toFixed(2) : wrestler.current}</td>`;        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${wrestler.peak.toFixed(2)}</td>`;
-        if (visibleColumns.floor) html += `<td class="rating">${wrestler.floor.toFixed(2)}</td>`;
-        if (visibleColumns.average) html += `<td class="rating">${wrestler.average.toFixed(2)}</td>`;
+        if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
+        if (visibleColumns.floor) html += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
+        if (visibleColumns.average) html += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
         if (visibleColumns.peakWeek) html += `<td>${wrestler.peakWeek}</td>`;
         if (visibleColumns.floorWeek) html += `<td>${wrestler.floorWeek}</td>`;
         if (visibleColumns.weeksAtNumber1) html += `<td>${wrestler.weeksAtNumber1}</td>`;
