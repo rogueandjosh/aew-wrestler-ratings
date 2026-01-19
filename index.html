@@ -1688,45 +1688,6 @@ let visibleColumns = {
                     .then(async data => {
                         try {
                             ratingsData = fixEncodingIssues(data);
-                            
-                            // Reconstruct arrows from previous week in archive
-                            if (archiveIndex && archiveIndex.weeks) {
-                                const currentFilename = selectedValue.replace('archive/', '');
-                                const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                                
-                                // Only reconstruct if there IS a previous week (not the first week ever)
-                                if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
-                                    const previousWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
-                                    ratingsData = await reconstructArrows(ratingsData, previousWeekUrl);
-                                    
-                                    // Fix inactive wrestler ranks using previous week data
-                                    ratingsData = await fixInactiveRanks(ratingsData, previousWeekUrl);
-                                } else if (currentIndex === archiveIndex.weeks.length - 1) {
-                                    // This is the very first week - no previous week exists
-                                    console.log('This is the first week ever - no previous week to compare');
-                                }
-                            }
-                            
-                            // Filter ghost re-entries (safety net)
-                            const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                            
-                            // Get previous week URL for filtering
-                            const currentFilename = selectedValue.replace('archive/', '');
-                            const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                            const previousWeekUrl = currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1
-                                ? archiveIndex.weeks[currentIndex + 1].url
-                                : null;
-                            
-                            for (const div of divisions) {
-                                ratingsData[div] = await filterGhostReentries(ratingsData[div], div, previousWeekUrl);
-                                
-                                // Recalculate ranks after filtering
-                                if (ratingsData[div]) {
-                                    ratingsData[div].forEach((wrestler, index) => {
-                                        wrestler.rank = index + 1;
-                                    });
-                                }
-                            }
 
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
