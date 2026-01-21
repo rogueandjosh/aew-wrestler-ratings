@@ -1075,9 +1075,14 @@
                     // Use for loop instead of forEach to allow await
                     for (let d = 0; d < dropped.length; d++) {
                         const wrestler = dropped[d];
-                        const actualName = wrestler.name.replace(' (Inactive)', '');
+                        // Clean name: remove all variations of (Inactive ...) suffix
+                        const actualName = wrestler.name
+                            .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                            .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                            .replace(/\s*\(Inactive\)/i, '')
+                            .trim();
                         
-                        console.log(`      Checking: ${actualName}`);
+                        console.log(`      Checking: ${wrestler.name} → cleaned: ${actualName}`);
                         console.log(`         Was in prev week rankings? ${previousWeekWrestlers.has(actualName)}`);
                         
                         // ONLY include if they were actually in previous week's visible rankings
@@ -1184,7 +1189,12 @@
             
             // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
             const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
-                const actualName = wrestler.name.replace(' (Inactive)', '');
+                // Clean name: remove all variations of (Inactive ...) suffix
+                const actualName = wrestler.name
+                    .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                    .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                    .replace(/\s*\(Inactive\)/i, '')
+                    .trim();
                 // Keep only if NOT currently ranked
                 const shouldKeep = !currentlyRanked.has(actualName);
                 if (!shouldKeep) {
