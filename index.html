@@ -1871,15 +1871,22 @@ let visibleColumns = {
                     // Get previous week URL for looking up dropped wrestler info
                     let prevWeekUrl = null;
                     const currentWeekSelect = document.getElementById('weekSelect');
+                    console.log('📅 Current week selected:', currentWeekSelect.value);
+                    
                     if (currentWeekSelect.value === 'current') {
                         // For current week, previous is first archive week
                         prevWeekUrl = archiveIndex?.weeks?.[0]?.url;
+                        console.log('📅 Loading previous week (most recent archive):', archiveIndex?.weeks?.[0]?.label);
                     } else {
                         // For archive weeks, find the previous week (earlier in time = higher index)
                         const currentFilename = currentWeekSelect.value.replace('archive/', '');
                         const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                        console.log('📅 Current index in archive:', currentIndex, 'filename:', currentFilename);
                         if (currentIndex > 0) {
                             prevWeekUrl = archiveIndex.weeks[currentIndex - 1].url;
+                            console.log('📅 Loading previous week:', archiveIndex.weeks[currentIndex - 1].label);
+                        } else {
+                            console.log('📅 No previous week available (this is the oldest week)');
                         }
                     }
                     
@@ -1899,7 +1906,11 @@ let visibleColumns = {
                             
                             // Look up rank and rating from previous week if missing
                             if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
+                                // Search BOTH active roster AND dropped out section from previous week
                                 const prevRoster = prevWeekData[division] || [];
+                                const prevDroppedKey = division + 'DroppedOut';
+                                const prevDropped = prevWeekData[prevDroppedKey] || [];
+                                
                                 // Clean name: remove all variations of (Inactive ...) suffix
                                 const cleanName = wrestler.name
                                     .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
@@ -1908,10 +1919,9 @@ let visibleColumns = {
                                     .trim();
                                 
                                 console.log('🔍 Looking up dropped wrestler:', cleanName);
-                                console.log('   Previous week has', prevRoster.length, 'wrestlers');
-                                console.log('   First 3 names in prev week:', prevRoster.slice(0, 3).map(w => w.name).join(', '));
                                 
-                                const prevWrestler = prevRoster.find(w => {
+                                // First try active roster
+                                let prevWrestler = prevRoster.find(w => {
                                     const prevName = w.name
                                         .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                         .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
@@ -1920,12 +1930,25 @@ let visibleColumns = {
                                     return prevName === cleanName;
                                 });
                                 
+                                // If not in active roster, try dropped out section
+                                if (!prevWrestler && prevDropped.length > 0) {
+                                    console.log('   Not in active roster, checking dropped out section...');
+                                    prevWrestler = prevDropped.find(w => {
+                                        const prevName = w.name
+                                            .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                                            .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                                            .replace(/\s*\(Inactive\)/i, '')
+                                            .trim();
+                                        return prevName === cleanName;
+                                    });
+                                }
+                                
                                 if (prevWrestler) {
-                                    console.log('   ✅ FOUND in previous week: rank', prevWrestler.rank, 'rating', prevWrestler.rating);
-                                    wrestler.lastRank = prevWrestler.rank;
-                                    wrestler.lastRating = prevWrestler.rating;
+                                    console.log('   ✅ FOUND: rank', prevWrestler.lastRank || prevWrestler.rank, 'rating', prevWrestler.lastRating || prevWrestler.rating);
+                                    wrestler.lastRank = prevWrestler.lastRank || prevWrestler.rank;
+                                    wrestler.lastRating = prevWrestler.lastRating || prevWrestler.rating;
                                 } else {
-                                    console.log('   ❌ NOT FOUND in previous week');
+                                    console.log('   ❌ NOT FOUND in either active or dropped out');
                                 }
                             }
                             
