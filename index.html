@@ -1627,38 +1627,7 @@ let visibleColumns = {
                         ratingsData = fixEncodingIssues(data);
                         console.log('🟢 Encoding fixed');
                         
-                        // DON'T reconstruct arrows for current week - JSON from export is correct
-                        
-                        const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                        const previousWeekUrl = archiveIndex?.weeks?.[0]?.url;
-                        
-                        console.log('🟢 Previous week URL:', previousWeekUrl);
-                        console.log('🟢 Archive index exists?', !!archiveIndex);
-                        console.log('🟢 Weeks array exists?', !!archiveIndex?.weeks);
-                        console.log('🟢 Weeks count:', archiveIndex?.weeks?.length);
-                        
-                        if (!previousWeekUrl) {
-                            console.log('🔴 NO PREVIOUS WEEK URL - SKIPPING FILTER!');
-                        }
-                        
-                        for (const div of divisions) {
-                            const beforeCount = ratingsData[div]?.length || 0;
-                            console.log(`🟢 Processing ${div}: ${beforeCount} wrestlers before filter`);
-                            
-                            ratingsData[div] = await filterGhostReentries(ratingsData[div], div, previousWeekUrl);
-                            
-                            const afterCount = ratingsData[div]?.length || 0;
-                            console.log(`🟢 ${div}: ${beforeCount} → ${afterCount} (removed ${beforeCount - afterCount})`);
-                            
-                            // Recalculate ranks after filtering
-                            if (ratingsData[div]) {
-                                ratingsData[div].forEach((wrestler, index) => {
-                                    wrestler.rank = index + 1;
-                                });
-                            }
-                        }
-                        
-                        console.log('🟢 Ghost filter complete!');
+                        // Data is already correct from JSON export - no processing needed
                         
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
@@ -1898,29 +1867,46 @@ let visibleColumns = {
                 
                 if (droppedOut && droppedOut.length > 0) {
                     const droppedRows = [];
+                    
+                    // Get previous week URL for looking up dropped wrestler info
+                    let prevWeekUrl = null;
+                    const currentWeekSelect = document.getElementById('weekSelect');
+                    if (currentWeekSelect.value === 'current') {
+                        // For current week, previous is first archive week
+                        prevWeekUrl = archiveIndex?.weeks?.[0]?.url;
+                    } else {
+                        // For archive weeks, find the next week in archive
+                        const currentFilename = currentWeekSelect.value.replace('archive/', '');
+                        const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                        if (currentIndex >= 0 && currentIndex + 1 < archiveIndex.weeks.length) {
+                            prevWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                        }
+                    }
+                    
+                    // Load previous week data if available
+                    let prevWeekData = null;
+                    if (prevWeekUrl) {
+                        try {
+                            prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
+                        } catch (e) {
+                            console.log('Could not load previous week:', e);
+                        }
+                    }
+                    
                     for (let i = 0; i < droppedOut.length; i++) {
                         const wrestler = droppedOut[i];
                         if (wrestler.name.toLowerCase().includes(searchTerm)) {
                             
-                            // Look up previous week for rank and rating if missing
-                            if ((!wrestler.lastRank || !wrestler.lastRating) && archiveIndex?.weeks?.length > 0) {
-                                try {
-                                    const prevWeekUrl = archiveIndex.weeks[0].url;
-                                    const prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
-                                    const prevRoster = prevWeekData[division] || [];
-                                    
-                                    // Clean name: "Rocky Romero (Inactive (12+ weeks))" → "Rocky Romero"
-                                    const cleanName = wrestler.name.replace(/\s*\([^)]*\)\s*$/g, '').trim();
-                                    
-                                    // Find in previous week
-                                    const prevWrestler = prevRoster.find(w => w.name === cleanName);
-                                    
-                                    if (prevWrestler) {
-                                        wrestler.lastRank = prevWrestler.rank;
-                                        wrestler.lastRating = prevWrestler.rating;
-                                    }
-                                } catch (e) {
-                                    console.log('Could not lookup previous week:', e);
+                            // Look up rank and rating from previous week if missing
+                            if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
+                                const prevRoster = prevWeekData[division] || [];
+                                // Clean name: "Rocky Romero (Inactive (12+ weeks))" → "Rocky Romero"
+                                const cleanName = wrestler.name.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+                                const prevWrestler = prevRoster.find(w => w.name === cleanName);
+                                
+                                if (prevWrestler) {
+                                    wrestler.lastRank = prevWrestler.rank;
+                                    wrestler.lastRating = prevWrestler.rating;
                                 }
                             }
                             
@@ -1940,11 +1926,11 @@ let visibleColumns = {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
                             }
                             
-                            // Clean up the name - fix double brackets
+                            // Clean up brackets in name
                             let cleanDisplayName = displayName;
                             cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks)\)\)/, '(Inactive for $1)');
                             
-                            // Build info text with rank if available
+                            // Build info with rank if available
                             let infoText = '';
                             if (wrestler.lastRank) {
                                 infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
