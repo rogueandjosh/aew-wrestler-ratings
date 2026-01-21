@@ -1878,13 +1878,15 @@ let visibleColumns = {
                         prevWeekUrl = archiveIndex?.weeks?.[0]?.url;
                         console.log('📅 Loading previous week (most recent archive):', archiveIndex?.weeks?.[0]?.label);
                     } else {
-                        // For archive weeks, find the previous week (earlier in time = higher index)
+                        // For archive weeks, find the previous week
+                        // Archive array: [0]=newest, [1]=older, [2]=even older...
+                        // So previous week = currentIndex + 1
                         const currentFilename = currentWeekSelect.value.replace('archive/', '');
                         const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
                         console.log('📅 Current index in archive:', currentIndex, 'filename:', currentFilename);
-                        if (currentIndex > 0) {
-                            prevWeekUrl = archiveIndex.weeks[currentIndex - 1].url;
-                            console.log('📅 Loading previous week:', archiveIndex.weeks[currentIndex - 1].label);
+                        if (currentIndex >= 0 && currentIndex + 1 < archiveIndex.weeks.length) {
+                            prevWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                            console.log('📅 Loading previous week:', archiveIndex.weeks[currentIndex + 1].label);
                         } else {
                             console.log('📅 No previous week available (this is the oldest week)');
                         }
@@ -1895,9 +1897,14 @@ let visibleColumns = {
                     if (prevWeekUrl) {
                         try {
                             prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
+                            console.log('✅ Loaded previous week data from:', prevWeekUrl);
+                            console.log('   currentWeek in prev data:', prevWeekData.currentWeek);
+                            console.log('   mens array length:', prevWeekData.mens?.length);
                         } catch (e) {
                             console.log('Could not load previous week:', e);
                         }
+                    } else {
+                        console.log('❌ No prevWeekUrl found');
                     }
                     
                     for (let i = 0; i < droppedOut.length; i++) {
