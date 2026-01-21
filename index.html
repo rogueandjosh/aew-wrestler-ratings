@@ -1093,6 +1093,11 @@
                                 const isInactive = wrestler.name.includes('(Inactive)');
                                 const isNameChange = !isInactive && nameChanges[actualName];
                                 
+                                console.log(`         isInactive: ${isInactive}, isNameChange: ${isNameChange}`);
+                                if (isNameChange) {
+                                    console.log(`         ✅ NAME CHANGE DETECTED: ${actualName} → ${nameChanges[actualName]}`);
+                                }
+                                
                                 // Debug for Jackson names
                                 if (actualName.includes('Jackson')) {
                                     console.log(`[Recently Dropped] ${actualName}:`);
