@@ -1030,90 +1030,91 @@
                 currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
             }
             
-            // Get 4 weeks starting from the current viewed week
-            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 4, archiveIndex.weeks.length));
+            // Get 4 weeks starting from the current viewed week (not including it, starting from next)
+            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
             
-            if (weeksToCheck.length < 1) {
+            if (weeksToCheck.length < 2) {
                 section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
                 return;
             }
             
             const recentlyDropped = {};
             
-            // Load each week and collect dropped out wrestlers
-            for (let i = 0; i < weeksToCheck.length; i++) {
+            // Load each week and collect ONLY wrestlers who were in the previous week's visible rankings
+            for (let i = 0; i < weeksToCheck.length - 1; i++) {
                 try {
                     const weekData = await fetch(weeksToCheck[i].url).then(r => r.json());
                     const weekLabel = weeksToCheck[i].label;
                     
+                    // Get previous week's data to verify wrestler was actually there
+                    let previousWeekWrestlers = new Set();
+                    if (i + 1 < weeksToCheck.length) {
+                        const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
+                        const prevRoster = prevWeekData[division] || [];
+                        previousWeekWrestlers = new Set(prevRoster.map(w => w.name));
+                    }
+                    
                     const droppedKey = division + 'DroppedOut';
                     const dropped = weekData[droppedKey] || [];
                     
-                    // Process each dropped wrestler
+                    // Use for loop instead of forEach to allow await
                     for (let d = 0; d < dropped.length; d++) {
                         const wrestler = dropped[d];
+                        const actualName = wrestler.name.replace(' (Inactive)', '');
                         
-                        // Clean up the name - handle multiple bracket formats
-                        let cleanName = wrestler.name;
-                        let reason = null;
-                        
-                        // Extract reason from brackets and clean name
-                        // Handles: "Name (Inactive (12+ weeks))" or "Name (Inactive for 12+ weeks)"
-                        const inactiveMatch = cleanName.match(/^(.+?)\s*\(Inactive\s*(?:\()?(\d+\+\s*weeks)(?:\))?\)$/);
-                        if (inactiveMatch) {
-                            cleanName = inactiveMatch[1].trim();
-                            reason = `Inactive for ${inactiveMatch[2]}`;
-                        }
-                        
-                        const key = cleanName;
-                        
-                        if (!recentlyDropped[key]) {
-                            // Search previous week to get actual rank and rating
-                            let lastRank = null;
-                            let lastRating = null;
-                            
-                            // Look in the PREVIOUS week (i+1) for this wrestler's last known state
-                            if (i + 1 < weeksToCheck.length) {
-                                try {
-                                    const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
-                                    const prevRoster = prevWeekData[division] || [];
-                                    const prevWrestler = prevRoster.find(w => w.name === cleanName);
-                                    
-                                    if (prevWrestler) {
-                                        lastRank = prevWrestler.rank;
-                                        lastRating = prevWrestler.rating;
-                                    }
-                                } catch (e) {
-                                    console.log('Error loading previous week:', e);
+                        // ONLY include if they were actually in previous week's visible rankings
+                        if (previousWeekWrestlers.has(actualName)) {
+                            const key = wrestler.name;
+                            if (!recentlyDropped[key]) {
+                                const isInactive = wrestler.name.includes('(Inactive)');
+                                const isNameChange = !isInactive && nameChanges[actualName];
+                                
+                                // Debug for Jackson names
+                                if (actualName.includes('Jackson')) {
+                                    console.log(`[Recently Dropped] ${actualName}:`);
+                                    console.log(`  isInactive: ${isInactive}`);
+                                    console.log(`  nameChanges[${actualName}]: ${nameChanges[actualName]}`);
+                                    console.log(`  isNameChange: ${isNameChange}`);
                                 }
+                                
+                                let displayRating;
+                                
+                                if (isInactive) {
+                                    // For inactive wrestlers, show their last rating when they went inactive
+                                    displayRating = wrestler.lastRating;
+                                } else if (isNameChange) {
+                                    // For name changes, show their actual last rating (NOT 100.00)
+                                    displayRating = wrestler.lastRating;
+                                } else {
+                                    // For natural drops (rating hit 100.00), show exactly 100.00
+                                    displayRating = 100.00;
+                                }
+                                
+                                // Find LAST time they were actually RANKED (not in dropped out)
+                                let lastRankedWeek = weekLabel;
+                                for (let j = i + 1; j < weeksToCheck.length; j++) {
+                                    try {
+                                        const checkWeekData = await fetch(weeksToCheck[j].url).then(r => r.json());
+                                        const checkRoster = checkWeekData[division] || [];
+                                        const wasRanked = checkRoster.find(w => w.name === actualName);
+                                        if (wasRanked) {
+                                            lastRankedWeek = weeksToCheck[j].label;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('Error checking week:', e);
+                                    }
+                                }
+                                
+                                recentlyDropped[key] = {
+                                    name: wrestler.name,
+                                    rating: displayRating,
+                                    lastSeen: lastRankedWeek,
+                                    isInactive: isInactive,
+                                    isNameChange: isNameChange,
+                                    newName: isNameChange ? nameChanges[actualName] : null
+                                };
                             }
-                            
-                            // Fallback: if not found in previous week, check if JSON has lastRank/lastRating
-                            if (lastRank === null && wrestler.lastRank) {
-                                lastRank = wrestler.lastRank;
-                            }
-                            if (lastRating === null && wrestler.lastRating) {
-                                lastRating = wrestler.lastRating;
-                            }
-                            
-                            // Final fallback
-                            if (lastRating === null) {
-                                lastRating = 100.00;
-                            }
-                            
-                            const isInactive = reason !== null;
-                            const isNameChange = !isInactive && nameChanges[cleanName];
-                            
-                            recentlyDropped[key] = {
-                                name: cleanName,
-                                rank: lastRank,
-                                rating: lastRating,
-                                lastSeen: weekLabel,
-                                reason: reason,
-                                isInactive: isInactive,
-                                isNameChange: isNameChange,
-                                newName: isNameChange ? nameChanges[cleanName] : null
-                            };
                         }
                     }
                 } catch (error) {
@@ -1128,7 +1129,9 @@
             
             // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
             const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
-                return !currentlyRanked.has(wrestler.name);
+                const actualName = wrestler.name.replace(' (Inactive)', '');
+                // Keep only if NOT currently ranked
+                return !currentlyRanked.has(actualName);
             });
             
             if (wrestlers.length === 0) {
@@ -1140,32 +1143,21 @@
             
             wrestlers.forEach(wrestler => {
                 const inactiveClass = wrestler.isInactive ? 'inactive' : '';
-                let displayName = wrestler.name;
-                let displayReason = '';
+                let status = wrestler.isInactive ? 'Inactive' : 'Dropped';
+                let displayName = wrestler.name.replace(' (Inactive)', '');
                 
-                // Format the display
-                if (wrestler.reason) {
-                    // Show: "Wrestler Name (Inactive for 12+ weeks)"
-                    displayName = `${wrestler.name} (${wrestler.reason})`;
-                } else if (wrestler.isNameChange) {
-                    // Show: "Old Name → New Name"
-                    displayName = `${wrestler.name} → ${wrestler.newName}`;
-                    displayReason = 'Name Change';
-                }
-                
-                // Build the rating/rank display
-                let statsLine = '';
-                if (wrestler.rank) {
-                    statsLine = `Was #${wrestler.rank} • ${(wrestler.rating || 100).toFixed(2)}`;
-                } else {
-                    statsLine = `Rating: ${(wrestler.rating || 100).toFixed(2)}`;
+                // Check for name change
+                if (wrestler.isNameChange) {
+                    status = 'Name Change';
+                    displayName += ` → ${wrestler.newName}`;
                 }
                 
                 html += `
                     <div class="recently-dropped-item ${inactiveClass}">
                         <div class="recently-dropped-name">${displayName}</div>
                         <div class="recently-dropped-details">
-                            ${statsLine}<br>
+                            Status: ${status}<br>
+                            Last Rating: ${(wrestler.rating || 100).toFixed(2)}<br>
                             Last Seen: ${wrestler.lastSeen}
                         </div>
                     </div>
@@ -1635,6 +1627,39 @@ let visibleColumns = {
                         ratingsData = fixEncodingIssues(data);
                         console.log('🟢 Encoding fixed');
                         
+                        // DON'T reconstruct arrows for current week - JSON from export is correct
+                        
+                        const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                        const previousWeekUrl = archiveIndex?.weeks?.[0]?.url;
+                        
+                        console.log('🟢 Previous week URL:', previousWeekUrl);
+                        console.log('🟢 Archive index exists?', !!archiveIndex);
+                        console.log('🟢 Weeks array exists?', !!archiveIndex?.weeks);
+                        console.log('🟢 Weeks count:', archiveIndex?.weeks?.length);
+                        
+                        if (!previousWeekUrl) {
+                            console.log('🔴 NO PREVIOUS WEEK URL - SKIPPING FILTER!');
+                        }
+                        
+                        for (const div of divisions) {
+                            const beforeCount = ratingsData[div]?.length || 0;
+                            console.log(`🟢 Processing ${div}: ${beforeCount} wrestlers before filter`);
+                            
+                            ratingsData[div] = await filterGhostReentries(ratingsData[div], div, previousWeekUrl);
+                            
+                            const afterCount = ratingsData[div]?.length || 0;
+                            console.log(`🟢 ${div}: ${beforeCount} → ${afterCount} (removed ${beforeCount - afterCount})`);
+                            
+                            // Recalculate ranks after filtering
+                            if (ratingsData[div]) {
+                                ratingsData[div].forEach((wrestler, index) => {
+                                    wrestler.rank = index + 1;
+                                });
+                            }
+                        }
+                        
+                        console.log('🟢 Ghost filter complete!');
+                        
                         if (ratingsData.dateRange) {
                             document.getElementById('dateRange').textContent = ratingsData.dateRange;
                         } else {
@@ -1892,34 +1917,26 @@ let visibleColumns = {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
                             }
                             
-                            // Build display text
-let infoText = '';
-if (wrestler.lastRank) {
-    infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
-} else {
-    infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
-}
-
-// Clean up the name - fix double brackets
-let cleanDisplayName = displayName;
-cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks)\)\)/, '(Inactive for $1)');
-
-// Build info text with rank if available
-let infoText = '';
-if (wrestler.lastRank) {
-    infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
-} else {
-    infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
-}
-
-droppedRows.push(`
-    <div class="dropped-wrestler">
-        <div class="dropped-wrestler-name">${cleanDisplayName}</div>
-        <div class="dropped-wrestler-info">
-            ${infoText}
-        </div>
-    </div>
-`);
+                            // Clean up the name - fix double brackets
+                            let cleanDisplayName = displayName;
+                            cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks)\)\)/, '(Inactive for $1)');
+                            
+                            // Build info text with rank if available
+                            let infoText = '';
+                            if (wrestler.lastRank) {
+                                infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
+                            } else {
+                                infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
+                            }
+                            
+                            droppedRows.push(`
+                                <div class="dropped-wrestler">
+                                    <div class="dropped-wrestler-name">${cleanDisplayName}</div>
+                                    <div class="dropped-wrestler-info">
+                                        ${infoText}
+                                    </div>
+                                </div>
+                            `);
                         }
                     }
 
