@@ -1013,6 +1013,8 @@
         async function buildRecentlyDroppedSection(division) {
             const section = document.getElementById(`recentlyDroppedSection_${division}`);
             
+            console.log('🔍 Building Recently Dropped section for:', division);
+            
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
                 section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
                 return;
@@ -1025,13 +1027,20 @@
             const selectedValue = select.value;
             let currentWeekIndex = 0;
             
+            console.log('🔍 Selected week:', selectedValue);
+            
             if (selectedValue !== 'current') {
                 const currentFilename = selectedValue.replace('archive/', '');
                 currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                console.log('🔍 Archive mode - currentWeekIndex:', currentWeekIndex);
+            } else {
+                console.log('🔍 Current week mode - currentWeekIndex: 0');
             }
             
             // Get 4 weeks starting from the current viewed week (not including it, starting from next)
             const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
+            
+            console.log('🔍 Weeks to check:', weeksToCheck.map(w => w.label));
             
             if (weeksToCheck.length < 2) {
                 section.innerHTML = '<p style="color: #b8b8b8;">Not enough archive data to show recently dropped wrestlers.</p>';
@@ -1046,24 +1055,34 @@
                     const weekData = await fetch(weeksToCheck[i].url).then(r => r.json());
                     const weekLabel = weeksToCheck[i].label;
                     
+                    console.log(`🔍 Checking week ${i}: ${weekLabel}`);
+                    
                     // Get previous week's data to verify wrestler was actually there
                     let previousWeekWrestlers = new Set();
                     if (i + 1 < weeksToCheck.length) {
                         const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
                         const prevRoster = prevWeekData[division] || [];
                         previousWeekWrestlers = new Set(prevRoster.map(w => w.name));
+                        console.log(`   Previous week (${weeksToCheck[i + 1].label}) had ${prevRoster.length} wrestlers`);
                     }
                     
                     const droppedKey = division + 'DroppedOut';
                     const dropped = weekData[droppedKey] || [];
+                    
+                    console.log(`   Found ${dropped.length} in droppedOut list`);
+                    console.log(`   First 3 dropped names:`, dropped.slice(0, 3).map(w => w.name));
                     
                     // Use for loop instead of forEach to allow await
                     for (let d = 0; d < dropped.length; d++) {
                         const wrestler = dropped[d];
                         const actualName = wrestler.name.replace(' (Inactive)', '');
                         
+                        console.log(`      Checking: ${actualName}`);
+                        console.log(`         Was in prev week rankings? ${previousWeekWrestlers.has(actualName)}`);
+                        
                         // ONLY include if they were actually in previous week's visible rankings
                         if (previousWeekWrestlers.has(actualName)) {
+                            console.log(`         ✅ ADDING to recently dropped`);
                             const key = wrestler.name;
                             if (!recentlyDropped[key]) {
                                 const isInactive = wrestler.name.includes('(Inactive)');
@@ -1160,12 +1179,21 @@
             const currentRoster = currentWeekData[division] || [];
             const currentlyRanked = new Set(currentRoster.map(w => w.name));
             
+            console.log('🔍 Total collected in recentlyDropped:', Object.keys(recentlyDropped).length);
+            console.log('🔍 Currently ranked wrestlers:', currentlyRanked.size);
+            
             // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
             const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
                 const actualName = wrestler.name.replace(' (Inactive)', '');
                 // Keep only if NOT currently ranked
-                return !currentlyRanked.has(actualName);
+                const shouldKeep = !currentlyRanked.has(actualName);
+                if (!shouldKeep) {
+                    console.log(`🔍 Filtering out ${actualName} - currently ranked`);
+                }
+                return shouldKeep;
             });
+            
+            console.log('🔍 Final wrestlers after filtering:', wrestlers.length);
             
             if (wrestlers.length === 0) {
                 section.innerHTML = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
