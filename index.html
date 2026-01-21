@@ -1875,11 +1875,11 @@ let visibleColumns = {
                         // For current week, previous is first archive week
                         prevWeekUrl = archiveIndex?.weeks?.[0]?.url;
                     } else {
-                        // For archive weeks, find the next week in archive
+                        // For archive weeks, find the previous week (earlier in time = higher index)
                         const currentFilename = currentWeekSelect.value.replace('archive/', '');
                         const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                        if (currentIndex >= 0 && currentIndex + 1 < archiveIndex.weeks.length) {
-                            prevWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
+                        if (currentIndex > 0) {
+                            prevWeekUrl = archiveIndex.weeks[currentIndex - 1].url;
                         }
                     }
                     
@@ -1900,9 +1900,20 @@ let visibleColumns = {
                             // Look up rank and rating from previous week if missing
                             if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
                                 const prevRoster = prevWeekData[division] || [];
-                                // Clean name: "Rocky Romero (Inactive (12+ weeks))" → "Rocky Romero"
-                                const cleanName = wrestler.name.replace(/\s*\([^)]*\)\s*$/g, '').trim();
-                                const prevWrestler = prevRoster.find(w => w.name === cleanName);
+                                // Clean name: remove all variations of (Inactive ...) suffix
+                                const cleanName = wrestler.name
+                                    .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                                    .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                                    .replace(/\s*\(Inactive\)/i, '')
+                                    .trim();
+                                const prevWrestler = prevRoster.find(w => {
+                                    const prevName = w.name
+                                        .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                                        .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                                        .replace(/\s*\(Inactive\)/i, '')
+                                        .trim();
+                                    return prevName === cleanName;
+                                });
                                 
                                 if (prevWrestler) {
                                     wrestler.lastRank = prevWrestler.rank;
@@ -1926,9 +1937,10 @@ let visibleColumns = {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
                             }
                             
-                            // Clean up brackets in name
+                            // Clean up brackets in name - handle both formats
                             let cleanDisplayName = displayName;
-                            cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks)\)\)/, '(Inactive for $1)');
+                            cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+? weeks?)\)\)/, '(Inactive for $1)');
+                            cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks?)\)\)/, '(Inactive for $1)');
                             
                             // Build info with rank if available
                             let infoText = '';
