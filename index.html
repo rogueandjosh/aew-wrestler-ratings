@@ -1874,9 +1874,11 @@ let visibleColumns = {
                     console.log('📅 Current week selected:', currentWeekSelect.value);
                     
                     if (currentWeekSelect.value === 'current') {
-                        // For current week, previous is first archive week
-                        prevWeekUrl = archiveIndex?.weeks?.[0]?.url;
-                        console.log('📅 Loading previous week (most recent archive):', archiveIndex?.weeks?.[0]?.label);
+                        // For current week, previous is the week before the most recent archive
+                        // archiveIndex.weeks[0] = the week that just got archived (same as current)
+                        // archiveIndex.weeks[1] = the actual previous week
+                        prevWeekUrl = archiveIndex?.weeks?.[1]?.url;
+                        console.log('📅 Loading previous week:', archiveIndex?.weeks?.[1]?.label);
                     } else {
                         // For archive weeks, find the previous week
                         // Archive array: [0]=newest, [1]=older, [2]=even older...
