@@ -1892,14 +1892,22 @@ let visibleColumns = {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
                             }
                             
-                            droppedRows.push(`
-                                <div class="dropped-wrestler">
-                                    <div class="dropped-wrestler-name">${displayName}</div>
-                                    <div class="dropped-wrestler-info">
-                                        Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}
-                                    </div>
-                                </div>
-                            `);
+                            // Build display text
+let infoText = '';
+if (wrestler.lastRank) {
+    infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
+} else {
+    infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
+}
+
+droppedRows.push(`
+    <div class="dropped-wrestler">
+        <div class="dropped-wrestler-name">${displayName}</div>
+        <div class="dropped-wrestler-info">
+            ${infoText}
+        </div>
+    </div>
+`);
                         }
                     }
 
