@@ -1075,11 +1075,12 @@
                     // Use for loop instead of forEach to allow await
                     for (let d = 0; d < dropped.length; d++) {
                         const wrestler = dropped[d];
-                        // Clean name: remove all variations of (Inactive ...) suffix
+                        // Clean name: remove all variations of (Inactive ...) and (Name change) suffixes
                         const actualName = wrestler.name
                             .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                             .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                             .replace(/\s*\(Inactive\)/i, '')
+                            .replace(/\s*\(Name change\)/i, '')
                             .trim();
                         
                         console.log(`      Checking: ${wrestler.name} → cleaned: ${actualName}`);
@@ -1148,12 +1149,14 @@
                                             .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                             .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                             .replace(/\s*\(Inactive\)/i, '')
+                                            .replace(/\s*\(Name change\)/i, '')
                                             .trim();
                                         const prevWrestler = prevRoster.find(w => {
                                             const prevName = w.name
                                                 .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                                 .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                                 .replace(/\s*\(Inactive\)/i, '')
+                                                .replace(/\s*\(Name change\)/i, '')
                                                 .trim();
                                             return prevName === cleanName;
                                         });
@@ -1194,11 +1197,12 @@
             
             // Build HTML - EXCLUDE wrestlers who are currently ranked (they re-entered)
             const wrestlers = Object.values(recentlyDropped).filter(wrestler => {
-                // Clean name: remove all variations of (Inactive ...) suffix
+                // Clean name: remove all variations of (Inactive ...) and (Name change) suffixes
                 const actualName = wrestler.name
                     .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                     .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                     .replace(/\s*\(Inactive\)/i, '')
+                    .replace(/\s*\(Name change\)/i, '')
                     .trim();
                 // Keep only if NOT currently ranked
                 const shouldKeep = !currentlyRanked.has(actualName);
