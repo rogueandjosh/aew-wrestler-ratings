@@ -1073,9 +1073,9 @@
                             let lastRating = null;
                             
                             // Look in the PREVIOUS week (i+1) for this wrestler's last known state
-                            if (i + 1 < archiveIndex.weeks.length) {
+                            if (i + 1 < weeksToCheck.length) {
                                 try {
-                                    const prevWeekData = await fetch(archiveIndex.weeks[currentWeekIndex + i + 1].url).then(r => r.json());
+                                    const prevWeekData = await fetch(weeksToCheck[i + 1].url).then(r => r.json());
                                     const prevRoster = prevWeekData[division] || [];
                                     const prevWrestler = prevRoster.find(w => w.name === cleanName);
                                     
