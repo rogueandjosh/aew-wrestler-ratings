@@ -1223,9 +1223,24 @@
             
             wrestlers.forEach(wrestler => {
                 const inactiveClass = wrestler.isInactive ? 'inactive' : '';
+                // Clean display name: remove all suffixes before adding our own formatting
                 let displayName = wrestler.name
-                    .replace(' (Inactive)', '')
-                    .replace(/\(Inactive \((\d+\+? weeks?)\)\)/, '(Inactive for $1)');
+                    .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                    .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                    .replace(/\s*\(Inactive\)/i, '')
+                    .replace(/\s*\(Name change\)/i, '')
+                    .trim();
+                
+                // Add back formatted inactive suffix if needed
+                if (wrestler.isInactive) {
+                    const origName = wrestler.name;
+                    const weeksMatch = origName.match(/\((\d+\+?\s+weeks?)\)/i);
+                    if (weeksMatch) {
+                        displayName += ` (Inactive for ${weeksMatch[1]})`;
+                    } else {
+                        displayName += ` (Inactive)`;
+                    }
+                }
                 
                 // Check for name change
                 if (wrestler.isNameChange) {
@@ -2009,11 +2024,12 @@ let visibleColumns = {
                                 const prevDroppedKey = division + 'DroppedOut';
                                 const prevDropped = prevWeekData[prevDroppedKey] || [];
                                 
-                                // Clean name: remove all variations of (Inactive ...) suffix
+                                // Clean name: remove all variations of (Inactive ...) and (Name change) suffixes
                                 const cleanName = wrestler.name
                                     .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                     .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                     .replace(/\s*\(Inactive\)/i, '')
+                                    .replace(/\s*\(Name change\)/i, '')
                                     .trim();
                                 
                                 console.log('🔍 Looking up dropped wrestler:', cleanName);
@@ -2024,6 +2040,7 @@ let visibleColumns = {
                                         .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                         .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                         .replace(/\s*\(Inactive\)/i, '')
+                                        .replace(/\s*\(Name change\)/i, '')
                                         .trim();
                                     return prevName === cleanName;
                                 });
@@ -2036,6 +2053,7 @@ let visibleColumns = {
                                             .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                                             .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                             .replace(/\s*\(Inactive\)/i, '')
+                                            .replace(/\s*\(Name change\)/i, '')
                                             .trim();
                                         return prevName === cleanName;
                                     });
@@ -2051,7 +2069,13 @@ let visibleColumns = {
                             }
                             
                             const isInactive = wrestler.name.includes('(Inactive)');
-                            const actualName = wrestler.name.replace(' (Inactive)', '');
+                            // Clean actualName: remove both (Inactive) and (Name change) suffixes
+                            const actualName = wrestler.name
+                                .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
+                                .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
+                                .replace(/\s*\(Inactive\)/i, '')
+                                .replace(/\s*\(Name change\)/i, '')
+                                .trim();
                             const isNameChange = !isInactive && nameChanges[actualName];
                             
                             // Debug logging for Matt/Nick Jackson
