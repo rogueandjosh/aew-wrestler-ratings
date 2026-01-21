@@ -1906,6 +1906,10 @@ let visibleColumns = {
                                     .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                                     .replace(/\s*\(Inactive\)/i, '')
                                     .trim();
+                                
+                                console.log('🔍 Looking up dropped wrestler:', cleanName);
+                                console.log('   Previous week has', prevRoster.length, 'wrestlers');
+                                
                                 const prevWrestler = prevRoster.find(w => {
                                     const prevName = w.name
                                         .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
@@ -1916,8 +1920,12 @@ let visibleColumns = {
                                 });
                                 
                                 if (prevWrestler) {
+                                    console.log('   ✅ FOUND in previous week: rank', prevWrestler.rank, 'rating', prevWrestler.rating);
                                     wrestler.lastRank = prevWrestler.rank;
                                     wrestler.lastRating = prevWrestler.rating;
+                                } else {
+                                    console.log('   ❌ NOT FOUND in previous week');
+                                    console.log('   First 3 names in prev week:', prevRoster.slice(0, 3).map(w => w.name));
                                 }
                             }
                             
