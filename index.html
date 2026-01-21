@@ -1900,9 +1900,21 @@ if (wrestler.lastRank) {
     infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
 }
 
+// Clean up the name - fix double brackets
+let cleanDisplayName = displayName;
+cleanDisplayName = cleanDisplayName.replace(/\(Inactive \((\d+\+ weeks)\)\)/, '(Inactive for $1)');
+
+// Build info text with rank if available
+let infoText = '';
+if (wrestler.lastRank) {
+    infoText = `Was #${wrestler.lastRank} • ${(wrestler.lastRating || 100).toFixed(2)}`;
+} else {
+    infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
+}
+
 droppedRows.push(`
     <div class="dropped-wrestler">
-        <div class="dropped-wrestler-name">${displayName}</div>
+        <div class="dropped-wrestler-name">${cleanDisplayName}</div>
         <div class="dropped-wrestler-info">
             ${infoText}
         </div>
