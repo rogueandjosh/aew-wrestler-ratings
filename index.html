@@ -1092,7 +1092,18 @@
                             const key = wrestler.name;
                             if (!recentlyDropped[key]) {
                                 const isInactive = wrestler.name.includes('(Inactive)');
-                                const isNameChange = !isInactive && nameChanges[actualName];
+                                
+                                // Check if this is a name change AND the new name is in current rankings
+                                // This prevents showing "Name Change" for wrestlers who dropped out BEFORE the name change happened
+                                let isNameChange = false;
+                                if (!isInactive && nameChanges[actualName]) {
+                                    const newName = nameChanges[actualName];
+                                    // Check if new name appears in the CURRENT week we're viewing
+                                    const currentWeekData = await fetch(weeksToCheck[0].url).then(r => r.json());
+                                    const currentRoster = currentWeekData[division] || [];
+                                    const newNameInRankings = currentRoster.some(w => w.name === newName);
+                                    isNameChange = newNameInRankings;
+                                }
                                 
                                 console.log(`         isInactive: ${isInactive}, isNameChange: ${isNameChange}`);
                                 if (isNameChange) {
@@ -2076,7 +2087,16 @@ let visibleColumns = {
                                 .replace(/\s*\(Inactive\)/i, '')
                                 .replace(/\s*\(Name change\)/i, '')
                                 .trim();
-                            const isNameChange = !isInactive && nameChanges[actualName];
+                            
+                            // Check if this is a name change AND the new name is in current rankings
+                            // This prevents showing "Name Change" for wrestlers who dropped out BEFORE the name change happened
+                            let isNameChange = false;
+                            if (!isInactive && nameChanges[actualName]) {
+                                const newName = nameChanges[actualName];
+                                const currentRoster = ratingsData[division] || [];
+                                const newNameInRankings = currentRoster.some(w => w.name === newName);
+                                isNameChange = newNameInRankings;
+                            }
                             
                             // Debug logging for Matt/Nick Jackson
                             if (actualName.includes('Jackson')) {
