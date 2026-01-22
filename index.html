@@ -1590,7 +1590,8 @@ let visibleColumns = {
                 const years = new Set();
                 const months = new Set();
                 
-                archiveIndex.weeks.forEach(week => {
+                // Skip the first archive week (index 0) as it's the same as current
+                archiveIndex.weeks.slice(1).forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
                     option.textContent = expandMonthName(week.label);
@@ -1675,8 +1676,8 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Get ALL weeks (ignore filters for navigation)
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            // Build weeks array, skipping first archive week (same as current)
+            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
             if (currentIndex === -1) return;
@@ -1719,7 +1720,8 @@ let visibleColumns = {
             if (!archiveIndex) return;
             
             const currentValue = weekSelect.value;
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            // Build weeks array, skipping first archive week (same as current)
+            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
             // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
