@@ -2030,7 +2030,7 @@ let visibleColumns = {
                             
                             // Always look up rank and rating from previous week for inactive wrestlers
                             // (Don't trust lastRank/lastRating from JSON as they may be from when first went inactive)
-                            const isInactiveWrestler = wrestler.name.includes('(Inactive)');
+                            const isInactiveWrestler = /\(Inactive/i.test(wrestler.name);
                             console.log(`🔍 Wrestler: ${wrestler.name}, isInactive: ${isInactiveWrestler}, has prevWeekData: ${!!prevWeekData}`);
                             
                             if (isInactiveWrestler && prevWeekData) {
