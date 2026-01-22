@@ -1590,8 +1590,8 @@ let visibleColumns = {
                 const years = new Set();
                 const months = new Set();
                 
-                // Skip the first archive week (index 0) as it's the same as current
-                archiveIndex.weeks.slice(1).forEach(week => {
+                // Include all archive weeks in dropdown (user can manually select first one if needed)
+                archiveIndex.weeks.forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
                     option.textContent = expandMonthName(week.label);
@@ -1672,9 +1672,15 @@ let visibleColumns = {
         
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
-            const currentValue = weekSelect.value;
+            let currentValue = weekSelect.value;
             
             if (!archiveIndex) return;
+            
+            // Special case: if viewing the first archive week (same as current), treat as 'current'
+            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+            if (currentValue === firstArchiveFile) {
+                currentValue = 'current';
+            }
             
             // Build weeks array, skipping first archive week (same as current)
             const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
@@ -1719,7 +1725,14 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            const currentValue = weekSelect.value;
+            let currentValue = weekSelect.value;
+            
+            // Special case: if viewing the first archive week (same as current), treat as 'current'
+            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+            if (currentValue === firstArchiveFile) {
+                currentValue = 'current';
+            }
+            
             // Build weeks array, skipping first archive week (same as current)
             const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
