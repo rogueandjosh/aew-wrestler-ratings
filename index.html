@@ -2028,8 +2028,10 @@ let visibleColumns = {
                         const wrestler = droppedOut[i];
                         if (wrestler.name.toLowerCase().includes(searchTerm)) {
                             
-                            // Look up rank and rating from previous week if missing
-                            if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
+                            // Always look up rank and rating from previous week for inactive wrestlers
+                            // (Don't trust lastRank/lastRating from JSON as they may be from when first went inactive)
+                            const isInactiveWrestler = wrestler.name.includes('(Inactive)');
+                            if (isInactiveWrestler && prevWeekData) {
                                 // Search BOTH active roster AND dropped out section from previous week
                                 const prevRoster = prevWeekData[division] || [];
                                 const prevDroppedKey = division + 'DroppedOut';
@@ -2077,7 +2079,11 @@ let visibleColumns = {
                                 } else {
                                     console.log('   ❌ NOT FOUND in either active or dropped out');
                                 }
+                            } else if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
+                                // For non-inactive wrestlers (name changes), use JSON values if present
+                                // This path shouldn't normally execute as name changes should have lastRank/lastRating
                             }
+                            
                             
                             const isInactive = wrestler.name.includes('(Inactive)');
                             // Clean actualName: remove both (Inactive) and (Name change) suffixes
