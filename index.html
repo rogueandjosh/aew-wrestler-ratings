@@ -1905,20 +1905,12 @@ let visibleColumns = {
             
             if (!ratingsData) return;
 
-            // Update active tab - map division to button text
-            const divisionButtonText = {
-                'mens': 'men',
-                'womens': 'women',
-                'menstag': "men's tag",
-                'womenstag': "women's tag",
-                'trios': 'trios'
-            };
-            
+            // Update active tab - use exact onclick matching
             document.querySelectorAll('#divisionTabs .tab').forEach(tab => {
                 tab.classList.remove('active');
-                const tabText = tab.textContent.toLowerCase();
-                const targetText = divisionButtonText[division];
-                if (tabText.includes(targetText)) {
+                // Check the onclick attribute to see which division this tab represents
+                const onclick = tab.getAttribute('onclick');
+                if (onclick && onclick.includes(`'${division}'`)) {
                     tab.classList.add('active');
                 }
             });
@@ -2437,20 +2429,12 @@ return '';
     document.getElementById('rankingsToggle').classList.remove('active');
     document.getElementById('statsToggle').classList.add('active');
 
-    // Update division tabs to highlight the selected division - map division to button text
-    const divisionButtonText = {
-        'mens': 'men',
-        'womens': 'women',
-        'menstag': "men's tag",
-        'womenstag': "women's tag",
-        'trios': 'trios'
-    };
-    
+    // Update active tab - use exact onclick matching
     document.querySelectorAll('#divisionTabs .tab').forEach(tab => {
         tab.classList.remove('active');
-        const tabText = tab.textContent.toLowerCase();
-        const targetText = divisionButtonText[division];
-        if (tabText.includes(targetText)) {
+        // Check the onclick attribute to see which division this tab represents
+        const onclick = tab.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${division}'`)) {
             tab.classList.add('active');
         }
     });
