@@ -1649,17 +1649,11 @@ let visibleColumns = {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
-            // Try to restore selection, or auto-select Week 1 if month changed
+            // Try to restore selection
             if (filteredWeeks.find(w => `archive/${w.filename}` === currentSelection)) {
                 weekSelect.value = currentSelection;
-            } else if (monthFilter) {
-                // Month changed - auto-select first week of that month
-                const week1 = filteredWeeks.find(w => w.label.includes('Week 1'));
-                if (week1) {
-                    weekSelect.value = `archive/${week1.filename}`;
-                    loadSelectedWeek();
-                }
             }
+            // Note: Removed auto-select Week 1 logic that was interfering with navigation
         }
         
         function resetToCurrent() {
