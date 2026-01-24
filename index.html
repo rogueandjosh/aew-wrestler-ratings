@@ -219,6 +219,42 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 5px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #b8b8b8;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .toggle-btn:hover {
+            color: #e0e0e0;
+        }
+
+        .toggle-btn.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
         .tabs {
             display: flex;
             justify-content: center;
@@ -554,6 +590,20 @@
             color: #ffd700;
             font-size: 1.1em;
         }
+        
+        .wrestler-image {
+            width: 60px;
+            padding: 8px;
+        }
+        
+        .wrestler-image img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            background: #2d2d2d;
+        }
 
         .name {
             font-weight: bold;
@@ -886,13 +936,21 @@
             <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showDivision('mens')">Men</button>
-            <button class="tab" onclick="showDivision('womens')">Women</button>
-            <button class="tab" onclick="showDivision('menstag')">Men's Tag Teams</button>
-            <button class="tab" onclick="showDivision('womenstag')">Women's Tag Teams</button>
-            <button class="tab" onclick="showDivision('trios')">Trios</button>
-            <button class="tab" onclick="showStatistics('mens')">📊 Statistics</button>
+        <div class="view-toggle">
+            <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
+                📊 Weekly Rankings
+            </button>
+            <button id="statsToggle" class="toggle-btn" onclick="switchToStatistics()">
+                📈 All Wrestler Statistics
+            </button>
+        </div>
+
+        <div id="divisionTabs" class="tabs">
+            <button class="tab active" onclick="handleDivisionClick('mens')">Men</button>
+            <button class="tab" onclick="handleDivisionClick('womens')">Women</button>
+            <button class="tab" onclick="handleDivisionClick('menstag')">Men's Tag Teams</button>
+            <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
+            <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
         </div>
 
         <div id="content">
@@ -1835,6 +1893,10 @@ let visibleColumns = {
             currentView = 'rankings';
             currentDivision = division; // Remember which division we're on
             
+            // Update toggle buttons to show rankings is active
+            document.getElementById('rankingsToggle').classList.add('active');
+            document.getElementById('statsToggle').classList.remove('active');
+            
             if (!ratingsData) return;
 
             // Update active tab
@@ -1967,10 +2029,19 @@ let visibleColumns = {
                 const changeClass = getChangeClass(wrestler.change);
                 const changeSymbol = getChangeSymbol(wrestler.change);
                 const teamMembers = getTeamMembers(wrestler.name, division);
+                
+                // Only show images for top 10
+                const showImage = wrestler.rank <= 10;
+                let imageCell = '';
+                if (showImage) {
+                    const slug = createSlug(wrestler.name);
+                    imageCell = `<td class="wrestler-image"><img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" onerror="this.src='images/placeholder.png'"></td>`;
+                }
 
               rows.push(`
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
+                        ${imageCell}
                         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
                         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
                         <td class="change ${changeClass}">${changeSymbol}</td>
@@ -1984,11 +2055,15 @@ let visibleColumns = {
             // Update table
             const tableEl = document.getElementById('table-' + division);
             if (tableEl) {
+                // Only show images for top 10 wrestlers
+                const showImages = filteredData.length > 0 && filteredData[0].rank <= 10;
+                
                 tableEl.innerHTML = `
                     <table>
                         <thead>
                             <tr>
                                 <th>Rank</th>
+                                ${showImages ? '<th>Image</th>' : ''}
                                 <th>Name</th>
                                 <th>Rating</th>
                                 <th>Change</th>
@@ -2315,17 +2390,54 @@ return '';
                 }, 150); // Wait 150ms after user stops typing/sliding
             }
         }
+        
+        function handleDivisionClick(division) {
+            // Check which toggle is active and route accordingly
+            if (document.getElementById('statsToggle').classList.contains('active')) {
+                // Statistics mode - show statistics for this division
+                showStatistics(division);
+            } else {
+                // Rankings mode - show rankings for this division
+                showDivision(division);
+            }
+        }
+
+        function switchToRankings() {
+            // Update toggle buttons
+            document.getElementById('rankingsToggle').classList.add('active');
+            document.getElementById('statsToggle').classList.remove('active');
+            
+            // Switch view mode
+            currentView = 'rankings';
+            
+            // Show rankings for current division
+            showDivision(currentDivision === 'statistics' ? 'mens' : currentDivision);
+        }
+
+        function switchToStatistics() {
+            // Update toggle buttons
+            document.getElementById('rankingsToggle').classList.remove('active');
+            document.getElementById('statsToggle').classList.add('active');
+            
+            // Show statistics for current division (or default to mens)
+            showStatistics(currentDivision === 'statistics' ? 'mens' : currentDivision);
+        }
 
        async function showStatistics(division) {
     currentView = 'statistics';
-    currentDivision = 'statistics'; // Remember we're in statistics
+    currentDivision = division; // Remember which division we're on in statistics mode
     currentStatsDivision = division;
     currentSortColumn = 'peak';
     currentSortDirection = 'desc';
+    
+    // Update toggle buttons to show statistics is active
+    document.getElementById('rankingsToggle').classList.remove('active');
+    document.getElementById('statsToggle').classList.add('active');
 
+    // Update division tabs to highlight the selected division
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
-        if (tab.textContent.includes('Statistics')) {
+        if (tab.textContent.toLowerCase().includes(division.replace('tag', ' tag'))) {
             tab.classList.add('active');
         }
     });
