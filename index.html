@@ -1905,10 +1905,20 @@ let visibleColumns = {
             
             if (!ratingsData) return;
 
-            // Update active tab
-            document.querySelectorAll('.tab').forEach(tab => {
+            // Update active tab - map division to button text
+            const divisionButtonText = {
+                'mens': 'men',
+                'womens': 'women',
+                'menstag': "men's tag",
+                'womenstag': "women's tag",
+                'trios': 'trios'
+            };
+            
+            document.querySelectorAll('#divisionTabs .tab').forEach(tab => {
                 tab.classList.remove('active');
-                if (tab.textContent.toLowerCase().includes(division.replace('tag', ' tag'))) {
+                const tabText = tab.textContent.toLowerCase();
+                const targetText = divisionButtonText[division];
+                if (tabText.includes(targetText)) {
                     tab.classList.add('active');
                 }
             });
@@ -2035,19 +2045,10 @@ let visibleColumns = {
                 const changeClass = getChangeClass(wrestler.change);
                 const changeSymbol = getChangeSymbol(wrestler.change);
                 const teamMembers = getTeamMembers(wrestler.name, division);
-                
-                // Only show images for top 10
-                const showImage = wrestler.rank <= 10;
-                let imageCell = '';
-                if (showImage) {
-                    const slug = createSlug(wrestler.name);
-                    imageCell = `<td class="wrestler-image"><img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" onerror="this.src='images/placeholder.png'"></td>`;
-                }
 
               rows.push(`
                     <tr>
                         <td class="rank">${wrestler.rank}</td>
-                        ${imageCell}
                         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
                         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
                         <td class="change ${changeClass}">${changeSymbol}</td>
@@ -2061,15 +2062,11 @@ let visibleColumns = {
             // Update table
             const tableEl = document.getElementById('table-' + division);
             if (tableEl) {
-                // Only show images for top 10 wrestlers
-                const showImages = filteredData.length > 0 && filteredData[0].rank <= 10;
-                
                 tableEl.innerHTML = `
                     <table>
                         <thead>
                             <tr>
                                 <th>Rank</th>
-                                ${showImages ? '<th>Image</th>' : ''}
                                 <th>Name</th>
                                 <th>Rating</th>
                                 <th>Change</th>
@@ -2440,10 +2437,20 @@ return '';
     document.getElementById('rankingsToggle').classList.remove('active');
     document.getElementById('statsToggle').classList.add('active');
 
-    // Update division tabs to highlight the selected division
-    document.querySelectorAll('.tab').forEach(tab => {
+    // Update division tabs to highlight the selected division - map division to button text
+    const divisionButtonText = {
+        'mens': 'men',
+        'womens': 'women',
+        'menstag': "men's tag",
+        'womenstag': "women's tag",
+        'trios': 'trios'
+    };
+    
+    document.querySelectorAll('#divisionTabs .tab').forEach(tab => {
         tab.classList.remove('active');
-        if (tab.textContent.toLowerCase().includes(division.replace('tag', ' tag'))) {
+        const tabText = tab.textContent.toLowerCase();
+        const targetText = divisionButtonText[division];
+        if (tabText.includes(targetText)) {
             tab.classList.add('active');
         }
     });
@@ -2493,21 +2500,13 @@ function renderStatistics(division) {
         'trios': "Trios"
     };
 
-    // Create tabs for divisions
+    // Create summary stats
     let html = `
         <div class="stats-summary">
             <div class="stat-box">
                 <div class="stat-number">${divisionData.length}</div>
                 <div class="stat-label">Total Wrestlers</div>
             </div>
-        </div>
-
-        <div class="tabs" style="margin-bottom: 20px;">
-            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men's Singles</button>
-            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women's Singles</button>
-            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
-            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
-            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
         </div>
 
         <div class="table-container">
@@ -3090,14 +3089,6 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 <div class="stat-number">${selectedWeekLabel}</div>
                 <div class="stat-label">Statistics Through</div>
             </div>
-        </div>
-
-        <div class="tabs" style="margin-bottom: 20px;">
-            <button class="tab ${division === 'mens' ? 'active' : ''}" onclick="showStatistics('mens')">Men</button>
-            <button class="tab ${division === 'womens' ? 'active' : ''}" onclick="showStatistics('womens')">Women</button>
-            <button class="tab ${division === 'menstag' ? 'active' : ''}" onclick="showStatistics('menstag')">Men's Tag</button>
-            <button class="tab ${division === 'womenstag' ? 'active' : ''}" onclick="showStatistics('womenstag')">Women's Tag</button>
-            <button class="tab ${division === 'trios' ? 'active' : ''}" onclick="showStatistics('trios')">Trios</button>
         </div>
     `;
     
