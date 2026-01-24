@@ -1235,12 +1235,14 @@
             wrestlers.forEach(wrestler => {
                 const inactiveClass = wrestler.isInactive ? 'inactive' : '';
                 // Clean display name: remove all suffixes before adding our own formatting
-                let displayName = wrestler.name
+                let baseName = wrestler.name
                     .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
                     .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
                     .replace(/\s*\(Inactive\)/i, '')
                     .replace(/\s*\(Name change\)/i, '')
                     .trim();
+                
+                let displayName = baseName;
                 
                 // Add back formatted inactive suffix if needed
                 if (wrestler.isInactive) {
@@ -1268,9 +1270,12 @@
                     infoText = `Last Rating: ${(wrestler.rating || 100).toFixed(2)}`;
                 }
                 
+                // Create hyperlink to wrestler stats (use baseName for the slug)
+                const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(baseName)}" class="wrestler-link">${displayName}</a>`;
+                
                 html += `
                     <div class="recently-dropped-item ${inactiveClass}">
-                        <div class="recently-dropped-name">${displayName}</div>
+                        <div class="recently-dropped-name">${wrestlerLink}</div>
                         <div class="recently-dropped-details">
                             ${infoText}<br>
                             Last Seen: ${wrestler.lastSeen}
@@ -2208,9 +2213,12 @@ let visibleColumns = {
                                 infoText = `Last Rating: ${(wrestler.lastRating || 100).toFixed(2)}`;
                             }
                             
+                            // Create hyperlink to wrestler stats (use actualName for the slug)
+                            const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(actualName)}" class="wrestler-link">${cleanDisplayName}</a>`;
+                            
                             droppedRows.push(`
                                 <div class="dropped-wrestler">
-                                    <div class="dropped-wrestler-name">${cleanDisplayName}</div>
+                                    <div class="dropped-wrestler-name">${wrestlerLink}</div>
                                     <div class="dropped-wrestler-info">
                                         ${infoText}
                                     </div>
