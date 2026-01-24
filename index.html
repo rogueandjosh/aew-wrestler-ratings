@@ -1682,13 +1682,18 @@ let visibleColumns = {
                 currentValue = 'current';
             }
             
-            // Build weeks array, skipping first archive week (same as current)
-            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
-            const currentIndex = allWeeks.indexOf(currentValue);
+            // Build full weeks array (including the duplicate at index 1)
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            let currentIndex = allWeeks.indexOf(currentValue);
             
             if (currentIndex === -1) return;
             
-            const newIndex = currentIndex + direction;
+            let newIndex = currentIndex + direction;
+            
+            // Skip the duplicate: if moving from current (index 0) to index 1, go to index 2 instead
+            if (currentIndex === 0 && direction === 1 && newIndex === 1) {
+                newIndex = 2;
+            }
             
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
@@ -1733,8 +1738,8 @@ let visibleColumns = {
                 currentValue = 'current';
             }
             
-            // Build weeks array, skipping first archive week (same as current)
-            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
+            // Build full weeks array (including the duplicate at index 1)
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
             // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
