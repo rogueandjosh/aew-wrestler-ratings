@@ -1538,6 +1538,11 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
+            // Update Current Week button text to include the week label
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn && ratingsData.currentWeek) {
+                resetBtn.textContent = `↻ Current Week (${expandMonthName(ratingsData.currentWeek)})`;
+            }
 
             // Load statistics if available
             if (statsResponse) {
@@ -1755,6 +1760,12 @@ let visibleColumns = {
                         console.log('🟢 Data loaded successfully');
                         ratingsData = fixEncodingIssues(data);
                         console.log('🟢 Encoding fixed');
+                        
+                        // Update Current Week button text to include the week label
+                        const resetBtn = document.getElementById('resetBtn');
+                        if (resetBtn && ratingsData.currentWeek) {
+                            resetBtn.textContent = `↻ Current Week (${expandMonthName(ratingsData.currentWeek)})`;
+                        }
                         
                         // Data is already correct from JSON export - no processing needed
                         
