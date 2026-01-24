@@ -1860,6 +1860,12 @@ let visibleColumns = {
                     .then(async data => {
                         try {
                             ratingsData = fixEncodingIssues(data);
+                            
+                            // Reset Current Week button text to simple version (no week label for archives)
+                            const resetBtn = document.getElementById('resetBtn');
+                            if (resetBtn) {
+                                resetBtn.textContent = '↻ Current Week';
+                            }
 
                             if (ratingsData.dateRange) {
                                 document.getElementById('dateRange').textContent = ratingsData.dateRange;
