@@ -1506,7 +1506,7 @@ let visibleColumns = {
 };
 
         // Helper function to fix encoding issues in JSON data
-        async function fixEncodingIssues(data) {
+        function fixEncodingIssues(data) {
             if (!data) return data;
             
             // Fix divisions
@@ -1662,7 +1662,7 @@ let visibleColumns = {
             
             // Load current rankings
             ratingsData = await currentResponse.json();
-            ratingsData = await fixEncodingIssues(ratingsData);
+            ratingsData = fixEncodingIssues(ratingsData);
             
             // Calculate proper arrow directions by comparing with previous week
             ratingsData = await calculateArrowDirections(ratingsData);
@@ -1887,7 +1887,7 @@ let visibleColumns = {
                     .then(response => response.json())
                     .then(async data => {
                         console.log('🟢 Data loaded successfully');
-                        ratingsData = await fixEncodingIssues(data);
+                        ratingsData = fixEncodingIssues(data);
                         console.log('🟢 Encoding fixed');
                         
                         // Calculate proper arrow directions by comparing with previous week
