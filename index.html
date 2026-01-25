@@ -2126,9 +2126,12 @@ for (let i = 0; i < filteredData.length; i++) {
 
 const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
     
- rows.push(`
+ // Add spacing class before rank 11 (first row without images)
+const gapClass = wrestler.rank === 11 ? ' style="padding-top: 30px;"' : '';
+
+rows.push(`
     <tr>
-        <td class="rank">${wrestler.rank}</td>
+        <td class="rank"${gapClass}>${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
@@ -2138,11 +2141,6 @@ const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
         <td>${(wrestler.floor || 100).toFixed(2)}</td>
     </tr>
 `);
-
-// Add spacer row after rank 10
-if (wrestler.rank === 10) {
-    rows.push(`<tr style="height: 20px;"><td colspan="7"></td></tr>`);
-}
 }
 
             // Update table
