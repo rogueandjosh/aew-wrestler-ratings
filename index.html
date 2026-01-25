@@ -62,6 +62,10 @@
             color: #9ca3af;
         }
 
+        .last-with-image {
+            border-bottom: 20px solid transparent !important;
+        }
+
         .subtitle {
             color: #b8b8b8;
             font-size: 1.1em;
@@ -2120,8 +2124,10 @@ for (let i = 0; i < filteredData.length; i++) {
         </td>`;
     }
 
+const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
+    
   rows.push(`
-        <tr>
+        <tr${spacingClass}>
             <td class="rank">${wrestler.rank}</td>
             ${imageCell}
             <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
@@ -2146,7 +2152,7 @@ if (tableEl) {
             <thead>
                 <tr>
                     <th>Rank</th>
-                    ${showImages ? '<th>Image</th>' : ''}
+                    ${showImages ? '<th></th>' : ''}
                     <th>Name</th>
                     <th>Rating</th>
                     <th>Change</th>
