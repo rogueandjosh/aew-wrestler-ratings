@@ -62,8 +62,8 @@
             color: #9ca3af;
         }
 
-        tr.rank-11-gap td {
-            padding-top: 30px !important;
+        tr.rank-10-border {
+            border-bottom: 3px solid rgba(255, 215, 0, 0.3) !important;
         }
 
         .subtitle {
@@ -2124,13 +2124,11 @@ for (let i = 0; i < filteredData.length; i++) {
         </td>`;
     }
 
-const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
-    
- // Add spacing class to entire row 11
-const rowStyle = wrestler.rank === 11 ? ' class="rank-11-gap"' : '';
+// Add border to row 10
+const rowClass = wrestler.rank === 10 ? ' class="rank-10-border"' : '';
 
 rows.push(`
-    <tr${rowStyle}>
+     <tr${rowClass}>
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
