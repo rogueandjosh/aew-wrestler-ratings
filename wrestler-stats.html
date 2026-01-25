@@ -1115,50 +1115,44 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         function aggregateByMonth(historyData) {
-            const monthlyMap = {};
-            
-            // HARDCODED: Only process data through November 2025
-            const cutoffDate = new Date(2025, 10, 30); // November 30, 2025
-            
-            historyData.forEach(h => {
-                const date = new Date(h.date);
-                
-                // Skip any data after November 2025
-                if (date > cutoffDate) return;
-                
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-                
-                if (!monthlyMap[monthKey]) {
-                    monthlyMap[monthKey] = {
-                        label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
-                        ratings: [],
-                        date: new Date(year, month, 15),
-                        year: year,
-                        month: month
-                    };
-                }
-                monthlyMap[monthKey].ratings.push(h.rating);
-            });
-
-            // Convert to array and sort chronologically
-            const monthlyData = Object.values(monthlyMap).map(m => ({
-                label: m.label,
-                rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
-                date: m.date,
-                year: m.year,
-                month: m.month
-            }));
-
-            // Sort by date
-            monthlyData.sort((a, b) => {
-                if (a.year !== b.year) return a.year - b.year;
-                return a.month - b.month;
-            });
-            
-            return monthlyData;
+    const monthlyMap = {};
+    
+    historyData.forEach(h => {
+        const date = new Date(h.date);
+        
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+        
+        if (!monthlyMap[monthKey]) {
+            monthlyMap[monthKey] = {
+                label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+                ratings: [],
+                date: new Date(year, month, 15),
+                year: year,
+                month: month
+            };
         }
+        monthlyMap[monthKey].ratings.push(h.rating);
+    }); // ← This closes the forEach
+
+    // Convert to array and sort chronologically
+    const monthlyData = Object.values(monthlyMap).map(m => ({
+        label: m.label,
+        rating: m.ratings.reduce((a, b) => a + b, 0) / m.ratings.length,
+        date: m.date,
+        year: m.year,
+        month: m.month
+    }));
+
+    // Sort by date
+    monthlyData.sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return a.month - b.month;
+    });
+    
+    return monthlyData;
+} // ← This closes the function
 
         function getFilteredMatches() {
             if (currentYear === 'ALL') {
