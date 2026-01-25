@@ -2135,27 +2135,32 @@ for (let i = 0; i < filteredData.length; i++) {
 }
 
             // Update table
-            const tableEl = document.getElementById('table-' + division);
-            if (tableEl) {
-                tableEl.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Name</th>
-                                <th>Rating</th>
-                                <th>Change</th>
-                                <th>Matches</th>
-                                <th>Peak</th>
-                                <th>Floor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows.join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
+const tableEl = document.getElementById('table-' + division);
+if (tableEl) {
+    // Check if we should show images (only for top 10)
+    const showImages = filteredData.length > 0 && 
+                       filteredData.some(w => w.rank <= 10);
+    
+    tableEl.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    ${showImages ? '<th>Image</th>' : ''}
+                    <th>Name</th>
+                    <th>Rating</th>
+                    <th>Change</th>
+                    <th>Matches</th>
+                    <th>Peak</th>
+                    <th>Floor</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows.join('')}
+            </tbody>
+        </table>
+    `;
+}
 
             // Update dropped out section
             const droppedEl = document.getElementById('dropped-' + division);
