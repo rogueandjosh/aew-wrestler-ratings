@@ -62,8 +62,8 @@
             color: #9ca3af;
         }
 
-        .last-with-image {
-            border-bottom: 20px solid transparent !important;
+        tr.rank-11-gap td {
+            padding-top: 30px !important;
         }
 
         .subtitle {
@@ -2126,12 +2126,12 @@ for (let i = 0; i < filteredData.length; i++) {
 
 const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
     
- // Add spacing class before rank 11 (first row without images)
-const gapClass = wrestler.rank === 11 ? ' style="padding-top: 30px;"' : '';
+ // Add spacing class to entire row 11
+const rowStyle = wrestler.rank === 11 ? ' class="rank-11-gap"' : '';
 
 rows.push(`
-    <tr>
-        <td class="rank"${gapClass}>${wrestler.rank}</td>
+    <tr${rowStyle}>
+        <td class="rank">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
