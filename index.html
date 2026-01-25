@@ -2100,26 +2100,39 @@ let visibleColumns = {
             }
 
             // Build table rows efficiently
-            const rows = [];
-            for (let i = 0; i < filteredData.length; i++) {
-                const wrestler = filteredData[i];
-                const ratingClass = getRatingClass(wrestler.rating);
-                const changeClass = getChangeClass(wrestler.change);
-                const changeSymbol = getChangeSymbol(wrestler.change);
-                const teamMembers = getTeamMembers(wrestler.name, division);
+const rows = [];
+for (let i = 0; i < filteredData.length; i++) {
+    const wrestler = filteredData[i];
+    const ratingClass = getRatingClass(wrestler.rating);
+    const changeClass = getChangeClass(wrestler.change);
+    const changeSymbol = getChangeSymbol(wrestler.change);
+    const teamMembers = getTeamMembers(wrestler.name, division);
+    
+    // Only show images for top 10
+    const showImage = wrestler.rank <= 10;
+    let imageCell = '';
+    if (showImage) {
+        const slug = createSlug(wrestler.name);
+        imageCell = `<td class="wrestler-image">
+            <img src="images/wrestlers/${slug}.jpg" 
+                 alt="${wrestler.name}" 
+                 onerror="this.src='images/placeholder.png'">
+        </td>`;
+    }
 
-              rows.push(`
-                    <tr>
-                        <td class="rank">${wrestler.rank}</td>
-                        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
-                        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
-                        <td class="change ${changeClass}">${changeSymbol}</td>
-                        <td>${wrestler.matches}</td>
-                        <td>${(wrestler.peak || 100).toFixed(2)}</td>
-                        <td>${(wrestler.floor || 100).toFixed(2)}</td>
-                    </tr>
-                `);
-            }
+  rows.push(`
+        <tr>
+            <td class="rank">${wrestler.rank}</td>
+            ${imageCell}
+            <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
+            <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
+            <td class="change ${changeClass}">${changeSymbol}</td>
+            <td>${wrestler.matches}</td>
+            <td>${(wrestler.peak || 100).toFixed(2)}</td>
+            <td>${(wrestler.floor || 100).toFixed(2)}</td>
+        </tr>
+    `);
+}
 
             // Update table
             const tableEl = document.getElementById('table-' + division);
