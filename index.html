@@ -2126,18 +2126,23 @@ for (let i = 0; i < filteredData.length; i++) {
 
 const spacingClass = wrestler.rank === 10 ? ' class="last-with-image"' : '';
     
-  rows.push(`
-        <tr${spacingClass}>
-            <td class="rank">${wrestler.rank}</td>
-            ${imageCell}
-            <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
-            <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
-            <td class="change ${changeClass}">${changeSymbol}</td>
-            <td>${wrestler.matches}</td>
-            <td>${(wrestler.peak || 100).toFixed(2)}</td>
-            <td>${(wrestler.floor || 100).toFixed(2)}</td>
-        </tr>
-    `);
+ rows.push(`
+    <tr>
+        <td class="rank">${wrestler.rank}</td>
+        ${imageCell}
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
+        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
+        <td class="change ${changeClass}">${changeSymbol}</td>
+        <td>${wrestler.matches}</td>
+        <td>${(wrestler.peak || 100).toFixed(2)}</td>
+        <td>${(wrestler.floor || 100).toFixed(2)}</td>
+    </tr>
+`);
+
+// Add spacer row after rank 10
+if (wrestler.rank === 10) {
+    rows.push(`<tr style="height: 20px;"><td colspan="7"></td></tr>`);
+}
 }
 
             // Update table
