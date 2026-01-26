@@ -62,6 +62,10 @@
             color: #9ca3af;
         }
 
+        tr.rank-10-border {
+            border-bottom: 3px solid rgba(255, 215, 0, 0.3) !important;
+        }
+
         .subtitle {
             color: #b8b8b8;
             font-size: 1.1em;
@@ -1368,68 +1372,6 @@
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
         }
-        
-        // Get alternative image filenames for wrestlers with name changes
-        function getImageAlternatives(currentName) {
-            const alternatives = [createSlug(currentName)];
-            
-            // Clean the current name (remove suffixes)
-            const cleanName = currentName
-                .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
-                .replace(/\s*\(Inactive\s+\(\d+\+?\s+weeks?\)\)/i, '')
-                .replace(/\s*\(Inactive\)/i, '')
-                .replace(/\s*\(Name change\)/i, '')
-                .trim();
-            
-            // Add cleaned version if different
-            if (cleanName !== currentName) {
-                alternatives.push(createSlug(cleanName));
-            }
-            
-            // Check for known name changes and add historical names
-            if (!nameChanges || nameChanges.length === 0) return alternatives;
-            
-            // Find all name changes related to this wrestler
-            const relatedChanges = nameChanges.filter(change => 
-                change.oldName === cleanName || change.newName === cleanName
-            );
-            
-            // Add all related names as alternatives
-            relatedChanges.forEach(change => {
-                const oldSlug = createSlug(change.oldName);
-                const newSlug = createSlug(change.newName);
-                if (!alternatives.includes(oldSlug)) alternatives.push(oldSlug);
-                if (!alternatives.includes(newSlug)) alternatives.push(newSlug);
-            });
-            
-            return alternatives;
-        }
-        
-        // Generate image tag with fallback attempts for name changes
-        function getWrestlerImage(name, withinThreshold) {
-            if (!withinThreshold) {
-                // Beyond threshold - just placeholder
-                return `<td class="wrestler-image">
-                    <img src="images/placeholder.png" alt="${name}">
-                </td>`;
-            }
-            
-            // Get all possible filename variations
-            const alternatives = getImageAlternatives(name);
-            const primarySlug = alternatives[0];
-            
-            // Build onerror chain to try alternatives
-            let errorHandler = "this.src='images/placeholder.png'";
-            for (let i = 1; i < alternatives.length; i++) {
-                errorHandler = `this.onerror=function(){this.onerror=null;${errorHandler}};this.src='images/wrestlers/${alternatives[i]}.jpg'`;
-            }
-            
-            return `<td class="wrestler-image">
-                <img src="images/wrestlers/${primarySlug}.jpg" 
-                     alt="${name}" 
-                     onerror="${errorHandler}">
-            </td>`;
-        }
 
         // Get the correct name for a wrestler at a specific week
         function getCanonicalNameAtWeek(canonicalName, weekLabel, nameChanges) {
@@ -2170,22 +2112,23 @@ for (let i = 0; i < filteredData.length; i++) {
     const changeSymbol = getChangeSymbol(wrestler.change);
     const teamMembers = getTeamMembers(wrestler.name, division);
     
-    // Determine image threshold based on division size
-    let imageThreshold;
-    if (filteredData.length <= 10) {
-        imageThreshold = Math.min(3, filteredData.length);
-    } else if (filteredData.length <= 29) {
-        imageThreshold = 5;
-    } else {
-        imageThreshold = 10;
+    // Only show images for top 10
+    const showImage = wrestler.rank <= 10;
+    let imageCell = '';
+    if (showImage) {
+        const slug = createSlug(wrestler.name);
+        imageCell = `<td class="wrestler-image">
+            <img src="images/wrestlers/${slug}.jpg" 
+                 alt="${wrestler.name}" 
+                 onerror="this.src='images/placeholder.png'">
+        </td>`;
     }
-    
-    // Generate image cell with name-change fallback support
-    const withinThreshold = wrestler.rank <= imageThreshold;
-    const imageCell = getWrestlerImage(wrestler.name, withinThreshold);
+
+// Add border to row 10
+const rowClass = wrestler.rank === 10 ? ' class="rank-10-border"' : '';
 
 rows.push(`
-     <tr>
+     <tr${rowClass}>
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
@@ -2201,12 +2144,16 @@ rows.push(`
             // Update table
 const tableEl = document.getElementById('table-' + division);
 if (tableEl) {
+    // Check if we should show images (only for top 10)
+    const showImages = filteredData.length > 0 && 
+                       filteredData.some(w => w.rank <= 10);
+    
     tableEl.innerHTML = `
         <table>
             <thead>
                 <tr>
                     <th>Rank</th>
-                    <th></th>
+                    ${showImages ? '<th></th>' : ''}
                     <th>Name</th>
                     <th>Rating</th>
                     <th>Change</th>
