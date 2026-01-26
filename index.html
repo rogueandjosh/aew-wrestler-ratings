@@ -2118,15 +2118,24 @@ for (let i = 0; i < filteredData.length; i++) {
         imageThreshold = 10;
     }
     
-    // Only show images for wrestlers within threshold
-    const showImage = wrestler.rank <= imageThreshold;
+    // ALL wrestlers get image column
+    // Top wrestlers (within threshold) try to load their photo, others go straight to placeholder
+    const slug = createSlug(wrestler.name);
+    const withinThreshold = wrestler.rank <= imageThreshold;
+    
     let imageCell = '';
-    if (showImage) {
-        const slug = createSlug(wrestler.name);
+    if (withinThreshold) {
+        // Try to load wrestler's photo, fallback to placeholder
         imageCell = `<td class="wrestler-image">
             <img src="images/wrestlers/${slug}.jpg" 
                  alt="${wrestler.name}" 
                  onerror="this.src='images/placeholder.png'">
+        </td>`;
+    } else {
+        // Beyond threshold - just show placeholder directly
+        imageCell = `<td class="wrestler-image">
+            <img src="images/placeholder.png" 
+                 alt="${wrestler.name}">
         </td>`;
     }
 
@@ -2147,26 +2156,12 @@ rows.push(`
             // Update table
 const tableEl = document.getElementById('table-' + division);
 if (tableEl) {
-    // Determine image threshold based on division size
-    let imageThreshold;
-    if (filteredData.length <= 10) {
-        imageThreshold = Math.min(3, filteredData.length);
-    } else if (filteredData.length <= 29) {
-        imageThreshold = 5;
-    } else {
-        imageThreshold = 10;
-    }
-    
-    // Check if we should show images column
-    const showImages = filteredData.length > 0 && 
-                       filteredData.some(w => w.rank <= imageThreshold);
-    
     tableEl.innerHTML = `
         <table>
             <thead>
                 <tr>
                     <th>Rank</th>
-                    ${showImages ? '<th></th>' : ''}
+                    <th></th>
                     <th>Name</th>
                     <th>Rating</th>
                     <th>Change</th>
