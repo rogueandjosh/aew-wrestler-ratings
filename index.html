@@ -62,10 +62,6 @@
             color: #9ca3af;
         }
 
-        tr.rank-10-border {
-            border-bottom: 3px solid rgba(255, 215, 0, 0.3) !important;
-        }
-
         .subtitle {
             color: #b8b8b8;
             font-size: 1.1em;
@@ -2112,8 +2108,18 @@ for (let i = 0; i < filteredData.length; i++) {
     const changeSymbol = getChangeSymbol(wrestler.change);
     const teamMembers = getTeamMembers(wrestler.name, division);
     
-    // Only show images for top 10
-    const showImage = wrestler.rank <= 10;
+    // Determine image threshold based on division size
+    let imageThreshold;
+    if (filteredData.length <= 10) {
+        imageThreshold = Math.min(3, filteredData.length);
+    } else if (filteredData.length <= 29) {
+        imageThreshold = 5;
+    } else {
+        imageThreshold = 10;
+    }
+    
+    // Only show images for wrestlers within threshold
+    const showImage = wrestler.rank <= imageThreshold;
     let imageCell = '';
     if (showImage) {
         const slug = createSlug(wrestler.name);
@@ -2124,11 +2130,8 @@ for (let i = 0; i < filteredData.length; i++) {
         </td>`;
     }
 
-// Add border to row 10
-const rowClass = wrestler.rank === 10 ? ' class="rank-10-border"' : '';
-
 rows.push(`
-     <tr${rowClass}>
+     <tr>
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
@@ -2144,9 +2147,19 @@ rows.push(`
             // Update table
 const tableEl = document.getElementById('table-' + division);
 if (tableEl) {
-    // Check if we should show images (only for top 10)
+    // Determine image threshold based on division size
+    let imageThreshold;
+    if (filteredData.length <= 10) {
+        imageThreshold = Math.min(3, filteredData.length);
+    } else if (filteredData.length <= 29) {
+        imageThreshold = 5;
+    } else {
+        imageThreshold = 10;
+    }
+    
+    // Check if we should show images column
     const showImages = filteredData.length > 0 && 
-                       filteredData.some(w => w.rank <= 10);
+                       filteredData.some(w => w.rank <= imageThreshold);
     
     tableEl.innerHTML = `
         <table>
