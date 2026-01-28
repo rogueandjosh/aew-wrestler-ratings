@@ -2352,8 +2352,8 @@ for (let i = 0; i < filteredData.length; i++) {
             const slug1 = createSlug(members[0]);
             const slug2 = createSlug(members[1]);
             const slug3 = createSlug(members[2]);
-            const initials1 = generateTagInitials(members[0]);
-            const initials2 = generateTagInitials(members[1]);
+            const initials1 = generateTrioInitial(members[0]);
+            const initials2 = generateTrioInitial(members[1]);
             const initials3 = generateTrioInitial(members[2]);
             const initialsUrl1 = createInitialsCircle(initials1, 30);
             const initialsUrl2 = createInitialsCircle(initials2, 30);
@@ -2395,8 +2395,8 @@ for (let i = 0; i < filteredData.length; i++) {
         } else {
             // Beyond threshold - show individual wrestler initials
             if (members.length >= 3) {
-                const initials1 = generateTagInitials(members[0]);
-                const initials2 = generateTagInitials(members[1]);
+                const initials1 = generateTrioInitial(members[0]);
+                const initials2 = generateTrioInitial(members[1]);
                 const initials3 = generateTrioInitial(members[2]);
                 const initialsUrl1 = createInitialsCircle(initials1, 30);
                 const initialsUrl2 = createInitialsCircle(initials2, 30);
