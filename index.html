@@ -1368,6 +1368,83 @@
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
         }
+        
+        // Generate initials from wrestler/team name
+        function generateInitials(name) {
+            // Remove common filler words
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            
+            // Handle parenthetical - extract main name before parenthesis
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            // Check if it contains "&" (wrestler & wrestler format)
+            if (cleanName.includes('&')) {
+                let parts = cleanName.split('&').map(p => p.trim());
+                // Get first initial of each part
+                let initials = parts.map(p => p.charAt(0)).join('');
+                return initials.toUpperCase();
+            }
+            
+            // Split into words
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            
+            // Remove words in quotes (nicknames)
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            // If it's already an acronym (all caps, 2-4 letters), keep as-is
+            if (words.length === 1 && words[0].length <= 4 && words[0] === words[0].toUpperCase()) {
+                return words[0];
+            }
+            
+            // For long names (4+ words), use first + last initial only
+            if (words.length >= 4) {
+                return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+            }
+            
+            // For 1-3 words, use first letter of each (max 3)
+            let initials = words.slice(0, 3).map(w => w.charAt(0)).join('');
+            
+            return initials.toUpperCase();
+        }
+        
+        // Create initials SVG circle - Style 1 (Gold Ring)
+        function createInitialsCircle(initials, size) {
+            const radius = size / 2 - 2;
+            const center = size / 2;
+            
+            // Adjust font size based on number of letters
+            let fontSize;
+            if (initials.length === 1) {
+                fontSize = size * 0.4; // 40% of size for single letter
+            } else if (initials.length === 2) {
+                fontSize = size * 0.3; // 30% of size for 2 letters
+            } else {
+                fontSize = size * 0.25; // 25% of size for 3+ letters
+            }
+            
+            const textY = center + fontSize * 0.35; // Vertically center text
+            
+            const svg = `
+                <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="${center}" cy="${center}" r="${radius}" 
+                            fill="#2d2d2d" stroke="#ffd700" stroke-width="2"/>
+                    <text x="${center}" y="${textY}" text-anchor="middle" 
+                          fill="white" font-size="${fontSize}" font-weight="bold" 
+                          font-family="Arial, sans-serif">${initials}</text>
+                </svg>
+            `;
+            
+            // Return as data URL
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
 
         // Get the correct name for a wrestler at a specific week
         function getCanonicalNameAtWeek(canonicalName, weekLabel, nameChanges) {
@@ -2124,121 +2201,185 @@ for (let i = 0; i < filteredData.length; i++) {
     
     // Check if this is a tag/trio division
     if (division === 'menstag' || division === 'womenstag') {
-        // TAG TEAMS - Show 2 images side by side (30x30 each)
+        // TAG TEAMS - Show 2 images side by side (45x45 each)
         const members = teamMembersData?.teams?.[wrestler.name] || [];
         
         if (withinThreshold && members.length >= 2) {
-            // Try to load individual wrestler images
+            // Try to load individual wrestler images, fallback to initials
             const slug1 = createSlug(members[0]);
             const slug2 = createSlug(members[1]);
+            const initials1 = generateInitials(members[0]);
+            const initials2 = generateInitials(members[1]);
+            const initialsUrl1 = createInitialsCircle(initials1, 45);
+            const initialsUrl2 = createInitialsCircle(initials2, 45);
+            
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
                     <img src="images/wrestlers/${slug1}.jpg" 
                          alt="${members[0]}" 
                          style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                         onerror="this.src='images/placeholder.png'">
+                         onerror="this.onerror=null; this.src='${initialsUrl1}';">
                     <img src="images/wrestlers/${slug2}.jpg" 
                          alt="${members[1]}" 
                          style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                         onerror="this.src='images/placeholder.png'">
+                         onerror="this.onerror=null; this.src='${initialsUrl2}';">
                 </div>
             </td>`;
         } else if (withinThreshold) {
-            // Within threshold but no member data - show 2 placeholders
+            // Within threshold but no member data - show team initials
+            const teamInitials = generateInitials(wrestler.name);
+            const teamInitialsUrl = createInitialsCircle(teamInitials, 45);
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 1" 
+                    <img src="${teamInitialsUrl}" 
+                         alt="Team" 
                          style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 2" 
+                    <img src="${teamInitialsUrl}" 
+                         alt="Team" 
                          style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                 </div>
             </td>`;
         } else {
-            // Beyond threshold - 2 placeholders
-            imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 1" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 2" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                </div>
-            </td>`;
+            // Beyond threshold - show individual wrestler initials
+            if (members.length >= 2) {
+                const initials1 = generateInitials(members[0]);
+                const initials2 = generateInitials(members[1]);
+                const initialsUrl1 = createInitialsCircle(initials1, 45);
+                const initialsUrl2 = createInitialsCircle(initials2, 45);
+                imageCell = `<td class="wrestler-image">
+                    <div style="display: flex; gap: 2px;">
+                        <img src="${initialsUrl1}" 
+                             alt="${members[0]}" 
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                        <img src="${initialsUrl2}" 
+                             alt="${members[1]}" 
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                    </div>
+                </td>`;
+            } else {
+                // No member data - use team initials
+                const teamInitials = generateInitials(wrestler.name);
+                const teamInitialsUrl = createInitialsCircle(teamInitials, 45);
+                imageCell = `<td class="wrestler-image">
+                    <div style="display: flex; gap: 2px;">
+                        <img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                        <img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                    </div>
+                </td>`;
+            }
         }
     } else if (division === 'trios') {
-        // TRIOS - Show 3 images side by side (20x20 each)
+    } else if (division === 'trios') {
+        // TRIOS - Show 3 images side by side (30x30 each)
         const members = teamMembersData?.teams?.[wrestler.name] || [];
         
         if (withinThreshold && members.length >= 3) {
-            // Try to load individual wrestler images
+            // Try to load individual wrestler images, fallback to initials
             const slug1 = createSlug(members[0]);
             const slug2 = createSlug(members[1]);
             const slug3 = createSlug(members[2]);
+            const initials1 = generateInitials(members[0]);
+            const initials2 = generateInitials(members[1]);
+            const initials3 = generateInitials(members[2]);
+            const initialsUrl1 = createInitialsCircle(initials1, 30);
+            const initialsUrl2 = createInitialsCircle(initials2, 30);
+            const initialsUrl3 = createInitialsCircle(initials3, 30);
+            
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
                     <img src="images/wrestlers/${slug1}.jpg" 
                          alt="${members[0]}" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
-                         onerror="this.src='images/placeholder.png'">
+                         onerror="this.onerror=null; this.src='${initialsUrl1}';">
                     <img src="images/wrestlers/${slug2}.jpg" 
                          alt="${members[1]}" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
-                         onerror="this.src='images/placeholder.png'">
+                         onerror="this.onerror=null; this.src='${initialsUrl2}';">
                     <img src="images/wrestlers/${slug3}.jpg" 
                          alt="${members[2]}" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
-                         onerror="this.src='images/placeholder.png'">
+                         onerror="this.onerror=null; this.src='${initialsUrl3}';">
                 </div>
             </td>`;
         } else if (withinThreshold) {
-            // Within threshold but no member data - show 3 placeholders
+            // Within threshold but no member data - show team initials
+            const teamInitials = generateInitials(wrestler.name);
+            const teamInitialsUrl = createInitialsCircle(teamInitials, 30);
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 1" 
+                    <img src="${teamInitialsUrl}" 
+                         alt="Team" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 2" 
+                    <img src="${teamInitialsUrl}" 
+                         alt="Team" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 3" 
+                    <img src="${teamInitialsUrl}" 
+                         alt="Team" 
                          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
                 </div>
             </td>`;
         } else {
-            // Beyond threshold - 3 placeholders
-            imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 1" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 2" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="images/placeholder.png" 
-                         alt="Wrestler 3" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                </div>
-            </td>`;
+            // Beyond threshold - show individual wrestler initials
+            if (members.length >= 3) {
+                const initials1 = generateInitials(members[0]);
+                const initials2 = generateInitials(members[1]);
+                const initials3 = generateInitials(members[2]);
+                const initialsUrl1 = createInitialsCircle(initials1, 30);
+                const initialsUrl2 = createInitialsCircle(initials2, 30);
+                const initialsUrl3 = createInitialsCircle(initials3, 30);
+                imageCell = `<td class="wrestler-image">
+                    <div style="display: flex; gap: 2px;">
+                        <img src="${initialsUrl1}" 
+                             alt="${members[0]}" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                        <img src="${initialsUrl2}" 
+                             alt="${members[1]}" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                        <img src="${initialsUrl3}" 
+                             alt="${members[2]}" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                    </div>
+                </td>`;
+            } else {
+                // No member data - use team initials
+                const teamInitials = generateInitials(wrestler.name);
+                const teamInitialsUrl = createInitialsCircle(teamInitials, 30);
+                imageCell = `<td class="wrestler-image">
+                    <div style="display: flex; gap: 2px;">
+                        <img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                        <img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                        <img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                    </div>
+                </td>`;
+            }
         }
     } else {
-        // SINGLES DIVISIONS - Show single 50x50 image
+        // SINGLES DIVISIONS - Show single 60x60 image
         const slug = createSlug(wrestler.name);
+        const initials = generateInitials(wrestler.name);
+        const initialsDataUrl = createInitialsCircle(initials, 60);
         
         if (withinThreshold) {
-            // Try to load wrestler's photo, fallback to placeholder
+            // Try to load wrestler's photo, fallback to initials, then placeholder
             imageCell = `<td class="wrestler-image">
                 <img src="images/wrestlers/${slug}.jpg" 
                      alt="${wrestler.name}" 
-                     onerror="this.src='images/placeholder.png'">
+                     onerror="this.onerror=null; this.src='${initialsDataUrl}';">
             </td>`;
         } else {
-            // Beyond threshold - just show placeholder directly
+            // Beyond threshold - show initials directly
             imageCell = `<td class="wrestler-image">
-                <img src="images/placeholder.png" 
+                <img src="${initialsDataUrl}" 
                      alt="${wrestler.name}">
             </td>`;
         }
