@@ -1415,6 +1415,76 @@
             return initials.toUpperCase();
         }
         
+        // Generate max 2-letter initials for TAG TEAMS
+        function generateTagInitials(name) {
+            // Remove common filler words
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            
+            // Handle parenthetical
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            // Split into words
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            
+            // Remove words in quotes (nicknames)
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            // If single word/acronym (PAC, MJF, Hook, Sting)
+            if (words.length === 1) {
+                // Just return first letter
+                return words[0].charAt(0).toUpperCase();
+            }
+            
+            // For 2+ words, use first + last initial (max 2 letters)
+            return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+        }
+        
+        // Generate 1-letter initial for TRIOS (use surname/most prominent part)
+        function generateTrioInitial(name) {
+            // Remove common filler words
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            
+            // Handle parenthetical
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            // Split into words
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            
+            // Remove words in quotes (nicknames)
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            // If single word/acronym (PAC, MJF, Hook, Sting)
+            if (words.length === 1) {
+                // Just return first letter
+                return words[0].charAt(0).toUpperCase();
+            }
+            
+            // For multi-word names, use LAST word (surname/most prominent)
+            // Exception: For "Penta El Zero M" type names, use first word as it's most prominent
+            if (words.length >= 3 && words[0].toLowerCase() === 'penta') {
+                return 'P';
+            }
+            
+            // Otherwise use last word (surname)
+            return words[words.length - 1].charAt(0).toUpperCase();
+        }
+        
         // Create initials SVG circle - Style 1 (Gold Ring)
         function createInitialsCircle(initials, size) {
             const radius = size / 2 - 2;
@@ -2208,8 +2278,8 @@ for (let i = 0; i < filteredData.length; i++) {
             // Try to load individual wrestler images, fallback to initials
             const slug1 = createSlug(members[0]);
             const slug2 = createSlug(members[1]);
-            const initials1 = generateInitials(members[0]);
-            const initials2 = generateInitials(members[1]);
+            const initials1 = generateTagInitials(members[0]);
+            const initials2 = generateTagInitials(members[1]);
             const initialsUrl1 = createInitialsCircle(initials1, 45);
             const initialsUrl2 = createInitialsCircle(initials2, 45);
             
@@ -2242,8 +2312,8 @@ for (let i = 0; i < filteredData.length; i++) {
         } else {
             // Beyond threshold - show individual wrestler initials
             if (members.length >= 2) {
-                const initials1 = generateInitials(members[0]);
-                const initials2 = generateInitials(members[1]);
+                const initials1 = generateTagInitials(members[0]);
+                const initials2 = generateTagInitials(members[1]);
                 const initialsUrl1 = createInitialsCircle(initials1, 45);
                 const initialsUrl2 = createInitialsCircle(initials2, 45);
                 imageCell = `<td class="wrestler-image">
@@ -2282,9 +2352,9 @@ for (let i = 0; i < filteredData.length; i++) {
             const slug1 = createSlug(members[0]);
             const slug2 = createSlug(members[1]);
             const slug3 = createSlug(members[2]);
-            const initials1 = generateInitials(members[0]);
-            const initials2 = generateInitials(members[1]);
-            const initials3 = generateInitials(members[2]);
+            const initials1 = generateTagInitials(members[0]);
+            const initials2 = generateTagInitials(members[1]);
+            const initials3 = generateTrioInitial(members[2]);
             const initialsUrl1 = createInitialsCircle(initials1, 30);
             const initialsUrl2 = createInitialsCircle(initials2, 30);
             const initialsUrl3 = createInitialsCircle(initials3, 30);
@@ -2325,9 +2395,9 @@ for (let i = 0; i < filteredData.length; i++) {
         } else {
             // Beyond threshold - show individual wrestler initials
             if (members.length >= 3) {
-                const initials1 = generateInitials(members[0]);
-                const initials2 = generateInitials(members[1]);
-                const initials3 = generateInitials(members[2]);
+                const initials1 = generateTagInitials(members[0]);
+                const initials2 = generateTagInitials(members[1]);
+                const initials3 = generateTrioInitial(members[2]);
                 const initialsUrl1 = createInitialsCircle(initials1, 30);
                 const initialsUrl2 = createInitialsCircle(initials2, 30);
                 const initialsUrl3 = createInitialsCircle(initials3, 30);
