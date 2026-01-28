@@ -1713,8 +1713,8 @@ let visibleColumns = {
             }
             
             try {
-                // Load previous week (index 1, not 0 which is same as current)
-                const prevWeekUrl = archiveIndex.weeks[1]?.url;
+                // Load previous week (index 0 is the actual previous week)
+                const prevWeekUrl = archiveIndex.weeks[0]?.url;
                 if (!prevWeekUrl) return data;
                 
                 const prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
@@ -2363,37 +2363,37 @@ for (let i = 0; i < filteredData.length; i++) {
                 <div style="display: flex; gap: 2px;">
                     <img src="images/wrestlers/${slug1}.jpg" 
                          alt="${members[0]}" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                          onerror="this.onerror=null; this.src='${initialsUrl1}';">
                     <img src="images/wrestlers/${slug2}.jpg" 
                          alt="${members[1]}" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                          onerror="this.onerror=null; this.src='${initialsUrl2}';">
                     <img src="images/wrestlers/${slug3}.jpg" 
                          alt="${members[2]}" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;"
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                          onerror="this.onerror=null; this.src='${initialsUrl3}';">
                 </div>
             </td>`;
         } else if (withinThreshold) {
-            // Within threshold but no member data - show team initials
-            const teamInitials = generateInitials(wrestler.name);
-            const teamInitialsUrl = createInitialsCircle(teamInitials, 30);
+            // Within threshold but no member data - show team initials (1 letter each)
+            const teamInitial1 = generateTrioInitial(wrestler.name);
+            const teamInitialsUrl1 = createInitialsCircle(teamInitial1, 30);
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
-                    <img src="${teamInitialsUrl}" 
+                    <img src="${teamInitialsUrl1}" 
                          alt="Team" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="${teamInitialsUrl}" 
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                    <img src="${teamInitialsUrl1}" 
                          alt="Team" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                    <img src="${teamInitialsUrl}" 
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                    <img src="${teamInitialsUrl1}" 
                          alt="Team" 
-                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                 </div>
             </td>`;
         } else {
-            // Beyond threshold - show individual wrestler initials
+            // Beyond threshold - show individual wrestler initials (1 letter each)
             if (members.length >= 3) {
                 const initials1 = generateTrioInitial(members[0]);
                 const initials2 = generateTrioInitial(members[1]);
@@ -2405,30 +2405,30 @@ for (let i = 0; i < filteredData.length; i++) {
                     <div style="display: flex; gap: 2px;">
                         <img src="${initialsUrl1}" 
                              alt="${members[0]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${initialsUrl2}" 
                              alt="${members[1]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${initialsUrl3}" 
                              alt="${members[2]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             } else {
-                // No member data - use team initials
-                const teamInitials = generateInitials(wrestler.name);
-                const teamInitialsUrl = createInitialsCircle(teamInitials, 30);
+                // No member data - use team initials (1 letter)
+                const teamInitial1 = generateTrioInitial(wrestler.name);
+                const teamInitialsUrl1 = createInitialsCircle(teamInitial1, 30);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
-                        <img src="${teamInitialsUrl}" 
+                        <img src="${teamInitialsUrl1}" 
                              alt="Team" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                        <img src="${teamInitialsUrl}" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                        <img src="${teamInitialsUrl1}" 
                              alt="Team" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
-                        <img src="${teamInitialsUrl}" 
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                        <img src="${teamInitialsUrl1}" 
                              alt="Team" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #ffd700;">
+                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             }
