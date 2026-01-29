@@ -1713,8 +1713,20 @@ let visibleColumns = {
             }
             
             try {
-                // Load previous week (index 0 is the actual previous week)
-                const prevWeekUrl = archiveIndex.weeks[0]?.url;
+                // Check if first archive week is same as current week
+                // If so, use index 1 (actual previous week), otherwise use index 0
+                let prevWeekIndex = 0;
+                
+                // If current week label matches first archive week label, it's a duplicate
+                if (data.currentWeek && archiveIndex.weeks[0]?.label) {
+                    const currentWeekExpanded = expandMonthName(data.currentWeek);
+                    if (currentWeekExpanded === archiveIndex.weeks[0].label) {
+                        // First archive is same as current, use the next one
+                        prevWeekIndex = 1;
+                    }
+                }
+                
+                const prevWeekUrl = archiveIndex.weeks[prevWeekIndex]?.url;
                 if (!prevWeekUrl) return data;
                 
                 const prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
