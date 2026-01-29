@@ -1823,21 +1823,37 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
+            console.log('🔍 DEBUG: Starting rank change processing');
+            console.log('Current week label:', ratingsData.currentWeek);
+            
             // Instead of calculating arrows, copy them from the archived version of this week
             // Check if first archive week matches current week
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
                 const currentWeekExpanded = expandMonthName(ratingsData.currentWeek);
                 const firstArchiveWeek = archiveIndex.weeks[0];
                 
+                console.log('Current week expanded:', currentWeekExpanded);
+                console.log('First archive week:', firstArchiveWeek?.label);
+                console.log('Do they match?', firstArchiveWeek?.label === currentWeekExpanded);
+                
                 if (firstArchiveWeek && firstArchiveWeek.label === currentWeekExpanded) {
+                    console.log('✅ Match found! Loading archive version:', firstArchiveWeek.url);
                     try {
                         // Load the archived version of this same week
                         const archivedCurrentWeek = await fetch(firstArchiveWeek.url).then(r => r.json());
+                        console.log('Archive data loaded successfully');
                         
                         // Copy the change values from archive to current
                         const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                         divisions.forEach(division => {
                             if (ratingsData[division] && archivedCurrentWeek[division]) {
+                                console.log(`Processing ${division}: ${ratingsData[division].length} wrestlers`);
+                                
+                                // Check a sample wrestler before
+                                if (ratingsData[division][0]) {
+                                    console.log(`BEFORE - ${division}[0]: ${ratingsData[division][0].name} change="${ratingsData[division][0].change}"`);
+                                }
+                                
                                 ratingsData[division] = ratingsData[division].map(wrestler => {
                                     // Find matching wrestler in archive
                                     const archivedWrestler = archivedCurrentWeek[division].find(w => 
@@ -1846,25 +1862,38 @@ let visibleColumns = {
                                     
                                     if (archivedWrestler && archivedWrestler.change) {
                                         // Copy the change from archive (which has correct arrows)
+                                        const oldChange = wrestler.change;
                                         wrestler.change = archivedWrestler.change;
+                                        if (oldChange !== archivedWrestler.change) {
+                                            console.log(`  Copied: ${wrestler.name}: "${oldChange}" → "${archivedWrestler.change}"`);
+                                        }
+                                    } else {
+                                        console.log(`  ⚠️ No match found for: ${wrestler.name}`);
                                     }
                                     
                                     return wrestler;
                                 });
+                                
+                                // Check a sample wrestler after
+                                if (ratingsData[division][0]) {
+                                    console.log(`AFTER - ${division}[0]: ${ratingsData[division][0].name} change="${ratingsData[division][0].change}"`);
+                                }
                             }
                         });
                         
-                        console.log('✅ Copied rank changes from archived version of current week');
+                        console.log('✅ Finished copying rank changes from archived version');
                     } catch (error) {
-                        console.log('Could not load archived current week, calculating arrows:', error);
+                        console.error('❌ Error loading archived current week:', error);
                         // Fallback to calculation if archive load fails
                         ratingsData = await calculateArrowDirections(ratingsData);
                     }
                 } else {
+                    console.log('⚠️ Current week not in archive yet, calculating arrows');
                     // Current week not in archive yet, calculate arrows
                     ratingsData = await calculateArrowDirections(ratingsData);
                 }
             } else {
+                console.log('⚠️ No archive index, calculating arrows');
                 // No archive index, calculate arrows
                 ratingsData = await calculateArrowDirections(ratingsData);
             }
