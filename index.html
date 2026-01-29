@@ -1719,8 +1719,8 @@ let visibleColumns = {
                 
                 // If current week label matches first archive week label, it's a duplicate
                 if (data.currentWeek && archiveIndex.weeks[0]?.label) {
-                    const currentWeekExpanded = expandMonthName(data.currentWeek);
-                    if (currentWeekExpanded === archiveIndex.weeks[0].label) {
+                    // Compare both in abbreviated format (don't expand)
+                    if (data.currentWeek === archiveIndex.weeks[0].label) {
                         // First archive is same as current, use the next one
                         prevWeekIndex = 1;
                     }
@@ -1829,14 +1829,15 @@ let visibleColumns = {
             // Instead of calculating arrows, copy them from the archived version of this week
             // Check if first archive week matches current week
             if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
-                const currentWeekExpanded = expandMonthName(ratingsData.currentWeek);
+                // Don't expand - compare both in abbreviated format
+                const currentWeekLabel = ratingsData.currentWeek; // Keep as "Jan '26 Week 4"
                 const firstArchiveWeek = archiveIndex.weeks[0];
                 
-                console.log('Current week expanded:', currentWeekExpanded);
+                console.log('Current week label:', currentWeekLabel);
                 console.log('First archive week:', firstArchiveWeek?.label);
-                console.log('Do they match?', firstArchiveWeek?.label === currentWeekExpanded);
+                console.log('Do they match?', firstArchiveWeek?.label === currentWeekLabel);
                 
-                if (firstArchiveWeek && firstArchiveWeek.label === currentWeekExpanded) {
+                if (firstArchiveWeek && firstArchiveWeek.label === currentWeekLabel) {
                     console.log('✅ Match found! Loading archive version:', firstArchiveWeek.url);
                     try {
                         // Load the archived version of this same week
@@ -2123,10 +2124,11 @@ let visibleColumns = {
                         
                         // Instead of calculating arrows, copy them from the archived version of this week
                         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
-                            const currentWeekExpanded = expandMonthName(ratingsData.currentWeek);
+                            // Compare both in abbreviated format (don't expand)
+                            const currentWeekLabel = ratingsData.currentWeek;
                             const firstArchiveWeek = archiveIndex.weeks[0];
                             
-                            if (firstArchiveWeek && firstArchiveWeek.label === currentWeekExpanded) {
+                            if (firstArchiveWeek && firstArchiveWeek.label === currentWeekLabel) {
                                 try {
                                     // Load the archived version of this same week
                                     const archivedCurrentWeek = await fetch(firstArchiveWeek.url).then(r => r.json());
