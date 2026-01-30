@@ -2025,6 +2025,34 @@ let visibleColumns = {
                 updateNavigationButtons();
             }
         }
+
+        // Initialize navigation buttons
+                updateNavigationButtons();
+            }
+        }
+        
+        // Restore state from URL hash (when returning from wrestler stats)
+        setTimeout(() => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const params = new URLSearchParams(hash);
+                const returnWeek = params.get('week');
+                const returnDivision = params.get('division');
+                
+                if (returnWeek && returnDivision) {
+                    console.log('Restoring state:', returnWeek, returnDivision);
+                    // Set the week selector
+                    const weekSelect = document.getElementById('weekSelect');
+                    weekSelect.value = decodeURIComponent(returnWeek);
+                    // Show the correct division
+                    showDivision(returnDivision);
+                    // Load that week's data
+                    loadSelectedWeek();
+                    // Clear the hash
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            }
+        }, 100); // Small delay to ensure DOM is ready
         
         // Track when year filter changes (not month filter)
         let lastYearFilter = '';
@@ -2703,8 +2731,7 @@ rows.push(`
      <tr class="${separatorClass}">
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
-        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
-        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(weekSelect.value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td>${wrestler.matches}</td>
         <td>${(wrestler.peak || 100).toFixed(2)}</td>
