@@ -2006,6 +2006,9 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
+            // Update month dropdown based on selected year
+            updateMonthOptions(yearFilter);
+            
             // Filter weeks
             const filteredWeeks = archiveIndex.weeks.filter(week => {
                 if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
@@ -2015,6 +2018,7 @@ let visibleColumns = {
             
             // Store current selection
             const currentSelection = weekSelect.value;
+            const wasOnCurrent = currentSelection === 'current';
             
             // Populate week dropdown
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
@@ -2022,11 +2026,63 @@ let visibleColumns = {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
-            // Try to restore selection
-            if (filteredWeeks.find(w => `archive/${w.filename}` === currentSelection)) {
-                weekSelect.value = currentSelection;
+            // Smart selection logic
+            if (filteredWeeks.length > 0) {
+                // Check if we need to auto-select (year or month filter was just changed)
+                const currentStillExists = filteredWeeks.find(w => `archive/${w.filename}` === currentSelection);
+                
+                if (!wasOnCurrent && !currentStillExists) {
+                    // Current selection not available - select oldest week (first in filtered list)
+                    weekSelect.value = `archive/${filteredWeeks[0].filename}`;
+                    loadSelectedWeek();
+                } else if (currentStillExists) {
+                    // Restore previous selection
+                    weekSelect.value = currentSelection;
+                }
             }
-            // Note: Removed auto-select Week 1 logic that was interfering with navigation
+        }
+        
+        function updateMonthOptions(selectedYear) {
+            const monthFilter = document.getElementById('monthFilter');
+            const currentMonth = monthFilter.value;
+            
+            if (!archiveIndex) return;
+            
+            // Get all unique year+month combinations
+            const availableMonths = new Set();
+            archiveIndex.weeks.forEach(week => {
+                const parts = week.label.match(/^(\w+) .*'(\d+)/);
+                if (parts) {
+                    const month = parts[1];
+                    const year = parts[2];
+                    if (!selectedYear || year === selectedYear) {
+                        availableMonths.add(month);
+                    }
+                }
+            });
+            
+            // Rebuild month dropdown with only available months
+            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const sortedMonths = Array.from(availableMonths).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+            
+            monthFilter.innerHTML = '<option value="">All</option>';
+            sortedMonths.forEach(month => {
+                const fullName = monthNames[monthOrder.indexOf(month)];
+                monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
+            });
+            
+            // Smart month selection
+            if (currentMonth && availableMonths.has(currentMonth)) {
+                // Keep current month if it's available
+                monthFilter.value = currentMonth;
+            } else if (selectedYear && sortedMonths.length > 0) {
+                // Month not available - select oldest month in the year
+                monthFilter.value = sortedMonths[0];
+            } else {
+                // No year selected or no months - show all
+                monthFilter.value = '';
+            }
         }
         
         function resetToCurrent() {
