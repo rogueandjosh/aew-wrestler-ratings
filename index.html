@@ -935,9 +935,14 @@
                     </button>
                 </div>
                 
-                <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                    ↻ Current Week
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                        ↻ Current Week
+                    </button>
+                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn" style="background: rgba(255, 215, 0, 0.15);">
+                        🎲 Random Week
+                    </button>
+                </div>
             </div>
             <p class="date-range" id="dateRange">Loading...</p>
             <p class="last-updated" id="lastUpdated">Loading...</p>
@@ -2001,6 +2006,7 @@ let visibleColumns = {
         
         // Track when year filter changes (not month filter)
         let lastYearFilter = '';
+        let isNavigating = false; // Flag to prevent auto-selection during button navigation
         
         function filterWeeks() {
             const yearFilter = document.getElementById('yearFilter').value;
@@ -2009,15 +2015,26 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Only update months if YEAR changed (not if month manually changed)
+            // Only update months if YEAR changed AND we're not navigating with buttons
             const yearChanged = yearFilter !== lastYearFilter;
-            if (yearChanged) {
+            if (yearChanged && !isNavigating) {
                 updateMonthOptions(yearFilter);
+                lastYearFilter = yearFilter;
+            } else if (!isNavigating) {
+                // Year didn't change, but we still need to update available months
+                updateMonthOptions(yearFilter);
+            }
+            
+            // Update lastYearFilter for next time
+            if (!isNavigating) {
                 lastYearFilter = yearFilter;
             }
             
             // Get the actual month value (may have been auto-selected if year changed)
             const actualMonthFilter = document.getElementById('monthFilter').value;
+            
+            // Store current week selection if navigating
+            const currentWeekSelection = isNavigating ? weekSelect.value : null;
             
             // Filter weeks
             const filteredWeeks = archiveIndex.weeks.filter(week => {
@@ -2032,8 +2049,11 @@ let visibleColumns = {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
-            // ALWAYS select oldest week when filtering (weeks array is newest-first, so oldest is LAST)
-            if (filteredWeeks.length > 0 && (yearFilter || actualMonthFilter)) {
+            // If navigating, restore the week selection
+            if (isNavigating && currentWeekSelection) {
+                weekSelect.value = currentWeekSelection;
+            } else if (filteredWeeks.length > 0 && (yearFilter || actualMonthFilter)) {
+                // ALWAYS select oldest week when filtering (weeks array is newest-first, so oldest is LAST)
                 const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
                 weekSelect.value = `archive/${oldestWeek.filename}`;
                 loadSelectedWeek();
@@ -2085,6 +2105,37 @@ let visibleColumns = {
             loadSelectedWeek();
         }
         
+        function loadRandomWeek() {
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) return;
+            
+            // Get a random week from all archived weeks
+            const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
+            const randomWeek = archiveIndex.weeks[randomIndex];
+            
+            // Extract year and month from the random week
+            const year = randomWeek.label.match(/'(\d+)/)?.[1];
+            const month = randomWeek.label.split(' ')[0];
+            
+            // Set navigation flag
+            isNavigating = true;
+            
+            // Update filters
+            document.getElementById('yearFilter').value = year || '';
+            document.getElementById('monthFilter').value = month || '';
+            
+            // Filter weeks to populate dropdown
+            filterWeeks();
+            
+            // Select the random week
+            document.getElementById('weekSelect').value = `archive/${randomWeek.filename}`;
+            
+            // Clear navigation flag
+            isNavigating = false;
+            
+            // Load the random week
+            loadSelectedWeek();
+        }
+        
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
             let currentValue = weekSelect.value;
@@ -2116,6 +2167,9 @@ let visibleColumns = {
             // Set new week
             weekSelect.value = allWeeks[newIndex];
             
+            // Set navigation flag to prevent auto-selection
+            isNavigating = true;
+            
             // Update filters to match
             if (allWeeks[newIndex] !== 'current') {
                 const filename = allWeeks[newIndex].replace('archive/', '');
@@ -2134,6 +2188,9 @@ let visibleColumns = {
                 document.getElementById('monthFilter').value = '';
                 filterWeeks();
             }
+            
+            // Clear navigation flag
+            isNavigating = false;
             
             loadSelectedWeek();
         }
