@@ -1223,20 +1223,26 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             `;
         }
 
-        // Navigation function - goes back to previous page
+        // Navigation function - goes back to previous page with state
         function goBackToRankings() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const returnWeek = urlParams.get('returnWeek');
-    const returnDivision = urlParams.get('returnDivision');
-    
-    if (returnWeek && returnDivision) {
-        // Go back to specific week/division
-        window.location.href = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
-    } else {
-        // Fallback to browser back
-        window.history.back();
-    }
-}
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnWeek = urlParams.get('returnWeek');
+            const returnDivision = urlParams.get('returnDivision');
+            
+            console.log('🔍 Back button clicked');
+            console.log('Return params:', { returnWeek, returnDivision });
+            
+            if (returnWeek && returnDivision) {
+                // Go back to specific week/division
+                const url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
+                console.log('✅ Navigating to:', url);
+                window.location.href = url;
+            } else {
+                // Fallback to browser back
+                console.log('⚠️ No return params, using browser back');
+                window.history.back();
+            }
+        }
     </script>
 </body>
 </html>
