@@ -1999,6 +1999,9 @@ let visibleColumns = {
             }
         }
         
+        // Track if we're in the middle of a filter change
+        let filterChangeInProgress = false;
+        
         function filterWeeks() {
             const yearFilter = document.getElementById('yearFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
@@ -2006,19 +2009,22 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Update month dropdown based on selected year
-            updateMonthOptions(yearFilter);
+            // Store selection BEFORE updating months (in case month changes)
+            const currentSelection = weekSelect.value;
+            const wasOnCurrent = currentSelection === 'current';
+            
+            // Update month dropdown based on selected year (this may change monthFilter value)
+            const monthChanged = updateMonthOptions(yearFilter);
+            
+            // Get the actual month value after it may have changed
+            const actualMonthFilter = document.getElementById('monthFilter').value;
             
             // Filter weeks
             const filteredWeeks = archiveIndex.weeks.filter(week => {
                 if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
-                if (monthFilter && !week.label.startsWith(monthFilter)) return false;
+                if (actualMonthFilter && !week.label.startsWith(actualMonthFilter)) return false;
                 return true;
             });
-            
-            // Store current selection
-            const currentSelection = weekSelect.value;
-            const wasOnCurrent = currentSelection === 'current';
             
             // Populate week dropdown
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
@@ -2027,17 +2033,20 @@ let visibleColumns = {
             });
             
             // Smart selection logic
-            if (filteredWeeks.length > 0) {
-                // Check if we need to auto-select (year or month filter was just changed)
+            if (filteredWeeks.length > 0 && !filterChangeInProgress) {
                 const currentStillExists = filteredWeeks.find(w => `archive/${w.filename}` === currentSelection);
                 
-                if (!wasOnCurrent && !currentStillExists) {
-                    // Current selection not available - select oldest week (first in filtered list)
+                // If month changed OR current selection doesn't exist, select oldest week
+                if (monthChanged || (!wasOnCurrent && !currentStillExists)) {
                     weekSelect.value = `archive/${filteredWeeks[0].filename}`;
                     loadSelectedWeek();
                 } else if (currentStillExists) {
                     // Restore previous selection
                     weekSelect.value = currentSelection;
+                } else if (wasOnCurrent && (yearFilter || actualMonthFilter)) {
+                    // Was on current, but now filtering - select oldest week
+                    weekSelect.value = `archive/${filteredWeeks[0].filename}`;
+                    loadSelectedWeek();
                 }
             }
         }
@@ -2046,7 +2055,7 @@ let visibleColumns = {
             const monthFilter = document.getElementById('monthFilter');
             const currentMonth = monthFilter.value;
             
-            if (!archiveIndex) return;
+            if (!archiveIndex) return false;
             
             // Get all unique year+month combinations
             const availableMonths = new Set();
@@ -2072,17 +2081,23 @@ let visibleColumns = {
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
             
+            let monthChanged = false;
             // Smart month selection
             if (currentMonth && availableMonths.has(currentMonth)) {
                 // Keep current month if it's available
                 monthFilter.value = currentMonth;
             } else if (selectedYear && sortedMonths.length > 0) {
                 // Month not available - select oldest month in the year
+                filterChangeInProgress = true;
                 monthFilter.value = sortedMonths[0];
+                monthChanged = true;
+                filterChangeInProgress = false;
             } else {
                 // No year selected or no months - show all
                 monthFilter.value = '';
             }
+            
+            return monthChanged;
         }
         
         function resetToCurrent() {
