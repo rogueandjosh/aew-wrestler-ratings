@@ -585,6 +585,10 @@
             background: rgba(255, 215, 0, 0.05);
         }
 
+        .threshold-separator td {
+            border-bottom: 2px dotted rgba(255, 215, 0, 0.4) !important;
+        }
+
         .rank {
             width: 50px;
             font-weight: bold;
@@ -2441,34 +2445,34 @@ for (let i = 0; i < filteredData.length; i++) {
                 </div>
             </td>`;
         } else {
-            // Beyond threshold - show individual wrestler initials
+            // Beyond threshold - show individual wrestler initials (SMALLER SIZE)
             if (members.length >= 2) {
                 const initials1 = generateTagInitials(members[0]);
                 const initials2 = generateTagInitials(members[1]);
-                const initialsUrl1 = createInitialsCircle(initials1, 65);
-                const initialsUrl2 = createInitialsCircle(initials2, 65);
+                const initialsUrl1 = createInitialsCircle(initials1, 50);
+                const initialsUrl2 = createInitialsCircle(initials2, 50);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
                         <img src="${initialsUrl1}" 
                              alt="${members[0]}" 
-                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${initialsUrl2}" 
                              alt="${members[1]}" 
-                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             } else {
-                // No member data - use team initials
+                // No member data - use team initials (SMALLER SIZE)
                 const teamInitials = generateInitials(wrestler.name);
-                const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
+                const teamInitialsUrl = createInitialsCircle(teamInitials, 50);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             }
@@ -2507,18 +2511,21 @@ for (let i = 0; i < filteredData.length; i++) {
                     </div>
                 </td>`;
             } else {
-                // Beyond threshold - show initials directly
+                // Beyond threshold - show initials directly (SMALLER SIZE)
+                const initialsUrl1Small = createInitialsCircle(initials1, 35);
+                const initialsUrl2Small = createInitialsCircle(initials2, 35);
+                const initialsUrl3Small = createInitialsCircle(initials3, 35);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
-                        <img src="${initialsUrl1}" 
+                        <img src="${initialsUrl1Small}" 
                              alt="${members[0]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
-                        <img src="${initialsUrl2}" 
+                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
+                        <img src="${initialsUrl2Small}" 
                              alt="${members[1]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
-                        <img src="${initialsUrl3}" 
+                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
+                        <img src="${initialsUrl3Small}" 
                              alt="${members[2]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
+                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             }
@@ -2552,16 +2559,21 @@ for (let i = 0; i < filteredData.length; i++) {
                      onerror="this.onerror=null; this.src='${initialsDataUrl}';">
             </td>`;
         } else {
-            // Beyond threshold - show initials directly
+            // Beyond threshold - show initials directly (SMALLER SIZE)
+            const initialsDataUrlSmall = createInitialsCircle(initials, 70);
             imageCell = `<td class="wrestler-image">
-                <img src="${initialsDataUrl}" 
-                     alt="${wrestler.name}">
+                <img src="${initialsDataUrlSmall}" 
+                     alt="${wrestler.name}" 
+                     style="width: 70px; height: 70px;">
             </td>`;
         }
     }
 
+    // Add separator class if this wrestler is at the threshold boundary
+    const separatorClass = (wrestler.rank === imageThreshold && filteredData.length > imageThreshold) ? ' threshold-separator' : '';
+
 rows.push(`
-     <tr>
+     <tr class="${separatorClass}">
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
