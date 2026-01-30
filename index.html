@@ -172,13 +172,13 @@
 
         .action-buttons {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
             width: 100%;
         }
         
         .action-buttons .reset-btn {
-            flex: 1;
-            min-width: 0;
+            width: 100%;
         }
         
         .random-btn {
@@ -956,10 +956,10 @@
                 
                 <div class="action-buttons">
                     <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                        ↻ Current
+                        ↻ Current Week
                     </button>
                     <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                        🎲 Random
+                        🎲 Random Week
                     </button>
                 </div>
             </div>
