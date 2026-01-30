@@ -170,28 +170,6 @@
             background: rgba(255, 215, 0, 0.3) !important;
         }
 
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .action-buttons .reset-btn {
-            width: auto;
-            min-width: 200px;
-            text-align: center;
-            justify-content: center;
-        }
-        
-        .random-btn {
-            background: rgba(255, 215, 0, 0.25) !important;
-        }
-        
-        .random-btn:hover:not(:disabled) {
-            background: rgba(255, 215, 0, 0.4) !important;
-        }
-
         .week-selector select {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
@@ -957,11 +935,11 @@
                     </button>
                 </div>
                 
-                <div class="action-buttons">
+                <div style="display: flex; gap: 10px;">
                     <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
                         ↻ Current Week
                     </button>
-                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
+                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn" style="background: rgba(255, 215, 0, 0.15);">
                         🎲 Random Week
                     </button>
                 </div>
@@ -2027,27 +2005,35 @@ let visibleColumns = {
         }
         
         // Restore state from URL hash (when returning from wrestler stats)
+        console.log('🔍 Checking for state restoration...');
         setTimeout(() => {
             const hash = window.location.hash.substring(1);
+            console.log('Hash:', hash);
             if (hash) {
                 const params = new URLSearchParams(hash);
                 const returnWeek = params.get('week');
                 const returnDivision = params.get('division');
+                console.log('Return params:', { returnWeek, returnDivision });
                 
                 if (returnWeek && returnDivision) {
-                    console.log('Restoring state:', returnWeek, returnDivision);
+                    console.log('✅ Restoring state:', returnWeek, returnDivision);
                     // Set the week selector
                     const weekSelect = document.getElementById('weekSelect');
                     weekSelect.value = decodeURIComponent(returnWeek);
+                    console.log('Week selector set to:', weekSelect.value);
                     // Show the correct division
                     showDivision(returnDivision);
+                    console.log('Division set to:', returnDivision);
                     // Load that week's data
                     loadSelectedWeek();
+                    console.log('Loading week data...');
                     // Clear the hash
                     history.replaceState(null, '', window.location.pathname);
                 }
+            } else {
+                console.log('No hash found in URL');
             }
-        }, 100); // Small delay to ensure DOM is ready
+        }, 500); // Increased delay to ensure everything is loaded
         
         // Track when year filter changes (not month filter)
         let lastYearFilter = '';
@@ -2726,7 +2712,8 @@ rows.push(`
      <tr class="${separatorClass}">
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
-        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(weekSelect.value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
+        <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td>${wrestler.matches}</td>
         <td>${(wrestler.peak || 100).toFixed(2)}</td>
