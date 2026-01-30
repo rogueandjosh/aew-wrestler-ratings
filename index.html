@@ -2419,7 +2419,7 @@ for (let i = 0; i < filteredData.length; i++) {
             const initialsUrl2 = createInitialsCircle(initials2, 65);
             
             imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px;">
+                <div style="display: flex; gap: 2px; justify-content: center;">
                     <img src="images/wrestlers/${slug1}.jpg" 
                          alt="${members[0]}" 
                          style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
@@ -2435,7 +2435,7 @@ for (let i = 0; i < filteredData.length; i++) {
             const teamInitials = generateInitials(wrestler.name);
             const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
             imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px;">
+                <div style="display: flex; gap: 2px; justify-content: center;">
                     <img src="${teamInitialsUrl}" 
                          alt="Team" 
                          style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
@@ -2452,7 +2452,7 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initialsUrl1 = createInitialsCircle(initials1, 50);
                 const initialsUrl2 = createInitialsCircle(initials2, 50);
                 imageCell = `<td class="wrestler-image">
-                    <div style="display: flex; gap: 2px;">
+                    <div style="display: flex; gap: 2px; justify-content: center;">
                         <img src="${initialsUrl1}" 
                              alt="${members[0]}" 
                              style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
@@ -2466,7 +2466,7 @@ for (let i = 0; i < filteredData.length; i++) {
                 const teamInitials = generateInitials(wrestler.name);
                 const teamInitialsUrl = createInitialsCircle(teamInitials, 50);
                 imageCell = `<td class="wrestler-image">
-                    <div style="display: flex; gap: 2px;">
+                    <div style="display: flex; gap: 2px; justify-content: center;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
                              style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
@@ -2495,7 +2495,7 @@ for (let i = 0; i < filteredData.length; i++) {
             if (withinThreshold) {
                 // Within threshold - try photos, fallback to initials
                 imageCell = `<td class="wrestler-image">
-                    <div style="display: flex; gap: 2px;">
+                    <div style="display: flex; gap: 2px; justify-content: center;">
                         <img src="images/wrestlers/${slug1}.jpg" 
                              alt="${members[0]}" 
                              style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
@@ -2516,7 +2516,7 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initialsUrl2Small = createInitialsCircle(initials2, 35);
                 const initialsUrl3Small = createInitialsCircle(initials3, 35);
                 imageCell = `<td class="wrestler-image">
-                    <div style="display: flex; gap: 2px;">
+                    <div style="display: flex; gap: 2px; justify-content: center;">
                         <img src="${initialsUrl1Small}" 
                              alt="${members[0]}" 
                              style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
@@ -2532,7 +2532,7 @@ for (let i = 0; i < filteredData.length; i++) {
         } else {
             // No member data - show 3 placeholders
             imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px;">
+                <div style="display: flex; gap: 2px; justify-content: center;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 1" 
                          style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
