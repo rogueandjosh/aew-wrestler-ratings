@@ -170,6 +170,25 @@
             background: rgba(255, 215, 0, 0.3) !important;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .action-buttons .reset-btn {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .random-btn {
+            background: rgba(255, 215, 0, 0.25) !important;
+        }
+        
+        .random-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.4) !important;
+        }
+
         .week-selector select {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
@@ -935,12 +954,12 @@
                     </button>
                 </div>
                 
-                <div style="display: flex; gap: 10px;">
+                <div class="action-buttons">
                     <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                        ↻ Current Week
+                        ↻ Current
                     </button>
-                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn" style="background: rgba(255, 215, 0, 0.15);">
-                        🎲 Random Week
+                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
+                        🎲 Random
                     </button>
                 </div>
             </div>
