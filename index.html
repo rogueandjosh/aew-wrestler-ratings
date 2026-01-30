@@ -1999,6 +1999,9 @@ let visibleColumns = {
             }
         }
         
+        // Track when year filter changes (not month filter)
+        let lastYearFilter = '';
+        
         function filterWeeks() {
             const yearFilter = document.getElementById('yearFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
@@ -2006,10 +2009,14 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Update month dropdown based on selected year (always selects oldest month for that year)
-            updateMonthOptions(yearFilter);
+            // Only update months if YEAR changed (not if month manually changed)
+            const yearChanged = yearFilter !== lastYearFilter;
+            if (yearChanged) {
+                updateMonthOptions(yearFilter);
+                lastYearFilter = yearFilter;
+            }
             
-            // Get the actual month value after it may have been auto-selected
+            // Get the actual month value (may have been auto-selected if year changed)
             const actualMonthFilter = document.getElementById('monthFilter').value;
             
             // Filter weeks
@@ -2025,9 +2032,10 @@ let visibleColumns = {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
-            // ALWAYS select oldest week when filtering
+            // ALWAYS select oldest week when filtering (weeks array is newest-first, so oldest is LAST)
             if (filteredWeeks.length > 0 && (yearFilter || actualMonthFilter)) {
-                weekSelect.value = `archive/${filteredWeeks[0].filename}`;
+                const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
+                weekSelect.value = `archive/${oldestWeek.filename}`;
                 loadSelectedWeek();
             }
         }
@@ -2037,7 +2045,7 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Get all unique year+month combinations
+            // Get all unique year+month combinations for the selected year
             const availableMonths = new Set();
             archiveIndex.weeks.forEach(week => {
                 const parts = week.label.match(/^(\w+) .*'(\d+)/);
@@ -2061,7 +2069,7 @@ let visibleColumns = {
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
             
-            // ALWAYS select oldest month when year is selected
+            // Auto-select oldest month when year is selected (this only happens on year change)
             if (selectedYear && sortedMonths.length > 0) {
                 monthFilter.value = sortedMonths[0];
             } else {
