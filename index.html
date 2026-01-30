@@ -586,19 +586,22 @@
         }
 
         .rank {
+            width: 50px;
             font-weight: bold;
             color: #ffd700;
             font-size: 1.1em;
+            text-align: center;
         }
         
         .wrestler-image {
-            width: 70px;
+            width: 150px;
             padding: 8px;
+            text-align: center;
         }
         
         .wrestler-image img {
-            width: 60px;
-            height: 60px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ffd700;
@@ -2408,33 +2411,33 @@ for (let i = 0; i < filteredData.length; i++) {
             const slug2 = createSlug(members[1]);
             const initials1 = generateTagInitials(members[0]);
             const initials2 = generateTagInitials(members[1]);
-            const initialsUrl1 = createInitialsCircle(initials1, 45);
-            const initialsUrl2 = createInitialsCircle(initials2, 45);
+            const initialsUrl1 = createInitialsCircle(initials1, 65);
+            const initialsUrl2 = createInitialsCircle(initials2, 65);
             
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
                     <img src="images/wrestlers/${slug1}.jpg" 
                          alt="${members[0]}" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                          onerror="this.onerror=null; this.src='${initialsUrl1}';">
                     <img src="images/wrestlers/${slug2}.jpg" 
                          alt="${members[1]}" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                          onerror="this.onerror=null; this.src='${initialsUrl2}';">
                 </div>
             </td>`;
         } else if (withinThreshold) {
             // Within threshold but no member data - show team initials
             const teamInitials = generateInitials(wrestler.name);
-            const teamInitialsUrl = createInitialsCircle(teamInitials, 45);
+            const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px;">
                     <img src="${teamInitialsUrl}" 
                          alt="Team" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     <img src="${teamInitialsUrl}" 
                          alt="Team" 
-                         style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                 </div>
             </td>`;
         } else {
@@ -2442,36 +2445,36 @@ for (let i = 0; i < filteredData.length; i++) {
             if (members.length >= 2) {
                 const initials1 = generateTagInitials(members[0]);
                 const initials2 = generateTagInitials(members[1]);
-                const initialsUrl1 = createInitialsCircle(initials1, 45);
-                const initialsUrl2 = createInitialsCircle(initials2, 45);
+                const initialsUrl1 = createInitialsCircle(initials1, 65);
+                const initialsUrl2 = createInitialsCircle(initials2, 65);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
                         <img src="${initialsUrl1}" 
                              alt="${members[0]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${initialsUrl2}" 
                              alt="${members[1]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             } else {
                 // No member data - use team initials
                 const teamInitials = generateInitials(wrestler.name);
-                const teamInitialsUrl = createInitialsCircle(teamInitials, 45);
+                const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             }
         }
     } else if (division === 'trios') {
-        // TRIOS - Show 3 images side by side (30x30 each)
+        // TRIOS - Show 3 images side by side (45x45 each)
         const members = teamMembersData?.teams?.[wrestler.name] || [];
         
         if (members.length >= 3) {
@@ -2481,9 +2484,9 @@ for (let i = 0; i < filteredData.length; i++) {
             const initials1 = generateTrioInitial(members[0]);
             const initials2 = generateTrioInitial(members[1]);
             const initials3 = generateTrioInitial(members[2]);
-            const initialsUrl1 = createInitialsCircle(initials1, 30);
-            const initialsUrl2 = createInitialsCircle(initials2, 30);
-            const initialsUrl3 = createInitialsCircle(initials3, 30);
+            const initialsUrl1 = createInitialsCircle(initials1, 45);
+            const initialsUrl2 = createInitialsCircle(initials2, 45);
+            const initialsUrl3 = createInitialsCircle(initials3, 45);
             
             if (withinThreshold) {
                 // Within threshold - try photos, fallback to initials
@@ -2491,15 +2494,15 @@ for (let i = 0; i < filteredData.length; i++) {
                     <div style="display: flex; gap: 2px;">
                         <img src="images/wrestlers/${slug1}.jpg" 
                              alt="${members[0]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                              onerror="this.onerror=null; this.src='${initialsUrl1}';">
                         <img src="images/wrestlers/${slug2}.jpg" 
                              alt="${members[1]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                              onerror="this.onerror=null; this.src='${initialsUrl2}';">
                         <img src="images/wrestlers/${slug3}.jpg" 
                              alt="${members[2]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
                              onerror="this.onerror=null; this.src='${initialsUrl3}';">
                     </div>
                 </td>`;
@@ -2509,13 +2512,13 @@ for (let i = 0; i < filteredData.length; i++) {
                     <div style="display: flex; gap: 2px;">
                         <img src="${initialsUrl1}" 
                              alt="${members[0]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                         <img src="${initialsUrl2}" 
                              alt="${members[1]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                         <img src="${initialsUrl3}" 
                              alt="${members[2]}" 
-                             style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                             style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                     </div>
                 </td>`;
             }
@@ -2525,13 +2528,13 @@ for (let i = 0; i < filteredData.length; i++) {
                 <div style="display: flex; gap: 2px;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 1" 
-                         style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 2" 
-                         style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 3" 
-                         style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ffd700;">
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
                 </div>
             </td>`;
         }
@@ -2539,7 +2542,7 @@ for (let i = 0; i < filteredData.length; i++) {
         // SINGLES DIVISIONS - Show single 60x60 image
         const slug = createSlug(wrestler.name);
         const initials = generateInitials(wrestler.name);
-        const initialsDataUrl = createInitialsCircle(initials, 60);
+        const initialsDataUrl = createInitialsCircle(initials, 90);
         
         if (withinThreshold) {
             // Try to load wrestler's photo, fallback to initials, then placeholder
