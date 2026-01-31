@@ -413,14 +413,6 @@
                 </div>
             </div>
 
-            <!-- Team Affiliations Section -->
-            <div class="section" id="teamAffiliationsSection" style="display: none;">
-                <div class="section-title">👥 Team Affiliations</div>
-                <div id="teamAffiliationsContent" style="padding: 20px; background: rgba(255, 215, 0, 0.05); border-radius: 8px;">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </div>
-
             <div class="year-filter">
                 <h2>Filter by Year</h2>
                 <div class="year-buttons">
@@ -469,6 +461,26 @@
                         <h3>Bottom 5 Matches</h3>
                         <div id="bottomMatchesTable"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Team Affiliations Section -->
+            <div class="section" id="teamAffiliationsSection" style="display: none;">
+                <div class="section-title">👥 Team Affiliations</div>
+                <div class="table-container">
+                    <table id="teamAffiliationsTable">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Team Name</th>
+                                <th>Type</th>
+                                <th>Partners</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamAffiliationsBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -940,7 +952,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         function displayTeamAffiliations() {
             const section = document.getElementById('teamAffiliationsSection');
-            const content = document.getElementById('teamAffiliationsContent');
+            const tbody = document.getElementById('teamAffiliationsBody');
             
             if (!allTeamMembers || !allTeamMembers.teams) {
                 section.style.display = 'none';
@@ -991,71 +1003,48 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 return;
             }
             
-            // Show section and build content
+            // Show section and build table rows
             section.style.display = 'block';
             
-            const activeTeams = wrestlerTeams.filter(t => t.isActive);
-            const inactiveTeams = wrestlerTeams.filter(t => !t.isActive);
+            // Sort: active first, then by name
+            wrestlerTeams.sort((a, b) => {
+                if (a.isActive !== b.isActive) return b.isActive - a.isActive;
+                return a.name.localeCompare(b.name);
+            });
             
             let html = '';
             
-            if (activeTeams.length > 0) {
-                html += '<div style="margin-bottom: 20px;">';
-                html += '<h3 style="color: #4CAF50; margin-bottom: 10px; font-size: 1.1em;">✓ ACTIVE TEAMS</h3>';
-                activeTeams.forEach(team => {
-                    const teamSlug = createSlug(team.name);
-                    const weekSelect = document.getElementById('weekSelect');
-                    const currentWeek = weekSelect ? weekSelect.value : 'current';
-                    let divisionSlug = team.type === 'Trios' ? 'trios' : 'menstag';
-                    if (wrestlerData.division && wrestlerData.division.includes('Women')) {
-                        divisionSlug = 'womenstag';
-                    }
-                    
-                    html += `<div style="margin-bottom: 12px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 4px;">`;
-                    html += `<div style="font-weight: bold; margin-bottom: 4px;">`;
-                    html += `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                             style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
-                             onmouseover="this.style.color='#fff'"
-                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
-                    html += ` <span style="color: #999; font-size: 0.9em;">(${team.type})</span>`;
-                    html += `</div>`;
-                    if (team.members.length > 0) {
-                        html += `<div style="color: #bbb; font-size: 0.9em;">with ${team.members.join(', ')}</div>`;
-                    }
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
+            wrestlerTeams.forEach(team => {
+                const teamSlug = createSlug(team.name);
+                const weekSelect = document.getElementById('weekSelect');
+                const currentWeek = weekSelect ? weekSelect.value : 'current';
+                let divisionSlug = team.type === 'Trios' ? 'trios' : 'menstag';
+                if (wrestlerData.division && wrestlerData.division.includes('Women')) {
+                    divisionSlug = 'womenstag';
+                }
+                
+                const statusBadge = team.isActive 
+                    ? '<span style="background: #4CAF50; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.85em; font-weight: bold;">ACTIVE</span>'
+                    : '<span style="background: #666; color: #ccc; padding: 3px 8px; border-radius: 3px; font-size: 0.85em;">INACTIVE</span>';
+                
+                const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                                     style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700; font-weight: 500;"
+                                     onmouseover="this.style.color='#fff'"
+                                     onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                
+                const partnersText = team.members.length > 0 ? team.members.join(', ') : 'N/A';
+                
+                html += `
+                    <tr>
+                        <td style="text-align: center;">${statusBadge}</td>
+                        <td>${teamLink}</td>
+                        <td style="text-align: center;">${team.type}</td>
+                        <td>${partnersText}</td>
+                    </tr>
+                `;
+            });
             
-            if (inactiveTeams.length > 0) {
-                html += '<div>';
-                html += '<h3 style="color: #999; margin-bottom: 10px; font-size: 1.1em;">○ INACTIVE TEAMS</h3>';
-                inactiveTeams.forEach(team => {
-                    const teamSlug = createSlug(team.name);
-                    const weekSelect = document.getElementById('weekSelect');
-                    const currentWeek = weekSelect ? weekSelect.value : 'current';
-                    let divisionSlug = team.type === 'Trios' ? 'trios' : 'menstag';
-                    if (wrestlerData.division && wrestlerData.division.includes('Women')) {
-                        divisionSlug = 'womenstag';
-                    }
-                    
-                    html += `<div style="margin-bottom: 12px; padding: 10px; background: rgba(255, 255, 255, 0.03); border-left: 3px solid #666; border-radius: 4px;">`;
-                    html += `<div style="font-weight: bold; margin-bottom: 4px;">`;
-                    html += `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                             style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
-                             onmouseover="this.style.color='#fff'"
-                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
-                    html += ` <span style="color: #999; font-size: 0.9em;">(${team.type})</span>`;
-                    html += `</div>`;
-                    if (team.members.length > 0) {
-                        html += `<div style="color: #999; font-size: 0.9em;">with ${team.members.join(', ')}</div>`;
-                    }
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            content.innerHTML = html;
+            tbody.innerHTML = html;
         }
 
         function setupYearButtons() {
