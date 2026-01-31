@@ -2116,55 +2116,55 @@ let visibleColumns = {
         }
         
         function updateMonthOptions(selectedYear, autoSelectMonth = false) {
-    const monthFilter = document.getElementById('monthFilter');
+            const monthFilter = document.getElementById('monthFilter');
     
-    if (!archiveIndex) return;
+            if (!archiveIndex) return;
     
-    // Store current month selection before rebuilding
-    const currentMonthSelection = monthFilter.value;
+            // Store current month selection before rebuilding
+            const currentMonthSelection = monthFilter.value;
     
-    // Get all unique year+month combinations for the selected year
-    const availableMonths = new Set();
-    archiveIndex.weeks.forEach(week => {
-        const parts = week.label.match(/^(\w+) .*'(\d+)/);
-        if (parts) {
-            const month = parts[1];
-            const year = parts[2];
-            if (!selectedYear || year === selectedYear) {
-                availableMonths.add(month);
+            // Get all unique year+month combinations for the selected year
+            const availableMonths = new Set();
+            archiveIndex.weeks.forEach(week => {
+                const parts = week.label.match(/^(\w+) .*'(\d+)/);
+                if (parts) {
+                    const month = parts[1];
+                    const year = parts[2];
+                    if (!selectedYear || year === selectedYear) {
+                        availableMonths.add(month);
+                    }
+                }
+            });
+    
+            // Rebuild month dropdown with only available months
+            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const sortedMonths = Array.from(availableMonths).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+    
+            // **NEW: Temporarily disable onchange to prevent triggering filterWeeks**
+            const originalOnchange = monthFilter.onchange;
+            monthFilter.onchange = null;
+    
+            monthFilter.innerHTML = '<option value="">All</option>';
+            sortedMonths.forEach(month => {
+                const fullName = monthNames[monthOrder.indexOf(month)];
+                monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
+            });
+    
+            // Only auto-select oldest month when year changes (autoSelectMonth flag)
+            if (autoSelectMonth && selectedYear && sortedMonths.length > 0) {
+                monthFilter.value = sortedMonths[0];
+            } else if (sortedMonths.includes(currentMonthSelection)) {
+                // Restore previous month selection if it's still available
+                monthFilter.value = currentMonthSelection;
+            } else {
+                // Previous selection not available, clear it
+                monthFilter.value = '';
             }
+    
+            // **NEW: Restore onchange event**
+            monthFilter.onchange = originalOnchange;
         }
-    });
-    
-    // Rebuild month dropdown with only available months
-    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const sortedMonths = Array.from(availableMonths).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
-    
-    // Temporarily remove onchange to prevent triggering filterWeeks
-    const originalOnchange = monthFilter.onchange;
-    monthFilter.onchange = null;
-    
-    monthFilter.innerHTML = '<option value="">All</option>';
-    sortedMonths.forEach(month => {
-        const fullName = monthNames[monthOrder.indexOf(month)];
-        monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
-    });
-    
-    // Only auto-select oldest month when year changes (autoSelectMonth flag)
-    if (autoSelectMonth && selectedYear && sortedMonths.length > 0) {
-        monthFilter.value = sortedMonths[0];
-    } else if (sortedMonths.includes(currentMonthSelection)) {
-        // Restore previous month selection if it's still available
-        monthFilter.value = currentMonthSelection;
-    } else {
-        // Previous selection not available, clear it
-        monthFilter.value = '';
-    }
-    
-    // Restore onchange event
-    monthFilter.onchange = originalOnchange;
-}
         
         function resetToCurrent() {
             document.getElementById('yearFilter').value = '';
