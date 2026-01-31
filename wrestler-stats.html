@@ -970,7 +970,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             container.innerHTML = imageHTML;
         }
 
-        function displayTeamAffiliations() {
+        async function displayTeamAffiliations() {
             if (!allTeamMembers || !allTeamMembers.teams) {
                 return;
             }
@@ -1001,54 +1001,50 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     // Get other members (exclude current wrestler)
                     const otherMembers = members.filter(m => m !== wrestlerData.name);
                     
-                    // Count matches for THIS specific team
-                    // Match qualifies if ALL other team members appear in the opponents list
-                    let teamMatchCount = 0;
-                    if (wrestlerData.allMatches && wrestlerData.allMatches.length > 0) {
-                        teamMatchCount = wrestlerData.allMatches.filter(match => {
-                            if (!match.opponents || match.opponents.length === 0) return false;
-                            
-                            // For tag team (1 partner): partner must be in opponents
-                            if (otherMembers.length === 1) {
-                                return match.opponents.includes(otherMembers[0]);
-                            }
-                            
-                            // For trios (2 partners): both partners must be in opponents
-                            if (otherMembers.length === 2) {
-                                return match.opponents.includes(otherMembers[0]) && 
-                                       match.opponents.includes(otherMembers[1]);
-                            }
-                            
-                            // For larger teams: all partners must be in opponents
-                            return otherMembers.every(member => match.opponents.includes(member));
-                        }).length;
-                    }
-                    
-                    console.log(`Team ${teamName} (${members.join(', ')}): ${teamMatchCount} matches`);
-                    
                     wrestlerTeams.push({
                         name: teamName,
                         type: teamType,
                         isActive: isActive,
                         members: otherMembers,
-                        matchCount: teamMatchCount
+                        slug: createSlug(teamName)
                     });
                 }
             }
             
-            // Split into active and inactive (only include inactive with 2+ matches)
+            // Split into active and inactive
             const activeTeams = wrestlerTeams.filter(t => t.isActive);
-            const inactiveTeams = wrestlerTeams.filter(t => !t.isActive && t.matchCount >= 2);
+            const potentialInactiveTeams = wrestlerTeams.filter(t => !t.isActive);
             
-            console.log('Active teams:', activeTeams.map(t => `${t.name} (${t.matchCount} matches)`));
-            console.log('Inactive teams (filtered 2+):', inactiveTeams.map(t => `${t.name} (${t.matchCount} matches)`));
-            console.log('Excluded teams (1 match):', wrestlerTeams.filter(t => !t.isActive && t.matchCount < 2).map(t => `${t.name} (${t.matchCount} matches)`));
+            // Check which inactive teams actually have JSON files (async)
+            const inactiveTeams = [];
+            for (const team of potentialInactiveTeams) {
+                const exists = await checkTeamFileExists(team.slug);
+                if (exists) {
+                    inactiveTeams.push(team);
+                    console.log(`✓ Team ${team.name}: JSON file exists`);
+                } else {
+                    console.log(`✗ Team ${team.name}: JSON file NOT found - excluding`);
+                }
+            }
+            
+            console.log('Active teams:', activeTeams.map(t => t.name));
+            console.log('Inactive teams (with JSON files):', inactiveTeams.map(t => t.name));
             
             // Display active teams in header (top right)
             displayActiveTeams(activeTeams);
             
             // Display inactive teams at bottom (separate tables)
             displayInactiveTeams(inactiveTeams);
+        }
+
+        // Helper function to check if team JSON file exists
+        async function checkTeamFileExists(teamSlug) {
+            try {
+                const response = await fetch(`wrestlers/${teamSlug}.json`, { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
         }
 
         function displayActiveTeams(activeTeams) {
