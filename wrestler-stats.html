@@ -472,31 +472,29 @@
             <div class="section" id="inactiveTeamsSection" style="display: none;">
                 <div class="section-title">👥 Past Team Affiliations</div>
                 
-                <!-- Tag Teams Table -->
-                <div id="inactiveTagTeamsContainer" style="display: none; margin-bottom: 20px;">
-                    <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.1em;">Tag Teams</h3>
-                    <div class="table-container">
-                        <table>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Tag Teams Table (Left) -->
+                    <div id="inactiveTagTeamsContainer" style="display: none;">
+                        <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.1em; text-align: center;">Tag Teams</h3>
+                        <table style="width: 100%; border-collapse: collapse; border: 2px solid rgba(255, 215, 0, 0.3);">
                             <thead>
-                                <tr>
-                                    <th>Team Name</th>
-                                    <th>Partner</th>
+                                <tr style="background: rgba(255, 215, 0, 0.1);">
+                                    <th style="padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">Team Name</th>
+                                    <th style="padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">Partner</th>
                                 </tr>
                             </thead>
                             <tbody id="inactiveTagTeamsBody"></tbody>
                         </table>
                     </div>
-                </div>
 
-                <!-- Trios Table -->
-                <div id="inactiveTriosContainer" style="display: none;">
-                    <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.1em;">Trios</h3>
-                    <div class="table-container">
-                        <table>
+                    <!-- Trios Table (Right) -->
+                    <div id="inactiveTriosContainer" style="display: none;">
+                        <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.1em; text-align: center;">Trios</h3>
+                        <table style="width: 100%; border-collapse: collapse; border: 2px solid rgba(255, 215, 0, 0.3);">
                             <thead>
-                                <tr>
-                                    <th>Team Name</th>
-                                    <th>Partners</th>
+                                <tr style="background: rgba(255, 215, 0, 0.1);">
+                                    <th style="padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">Team Name</th>
+                                    <th style="padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">Partners</th>
                                 </tr>
                             </thead>
                             <tbody id="inactiveTriosBody"></tbody>
@@ -1089,14 +1087,19 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         divisionSlug = 'womenstag';
                     }
                     
-                    const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                                         style="color: #ffd700; text-decoration: none;"
-                                         onmouseover="this.style.color='#fff'"
-                                         onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    // Check if this team name might cause issues (e.g., contains only names with &)
+                    const isLikelyParsedName = team.name.includes(' & ') && !team.name.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/);
+                    
+                    const teamLink = isLikelyParsedName 
+                        ? `<span style="color: #999;">${team.name}</span>`
+                        : `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                             style="color: #ffd700; text-decoration: none;"
+                             onmouseover="this.style.color='#fff'"
+                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
                     
                     tagHtml += `<tr>
-                        <td>${teamLink}</td>
-                        <td>${team.members.join(', ') || 'N/A'}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${teamLink}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${team.members.join(', ') || 'N/A'}</td>
                     </tr>`;
                 });
                 
@@ -1114,14 +1117,19 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamSlug = createSlug(team.name);
                     const divisionSlug = 'trios';
                     
-                    const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                                         style="color: #ffd700; text-decoration: none;"
-                                         onmouseover="this.style.color='#fff'"
-                                         onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    // Check if this team name might cause issues
+                    const isLikelyParsedName = team.name.includes(' & ') && !team.name.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/);
+                    
+                    const teamLink = isLikelyParsedName 
+                        ? `<span style="color: #999;">${team.name}</span>`
+                        : `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                             style="color: #ffd700; text-decoration: none;"
+                             onmouseover="this.style.color='#fff'"
+                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
                     
                     triosHtml += `<tr>
-                        <td>${teamLink}</td>
-                        <td>${team.members.join(', ') || 'N/A'}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${teamLink}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${team.members.join(', ') || 'N/A'}</td>
                     </tr>`;
                 });
                 
