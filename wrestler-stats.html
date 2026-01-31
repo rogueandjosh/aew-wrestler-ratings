@@ -751,10 +751,25 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         function displayWrestlerImage() {
             const container = document.getElementById('wrestlerImageContainer');
             const division = wrestlerData.division;
+            console.log('🔍 Division:', division);
+            console.log('🔍 Team members data:', allTeamMembers?.teams?.[wrestlerData.name]);
             let imageHTML = '';
             
-            // Check division type
-            if (division === "Men's Tag Team" || division === "Women's Tag Team") {
+            // Check division type - be more flexible with matching
+            const isTagTeam = division && (
+                division.includes('Tag Team') || 
+                division === 'Men\'s Tag' || 
+                division === 'Women\'s Tag' ||
+                division === 'menstag' ||
+                division === 'womenstag'
+            );
+            
+            const isTrios = division && (
+                division === 'Trios' || 
+                division === 'trios'
+            );
+            
+            if (isTagTeam) {
                 // TAG TEAMS - 2 images at 90x90
                 const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
                 if (members.length >= 2) {
@@ -782,7 +797,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         <img src="${teamInitialsUrl}" style="width: 90px; height: 90px;">
                     `;
                 }
-            } else if (division === "Trios") {
+            } else if (isTrios) {
                 // TRIOS - 3 images at 70x70
                 const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
                 if (members.length >= 3) {
