@@ -2097,8 +2097,13 @@ let visibleColumns = {
             const weekStillAvailable = Array.from(weekSelect.options).some(opt => opt.value === currentWeekSelection);
             if (weekStillAvailable) {
                 weekSelect.value = currentWeekSelection;
+            } else if (filteredWeeks.length > 0 && (yearFilter || monthFilter)) {
+                // If week not available and filters are active, select oldest week (last in array)
+                const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
+                weekSelect.value = `archive/${oldestWeek.filename}`;
+                loadSelectedWeek(); // Load it!
             }
-            // If previous week not available, keep "Current Week" selected (don't auto-select anything else)
+            // If no filters active or no weeks available, keep "Current Week" selected
         }
         
         function updateMonthOptions(selectedYear) {
