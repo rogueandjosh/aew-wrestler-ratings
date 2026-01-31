@@ -74,6 +74,19 @@
             border: 2px solid #ffd700;
         }
 
+        .wrestler-image-container {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .wrestler-image-container img {
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            background: #2d2d2d;
+        }
+
         .wrestler-info {
             flex: 1;
         }
@@ -389,6 +402,7 @@
 
         <div id="content" style="display: none;">
             <div class="wrestler-header">
+                <div id="wrestlerImageContainer" class="wrestler-image-container"></div>
                 <div class="wrestler-info">
                     <h2 id="wrestlerName" class="wrestler-name"></h2>
                     <div id="formerNames" class="former-names" style="display: none;"></div>
@@ -459,6 +473,107 @@
         let currentRankingsData = null;
         let allTeamMembers = null; // Will hold team-members.json data
         let allNameChanges = null; // Will hold name-changes.json data
+
+        // Helper function: Create slug from name
+        function createSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+        
+        // Helper function: Generate initials from wrestler/team name
+        function generateInitials(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            if (words.length === 0) return '?';
+            if (words.length === 1) return words[0].substring(0, 3).toUpperCase();
+            if (words.length === 2) return (words[0][0] + words[1][0]).toUpperCase();
+            return (words[0][0] + words[1][0] + words[2][0]).toUpperCase();
+        }
+        
+        // Helper function: Generate tag team initials (max 2 letters per wrestler)
+        function generateTagInitials(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .trim();
+            
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            if (words.length === 0) return '?';
+            if (words.length === 1) {
+                return words[0].substring(0, 2).toUpperCase();
+            }
+            return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+        }
+        
+        // Helper function: Generate trio initials (1 letter - surname)
+        function generateTrioInitial(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .trim();
+            
+            if (cleanName.includes('(')) {
+                cleanName = cleanName.split('(')[0].trim();
+            }
+            
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            
+            if (words.length === 0) return '?';
+            if (words.length === 1) return words[0].charAt(0).toUpperCase();
+            if (words.length >= 3 && words[0].toLowerCase() === 'penta') return 'P';
+            return words[words.length - 1].charAt(0).toUpperCase();
+        }
+        
+        // Helper function: Create SVG initials circle
+        function createInitialsCircle(initials, size) {
+            const radius = size / 2 - 2;
+            const center = size / 2;
+            
+            let fontSize;
+            if (initials.length === 1) {
+                fontSize = size * 0.4;
+            } else if (initials.length === 2) {
+                fontSize = size * 0.3;
+            } else {
+                fontSize = size * 0.25;
+            }
+            
+            const textY = center + fontSize * 0.35;
+            
+            const svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="${center}" cy="${center}" r="${radius}" 
+                        fill="#2d2d2d" stroke="#ffd700" stroke-width="2"/>
+                <text x="${center}" y="${textY}" text-anchor="middle" 
+                      fill="white" font-size="${fontSize}" font-weight="bold" 
+                      font-family="Arial, sans-serif">${initials}</text>
+            </svg>`;
+            
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
 
         // Load team data files on page load
         async function loadTeamData() {
@@ -601,6 +716,9 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
             
+            // Display wrestler/team image
+            displayWrestlerImage();
+            
             // Check if wrestler is in current rankings (truly active)
             let isCurrentlyActive = false;
             if (currentRankingsData) {
@@ -628,6 +746,91 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             updateAllSections();
             setupYearButtons();
+        }
+
+        function displayWrestlerImage() {
+            const container = document.getElementById('wrestlerImageContainer');
+            const division = wrestlerData.division;
+            let imageHTML = '';
+            
+            // Check division type
+            if (division === "Men's Tag Team" || division === "Women's Tag Team") {
+                // TAG TEAMS - 2 images at 90x90
+                const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
+                if (members.length >= 2) {
+                    const slug1 = createSlug(members[0]);
+                    const slug2 = createSlug(members[1]);
+                    const initials1 = generateTagInitials(members[0]);
+                    const initials2 = generateTagInitials(members[1]);
+                    const initialsUrl1 = createInitialsCircle(initials1, 90);
+                    const initialsUrl2 = createInitialsCircle(initials2, 90);
+                    
+                    imageHTML = `
+                        <img src="images/wrestlers/${slug1}.jpg" 
+                             style="width: 90px; height: 90px;"
+                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                        <img src="images/wrestlers/${slug2}.jpg" 
+                             style="width: 90px; height: 90px;"
+                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                    `;
+                } else {
+                    // No member data - use team initials
+                    const teamInitials = generateInitials(wrestlerData.name);
+                    const teamInitialsUrl = createInitialsCircle(teamInitials, 90);
+                    imageHTML = `
+                        <img src="${teamInitialsUrl}" style="width: 90px; height: 90px;">
+                        <img src="${teamInitialsUrl}" style="width: 90px; height: 90px;">
+                    `;
+                }
+            } else if (division === "Trios") {
+                // TRIOS - 3 images at 70x70
+                const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
+                if (members.length >= 3) {
+                    const slug1 = createSlug(members[0]);
+                    const slug2 = createSlug(members[1]);
+                    const slug3 = createSlug(members[2]);
+                    const initials1 = generateTrioInitial(members[0]);
+                    const initials2 = generateTrioInitial(members[1]);
+                    const initials3 = generateTrioInitial(members[2]);
+                    const initialsUrl1 = createInitialsCircle(initials1, 70);
+                    const initialsUrl2 = createInitialsCircle(initials2, 70);
+                    const initialsUrl3 = createInitialsCircle(initials3, 70);
+                    
+                    imageHTML = `
+                        <img src="images/wrestlers/${slug1}.jpg" 
+                             style="width: 70px; height: 70px;"
+                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                        <img src="images/wrestlers/${slug2}.jpg" 
+                             style="width: 70px; height: 70px;"
+                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                        <img src="images/wrestlers/${slug3}.jpg" 
+                             style="width: 70px; height: 70px;"
+                             onerror="this.onerror=null; this.src='${initialsUrl3}';">
+                    `;
+                } else {
+                    // No member data - use placeholders
+                    const teamInitials = generateInitials(wrestlerData.name);
+                    const teamInitialsUrl = createInitialsCircle(teamInitials, 70);
+                    imageHTML = `
+                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
+                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
+                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
+                    `;
+                }
+            } else {
+                // SINGLES - 1 image at 120x120
+                const slug = createSlug(wrestlerData.name);
+                const initials = generateInitials(wrestlerData.name);
+                const initialsUrl = createInitialsCircle(initials, 120);
+                
+                imageHTML = `
+                    <img src="images/wrestlers/${slug}.jpg" 
+                         style="width: 120px; height: 120px;"
+                         onerror="this.onerror=null; this.src='${initialsUrl}';">
+                `;
+            }
+            
+            container.innerHTML = imageHTML;
         }
 
         function setupYearButtons() {
