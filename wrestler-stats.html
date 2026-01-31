@@ -758,10 +758,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             // Check division type - be more flexible with matching
             const isTagTeam = division && (
                 division.includes('Tag Team') || 
-                division === 'Men\'s Tag' || 
-                division === 'Women\'s Tag' ||
-                division === 'menstag' ||
-                division === 'womenstag'
+                division.includes('Tag') && (division.includes('Men') || division.includes('Women'))
             );
             
             const isTrios = division && (
@@ -771,8 +768,24 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             
             if (isTagTeam) {
                 // TAG TEAMS - 2 images at 90x90
-                const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
-                if (members.length >= 2) {
+                // Try multiple ways to find team members
+                let members = allTeamMembers?.teams?.[wrestlerData.name];
+                
+                // If not found, try without "The" prefix
+                if (!members || members.length < 2) {
+                    const nameWithoutThe = wrestlerData.name.replace(/^The\s+/i, '');
+                    members = allTeamMembers?.teams?.[nameWithoutThe];
+                }
+                
+                // If still not found, try with "The" prefix added
+                if (!members || members.length < 2) {
+                    const nameWithThe = 'The ' + wrestlerData.name;
+                    members = allTeamMembers?.teams?.[nameWithThe];
+                }
+                
+                console.log('🔍 Found members:', members);
+                
+                if (members && members.length >= 2) {
                     const slug1 = createSlug(members[0]);
                     const slug2 = createSlug(members[1]);
                     const initials1 = generateTagInitials(members[0]);
