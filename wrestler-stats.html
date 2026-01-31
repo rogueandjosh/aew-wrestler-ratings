@@ -616,13 +616,31 @@
             members = allTeamMembers?.teams?.[nameWithThe];
             if (members && members.length >= 2) return members;
             
-            // Check if this is an old name in name-changes.json
-            if (allNameChanges && Array.isArray(allNameChanges)) {
-                const nameChange = allNameChanges.find(change => change.oldName === teamName);
-                if (nameChange && nameChange.newName) {
-                    // Found the new name, try looking it up
-                    members = allTeamMembers?.teams?.[nameChange.newName];
-                    if (members && members.length >= 2) return members;
+            // Check name-changes.json for old→new or new→old mappings
+            if (allNameChanges) {
+                // Handle both formats: array or object with changes array
+                const changesArray = Array.isArray(allNameChanges) ? allNameChanges : allNameChanges.changes;
+                
+                if (Array.isArray(changesArray)) {
+                    // Check if teamName is an OLD name → find NEW name
+                    const nameChange = changesArray.find(change => change.oldName === teamName);
+                    if (nameChange && nameChange.newName) {
+                        members = allTeamMembers?.teams?.[nameChange.newName];
+                        if (members && members.length >= 2) {
+                            console.log('🔍 Found via old→new name change:', teamName, '→', nameChange.newName);
+                            return members;
+                        }
+                    }
+                    
+                    // Check if teamName is a NEW name → find OLD name
+                    const reverseChange = changesArray.find(change => change.newName === teamName);
+                    if (reverseChange && reverseChange.oldName) {
+                        members = allTeamMembers?.teams?.[reverseChange.oldName];
+                        if (members && members.length >= 2) {
+                            console.log('🔍 Found via new→old name change:', teamName, '→', reverseChange.oldName);
+                            return members;
+                        }
+                    }
                 }
             }
             
