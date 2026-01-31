@@ -1517,9 +1517,26 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         // Navigation function - goes back to previous page with state
-        // Navigation function - goes back to previous page
+        // Navigation function - smart back button
         function goBackToRankings() {
-            window.history.back();
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnWeek = urlParams.get('returnWeek');
+            const returnDivision = urlParams.get('returnDivision');
+            
+            // Check if we have state parameters AND if the previous page was likely the rankings
+            // (by checking if document.referrer contains index.html or is the same origin without wrestler-stats)
+            const referrer = document.referrer;
+            const isFromRankings = referrer && (referrer.includes('index.html') || 
+                                               (!referrer.includes('wrestler-stats') && referrer.includes(window.location.origin)));
+            
+            if (returnWeek && returnDivision && isFromRankings) {
+                // Coming from rankings - use state restoration
+                const url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
+                window.location.href = url;
+            } else {
+                // Coming from another wrestler page - use history.back
+                window.history.back();
+            }
         }
     </script>
 </body>
