@@ -575,6 +575,31 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
+        // Helper function: Convert opponent names array to hyperlinked string
+        function createOpponentLinks(opponents) {
+            if (!opponents || opponents.length === 0) {
+                return 'N/A';
+            }
+            
+            return opponents.map(name => {
+                const slug = createSlug(name);
+                const currentWeek = document.getElementById('weekSelect')?.value || 'current';
+                const currentDivision = wrestlerData?.division || '';
+                
+                // Get division slug for return URL
+                let divisionSlug = 'mens';
+                if (currentDivision.includes('Women') && !currentDivision.includes('Tag')) divisionSlug = 'womens';
+                else if (currentDivision.includes('Men') && currentDivision.includes('Tag')) divisionSlug = 'menstag';
+                else if (currentDivision.includes('Women') && currentDivision.includes('Tag')) divisionSlug = 'womenstag';
+                else if (currentDivision.includes('Trio')) divisionSlug = 'trios';
+                
+                return `<a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                           style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                           onmouseover="this.style.color='#fff'"
+                           onmouseout="this.style.color='#ffd700'">${name}</a>`;
+            }).join(', ');
+        }
+
         // Load team data files on page load
         async function loadTeamData() {
             try {
@@ -1126,10 +1151,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `recent-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers
-                const wrestlersStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Show ALL wrestlers with hyperlinks
+                const wrestlersStr = createOpponentLinks(m.opponents);
                 
                 return `
                     <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
@@ -1178,10 +1201,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `top-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers
-                const wrestlersStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Show ALL wrestlers with hyperlinks
+                const wrestlersStr = createOpponentLinks(m.opponents);
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -1217,10 +1238,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `bottom-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers
-                const wrestlersStr = m.opponents && m.opponents.length > 0 
-                    ? m.opponents.join(', ') 
-                    : 'N/A';
+                // Show ALL wrestlers with hyperlinks
+                const wrestlersStr = createOpponentLinks(m.opponents);
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -1475,11 +1494,5 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
         }
     </script>
-    
-    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
-        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
-        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-    </footer>
 </body>
 </html>
