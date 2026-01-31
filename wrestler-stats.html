@@ -600,6 +600,44 @@
             }).join(', ');
         }
 
+        // Helper function: Find team members, handling name changes
+        function findTeamMembers(teamName) {
+            // First try direct lookup
+            let members = allTeamMembers?.teams?.[teamName];
+            if (members && members.length >= 2) return members;
+            
+            // Try without "The" prefix
+            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
+            members = allTeamMembers?.teams?.[nameWithoutThe];
+            if (members && members.length >= 2) return members;
+            
+            // Try with "The" prefix
+            const nameWithThe = 'The ' + teamName;
+            members = allTeamMembers?.teams?.[nameWithThe];
+            if (members && members.length >= 2) return members;
+            
+            // Check if this is an old name in name-changes.json
+            if (allNameChanges && Array.isArray(allNameChanges)) {
+                const nameChange = allNameChanges.find(change => change.oldName === teamName);
+                if (nameChange && nameChange.newName) {
+                    // Found the new name, try looking it up
+                    members = allTeamMembers?.teams?.[nameChange.newName];
+                    if (members && members.length >= 2) return members;
+                }
+            }
+            
+            // If all lookups fail, try parsing "Name1 & Name2" or "Name1 & Name2 & Name3" format directly
+            if (teamName.includes(' & ')) {
+                const parts = teamName.split(' & ').map(n => n.trim());
+                if (parts.length >= 2) {
+                    console.log('🔍 Parsed members from name:', parts);
+                    return parts;
+                }
+            }
+            
+            return null;
+        }
+
         // Load team data files on page load
         async function loadTeamData() {
             try {
@@ -793,20 +831,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             
             if (isTagTeam) {
                 // TAG TEAMS - 2 images at 90x90
-                // Try multiple ways to find team members
-                let members = allTeamMembers?.teams?.[wrestlerData.name];
-                
-                // If not found, try without "The" prefix
-                if (!members || members.length < 2) {
-                    const nameWithoutThe = wrestlerData.name.replace(/^The\s+/i, '');
-                    members = allTeamMembers?.teams?.[nameWithoutThe];
-                }
-                
-                // If still not found, try with "The" prefix added
-                if (!members || members.length < 2) {
-                    const nameWithThe = 'The ' + wrestlerData.name;
-                    members = allTeamMembers?.teams?.[nameWithThe];
-                }
+                const members = findTeamMembers(wrestlerData.name);
                 
                 console.log('🔍 Found members:', members);
                 
@@ -837,8 +862,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 }
             } else if (isTrios) {
                 // TRIOS - 3 images at 70x70
-                const members = allTeamMembers?.teams?.[wrestlerData.name] || [];
-                if (members.length >= 3) {
+                const members = findTeamMembers(wrestlerData.name);
+                if (members && members.length >= 3) {
                     const slug1 = createSlug(members[0]);
                     const slug2 = createSlug(members[1]);
                     const slug3 = createSlug(members[2]);
@@ -1474,24 +1499,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         // Navigation function - goes back to previous page with state
+        // Navigation function - goes back to previous page
         function goBackToRankings() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const returnWeek = urlParams.get('returnWeek');
-            const returnDivision = urlParams.get('returnDivision');
-            
-            console.log('🔍 Back button clicked');
-            console.log('Return params:', { returnWeek, returnDivision });
-            
-            if (returnWeek && returnDivision) {
-                // Go back to specific week/division
-                const url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
-                console.log('✅ Navigating to:', url);
-                window.location.href = url;
-            } else {
-                // Fallback to browser back
-                console.log('⚠️ No return params, using browser back');
-                window.history.back();
-            }
+            window.history.back();
         }
     </script>
 </body>
