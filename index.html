@@ -2543,7 +2543,7 @@ for (let i = 0; i < filteredData.length; i++) {
     // Check if this is a tag/trio division
     if (division === 'menstag' || division === 'womenstag') {
         // TAG TEAMS - Show 2 images side by side (45x45 each)
-        const members = teamMembersData?.teams?.[wrestler.name] || [];
+        const members = findTeamMembersArray(wrestler.name) || [];
         
         if (withinThreshold && members.length >= 2) {
             // Try to load individual wrestler images, fallback to initials
@@ -2615,7 +2615,7 @@ for (let i = 0; i < filteredData.length; i++) {
         }
     } else if (division === 'trios') {
         // TRIOS - Show 3 images side by side (45x45 each)
-        const members = teamMembersData?.teams?.[wrestler.name] || [];
+        const members = findTeamMembersArray(wrestler.name) || [];
         
         if (members.length >= 3) {
             const slug1 = createSlug(members[0]);
@@ -3007,58 +3007,63 @@ if (tableEl) {
         // Debounce timer for search
         let filterDebounceTimer = null;
 
+        // Helper function: Find team members array, handling name changes
+        function findTeamMembersArray(teamName) {
+            if (!teamMembersData || !teamMembersData.teams) {
+                return null;
+            }
+            
+            // Direct lookup
+            let members = teamMembersData.teams[teamName];
+            if (members && members.length >= 2) return members;
+
+            // Try without "The" prefix
+            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
+            members = teamMembersData.teams[nameWithoutThe];
+            if (members && members.length >= 2) return members;
+
+            // Try with "The" prefix
+            const nameWithThe = 'The ' + teamName;
+            members = teamMembersData.teams[nameWithThe];
+            if (members && members.length >= 2) return members;
+
+            // Check name changes (new→old)
+            if (nameChanges) {
+                const oldNameEntry = Object.keys(nameChanges).find(oldName => 
+                    nameChanges[oldName] === teamName
+                );
+                
+                if (oldNameEntry) {
+                    members = teamMembersData.teams[oldNameEntry];
+                    if (members && members.length >= 2) return members;
+                }
+                
+                // Check name changes (old→new)
+                if (nameChanges[teamName]) {
+                    members = teamMembersData.teams[nameChanges[teamName]];
+                    if (members && members.length >= 2) return members;
+                }
+            }
+
+            // Parse "Name1 & Name2" format directly
+            if (teamName.includes(' & ')) {
+                const parts = teamName.split(' & ').map(n => n.trim());
+                if (parts.length >= 2) {
+                    return parts;
+                }
+            }
+
+            return null;
+        }
+
         function getTeamMembers(teamName, division) {
             // Only show members for tag teams and trios
             if (division !== 'menstag' && division !== 'womenstag' && division !== 'trios') {
                 return '';
             }
             
-            // If we don't have team members data loaded, return empty
-            if (!teamMembersData || !teamMembersData.teams) {
-                return '';
-            }
+            const members = findTeamMembersArray(teamName);
             
-            // Look up team members
-            let members = teamMembersData.teams[teamName];
-
-            // If not found, try without "The" prefix
-            if (!members) {
-                const nameWithoutThe = teamName.replace(/^The\s+/i, '');
-                members = teamMembersData.teams[nameWithoutThe];
-            }
-
-            // If not found, try with "The" prefix
-            if (!members) {
-                const nameWithThe = 'The ' + teamName;
-                members = teamMembersData.teams[nameWithThe];
-            }
-
-            // If still not found, check name changes
-            if (!members && nameChanges) {
-                // Check if teamName is a NEW name (find its old name)
-                const oldNameEntry = Object.keys(nameChanges).find(oldName => 
-                    nameChanges[oldName] === teamName
-                );
-                
-                if (oldNameEntry) {
-                    // Try looking up with old name
-                    members = teamMembersData.teams[oldNameEntry];
-                }
-                
-                // Check if teamName is an OLD name (find its new name)
-                if (!members && nameChanges[teamName]) {
-                    members = teamMembersData.teams[nameChanges[teamName]];
-                }
-            }
-
-            // If all lookups fail, try parsing "Name1 & Name2" or "Name1 & Name2 & Name3" format directly
-            if (!members && teamName.includes(' & ')) {
-                const parts = teamName.split(' & ').map(n => n.trim());
-                if (parts.length >= 2) {
-                    members = parts;
-                }
-            }
-
             if (members && members.length > 0) {
                 return `<span class="team-members">${members.join(' & ')}</span>`;
             }
