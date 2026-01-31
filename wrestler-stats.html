@@ -413,6 +413,14 @@
                 </div>
             </div>
 
+            <!-- Team Affiliations Section -->
+            <div class="section" id="teamAffiliationsSection" style="display: none;">
+                <div class="section-title">👥 Team Affiliations</div>
+                <div id="teamAffiliationsContent" style="padding: 20px; background: rgba(255, 215, 0, 0.05); border-radius: 8px;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
             <div class="year-filter">
                 <h2>Filter by Year</h2>
                 <div class="year-buttons">
@@ -827,6 +835,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             updateAllSections();
             setupYearButtons();
+            displayTeamAffiliations();
         }
 
         function displayWrestlerImage() {
@@ -927,6 +936,126 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
             
             container.innerHTML = imageHTML;
+        }
+
+        function displayTeamAffiliations() {
+            const section = document.getElementById('teamAffiliationsSection');
+            const content = document.getElementById('teamAffiliationsContent');
+            
+            if (!allTeamMembers || !allTeamMembers.teams) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            // Find all teams this wrestler is part of
+            const wrestlerTeams = [];
+            
+            for (const [teamName, members] of Object.entries(allTeamMembers.teams)) {
+                if (members.includes(wrestlerData.name)) {
+                    // Determine team type based on member count
+                    let teamType = 'Tag Team';
+                    if (members.length >= 3) {
+                        teamType = 'Trios';
+                    }
+                    
+                    // Check if team is currently active in rankings
+                    let isActive = false;
+                    if (currentRankingsData) {
+                        const divisions = ['menstag', 'womenstag', 'trios'];
+                        for (const div of divisions) {
+                            if (currentRankingsData[div]) {
+                                const found = currentRankingsData[div].find(w => w.name === teamName);
+                                if (found) {
+                                    isActive = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Get other members (exclude current wrestler)
+                    const otherMembers = members.filter(m => m !== wrestlerData.name);
+                    
+                    wrestlerTeams.push({
+                        name: teamName,
+                        type: teamType,
+                        isActive: isActive,
+                        members: otherMembers
+                    });
+                }
+            }
+            
+            // If no teams found, hide section
+            if (wrestlerTeams.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            // Show section and build content
+            section.style.display = 'block';
+            
+            const activeTeams = wrestlerTeams.filter(t => t.isActive);
+            const inactiveTeams = wrestlerTeams.filter(t => !t.isActive);
+            
+            let html = '';
+            
+            if (activeTeams.length > 0) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="color: #4CAF50; margin-bottom: 10px; font-size: 1.1em;">✓ ACTIVE TEAMS</h3>';
+                activeTeams.forEach(team => {
+                    const teamSlug = createSlug(team.name);
+                    const weekSelect = document.getElementById('weekSelect');
+                    const currentWeek = weekSelect ? weekSelect.value : 'current';
+                    let divisionSlug = team.type === 'Trios' ? 'trios' : 'menstag';
+                    if (wrestlerData.division && wrestlerData.division.includes('Women')) {
+                        divisionSlug = 'womenstag';
+                    }
+                    
+                    html += `<div style="margin-bottom: 12px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 4px;">`;
+                    html += `<div style="font-weight: bold; margin-bottom: 4px;">`;
+                    html += `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                             style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                             onmouseover="this.style.color='#fff'"
+                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    html += ` <span style="color: #999; font-size: 0.9em;">(${team.type})</span>`;
+                    html += `</div>`;
+                    if (team.members.length > 0) {
+                        html += `<div style="color: #bbb; font-size: 0.9em;">with ${team.members.join(', ')}</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (inactiveTeams.length > 0) {
+                html += '<div>';
+                html += '<h3 style="color: #999; margin-bottom: 10px; font-size: 1.1em;">○ INACTIVE TEAMS</h3>';
+                inactiveTeams.forEach(team => {
+                    const teamSlug = createSlug(team.name);
+                    const weekSelect = document.getElementById('weekSelect');
+                    const currentWeek = weekSelect ? weekSelect.value : 'current';
+                    let divisionSlug = team.type === 'Trios' ? 'trios' : 'menstag';
+                    if (wrestlerData.division && wrestlerData.division.includes('Women')) {
+                        divisionSlug = 'womenstag';
+                    }
+                    
+                    html += `<div style="margin-bottom: 12px; padding: 10px; background: rgba(255, 255, 255, 0.03); border-left: 3px solid #666; border-radius: 4px;">`;
+                    html += `<div style="font-weight: bold; margin-bottom: 4px;">`;
+                    html += `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                             style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                             onmouseover="this.style.color='#fff'"
+                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    html += ` <span style="color: #999; font-size: 0.9em;">(${team.type})</span>`;
+                    html += `</div>`;
+                    if (team.members.length > 0) {
+                        html += `<div style="color: #999; font-size: 0.9em;">with ${team.members.join(', ')}</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
+            content.innerHTML = html;
         }
 
         function setupYearButtons() {
