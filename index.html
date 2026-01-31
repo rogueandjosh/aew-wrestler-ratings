@@ -1341,7 +1341,9 @@
                 }
                 
                 // Create hyperlink to wrestler stats (use baseName for the slug)
-                const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(baseName)}" class="wrestler-link">${displayName}</a>`;
+                const weekSelect = document.getElementById('weekSelect');
+                const currentWeek = weekSelect ? weekSelect.value : 'current';
+                const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(baseName)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${displayName}</a>`;
                 
                 html += `
                     <div class="recently-dropped-item ${inactiveClass}">
@@ -2956,7 +2958,9 @@ if (tableEl) {
                             }
                             
                             // Create hyperlink to wrestler stats (use actualName for the slug)
-                            const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(actualName)}" class="wrestler-link">${cleanDisplayName}</a>`;
+                            const weekSelect = document.getElementById('weekSelect');
+                            const currentWeek = weekSelect ? weekSelect.value : 'current';
+                            const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(actualName)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${cleanDisplayName}</a>`;
                             
                             droppedRows.push(`
                                 <div class="dropped-wrestler">
@@ -3224,7 +3228,7 @@ function renderStatistics(division) {
         html += `
             <tr>
                 <td class="rank">${index + 1}</td>
-                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a></td>
                 <td class="rating ${ratingClass}">${(wrestler.current || 100).toFixed(2)}</td>
                 <td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>
                 <td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>
@@ -3271,7 +3275,7 @@ function renderStatistics(division) {
         
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
-        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
+        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a></td>`;
         if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
         if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
         if (visibleColumns.floor) html += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
@@ -3867,7 +3871,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         
         html += '<tr>';
         if (visibleColumns.rank) html += `<td class="rank">${index + 1}</td>`;
-        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}" class="wrestler-link">${wrestler.name}</a></td>`;
+        html += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a></td>`;
         if (visibleColumns.current) html += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;        if (visibleColumns.peak) html += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
         if (visibleColumns.floor) html += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
         if (visibleColumns.average) html += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
