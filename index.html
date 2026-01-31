@@ -2073,11 +2073,11 @@ let visibleColumns = {
             // Only update months if YEAR changed AND we're not navigating with buttons
             const yearChanged = yearFilter !== lastYearFilter;
             if (yearChanged && !isNavigating) {
-                updateMonthOptions(yearFilter);
+                updateMonthOptions(yearFilter, true); // Auto-select month on year change
                 lastYearFilter = yearFilter;
             } else if (!isNavigating) {
-                // Year didn't change, but we still need to update available months
-                updateMonthOptions(yearFilter);
+                // Year didn't change, just update available months (preserve selection)
+                updateMonthOptions(yearFilter, false); // Don't auto-select
             }
             
             // Update lastYearFilter for next time
@@ -2115,10 +2115,13 @@ let visibleColumns = {
             }
         }
         
-        function updateMonthOptions(selectedYear) {
+        function updateMonthOptions(selectedYear, autoSelectMonth = false) {
             const monthFilter = document.getElementById('monthFilter');
             
             if (!archiveIndex) return;
+            
+            // Store current month selection before rebuilding
+            const currentMonthSelection = monthFilter.value;
             
             // Get all unique year+month combinations for the selected year
             const availableMonths = new Set();
@@ -2144,10 +2147,14 @@ let visibleColumns = {
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
             
-            // Auto-select oldest month when year is selected (this only happens on year change)
-            if (selectedYear && sortedMonths.length > 0) {
+            // Only auto-select oldest month when year changes (autoSelectMonth flag)
+            if (autoSelectMonth && selectedYear && sortedMonths.length > 0) {
                 monthFilter.value = sortedMonths[0];
+            } else if (sortedMonths.includes(currentMonthSelection)) {
+                // Restore previous month selection if it's still available
+                monthFilter.value = currentMonthSelection;
             } else {
+                // Previous selection not available, clear it
                 monthFilter.value = '';
             }
         }
