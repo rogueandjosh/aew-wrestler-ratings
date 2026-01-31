@@ -867,6 +867,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             updateAllSections();
             setupYearButtons();
             displayTeamAffiliations();
+            displayTeamMembers(); // Show team members for tag/trio teams
         }
 
         function displayWrestlerImage() {
@@ -1000,18 +1001,29 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     // Get other members (exclude current wrestler)
                     const otherMembers = members.filter(m => m !== wrestlerData.name);
                     
+                    // Count matches for this team
+                    let teamMatches = 0;
+                    if (wrestlerData.allMatches) {
+                        teamMatches = wrestlerData.allMatches.filter(match => {
+                            if (!match.opponents || match.opponents.length === 0) return false;
+                            // Check if all other team members are in opponents
+                            return otherMembers.every(member => match.opponents.includes(member));
+                        }).length;
+                    }
+                    
                     wrestlerTeams.push({
                         name: teamName,
                         type: teamType,
                         isActive: isActive,
-                        members: otherMembers
+                        members: otherMembers,
+                        matchCount: teamMatches
                     });
                 }
             }
             
-            // Split into active and inactive
+            // Split into active and inactive (only include inactive with 2+ matches)
             const activeTeams = wrestlerTeams.filter(t => t.isActive);
-            const inactiveTeams = wrestlerTeams.filter(t => !t.isActive);
+            const inactiveTeams = wrestlerTeams.filter(t => !t.isActive && t.matchCount >= 2);
             
             // Display active teams in header (top right)
             displayActiveTeams(activeTeams);
@@ -1071,6 +1083,17 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const weekSelect = document.getElementById('weekSelect');
             const currentWeek = weekSelect ? weekSelect.value : 'current';
             
+            // Helper to create wrestler links
+            function createWrestlerLinks(members, divisionSlug) {
+                return members.map(member => {
+                    const memberSlug = createSlug(member);
+                    return `<a href="wrestler-stats.html?wrestler=${memberSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                               style="color: #ffd700; text-decoration: none;"
+                               onmouseover="this.style.color='#fff'"
+                               onmouseout="this.style.color='#ffd700'">${member}</a>`;
+                }).join(', ');
+            }
+            
             // Split by type
             const inactiveTagTeams = inactiveTeams.filter(t => t.type === 'Tag Team');
             const inactiveTrios = inactiveTeams.filter(t => t.type === 'Trios');
@@ -1087,19 +1110,18 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         divisionSlug = 'womenstag';
                     }
                     
-                    // Check if this team name might cause issues (e.g., contains only names with &)
-                    const isLikelyParsedName = team.name.includes(' & ') && !team.name.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/);
+                    // All teams get hyperlinks
+                    const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                                         style="color: #ffd700; text-decoration: none;"
+                                         onmouseover="this.style.color='#fff'"
+                                         onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
                     
-                    const teamLink = isLikelyParsedName 
-                        ? `<span style="color: #999;">${team.name}</span>`
-                        : `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                             style="color: #ffd700; text-decoration: none;"
-                             onmouseover="this.style.color='#fff'"
-                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    // Wrestler hyperlinks for partners
+                    const partnersLinks = team.members.length > 0 ? createWrestlerLinks(team.members, divisionSlug) : 'N/A';
                     
                     tagHtml += `<tr>
                         <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${teamLink}</td>
-                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${team.members.join(', ') || 'N/A'}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${partnersLinks}</td>
                     </tr>`;
                 });
                 
@@ -1117,19 +1139,18 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamSlug = createSlug(team.name);
                     const divisionSlug = 'trios';
                     
-                    // Check if this team name might cause issues
-                    const isLikelyParsedName = team.name.includes(' & ') && !team.name.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/);
+                    // All teams get hyperlinks
+                    const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                                         style="color: #ffd700; text-decoration: none;"
+                                         onmouseover="this.style.color='#fff'"
+                                         onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
                     
-                    const teamLink = isLikelyParsedName 
-                        ? `<span style="color: #999;">${team.name}</span>`
-                        : `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                             style="color: #ffd700; text-decoration: none;"
-                             onmouseover="this.style.color='#fff'"
-                             onmouseout="this.style.color='#ffd700'">${team.name}</a>`;
+                    // Wrestler hyperlinks for partners
+                    const partnersLinks = team.members.length > 0 ? createWrestlerLinks(team.members, divisionSlug) : 'N/A';
                     
                     triosHtml += `<tr>
                         <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${teamLink}</td>
-                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${team.members.join(', ') || 'N/A'}</td>
+                        <td style="padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;">${partnersLinks}</td>
                     </tr>`;
                 });
                 
@@ -1137,6 +1158,64 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             } else {
                 triosContainer.style.display = 'none';
             }
+        }
+
+        function displayTeamMembers() {
+            const container = document.getElementById('activeTeamsContainer');
+            const list = document.getElementById('activeTeamsList');
+            
+            // Only show for tag teams and trios
+            const isTeam = wrestlerData.division && (
+                wrestlerData.division.includes('Tag') || 
+                wrestlerData.division.includes('Trio')
+            );
+            
+            if (!isTeam || !allTeamMembers || !allTeamMembers.teams) {
+                return;
+            }
+            
+            // Find members for this team
+            const members = findTeamMembers(wrestlerData.name);
+            
+            if (!members || members.length === 0) {
+                return;
+            }
+            
+            // Show container
+            container.style.display = 'block';
+            
+            // Update label
+            const label = container.querySelector('div');
+            label.textContent = 'TEAM MEMBERS';
+            
+            const weekSelect = document.getElementById('weekSelect');
+            const currentWeek = weekSelect ? weekSelect.value : 'current';
+            
+            // Determine division for wrestler links
+            let divisionSlug = 'mens';
+            if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
+                divisionSlug = 'womens';
+            } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
+                divisionSlug = 'menstag';
+            } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
+                divisionSlug = 'womenstag';
+            } else if (wrestlerData.division.includes('Trio')) {
+                divisionSlug = 'trios';
+            }
+            
+            // Create links for each member
+            let html = '';
+            members.forEach(member => {
+                const memberSlug = createSlug(member);
+                html += `<div style="margin-bottom: 6px;">`;
+                html += `<a href="wrestler-stats.html?wrestler=${memberSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                         style="color: #ffd700; text-decoration: none; font-weight: 500; font-size: 0.95em;"
+                         onmouseover="this.style.color='#fff'"
+                         onmouseout="this.style.color='#ffd700'">• ${member}</a>`;
+                html += `</div>`;
+            });
+            
+            list.innerHTML = html;
         }
 
         function setupYearButtons() {
