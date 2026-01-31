@@ -2070,52 +2070,38 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Only update months if YEAR changed AND we're not navigating with buttons
+            // Update available month options based on selected year (but don't auto-select)
             const yearChanged = yearFilter !== lastYearFilter;
-            if (yearChanged && !isNavigating) {
-                updateMonthOptions(yearFilter, true); // Auto-select month on year change
-                lastYearFilter = yearFilter;
-            } else if (!isNavigating) {
-                // Year didn't change, just update available months (preserve selection)
-                updateMonthOptions(yearFilter, false); // Don't auto-select
-            }
-            
-            // Update lastYearFilter for next time
-            if (!isNavigating) {
+            if (yearChanged || !isNavigating) {
+                updateMonthOptions(yearFilter);
                 lastYearFilter = yearFilter;
             }
             
-            // Get the actual month value (may have been auto-selected if year changed)
-            const actualMonthFilter = document.getElementById('monthFilter').value;
+            // Store current week selection before rebuilding
+            const currentWeekSelection = weekSelect.value;
             
-            // Store current week selection if navigating
-            const currentWeekSelection = isNavigating ? weekSelect.value : null;
-            
-            // Filter weeks
+            // Filter weeks based on year and month
             const filteredWeeks = archiveIndex.weeks.filter(week => {
                 if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
-                if (actualMonthFilter && !week.label.startsWith(actualMonthFilter)) return false;
+                if (monthFilter && !week.label.startsWith(monthFilter)) return false;
                 return true;
             });
             
-            // Populate week dropdown
+            // Populate week dropdown with filtered weeks
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
-            // If navigating, restore the week selection
-            if (isNavigating && currentWeekSelection) {
+            // Try to restore previous week selection if it's still in the filtered list
+            const weekStillAvailable = Array.from(weekSelect.options).some(opt => opt.value === currentWeekSelection);
+            if (weekStillAvailable) {
                 weekSelect.value = currentWeekSelection;
-            } else if (filteredWeeks.length > 0 && (yearFilter || actualMonthFilter)) {
-                // ALWAYS select oldest week when filtering (weeks array is newest-first, so oldest is LAST)
-                const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
-                weekSelect.value = `archive/${oldestWeek.filename}`;
-                loadSelectedWeek();
             }
+            // If previous week not available, keep "Current Week" selected (don't auto-select anything else)
         }
         
-        function updateMonthOptions(selectedYear, autoSelectMonth = false) {
+        function updateMonthOptions(selectedYear) {
             const monthFilter = document.getElementById('monthFilter');
     
             if (!archiveIndex) return;
@@ -2141,29 +2127,19 @@ let visibleColumns = {
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const sortedMonths = Array.from(availableMonths).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
     
-            // **NEW: Temporarily disable onchange to prevent triggering filterWeeks**
-            const originalOnchange = monthFilter.onchange;
-            monthFilter.onchange = null;
-    
             monthFilter.innerHTML = '<option value="">All</option>';
             sortedMonths.forEach(month => {
                 const fullName = monthNames[monthOrder.indexOf(month)];
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
     
-            // Only auto-select oldest month when year changes (autoSelectMonth flag)
-            if (autoSelectMonth && selectedYear && sortedMonths.length > 0) {
-                monthFilter.value = sortedMonths[0];
-            } else if (sortedMonths.includes(currentMonthSelection)) {
-                // Restore previous month selection if it's still available
+            // Try to restore previous month selection if it's still available
+            if (sortedMonths.includes(currentMonthSelection)) {
                 monthFilter.value = currentMonthSelection;
             } else {
-                // Previous selection not available, clear it
+                // Previous selection not available, reset to "All"
                 monthFilter.value = '';
             }
-    
-            // **NEW: Restore onchange event**
-            monthFilter.onchange = originalOnchange;
         }
         
         function resetToCurrent() {
