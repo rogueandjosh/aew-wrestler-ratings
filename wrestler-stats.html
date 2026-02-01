@@ -858,6 +858,22 @@ const statusBadge = document.getElementById('statusBadge');
 statusBadge.textContent = isCurrentlyActive ? 'ACTIVE' : 'INACTIVE';
 statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'status-badge status-inactive';
 
+            // Check if formerNames needs to be populated from name-changes.json
+            if ((!wrestlerData.formerNames || wrestlerData.formerNames.length === 0) && allNameChanges) {
+                const changesArray = Array.isArray(allNameChanges) ? allNameChanges : allNameChanges.changes;
+                if (Array.isArray(changesArray)) {
+                    // Find all name changes where current name is the NEW name
+                    const oldNames = changesArray
+                        .filter(change => change.newName === wrestlerData.name)
+                        .map(change => change.oldName);
+                    
+                    if (oldNames.length > 0) {
+                        wrestlerData.formerNames = oldNames;
+                        console.log(`✓ Found former names for ${wrestlerData.name}:`, oldNames);
+                    }
+                }
+            }
+
             if (wrestlerData.formerNames && wrestlerData.formerNames.length > 0) {
                 const formerNamesEl = document.getElementById('formerNames');
                 const weekSelect = document.getElementById('weekSelect');
