@@ -860,7 +860,33 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             if (wrestlerData.formerNames && wrestlerData.formerNames.length > 0) {
                 const formerNamesEl = document.getElementById('formerNames');
-                formerNamesEl.textContent = `Formerly: ${wrestlerData.formerNames.join(', ')}`;
+                const weekSelect = document.getElementById('weekSelect');
+                const currentWeek = weekSelect ? weekSelect.value : 'current';
+                
+                // Get division slug for return URL
+                let divisionSlug = 'mens';
+                if (wrestlerData.division) {
+                    if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
+                        divisionSlug = 'womens';
+                    } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
+                        divisionSlug = 'menstag';
+                    } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
+                        divisionSlug = 'womenstag';
+                    } else if (wrestlerData.division.includes('Trio')) {
+                        divisionSlug = 'trios';
+                    }
+                }
+                
+                // Create hyperlinked former names
+                const formerNamesLinks = wrestlerData.formerNames.map(name => {
+                    const nameSlug = createSlug(name);
+                    return `<a href="wrestler-stats.html?wrestler=${nameSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                               style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                               onmouseover="this.style.color='#fff'"
+                               onmouseout="this.style.color='#ffd700'">${name}</a>`;
+                }).join(', ');
+                
+                formerNamesEl.innerHTML = `Formerly: ${formerNamesLinks}`;
                 formerNamesEl.style.display = 'block';
             }
 
