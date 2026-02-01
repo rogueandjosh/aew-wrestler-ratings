@@ -687,8 +687,30 @@
             if (teamName.includes(' & ')) {
                 const parts = teamName.split(' & ').map(n => n.trim());
                 if (parts.length >= 2) {
-                    console.log('🔍 Parsed members from name:', parts);
-                    return parts;
+                    // Try to expand surnames to full names by looking through allTeamMembers
+                    const expandedParts = parts.map(surname => {
+                        // Check if this is already a full name
+                        if (surname.includes(' ')) return surname;
+                        
+                        // Try to find a full name ending with this surname
+                        for (const [teamName, members] of Object.entries(allTeamMembers?.teams || {})) {
+                            for (const member of members) {
+                                // Check if member's last name matches
+                                const memberParts = member.split(' ');
+                                const lastName = memberParts[memberParts.length - 1];
+                                if (lastName === surname) {
+                                    console.log(`🔍 Expanded "${surname}" → "${member}"`);
+                                    return member;
+                                }
+                            }
+                        }
+                        
+                        // Couldn't expand, return as-is
+                        return surname;
+                    });
+                    
+                    console.log('🔍 Parsed members from name:', expandedParts);
+                    return expandedParts;
                 }
             }
             
@@ -832,6 +854,69 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
             }
         }
 
+        // Helper function to check if team JSON file exists (reuse from displayTeamAffiliations)
+        async function checkTeamFileExists(teamSlug) {
+            try {
+                const response = await fetch(`wrestlers/${teamSlug}.json`, { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Display former names with async JSON file check
+        async function displayFormerNames() {
+            if (!wrestlerData.formerNames || wrestlerData.formerNames.length === 0) {
+                return;
+            }
+
+            const formerNamesEl = document.getElementById('formerNames');
+            const weekSelect = document.getElementById('weekSelect');
+            const currentWeek = weekSelect ? weekSelect.value : 'current';
+            
+            // Get division slug for return URL
+            let divisionSlug = 'mens';
+            if (wrestlerData.division) {
+                if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'womens';
+                } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'menstag';
+                } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'womenstag';
+                } else if (wrestlerData.division.includes('Trio')) {
+                    divisionSlug = 'trios';
+                }
+            }
+            
+            // Check which former names have JSON files (async)
+            const validFormerNames = [];
+            for (const name of wrestlerData.formerNames) {
+                const nameSlug = createSlug(name);
+                const exists = await checkTeamFileExists(nameSlug);
+                if (exists) {
+                    validFormerNames.push(name);
+                    console.log(`✓ Former name "${name}" has JSON file`);
+                } else {
+                    console.log(`✗ Former name "${name}" has no JSON file - excluding`);
+                }
+            }
+            
+            // Only display if we have valid former names
+            if (validFormerNames.length > 0) {
+                // Create hyperlinked former names
+                const formerNamesLinks = validFormerNames.map(name => {
+                    const nameSlug = createSlug(name);
+                    return `<a href="wrestler-stats.html?wrestler=${nameSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                               style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                               onmouseover="this.style.color='#fff'"
+                               onmouseout="this.style.color='#ffd700'">${name}</a>`;
+                }).join(', ');
+                
+                formerNamesEl.innerHTML = `Formerly: ${formerNamesLinks}`;
+                formerNamesEl.style.display = 'block';
+            }
+        }
+
         function displayWrestlerData() {
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
@@ -874,37 +959,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 }
             }
 
-            if (wrestlerData.formerNames && wrestlerData.formerNames.length > 0) {
-                const formerNamesEl = document.getElementById('formerNames');
-                const weekSelect = document.getElementById('weekSelect');
-                const currentWeek = weekSelect ? weekSelect.value : 'current';
-                
-                // Get division slug for return URL
-                let divisionSlug = 'mens';
-                if (wrestlerData.division) {
-                    if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
-                        divisionSlug = 'womens';
-                    } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
-                        divisionSlug = 'menstag';
-                    } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
-                        divisionSlug = 'womenstag';
-                    } else if (wrestlerData.division.includes('Trio')) {
-                        divisionSlug = 'trios';
-                    }
-                }
-                
-                // Create hyperlinked former names
-                const formerNamesLinks = wrestlerData.formerNames.map(name => {
-                    const nameSlug = createSlug(name);
-                    return `<a href="wrestler-stats.html?wrestler=${nameSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
-                               style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
-                               onmouseover="this.style.color='#fff'"
-                               onmouseout="this.style.color='#ffd700'">${name}</a>`;
-                }).join(', ');
-                
-                formerNamesEl.innerHTML = `Formerly: ${formerNamesLinks}`;
-                formerNamesEl.style.display = 'block';
-            }
+            // Display former names with async JSON check
+            displayFormerNames();
 
             updateAllSections();
             setupYearButtons();
@@ -1080,15 +1136,6 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         // Helper function to check if team JSON file exists
-        async function checkTeamFileExists(teamSlug) {
-            try {
-                const response = await fetch(`wrestlers/${teamSlug}.json`, { method: 'HEAD' });
-                return response.ok;
-            } catch (error) {
-                return false;
-            }
-        }
-
         function displayActiveTeams(activeTeams) {
             const container = document.getElementById('activeTeamsContainer');
             const list = document.getElementById('activeTeamsList');
