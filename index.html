@@ -2095,15 +2095,24 @@ let visibleColumns = {
             
             // Try to restore previous week selection if it's still in the filtered list
             const weekStillAvailable = Array.from(weekSelect.options).some(opt => opt.value === currentWeekSelection);
-            if (weekStillAvailable) {
-                weekSelect.value = currentWeekSelection;
-            } else if (filteredWeeks.length > 0 && (yearFilter || monthFilter)) {
-                // If week not available and filters are active, select oldest week (last in array)
-                const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
-                weekSelect.value = `archive/${oldestWeek.filename}`;
-                loadSelectedWeek(); // Load it!
+            
+            // If filters are active, always select an archived week (not Current Week)
+            if (filteredWeeks.length > 0 && (yearFilter || monthFilter)) {
+                // Check if current selection is valid AND is an archived week
+                if (weekStillAvailable && currentWeekSelection !== 'current') {
+                    weekSelect.value = currentWeekSelection;
+                    // Don't call loadSelectedWeek - it's already loaded or will be loaded by existing logic
+                } else {
+                    // Current selection not valid or was "Current Week" - select oldest archived week
+                    const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
+                    weekSelect.value = `archive/${oldestWeek.filename}`;
+                    loadSelectedWeek(); // Load it!
+                }
+            } else if (weekStillAvailable && currentWeekSelection === 'current') {
+                // No filters active and was on current week - stay on current week
+                weekSelect.value = 'current';
             }
-            // If no filters active or no weeks available, keep "Current Week" selected
+            // If no weeks available, dropdown will just have "Current Week" option
         }
         
         function updateMonthOptions(selectedYear) {
