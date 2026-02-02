@@ -1915,6 +1915,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const urlParams = new URLSearchParams(window.location.search);
             const returnWeek = urlParams.get('returnWeek');
             const returnDivision = urlParams.get('returnDivision');
+            const returnView = urlParams.get('returnView');
             
             // Check if we have state parameters AND if the previous page was likely the rankings
             // (by checking if document.referrer contains index.html or is the same origin without wrestler-stats)
@@ -1924,7 +1925,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             
             if (returnWeek && returnDivision && isFromRankings) {
                 // Coming from rankings - use state restoration
-                const url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
+                let url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
+                
+                // If came from statistics view, add that to the hash
+                if (returnView === 'statistics') {
+                    url += '&view=statistics';
+                }
+                
                 window.location.href = url;
             } else {
                 // Coming from another wrestler page - use history.back
