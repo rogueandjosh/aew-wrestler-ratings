@@ -2042,23 +2042,25 @@ let visibleColumns = {
                 
                 if (returnWeek && returnDivision) {
                     console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
+                    
                     // Set the week selector
                     const weekSelect = document.getElementById('weekSelect');
                     weekSelect.value = decodeURIComponent(returnWeek);
                     console.log('Week selector set to:', weekSelect.value);
-                    // Show the correct division
-                    showDivision(returnDivision);
-                    console.log('Division set to:', returnDivision);
-                    // Load that week's data
-                    loadSelectedWeek();
-                    console.log('Loading week data...');
                     
-                    // If returning to statistics view, switch to it AFTER everything else loads
+                    // If returning to statistics view, go directly there
                     if (returnView === 'statistics') {
-                        console.log('✅ Switching to statistics view');
-                        setTimeout(() => {
-                            switchToStatistics();
-                        }, 100); // Small delay to let rankings load first
+                        console.log('✅ Going directly to statistics view');
+                        // Switch to statistics - this will handle showing the division
+                        switchToStatistics();
+                        // Manually set the division tab highlight
+                        showDivision(returnDivision);
+                    } else {
+                        // Normal rankings view - show division and load week data
+                        showDivision(returnDivision);
+                        console.log('Division set to:', returnDivision);
+                        loadSelectedWeek();
+                        console.log('Loading week data...');
                     }
                     
                     // Clear the hash
