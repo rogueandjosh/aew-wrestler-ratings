@@ -2037,10 +2037,11 @@ let visibleColumns = {
                 const params = new URLSearchParams(hash);
                 const returnWeek = params.get('week');
                 const returnDivision = params.get('division');
-                console.log('Return params:', { returnWeek, returnDivision });
+                const returnView = params.get('view');
+                console.log('Return params:', { returnWeek, returnDivision, returnView });
                 
                 if (returnWeek && returnDivision) {
-                    console.log('✅ Restoring state:', returnWeek, returnDivision);
+                    console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
                     // Set the week selector
                     const weekSelect = document.getElementById('weekSelect');
                     weekSelect.value = decodeURIComponent(returnWeek);
@@ -2051,6 +2052,14 @@ let visibleColumns = {
                     // Load that week's data
                     loadSelectedWeek();
                     console.log('Loading week data...');
+                    
+                    // If returning to statistics view, switch to it
+                    if (returnView === 'statistics') {
+                        console.log('✅ Switching to statistics view');
+                        document.getElementById('viewToggle').checked = true;
+                        toggleView();
+                    }
+                    
                     // Clear the hash
                     history.replaceState(null, '', window.location.pathname);
                 }
