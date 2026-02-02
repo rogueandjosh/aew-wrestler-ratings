@@ -2041,17 +2041,26 @@ let visibleColumns = {
                 console.log('Return params:', { returnWeek, returnDivision, returnView });
                 
                 if (returnWeek && returnDivision) {
-                    console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
-                    // Set the week selector
-                    const weekSelect = document.getElementById('weekSelect');
-                    weekSelect.value = decodeURIComponent(returnWeek);
-                    console.log('Week selector set to:', weekSelect.value);
-                    // Show the correct division
+                console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
+                // Set the week selector
+                const weekSelect = document.getElementById('weekSelect');
+                weekSelect.value = decodeURIComponent(returnWeek);
+                console.log('Week selector set to:', weekSelect.value);
+    
+                // If returning to statistics view, don't load week data
+                if (returnView === 'statistics') {
+                   console.log('✅ Switching to statistics view');
+                    // Just switch to statistics - don't load rankings
+                    setTimeout(() => {
+                        switchToStatistics();
+                    }, 100);
+                } else {
+                    // Normal rankings view - show division and load week data
                     showDivision(returnDivision);
                     console.log('Division set to:', returnDivision);
-                    // Load that week's data
                     loadSelectedWeek();
                     console.log('Loading week data...');
+                }
                     
                     // If returning to statistics view, switch to it AFTER everything else loads
                     if (returnView === 'statistics') {
