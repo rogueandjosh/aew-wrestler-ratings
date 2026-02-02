@@ -406,6 +406,7 @@
                 <div class="wrestler-info">
                     <h2 id="wrestlerName" class="wrestler-name"></h2>
                     <div id="formerNames" class="former-names" style="display: none;"></div>
+                    <div id="futureNames" class="former-names" style="display: none;"></div>
                     <div>
                         <span id="divisionBadge" class="division-badge"></span>
                         <span id="statusBadge" class="status-badge"></span>
@@ -917,6 +918,66 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
             }
         }
 
+        // Display future names with async JSON file check
+        async function displayFutureNames() {
+            // Check if current wrestler name appears as an oldName in name-changes.json
+            if (!allNameChanges) return;
+            
+            const changesArray = Array.isArray(allNameChanges) ? allNameChanges : allNameChanges.changes;
+            if (!Array.isArray(changesArray)) return;
+            
+            // Find all name changes where current name is the OLD name
+            const futureNameChanges = changesArray.filter(change => change.oldName === wrestlerData.name);
+            
+            if (futureNameChanges.length === 0) return;
+            
+            const futureNamesEl = document.getElementById('futureNames');
+            const weekSelect = document.getElementById('weekSelect');
+            const currentWeek = weekSelect ? weekSelect.value : 'current';
+            
+            // Get division slug for return URL
+            let divisionSlug = 'mens';
+            if (wrestlerData.division) {
+                if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'womens';
+                } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'menstag';
+                } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
+                    divisionSlug = 'womenstag';
+                } else if (wrestlerData.division.includes('Trio')) {
+                    divisionSlug = 'trios';
+                }
+            }
+            
+            // Check which future names have JSON files (async)
+            const validFutureNames = [];
+            for (const change of futureNameChanges) {
+                const nameSlug = createSlug(change.newName);
+                const exists = await checkTeamFileExists(nameSlug);
+                if (exists) {
+                    validFutureNames.push(change.newName);
+                    console.log(`✓ Future name "${change.newName}" has JSON file`);
+                } else {
+                    console.log(`✗ Future name "${change.newName}" has no JSON file - excluding`);
+                }
+            }
+            
+            // Only display if we have valid future names
+            if (validFutureNames.length > 0) {
+                // Create hyperlinked future names
+                const futureNamesLinks = validFutureNames.map(name => {
+                    const nameSlug = createSlug(name);
+                    return `<a href="wrestler-stats.html?wrestler=${nameSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                               style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                               onmouseover="this.style.color='#fff'"
+                               onmouseout="this.style.color='#ffd700'">${name}</a>`;
+                }).join(', ');
+                
+                futureNamesEl.innerHTML = `Later known as: ${futureNamesLinks}`;
+                futureNamesEl.style.display = 'block';
+            }
+        }
+
         function displayWrestlerData() {
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
@@ -961,6 +1022,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             // Display former names with async JSON check
             displayFormerNames();
+            
+            // Display future names with async JSON check
+            displayFutureNames();
 
             updateAllSections();
             setupYearButtons();
