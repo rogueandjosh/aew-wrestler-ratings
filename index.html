@@ -1859,24 +1859,7 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
-            console.log('🔍 DEBUG: Starting rank change processing');
-            console.log('Current week label:', ratingsData.currentWeek);
-            
-                    } catch (error) {
-                        console.error('❌ Error loading archived current week:', error);
-                        // Fallback to calculation if archive load fails
-                        ratingsData = await calculateArrowDirections(ratingsData);
-                    }
-                } else {
-                    console.log('⚠️ Current week not in archive yet, calculating arrows');
-                    // Current week not in archive yet, calculate arrows
-                    ratingsData = await calculateArrowDirections(ratingsData);
-                }
-            } else {
-                console.log('⚠️ No archive index, calculating arrows');
-                // No archive index, calculate arrows
-                ratingsData = await calculateArrowDirections(ratingsData);
-            }
+            console.log('🔍 Current rankings loaded with rank changes');
             
             // Update Current Week button text to include the week label
             const resetBtn = document.getElementById('resetBtn');
