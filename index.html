@@ -1859,7 +1859,9 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
-            console.log('🔍 Current rankings loaded with rank changes');
+            console.log('🔍 Current rankings loaded, calculating arrow directions...');
+            ratingsData = await calculateArrowDirections(ratingsData);
+            console.log('✅ Arrow directions calculated');
             
             // Update Current Week button text to include the week label
             const resetBtn = document.getElementById('resetBtn');
