@@ -2061,15 +2061,6 @@ let visibleColumns = {
                     loadSelectedWeek();
                     console.log('Loading week data...');
                 }
-                    
-                    // If returning to statistics view, switch to it AFTER everything else loads
-                    if (returnView === 'statistics') {
-                        console.log('✅ Switching to statistics view');
-                        setTimeout(() => {
-                            switchToStatistics();
-                        }, 100); // Small delay to let rankings load first
-                    }
-                    
                     // Clear the hash
                     history.replaceState(null, '', window.location.pathname);
                 }
