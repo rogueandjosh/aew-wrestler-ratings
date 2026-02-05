@@ -2721,17 +2721,27 @@ if (tableEl) {
                 if (droppedOut && droppedOut.length > 0) {
                     const droppedRows = [];
                     
-                    // Get previous week URL for looking up dropped wrestler info
+                    // Get previous week URL - MUST use ratingsData.currentWeek, not selector value!
+                    // Because selector has already been updated by navigation
                     let prevWeekUrl = null;
-                    const currentWeekSelect = document.getElementById('weekSelect');
-                    console.log('📅 Current week selected:', currentWeekSelect.value);
-                    
-                    if (currentWeekSelect.value === 'current') {
-                        // For current week, previous is the week before the most recent archive
-                        // archiveIndex.weeks[0] = the week that just got archived (same as current)
-                        // archiveIndex.weeks[1] = the actual previous week
-                        prevWeekUrl = archiveIndex?.weeks?.[1]?.url;
-                        console.log('📅 Loading previous week:', archiveIndex?.weeks?.[1]?.label);
+                    const currentWeekLabel = ratingsData.currentWeek; // Use THIS week's label
+
+                    console.log('📅 Current week being displayed:', currentWeekLabel);
+
+                    // Find this week in archive index
+                    const thisWeekEntry = archiveIndex.weeks.find(w => w.label === currentWeekLabel);
+
+                    if (thisWeekEntry) {
+                        // Found in archive - get next entry (older week)
+                        const thisWeekIndex = archiveIndex.weeks.indexOf(thisWeekEntry);
+                        if (thisWeekIndex + 1 < archiveIndex.weeks.length) {
+                            prevWeekUrl = archiveIndex.weeks[thisWeekIndex + 1].url;
+                            console.log('📅 Loading previous week:', archiveIndex.weeks[thisWeekIndex + 1].label);
+                        }
+                    } else if (archiveIndex.weeks[0]?.label === currentWeekLabel) {
+                        // This is the newest archived week (same as current)
+                        prevWeekUrl = archiveIndex.weeks[1]?.url;
+                        console.log('📅 Loading previous week:', archiveIndex.weeks[1]?.label);
                     } else {
                         // For archive weeks, find the previous week
                         // Archive array: [0]=newest, [1]=older, [2]=even older...
@@ -2751,7 +2761,7 @@ if (tableEl) {
                     let prevWeekData = null;
                     if (prevWeekUrl) {
                         try {
-                            prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
+                            prevWeekData = await fetch(prevWeekUrl + '?t=' + Date.now()).then(r => r.json());
                             console.log('✅ Loaded previous week data from:', prevWeekUrl);
                             console.log('   currentWeek in prev data:', prevWeekData.currentWeek);
                             console.log('   mens array length:', prevWeekData.mens?.length);
