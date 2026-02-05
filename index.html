@@ -2177,12 +2177,13 @@ let visibleColumns = {
                     
                     document.getElementById('yearFilter').value = year || '';
                     document.getElementById('monthFilter').value = month || '';
+                    weekSelect.value = allWeeks[newIndex]; 
                     filterWeeks();
-                    weekSelect.value = allWeeks[newIndex]; // Re-set after filter
                 }
             } else {
                 document.getElementById('yearFilter').value = '';
                 document.getElementById('monthFilter').value = '';
+                weekSelect.value = 'current';
                 filterWeeks();
             }
             
