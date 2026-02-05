@@ -2144,6 +2144,10 @@ let visibleColumns = {
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
             let currentValue = weekSelect.value;
+            console.log('🔴 NAVIGATE DEBUG:');
+            console.log('  currentValue:', currentValue);
+            console.log('  direction:', direction);
+            console.log('  Button clicked:', direction === 1 ? 'PREV/OLDER' : 'NEXT/NEWER');
             
             if (!archiveIndex) return;
             
