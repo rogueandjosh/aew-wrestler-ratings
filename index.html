@@ -923,7 +923,7 @@
             <p class="subtitle">Performance-based rankings, not wins and losses</p>
             <div class="week-selector">
                 <div class="selector-row">
-                    <button id="prevWeekBtn" onclick="navigateWeek(-1)" title="Go to older week">
+                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
                         <span class="arrow">◄</span>
                         <span class="btn-label">Older</span>
                     </button>
@@ -951,7 +951,7 @@
                         </div>
                     </div>
                     
-                    <button id="nextWeekBtn" onclick="navigateWeek(1)" title="Go to newer week">
+                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
                         <span class="btn-label">Newer</span>
                         <span class="arrow">►</span>
                     </button>
@@ -2171,7 +2171,7 @@ let visibleColumns = {
             // CRITICAL FIX: When navigating backwards from 'current' week,
             // skip to index 2 to avoid the duplicate first archive week (index 1)
             // The first archive week (archiveIndex.weeks[0]) is the same as current week
-            if (currentIndex === 0 && direction === -1) {
+            if (currentIndex === 0 && direction === 1) {
                 newIndex = 2; // Skip index 1 (the duplicate), go directly to index 2
                 if (newIndex >= allWeeks.length) return; // Safety check
             }
