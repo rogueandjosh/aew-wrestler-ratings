@@ -2164,19 +2164,24 @@ let visibleColumns = {
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
             
-            // CRITICAL: Skip the duplicate week when navigating backwards from current
-            // If we're at 'current' (index 0) and going back (direction = -1),
-            // we need to skip index 1 (the duplicate) and go to index 2
+            // CRITICAL FIX: When navigating backwards from 'current' week,
+            // skip to index 2 to avoid the duplicate first archive week (index 1)
+            // The first archive week (archiveIndex.weeks[0]) is the same as current week
             if (currentIndex === 0 && direction === -1) {
-                // Check if index 1 is a duplicate of current
-                if (allWeeks[1] === firstArchiveFile) {
-                    newIndex = 2; // Skip the duplicate, go to next week back
-                    if (newIndex >= allWeeks.length) return; // Safety check
-                }
+                console.log('🔵 NAVIGATING BACK FROM CURRENT:');
+                console.log('  allWeeks[0]:', allWeeks[0]);
+                console.log('  allWeeks[1]:', allWeeks[1], '← duplicate');
+                console.log('  allWeeks[2]:', allWeeks[2], '← target');
+                console.log('  archiveIndex.weeks[0].label:', archiveIndex.weeks[0].label, '← duplicate');
+                console.log('  archiveIndex.weeks[1].label:', archiveIndex.weeks[1].label, '← target');
+                
+                newIndex = 2; // Skip index 1 (the duplicate), go directly to index 2
+                if (newIndex >= allWeeks.length) return; // Safety check
             }
             
             // Store the target week BEFORE calling filterWeeks
             const targetWeek = allWeeks[newIndex];
+            console.log('🔵 Target week:', targetWeek);
             
             // Set navigation flag to prevent auto-selection
             isNavigating = true;
@@ -2185,20 +2190,27 @@ let visibleColumns = {
             if (targetWeek !== 'current') {
                 const filename = targetWeek.replace('archive/', '');
                 const week = archiveIndex.weeks.find(w => w.filename === filename);
+                console.log('🔵 Found week object:', week);
+                
                 if (week) {
                     const year = week.label.match(/'(\d+)/)?.[1];
                     const month = week.label.split(' ')[0];
+                    
+                    console.log('🔵 Setting filters - Year:', year, 'Month:', month);
                     
                     document.getElementById('yearFilter').value = year || '';
                     document.getElementById('monthFilter').value = month || '';
                     
                     // Temporarily set the value BEFORE filterWeeks so it gets preserved
                     weekSelect.value = targetWeek;
+                    console.log('🔵 Set weekSelect.value to:', targetWeek);
                     
                     filterWeeks(); // This rebuilds dropdown with filtered weeks
                     
                     // Set it AGAIN after filterWeeks to ensure it sticks
                     weekSelect.value = targetWeek;
+                    console.log('🔵 Set weekSelect.value AGAIN to:', targetWeek);
+                    console.log('🔵 Final weekSelect.value is:', weekSelect.value);
                 }
             } else {
                 document.getElementById('yearFilter').value = '';
