@@ -2031,6 +2031,14 @@ let visibleColumns = {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
+            // If we're in the middle of navigation, skip auto-selection logic
+            // The navigation function will set the correct value
+            if (isNavigating) {
+                // Just restore the selection - navigation logic handles the rest
+                weekSelect.value = currentWeekSelection;
+                return;
+            }
+            
             // Try to restore previous week selection if it's still in the filtered list
             const weekStillAvailable = Array.from(weekSelect.options).some(opt => opt.value === currentWeekSelection);
             
@@ -2156,12 +2164,26 @@ let visibleColumns = {
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
             
+            // CRITICAL: Skip the duplicate week when navigating backwards from current
+            // If we're at 'current' (index 0) and going back (direction = -1),
+            // we need to skip index 1 (the duplicate) and go to index 2
+            if (currentIndex === 0 && direction === -1) {
+                // Check if index 1 is a duplicate of current
+                if (allWeeks[1] === firstArchiveFile) {
+                    newIndex = 2; // Skip the duplicate, go to next week back
+                    if (newIndex >= allWeeks.length) return; // Safety check
+                }
+            }
+            
+            // Store the target week BEFORE calling filterWeeks
+            const targetWeek = allWeeks[newIndex];
+            
             // Set navigation flag to prevent auto-selection
             isNavigating = true;
             
-            // Update filters to match BEFORE setting weekSelect.value
-            if (allWeeks[newIndex] !== 'current') {
-                const filename = allWeeks[newIndex].replace('archive/', '');
+            // Update filters to match
+            if (targetWeek !== 'current') {
+                const filename = targetWeek.replace('archive/', '');
                 const week = archiveIndex.weeks.find(w => w.filename === filename);
                 if (week) {
                     const year = week.label.match(/'(\d+)/)?.[1];
@@ -2169,14 +2191,22 @@ let visibleColumns = {
                     
                     document.getElementById('yearFilter').value = year || '';
                     document.getElementById('monthFilter').value = month || '';
+                    
+                    // Temporarily set the value BEFORE filterWeeks so it gets preserved
+                    weekSelect.value = targetWeek;
+                    
                     filterWeeks(); // This rebuilds dropdown with filtered weeks
-                    weekSelect.value = allWeeks[newIndex]; // THEN set the value
+                    
+                    // Set it AGAIN after filterWeeks to ensure it sticks
+                    weekSelect.value = targetWeek;
                 }
             } else {
                 document.getElementById('yearFilter').value = '';
                 document.getElementById('monthFilter').value = '';
+                
+                weekSelect.value = 'current';
                 filterWeeks(); // This rebuilds dropdown with all weeks
-                weekSelect.value = 'current'; // THEN set the value
+                weekSelect.value = 'current'; // Set again to ensure it sticks
             }
             
             // Clear navigation flag
