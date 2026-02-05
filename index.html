@@ -2167,7 +2167,7 @@ let visibleColumns = {
             // CRITICAL FIX: When navigating backwards from 'current' week,
             // skip to index 2 to avoid the duplicate first archive week (index 1)
             // The first archive week (archiveIndex.weeks[0]) is the same as current week
-            if (currentIndex === 0 && direction === -1) {
+            if (currentIndex === 0 && direction === 1) {
                 newIndex = 2; // Skip index 1 (the duplicate), go directly to index 2
                 if (newIndex >= allWeeks.length) return; // Safety check
             }
