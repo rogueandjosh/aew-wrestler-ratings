@@ -2145,8 +2145,8 @@ let visibleColumns = {
                 currentValue = 'current';
             }
             
-            // Build full weeks array (including the duplicate at index 1)
-            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
+            // Build full weeks array - use ALL archive weeks (no skip)
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
             let currentIndex = allWeeks.indexOf(currentValue);
             
             if (currentIndex === -1) return;
@@ -2156,13 +2156,10 @@ let visibleColumns = {
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
             
-            // Set new week
-            weekSelect.value = allWeeks[newIndex];
-            
             // Set navigation flag to prevent auto-selection
             isNavigating = true;
             
-            // Update filters to match
+            // Update filters to match BEFORE setting weekSelect.value
             if (allWeeks[newIndex] !== 'current') {
                 const filename = allWeeks[newIndex].replace('archive/', '');
                 const week = archiveIndex.weeks.find(w => w.filename === filename);
@@ -2172,14 +2169,14 @@ let visibleColumns = {
                     
                     document.getElementById('yearFilter').value = year || '';
                     document.getElementById('monthFilter').value = month || '';
-                    weekSelect.value = allWeeks[newIndex]; 
-                    filterWeeks();
+                    filterWeeks(); // This rebuilds dropdown with filtered weeks
+                    weekSelect.value = allWeeks[newIndex]; // THEN set the value
                 }
             } else {
                 document.getElementById('yearFilter').value = '';
                 document.getElementById('monthFilter').value = '';
-                weekSelect.value = 'current';
-                filterWeeks();
+                filterWeeks(); // This rebuilds dropdown with all weeks
+                weekSelect.value = 'current'; // THEN set the value
             }
             
             // Clear navigation flag
@@ -2197,8 +2194,14 @@ let visibleColumns = {
             
             let currentValue = weekSelect.value;
             
-            // Build weeks array, but SKIP the first archive if it duplicates current
-            const allWeeks = ['current', ...archiveIndex.weeks.slice(1).map(w => `archive/${w.filename}`)];
+            // Special case: if viewing the first archive week (same as current), treat as 'current'
+            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+            if (currentValue === firstArchiveFile) {
+                currentValue = 'current';
+            }
+            
+            // Build weeks array - use ALL archive weeks (no skip) - matches navigateWeek()
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
             // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
