@@ -2153,11 +2153,6 @@ let visibleColumns = {
             
             let newIndex = currentIndex + direction;
             
-            // Skip the duplicate: if moving from current (index 0) to index 1, go to index 2 instead
-            if (currentIndex === 0 && direction === 1 && newIndex === 1) {
-                newIndex = 2;
-            }
-            
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
             
@@ -2200,12 +2195,6 @@ let visibleColumns = {
             if (!archiveIndex) return;
             
             let currentValue = weekSelect.value;
-            
-            // Special case: if viewing the first archive week (same as current), treat as 'current'
-            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
-            if (currentValue === firstArchiveFile) {
-                currentValue = 'current';
-            }
             
             // Build full weeks array (including the duplicate at index 1)
             const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
