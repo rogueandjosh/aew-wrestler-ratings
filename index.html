@@ -2145,21 +2145,36 @@ let visibleColumns = {
             const weekSelect = document.getElementById('weekSelect');
             let currentValue = weekSelect.value;
             
+            console.log('🟣 NAVIGATE WEEK CALLED:');
+            console.log('  Initial currentValue:', currentValue);
+            console.log('  Direction:', direction);
+            
             if (!archiveIndex) return;
             
             // Special case: if viewing the first archive week (same as current), treat as 'current'
             const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+            console.log('  firstArchiveFile:', firstArchiveFile);
+            
             if (currentValue === firstArchiveFile) {
+                console.log('  ✅ Detected viewing duplicate archive - treating as current');
                 currentValue = 'current';
             }
+            
+            console.log('  Final currentValue after duplicate check:', currentValue);
             
             // Build full weeks array - use ALL archive weeks (no skip)
             const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
             let currentIndex = allWeeks.indexOf(currentValue);
             
+            console.log('  currentIndex in allWeeks:', currentIndex);
+            console.log('  allWeeks[0]:', allWeeks[0]);
+            console.log('  allWeeks[1]:', allWeeks[1]);
+            console.log('  allWeeks[2]:', allWeeks[2]);
+            
             if (currentIndex === -1) return;
             
             let newIndex = currentIndex + direction;
+            console.log('  Initial newIndex:', newIndex);
             
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
@@ -2177,6 +2192,7 @@ let visibleColumns = {
                 
                 newIndex = 2; // Skip index 1 (the duplicate), go directly to index 2
                 if (newIndex >= allWeeks.length) return; // Safety check
+                console.log('  Adjusted newIndex to:', newIndex);
             }
             
             // Store the target week BEFORE calling filterWeeks
