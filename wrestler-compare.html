@@ -868,17 +868,15 @@ function calculateWeeksAtOne(data) {
                 : initials;
 
             // Calculate stats safely with fallbacks
-const currentRating = data.currentRating || data.current || 0;
+const currentRating = data.currentRank ? (data.currentRating || data.current || 0) : 'N/A';
 const peakRating = data.peakRating || data.peak || 0;
 const floorRating = calculateFloorRating(data);
 const isActive = data.isActive !== undefined ? data.isActive : true;
 
-// Average rating from match history or fallback
-const avgRating = data.statsByYear?.ALL?.averageRating 
-    ? data.statsByYear.ALL.averageRating.toFixed(2)
-    : (data.ratings && data.ratings.length > 0
-        ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
-        : (data.average || 0).toFixed(2));
+// Average rating - calculate from rating history or use fallback
+const avgRating = data.ratingHistory && data.ratingHistory.length > 0
+    ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
+    : (data.average || 0).toFixed(2);
 
 const peakRank = data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-';
 const weeksAtOne = calculateWeeksAtOne(data);
@@ -899,7 +897,7 @@ const totalMatches = data.totalMatches || 0;
                     <div class="stats-list">
                         <div class="stat-row-card">
                             <span class="stat-label-card">Current Rating</span>
-                            <span class="stat-value-card highlight ${getRatingClass(currentRating)}">${isActive ? currentRating.toFixed(2) : 'N/A'}</span>
+                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(currentRating) : ''}">${currentRating !== 'N/A' ? currentRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
