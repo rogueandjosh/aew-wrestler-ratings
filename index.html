@@ -985,6 +985,39 @@
             </button>
         </div>
 
+        <div style="text-align: center; margin: 20px 0;">
+    <div style="position: relative; display: inline-block;">
+        <button id="otherMenuBtn" style="padding: 10px 20px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 1em;">
+            ⚙️ Other ▼
+        </button>
+        <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            <a href="wrestler-compare.html" style="display: block; padding: 12px 20px; color: #ffd700; text-decoration: none; transition: all 0.3s;">
+                🥊 Compare Wrestlers
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Dropdown menu toggle
+document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('otherMenuDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+});
+
+document.addEventListener('click', function() {
+    document.getElementById('otherMenuDropdown').style.display = 'none';
+});
+
+document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
+    this.style.background = 'rgba(255, 215, 0, 0.2)';
+});
+document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', function() {
+    this.style.background = 'transparent';
+});
+</script>
+
         <div id="divisionTabs" class="tabs">
             <button class="tab active" onclick="handleDivisionClick('mens')">Men</button>
             <button class="tab" onclick="handleDivisionClick('womens')">Women</button>
