@@ -3494,15 +3494,13 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         const weekLabel = weekData.weekLabel || weekData.currentWeek;
 
         divisions.forEach(divKey => {
-            const divisionData = weekData[divKey] || [];
-            divisionData.forEach((wrestler, index) => {
-                const rank = index + 1;
-                const canonicalName = (getCanonicalName(originalName, nameChanges) || '').toString();
-
-                const rating = wrestler.rating;
-
-                // Get the canonical name (most recent name for this wrestler)
-                const canonicalName = getCanonicalName(originalName, nameChanges);
+    const divisionData = weekData[divKey] || [];
+    divisionData.forEach((wrestler, index) => {
+        const rank = index + 1;
+        const originalName = (wrestler.name || '').toString();
+        const rating = wrestler.rating;
+        // Get the canonical name (most recent name for this wrestler)
+        const canonicalName = (getCanonicalName(originalName, nameChanges) || '').toString();
 
                 if (!statistics[divKey][canonicalName]) {
                     statistics[divKey][canonicalName] = {
