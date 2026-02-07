@@ -883,7 +883,17 @@ async function loadCurrentRankings() {
 function isInCurrentRankings(wrestlerName, division) {
     if (!currentRankingsData) return false;
     
-    const divisionData = currentRankingsData[division];
+    // Convert division name to key format
+    const divisionMap = {
+        'Men': 'mens',
+        'Women': 'womens',
+        "Men's Tag": 'menstag',
+        "Women's Tag": 'womenstag',
+        'Trios': 'trios'
+    };
+    
+    const divKey = divisionMap[division] || division;
+    const divisionData = currentRankingsData[divKey];
     if (!divisionData) return false;
     
     return divisionData.some(w => w.name === wrestlerName);
