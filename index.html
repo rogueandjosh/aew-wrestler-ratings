@@ -956,6 +956,34 @@
             <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
         </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="yearFilter">Year:</label>
+                <select id="yearFilter">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="monthFilter">Month:</label>
+                <select id="monthFilter">
+                    <option value="">All Months</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="weekSelect">Week:</label>
+                <select id="weekSelect">
+                    <option value="current">Current Week</option>
+                </select>
+            </div>
+            <button id="resetBtn" class="reset-btn">↻ Current Week</button>
+        </div>
+
+        <div class="navigation-buttons">
+            <button id="newerBtn" class="nav-btn" disabled>← Newer</button>
+            <button id="olderBtn" class="nav-btn" disabled>Older →</button>
+            <button id="randomBtn" class="nav-btn">🎲 Random Week</button>
+        </div>
         
         <div id="content">
             <div class="loading">Loading rankings data...</div>
