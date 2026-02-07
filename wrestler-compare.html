@@ -299,6 +299,113 @@
             font-style: italic;
         }
 
+        /* ===== PHASE 2: Stats Comparison Cards ===== */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .wrestler-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .wrestler-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .wrestler-header-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .wrestler-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1a1a2e;
+            border: 2px solid #ffd700;
+            flex-shrink: 0;
+        }
+
+        .wrestler-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .wrestler-name-card {
+            font-size: 1.3em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-row-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .stat-row-card:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .stat-label-card {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .stat-value-card {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .stat-value-card.highlight {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        .stat-value-card.good {
+            color: #4ade80;
+        }
+
+        .stat-value-card.average {
+            color: #fbbf24;
+        }
+
+        .stat-value-card.poor {
+            color: #f87171;
+        }
+        /* ===== END PHASE 2 STYLES ===== */
+
         /* Responsive Design */
         @media (max-width: 768px) {
             h1 {
@@ -618,10 +725,27 @@
             // Update URL
             updateURL();
 
-            // TODO: Phase 2 - Fetch wrestler data and build stats table
-            // TODO: Phase 3 - Build line graph
+            // PHASE 2: Fetch wrestler data and build stats table
+            const statsTableDiv = document.getElementById('statsTable');
+            statsTableDiv.innerHTML = '<div class="loading">Loading wrestler data</div>';
+
+            try {
+                // Get selected wrestler slugs
+                const selectedWrestlers = [wrestler1, wrestler2, wrestler3].filter(w => w);
+                
+                // Load data for each wrestler
+                const wrestlerDataPromises = selectedWrestlers.map(slug => loadWrestlerData(slug));
+                const wrestlerData = await Promise.all(wrestlerDataPromises);
+
+                // Build comparison table
+                statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
+
+            } catch (error) {
+                console.error('Error loading wrestler data:', error);
+                statsTableDiv.innerHTML = `<div class="error">Error loading wrestler data: ${error.message}</div>`;
+            }
             
-            alert('Comparison functionality coming in Phase 2!');
+            // TODO: Phase 3 - Build line graph
         }
 
         // Clear all selections
@@ -678,6 +802,141 @@
                 alert('Failed to copy link. Please copy manually from the address bar.');
             }
         }
+
+        // ===== PHASE 2 FUNCTIONS =====
+        
+        // Load individual wrestler data
+        async function loadWrestlerData(slug) {
+            try {
+                // Try individual wrestler file first
+                const response = await fetch(`wrestlers/${slug}.json`);
+                if (response.ok) {
+                    return await response.json();
+                }
+                throw new Error(`Wrestler file not found: ${slug}`);
+            } catch (error) {
+                console.error(`Error loading ${slug}:`, error);
+                // Fallback: use statistics.json data
+                if (statisticsData) {
+                    for (const division in statisticsData) {
+                        const wrestler = statisticsData[division].find(w => 
+                            createSlug(w.name) === slug
+                        );
+                        if (wrestler) {
+                            wrestler.division = division;
+                            return wrestler;
+                        }
+                    }
+                }
+                throw new Error(`Could not load data for ${slug}`);
+            }
+        }
+
+        // Build stats comparison table HTML
+        function buildStatsTable(wrestlerData) {
+            return `
+                <div class="comparison-grid">
+                    ${wrestlerData.map(data => createWrestlerCard(data)).join('')}
+                </div>
+            `;
+        }
+
+        // Create individual wrestler card
+        function createWrestlerCard(data) {
+            const initials = getInitials(data.name);
+            const photoHTML = data.photo 
+                ? `<img src="${data.photo}" alt="${data.name}">`
+                : initials;
+
+            // Calculate stats
+            const avgRating = data.ratings && data.ratings.length > 0
+                ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
+                : (data.average || 0).toFixed(2);
+
+            const peakRank = data.ranks && data.ranks.length > 0
+                ? Math.min(...data.ranks)
+                : data.currentRank || '-';
+
+            const weeksAtOne = data.weeksAtNumber1 || 0;
+            const totalWeeks = data.totalWeeksRanked || (data.weeks?.length) || 0;
+            const totalMatches = data.totalMatches || 0;
+
+            return `
+                <div class="wrestler-card">
+                    <div class="wrestler-header-card">
+                        <div class="wrestler-photo">
+                            ${photoHTML}
+                        </div>
+                        <div>
+                            <div class="wrestler-name-card">${data.name}</div>
+                            <div style="color: #999; font-size: 0.85em;">${getDivisionLabel(data.division)}</div>
+                        </div>
+                    </div>
+                    <div class="stats-list">
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Current Rating</span>
+                            <span class="stat-value-card highlight ${getRatingClass(data.current)}">${data.current.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Peak Rating</span>
+                            <span class="stat-value-card">${data.peak.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Floor Rating</span>
+                            <span class="stat-value-card">${data.floor.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Average Rating</span>
+                            <span class="stat-value-card">${avgRating}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Total Weeks</span>
+                            <span class="stat-value-card">${formatNumber(totalWeeks)}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Total Matches</span>
+                            <span class="stat-value-card">${formatNumber(totalMatches)}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Best Rank</span>
+                            <span class="stat-value-card">#${peakRank}</span>
+                        </div>
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Weeks at #1</span>
+                            <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
+                        </div>
+                        ${data.peakWeek ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Peak Week</span>
+                            <span class="stat-value-card" style="font-size: 0.85em;">${data.peakWeek}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper: Get initials from name
+        function getInitials(name) {
+            if (!name) return '?';
+            const words = name.trim().split(' ');
+            if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+            return words.map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        // Helper: Get rating color class
+        function getRatingClass(rating) {
+            if (rating >= 100) return 'good';
+            if (rating >= 95) return 'average';
+            return 'poor';
+        }
+
+        // Helper: Format number with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // ===== END PHASE 2 FUNCTIONS =====
 
         // Check URL parameters on page load
         function checkURLParams() {
