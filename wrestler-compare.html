@@ -868,7 +868,7 @@ function calculateWeeksAtOne(data) {
                 : initials;
 
             // Calculate stats safely with fallbacks
-const currentRating = data.currentRank ? (data.currentRating || data.current || 0) : 'N/A';
+const currentRating = (data.currentRank && data.currentRank <= 100) ? (data.currentRating || data.current) : 'N/A';
 const peakRating = data.peakRating || data.peak || 0;
 const floorRating = calculateFloorRating(data);
 const isActive = data.isActive !== undefined ? data.isActive : true;
@@ -898,6 +898,10 @@ const totalMatches = data.totalMatches || 0;
                         <div class="stat-row-card">
                             <span class="stat-label-card">Current Rating</span>
                             <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(currentRating) : ''}">${currentRating !== 'N/A' ? currentRating.toFixed(2) : 'N/A'}</span>
+                        </div>
+                        <div class="stat-row-card">
+                        <span class="stat-label-card">Current Rank</span>
+                        <span class="stat-value-card">${data.currentRank ? '#' + data.currentRank : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
