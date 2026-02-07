@@ -36,12 +36,6 @@
             border: 2px solid #ffd700;
         }
 
-        .compare-link:hover {
-    background: #ffd700;
-    color: #1a1a2e;
-    transform: translateY(-2px);
-}
-
         h1 {
             color: #ffd700;
             font-size: 2.5em;
@@ -924,23 +918,69 @@
 <body>
     <div class="container">
         <header style="position: relative;">
-            <h1>AEW WRESTLER RATINGS</h1>
-            <p class="tagline">Performance-based rankings using match quality ratings from Cagematch.net</p>
-            <div class="date-range">
-                <span id="dateRange"></span> | Last Updated: <span id="lastUpdated">Loading...</span>
-            </div>
+            <h1>AEW Wrestler Ratings</h1>
+            <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
+            <p class="subtitle">Performance-based rankings, not wins and losses</p>
             
             <!-- Other dropdown in top-right corner -->
-            <div style="position: absolute; top: 20px; right: 20px;">
-                <button id="otherMenuBtn" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
+                <button id="otherMenuBtn" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.9em;">
                     Other ▼
                 </button>
-                <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <a href="wrestler-compare.html" style="display: block; padding: 12px 20px; color: #ffd700; text-decoration: none; transition: all 0.3s;">
+                <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 180px; z-index: 1001; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         🥊 Compare Wrestlers
                     </a>
                 </div>
             </div>
+            
+            <div class="week-selector">
+                <div class="selector-row">
+                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
+                        <span class="arrow">◄</span>
+                        <span class="btn-label">Older</span>
+                    </button>
+                    
+                    <div class="filters-group">
+                        <div class="filter-item">
+                            <label>Year</label>
+                            <select id="yearFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label>Month</label>
+                            <select id="monthFilter" onchange="filterWeeks()">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item week-item">
+                            <label>Week</label>
+                            <select id="weekSelect" onchange="loadSelectedWeek()">
+                                <option value="current">Current Week</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
+                        <span class="btn-label">Newer</span>
+                        <span class="arrow">►</span>
+                    </button>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                        ↻ Current Week
+                    </button>
+                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
+                        🎲 Random Week
+                    </button>
+                </div>
+            </div>
+            <p class="date-range" id="dateRange">Loading...</p>
+            <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
         <div class="view-toggle">
@@ -960,34 +1000,6 @@
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
         </div>
 
-        <div class="filters">
-            <div class="filter-group">
-                <label for="yearFilter">Year:</label>
-                <select id="yearFilter">
-                    <option value="">All Years</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="monthFilter">Month:</label>
-                <select id="monthFilter">
-                    <option value="">All Months</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="weekSelect">Week:</label>
-                <select id="weekSelect">
-                    <option value="current">Current Week</option>
-                </select>
-            </div>
-            <button id="resetBtn" class="reset-btn">↻ Current Week</button>
-        </div>
-
-        <div class="navigation-buttons">
-            <button id="newerBtn" class="nav-btn" disabled>← Newer</button>
-            <button id="olderBtn" class="nav-btn" disabled>Older →</button>
-            <button id="randomBtn" class="nav-btn">🎲 Random Week</button>
-        </div>
-        
         <div id="content">
             <div class="loading">Loading rankings data...</div>
         </div>
@@ -1693,29 +1705,46 @@ let visibleColumns = {
         function fixEncodingIssues(data) {
             if (!data) return data;
             
-            // Fix divisions - ONLY fix encoding, preserve integers
+            // Fix divisions
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
             divisions.forEach(division => {
                 if (data[division]) {
                     data[division] = data[division].map(wrestler => {
-                        // Fix encoding issues with em dash
+                        // Ensure change is a string before processing
                         if (wrestler.change && typeof wrestler.change === 'string') {
+                            // Store original if it has ? for later processing
+                            if (wrestler.change.includes('?')) {
+                                wrestler.needsArrowCalculation = wrestler.change.replace('?', '');
+                            }
+                            
+                            // Fix the encoding issues with em dash
                             wrestler.change = wrestler.change.replace(/�/g, '—');
-                        }
-                        
-                        // Handle null/undefined
-                        if (wrestler.change === null || wrestler.change === undefined) {
-                            wrestler.change = 0;
-                        }
-                        
-                        // Convert to number if it's a numeric string (but keep special strings like NEW, RE-ENTRY)
-                        if (typeof wrestler.change === 'string' && 
-                            wrestler.change !== 'NEW' && 
-                            wrestler.change !== 'RE-ENTRY' && 
-                            wrestler.change !== 'NAME CHANGE' &&
-                            wrestler.change !== '—' &&
-                            !isNaN(Number(wrestler.change))) {
-                            wrestler.change = Number(wrestler.change);
+                            
+                            // Remove ? for now - we'll calculate direction later
+                            wrestler.change = wrestler.change.replace(/\?/g, '');
+                            
+                            // Fix negative numbers to down arrows (e.g., "-1" → "↓1")
+                            wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            
+                            // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
+                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            
+                            // If it's just empty or standalone dash, make it em dash
+                            if (wrestler.change === '' || wrestler.change === '-') {
+                                wrestler.change = '—';
+                            }
+                        } else if (wrestler.change === null || wrestler.change === undefined) {
+                            // If change is missing, set to em dash
+                            wrestler.change = '—';
+                        } else if (typeof wrestler.change !== 'string') {
+                            // If it's a number or other type, convert to string first
+                            wrestler.change = String(wrestler.change);
+                            // Then apply same arrow logic
+                            if (wrestler.change.startsWith('-')) {
+                                wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
+                            } else if (/^\d+$/.test(wrestler.change)) {
+                                wrestler.change = '↑' + wrestler.change;
+                            }
                         }
                         
                         return wrestler;
@@ -1726,73 +1755,73 @@ let visibleColumns = {
             return data;
         }
         
-//         async function calculateArrowDirections(data) {
-//             // Only for current week - get previous week to calculate directions
-//             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
-//                 return data;
-//             }
-//             
-//             try {
-//                 // Check if first archive week is same as current week
-//                 // If so, use index 1 (actual previous week), otherwise use index 0
-//                 let prevWeekIndex = 0;
-//                 
-//                 // If current week label matches first archive week label, it's a duplicate
-//                 if (data.currentWeek && archiveIndex.weeks[0]?.label) {
-//                     // Compare both in abbreviated format (don't expand)
-//                     if (data.currentWeek === archiveIndex.weeks[0].label) {
-//                         // First archive is same as current, use the next one
-//                         prevWeekIndex = 1;
-//                     }
-//                 }
-//                 
-//                 const prevWeekUrl = archiveIndex.weeks[prevWeekIndex]?.url;
-//                 if (!prevWeekUrl) return data;
-//                 
-//                 const prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
-//                 
-//                 // Process each division
-//                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-//                 divisions.forEach(division => {
-//                     if (data[division] && prevWeekData[division]) {
-//                         data[division] = data[division].map(wrestler => {
-//                             if (wrestler.needsArrowCalculation) {
-//                                 // Find this wrestler in previous week
-//                                 const prevWrestler = prevWeekData[division].find(w => {
-//                                     const cleanCurrent = wrestler.name.replace(/\s*\(.*?\)/g, '').trim();
-//                                     const cleanPrev = w.name.replace(/\s*\(.*?\)/g, '').trim();
-//                                     return cleanCurrent === cleanPrev;
-//                                 });
-//                                 
-//                                 if (prevWrestler && prevWrestler.rank && wrestler.rank) {
-//                                     const rankDiff = prevWrestler.rank - wrestler.rank;
-//                                     if (rankDiff > 0) {
-//                                         // Moved up in rankings
-//                                         wrestler.change = '↑' + Math.abs(rankDiff);
-//                                     } else if (rankDiff < 0) {
-//                                         // Moved down in rankings
-//                                         wrestler.change = '↓' + Math.abs(rankDiff);
-//                                     } else {
-//                                         wrestler.change = '—';
-//                                     }
-//                                 } else {
-//                                     // Can't find in previous week - use what we have
-//                                     wrestler.change = '↑' + wrestler.needsArrowCalculation;
-//                                 }
-//                                 
-//                                 delete wrestler.needsArrowCalculation;
-//                             }
-//                             return wrestler;
-//                         });
-//                     }
-//                 });
-//                 
-//                 return data;
-//             } catch (error) {
-//                 console.error('Error calculating arrow directions:', error);
-//                 return data;
-//             }
-//         }
+        async function calculateArrowDirections(data) {
+            // Only for current week - get previous week to calculate directions
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length < 2) {
+                return data;
+            }
+            
+            try {
+                // Check if first archive week is same as current week
+                // If so, use index 1 (actual previous week), otherwise use index 0
+                let prevWeekIndex = 0;
+                
+                // If current week label matches first archive week label, it's a duplicate
+                if (data.currentWeek && archiveIndex.weeks[0]?.label) {
+                    // Compare both in abbreviated format (don't expand)
+                    if (data.currentWeek === archiveIndex.weeks[0].label) {
+                        // First archive is same as current, use the next one
+                        prevWeekIndex = 1;
+                    }
+                }
+                
+                const prevWeekUrl = archiveIndex.weeks[prevWeekIndex]?.url;
+                if (!prevWeekUrl) return data;
+                
+                const prevWeekData = await fetch(prevWeekUrl).then(r => r.json());
+                
+                // Process each division
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                divisions.forEach(division => {
+                    if (data[division] && prevWeekData[division]) {
+                        data[division] = data[division].map(wrestler => {
+                            if (wrestler.needsArrowCalculation) {
+                                // Find this wrestler in previous week
+                                const prevWrestler = prevWeekData[division].find(w => {
+                                    const cleanCurrent = wrestler.name.replace(/\s*\(.*?\)/g, '').trim();
+                                    const cleanPrev = w.name.replace(/\s*\(.*?\)/g, '').trim();
+                                    return cleanCurrent === cleanPrev;
+                                });
+                                
+                                if (prevWrestler && prevWrestler.rank && wrestler.rank) {
+                                    const rankDiff = prevWrestler.rank - wrestler.rank;
+                                    if (rankDiff > 0) {
+                                        // Moved up in rankings
+                                        wrestler.change = '↑' + Math.abs(rankDiff);
+                                    } else if (rankDiff < 0) {
+                                        // Moved down in rankings
+                                        wrestler.change = '↓' + Math.abs(rankDiff);
+                                    } else {
+                                        wrestler.change = '—';
+                                    }
+                                } else {
+                                    // Can't find in previous week - use what we have
+                                    wrestler.change = '↑' + wrestler.needsArrowCalculation;
+                                }
+                                
+                                delete wrestler.needsArrowCalculation;
+                            }
+                            return wrestler;
+                        });
+                    }
+                });
+                
+                return data;
+            } catch (error) {
+                console.error('Error calculating arrow directions:', error);
+                return data;
+            }
+        }
         
         // Load archive index, current rankings, statistics, and team members on page load
         Promise.all([
@@ -1843,6 +1872,9 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
+            console.log('🔍 Current rankings loaded, calculating arrow directions...');
+            ratingsData = await calculateArrowDirections(ratingsData);
+            console.log('✅ Arrow directions calculated');
             
             // Update Current Week button text to include the week label
             const resetBtn = document.getElementById('resetBtn');
@@ -2236,6 +2268,52 @@ let visibleColumns = {
                         ratingsData = fixEncodingIssues(data);
                         console.log('🟢 Encoding fixed');
                         
+                        // Instead of calculating arrows, copy them from the archived version of this week
+                        if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
+                            // Compare both in abbreviated format (don't expand)
+                            const currentWeekLabel = ratingsData.currentWeek;
+                            const firstArchiveWeek = archiveIndex.weeks[0];
+                            
+                            if (firstArchiveWeek && firstArchiveWeek.label === currentWeekLabel) {
+                                try {
+                                    // Load the archived version of this same week
+                                    const archivedCurrentWeek = await fetch(firstArchiveWeek.url).then(r => r.json());
+                                    
+                                    // Copy the change values from archive to current
+                                    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                                    divisions.forEach(division => {
+                                        if (ratingsData[division] && archivedCurrentWeek[division]) {
+                                            ratingsData[division] = ratingsData[division].map(wrestler => {
+                                                // Find matching wrestler in archive
+                                                const archivedWrestler = archivedCurrentWeek[division].find(w => 
+                                                    w.name.replace(/\s*\(.*?\)/g, '').trim() === wrestler.name.replace(/\s*\(.*?\)/g, '').trim()
+                                                );
+                                                
+                                                if (archivedWrestler && archivedWrestler.change) {
+                                                    // Copy the change from archive (which has correct arrows)
+                                                    wrestler.change = archivedWrestler.change;
+                                                }
+                                                
+                                                return wrestler;
+                                            });
+                                        }
+                                    });
+                                    
+                                    console.log('✅ Copied rank changes from archived version of current week');
+                                } catch (error) {
+                                    console.log('Could not load archived current week, calculating arrows:', error);
+                                    // Fallback to calculation if archive load fails
+                                    ratingsData = await calculateArrowDirections(ratingsData);
+                                }
+                            } else {
+                                // Current week not in archive yet, calculate arrows
+                                ratingsData = await calculateArrowDirections(ratingsData);
+                            }
+                        } else {
+                            // No archive index, calculate arrows
+                            ratingsData = await calculateArrowDirections(ratingsData);
+                        }
+                        console.log('🟢 Arrow directions processed');
                         
                         // Update Current Week button text to include the week label
                         const resetBtn = document.getElementById('resetBtn');
@@ -3483,13 +3561,14 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
         const weekLabel = weekData.weekLabel || weekData.currentWeek;
 
         divisions.forEach(divKey => {
-    const divisionData = weekData[divKey] || [];
-    divisionData.forEach((wrestler, index) => {
-        const rank = index + 1;
-        const originalName = (wrestler.name || '').toString();
-        const rating = wrestler.rating;
-        // Get the canonical name (most recent name for this wrestler)
-        const canonicalName = (getCanonicalName(originalName, nameChanges) || '').toString();
+            const divisionData = weekData[divKey] || [];
+            divisionData.forEach((wrestler, index) => {
+                const rank = index + 1;
+                const originalName = wrestler.name;
+                const rating = wrestler.rating;
+
+                // Get the canonical name (most recent name for this wrestler)
+                const canonicalName = getCanonicalName(originalName, nameChanges);
 
                 if (!statistics[divKey][canonicalName]) {
                     statistics[divKey][canonicalName] = {
@@ -3857,28 +3936,28 @@ document.addEventListener('click', function(e) {
         sessionStorage.setItem('aew_previous_state', JSON.stringify(state));
     }
 });
-</script>
+    </script>
 
-<script>    
-// Dropdown menu toggle
-document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const dropdown = document.getElementById('otherMenuDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-});
+    <script>
+    // Dropdown menu toggle for Other button
+    document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        const dropdown = document.getElementById('otherMenuDropdown');
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
 
-document.addEventListener('click', function() {
-    document.getElementById('otherMenuDropdown').style.display = 'none';
-});
+    document.addEventListener('click', function() {
+        document.getElementById('otherMenuDropdown').style.display = 'none';
+    });
 
-document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
-    this.style.background = 'rgba(255, 215, 0, 0.2)';
-});
-document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', function() {
-    this.style.background = 'transparent';
-});
-</script>
+    document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
+        this.style.background = 'rgba(255, 215, 0, 0.2)';
+    });
 
+    document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', function() {
+        this.style.background = 'transparent';
+    });
+    </script>
 
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
