@@ -862,20 +862,6 @@ function calculateWeeksAtOne(data) {
 
         // Create individual wrestler card
         function createWrestlerCard(data) {
-            // Get current week from the page data (same format as used in index.html)
-const getCurrentWeek = () => {
-    // Try to get from ratingsData if available
-    if (typeof ratingsData !== 'undefined' && ratingsData?.currentWeek) {
-        return ratingsData.currentWeek;
-    }
-    // Fallback: get from archive index (first week is current)
-    if (typeof archiveIndex !== 'undefined' && archiveIndex?.weeks?.[0]?.label) {
-        return archiveIndex.weeks[0].label;
-    }
-    return null;
-};
-
-const currentWeek = getCurrentWeek();
             const initials = getInitials(data.name);
             const photoHTML = data.photo 
                 ? `<img src="${data.photo}" alt="${data.name}">`
@@ -883,7 +869,7 @@ const currentWeek = getCurrentWeek();
 
             // Calculate stats safely with fallbacks
 const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
-const isCurrentlyRanked = currentWeek && lastAppearanceWeek === currentWeek;
+const isCurrentlyRanked = (data.currentRank && data.currentRank > 0);
 const currentRating = isCurrentlyRanked ? (data.currentRating || data.current) : 'N/A';
 const peakRating = data.peakRating || data.peak || 0;
 const floorRating = calculateFloorRating(data);
