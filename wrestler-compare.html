@@ -848,14 +848,18 @@
                 ? `<img src="${data.photo}" alt="${data.name}">`
                 : initials;
 
-            // Calculate stats
+            // Calculate stats safely with fallbacks
+            const currentRating = data.current || data.currentRating || 0;
+            const peakRating = data.peak || 0;
+            const floorRating = data.floor || 0;
+            
             const avgRating = data.ratings && data.ratings.length > 0
                 ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
-                : (data.average || 0).toFixed(2);
+                : (data.average || currentRating || 0).toFixed(2);
 
             const peakRank = data.ranks && data.ranks.length > 0
                 ? Math.min(...data.ranks)
-                : data.currentRank || '-';
+                : (data.currentRank || data.rank || '-');
 
             const weeksAtOne = data.weeksAtNumber1 || 0;
             const totalWeeks = data.totalWeeksRanked || (data.weeks?.length) || 0;
@@ -875,15 +879,15 @@
                     <div class="stats-list">
                         <div class="stat-row-card">
                             <span class="stat-label-card">Current Rating</span>
-                            <span class="stat-value-card highlight ${getRatingClass(data.current)}">${data.current.toFixed(2)}</span>
+                            <span class="stat-value-card highlight ${getRatingClass(currentRating)}">${currentRating.toFixed(2)}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
-                            <span class="stat-value-card">${data.peak.toFixed(2)}</span>
+                            <span class="stat-value-card">${peakRating.toFixed(2)}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Floor Rating</span>
-                            <span class="stat-value-card">${data.floor.toFixed(2)}</span>
+                            <span class="stat-value-card">${floorRating.toFixed(2)}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Average Rating</span>
