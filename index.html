@@ -924,21 +924,24 @@
 <body>
     <div class="container">
         <header style="position: relative;">
-    <h1>AEW WRESTLER RATINGS</h1>
-    <p class="tagline">Performance-based rankings using match quality ratings from Cagematch.net</p>
-    
-    <!-- Other dropdown in top-right corner -->
-    <div style="position: absolute; top: 20px; right: 20px;">
-        <button id="otherMenuBtn" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;">
-            Other ▼
-        </button>
-        <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-            <a href="wrestler-compare.html" style="display: block; padding: 12px 20px; color: #ffd700; text-decoration: none; transition: all 0.3s;">
-                🥊 Compare Wrestlers
-            </a>
-        </div>
-    </div>
-</header>
+            <h1>AEW WRESTLER RATINGS</h1>
+            <p class="tagline">Performance-based rankings using match quality ratings from Cagematch.net</p>
+            <div class="date-range">
+                <span id="dateRange"></span> | Last Updated: <span id="lastUpdated">Loading...</span>
+            </div>
+            
+            <!-- Other dropdown in top-right corner -->
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <button id="otherMenuBtn" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;">
+                    Other ▼
+                </button>
+                <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <a href="wrestler-compare.html" style="display: block; padding: 12px 20px; color: #ffd700; text-decoration: none; transition: all 0.3s;">
+                        🥊 Compare Wrestlers
+                    </a>
+                </div>
+            </div>
+        </header>
 
         <div class="view-toggle">
             <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
