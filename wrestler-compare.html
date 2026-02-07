@@ -841,6 +841,25 @@
             `;
         }
 
+        // Calculate floor rating from rating history
+function calculateFloorRating(data) {
+    if (data.floorRating) return data.floorRating;
+    if (data.floor) return data.floor;
+    if (data.ratingHistory && data.ratingHistory.length > 0) {
+        return Math.min(...data.ratingHistory.map(h => h.rating));
+    }
+    return 0;
+}
+
+// Count weeks at #1 from rating history
+function calculateWeeksAtOne(data) {
+    if (data.weeksAtNumber1) return data.weeksAtNumber1;
+    if (data.ratingHistory && data.ratingHistory.length > 0) {
+        return data.ratingHistory.filter(h => h.rank === 1).length;
+    }
+    return 0;
+}
+
         // Create individual wrestler card
         function createWrestlerCard(data) {
             const initials = getInitials(data.name);
@@ -851,15 +870,18 @@
             // Calculate stats safely with fallbacks
 const currentRating = data.currentRating || data.current || 0;
 const peakRating = data.peakRating || data.peak || 0;
-const floorRating = data.floorRating || data.floor || 0;
+const floorRating = calculateFloorRating(data);
+const isActive = data.isActive !== undefined ? data.isActive : true;
 
-const avgRating = data.ratings && data.ratings.length > 0
-    ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
-    : (data.average || currentRating || 0).toFixed(2);
+// Average rating from match history or fallback
+const avgRating = data.statsByYear?.ALL?.averageRating 
+    ? data.statsByYear.ALL.averageRating.toFixed(2)
+    : (data.ratings && data.ratings.length > 0
+        ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
+        : (data.average || 0).toFixed(2));
 
 const peakRank = data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-';
-
-const weeksAtOne = data.weeksAtNumber1 || 0;
+const weeksAtOne = calculateWeeksAtOne(data);
 const totalWeeks = data.totalWeeks || data.totalWeeksRanked || (data.weeks?.length) || 0;
 const totalMatches = data.totalMatches || 0;
 
@@ -877,7 +899,7 @@ const totalMatches = data.totalMatches || 0;
                     <div class="stats-list">
                         <div class="stat-row-card">
                             <span class="stat-label-card">Current Rating</span>
-                            <span class="stat-value-card highlight ${getRatingClass(currentRating)}">${currentRating.toFixed(2)}</span>
+                            <span class="stat-value-card highlight ${getRatingClass(currentRating)}">${isActive ? currentRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
