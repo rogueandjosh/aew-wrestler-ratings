@@ -923,80 +923,22 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>AEW Wrestler Ratings</h1>
-            <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
-            <p class="subtitle">Performance-based rankings, not wins and losses</p>
-            <div class="week-selector">
-                <div class="selector-row">
-                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
-                        <span class="arrow">◄</span>
-                        <span class="btn-label">Older</span>
-                    </button>
-                    
-                    <div class="filters-group">
-                        <div class="filter-item">
-                            <label>Year</label>
-                            <select id="yearFilter" onchange="filterWeeks()">
-                                <option value="">All</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-item">
-                            <label>Month</label>
-                            <select id="monthFilter" onchange="filterWeeks()">
-                                <option value="">All</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-item week-item">
-                            <label>Week</label>
-                            <select id="weekSelect" onchange="loadSelectedWeek()">
-                                <option value="current">Current Week</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
-                        <span class="btn-label">Newer</span>
-                        <span class="arrow">►</span>
-                    </button>
-                </div>
-                
-                <div class="action-buttons">
-                    <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                        ↻ Current Week
-                    </button>
-                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                        🎲 Random Week
-                    </button>
-                </div>
-            </div>
-            <p class="date-range" id="dateRange">Loading...</p>
-            <p class="last-updated" id="lastUpdated">Loading...</p>
-        </header>
-
-        <div class="view-toggle">
-            <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
-                📊 Weekly Rankings
-            </button>
-            <button id="statsToggle" class="toggle-btn" onclick="switchToStatistics()">
-                📈 All Wrestler Statistics
-            </button>
-        </div>
-
-        <div style="text-align: center; margin: 20px 0;">
-    <div style="position: relative; display: inline-block;">
-        <button id="otherMenuBtn" style="padding: 10px 20px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 1em;">
-            ⚙️ Other ▼
+        <header style="position: relative;">
+    <h1>AEW WRESTLER RATINGS</h1>
+    <p class="tagline">Performance-based rankings using match quality ratings from Cagematch.net</p>
+    
+    <!-- Other dropdown in top-right corner -->
+    <div style="position: absolute; top: 20px; right: 20px;">
+        <button id="otherMenuBtn" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; font-weight: bold; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;">
+            Other ▼
         </button>
-        <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 200px; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
             <a href="wrestler-compare.html" style="display: block; padding: 12px 20px; color: #ffd700; text-decoration: none; transition: all 0.3s;">
                 🥊 Compare Wrestlers
             </a>
         </div>
     </div>
-</div>
+</header>
 
 <script>
 // Dropdown menu toggle
@@ -1017,6 +959,15 @@ document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', fu
     this.style.background = 'transparent';
 });
 </script>
+
+        <div class="view-toggle">
+            <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
+                📊 Weekly Rankings
+            </button>
+            <button id="statsToggle" class="toggle-btn" onclick="switchToStatistics()">
+                📈 All Wrestler Statistics
+            </button>
+        </div>
 
         <div id="divisionTabs" class="tabs">
             <button class="tab active" onclick="handleDivisionClick('mens')">Men</button>
