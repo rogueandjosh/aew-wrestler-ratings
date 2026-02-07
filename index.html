@@ -940,26 +940,6 @@
     </div>
 </header>
 
-<script>
-// Dropdown menu toggle
-document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const dropdown = document.getElementById('otherMenuDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-});
-
-document.addEventListener('click', function() {
-    document.getElementById('otherMenuDropdown').style.display = 'none';
-});
-
-document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
-    this.style.background = 'rgba(255, 215, 0, 0.2)';
-});
-document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', function() {
-    this.style.background = 'transparent';
-});
-</script>
-
         <div class="view-toggle">
             <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
                 📊 Weekly Rankings
@@ -3852,7 +3832,28 @@ document.addEventListener('click', function(e) {
         sessionStorage.setItem('aew_previous_state', JSON.stringify(state));
     }
 });
-    </script>
+</script>
+
+<script>    
+// Dropdown menu toggle
+document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('otherMenuDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+});
+
+document.addEventListener('click', function() {
+    document.getElementById('otherMenuDropdown').style.display = 'none';
+});
+
+document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
+    this.style.background = 'rgba(255, 215, 0, 0.2)';
+});
+document.querySelector('#otherMenuDropdown a').addEventListener('mouseleave', function() {
+    this.style.background = 'transparent';
+});
+</script>
+
 
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
