@@ -849,21 +849,19 @@
                 : initials;
 
             // Calculate stats safely with fallbacks
-            const currentRating = data.current || data.currentRating || 0;
-            const peakRating = data.peak || 0;
-            const floorRating = data.floor || 0;
-            
-            const avgRating = data.ratings && data.ratings.length > 0
-                ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
-                : (data.average || currentRating || 0).toFixed(2);
+const currentRating = data.currentRating || data.current || 0;
+const peakRating = data.peakRating || data.peak || 0;
+const floorRating = data.floorRating || data.floor || 0;
 
-            const peakRank = data.ranks && data.ranks.length > 0
-                ? Math.min(...data.ranks)
-                : (data.currentRank || data.rank || '-');
+const avgRating = data.ratings && data.ratings.length > 0
+    ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(2)
+    : (data.average || currentRating || 0).toFixed(2);
 
-            const weeksAtOne = data.weeksAtNumber1 || 0;
-            const totalWeeks = data.totalWeeksRanked || (data.weeks?.length) || 0;
-            const totalMatches = data.totalMatches || 0;
+const peakRank = data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-';
+
+const weeksAtOne = data.weeksAtNumber1 || 0;
+const totalWeeks = data.totalWeeks || data.totalWeeksRanked || (data.weeks?.length) || 0;
+const totalMatches = data.totalMatches || 0;
 
             return `
                 <div class="wrestler-card">
