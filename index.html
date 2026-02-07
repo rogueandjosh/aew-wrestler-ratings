@@ -1727,7 +1727,12 @@ let visibleColumns = {
                             wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
                             
                             // Fix positive numbers to up arrows (e.g., "1" or "+1" → "↑1")
-                            wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            // But don't convert 0
+                            if (wrestler.change === '0') {
+                                wrestler.change = '—';
+                            } else {
+                                wrestler.change = wrestler.change.replace(/^\+?(\d+)$/, '↑$1');
+                            }
                             
                             // If it's just empty or standalone dash, make it em dash
                             if (wrestler.change === '' || wrestler.change === '-') {
@@ -1742,8 +1747,10 @@ let visibleColumns = {
                             // Then apply same arrow logic
                             if (wrestler.change.startsWith('-')) {
                                 wrestler.change = wrestler.change.replace(/^-(\d+)$/, '↓$1');
-                            } else if (/^\d+$/.test(wrestler.change)) {
+                            } else if (/^\d+$/.test(wrestler.change) && wrestler.change !== '0') {
                                 wrestler.change = '↑' + wrestler.change;
+                            } else if (wrestler.change === '0') {
+                                wrestler.change = '—';
                             }
                         }
                         
@@ -3564,11 +3571,14 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
             const divisionData = weekData[divKey] || [];
             divisionData.forEach((wrestler, index) => {
                 const rank = index + 1;
-                const originalName = wrestler.name;
+                const originalName = (wrestler.name || '').toString();
                 const rating = wrestler.rating;
 
                 // Get the canonical name (most recent name for this wrestler)
-                const canonicalName = getCanonicalName(originalName, nameChanges);
+                const canonicalName = (getCanonicalName(originalName, nameChanges) || '').toString();
+                
+                // Skip if name is empty
+                if (!canonicalName || canonicalName === '') return;
 
                 if (!statistics[divKey][canonicalName]) {
                     statistics[divKey][canonicalName] = {
