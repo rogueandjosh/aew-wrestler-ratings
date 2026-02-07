@@ -392,10 +392,9 @@
                 </button>
                 <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block;">
                     🏠 Home
-                </a>
-                <a href="wrestler-compare.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block;">
+                <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer;">
                 🥊 Compare
-            </a>
+                </a>
             </div>
         </header>
 
@@ -2006,6 +2005,28 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 window.history.back();
             }
         }
+
+        function goToCompare() {
+        // Get current wrestler's slug from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentWrestlerSlug = urlParams.get('wrestler');
+        
+        // Get current wrestler's division
+        const division = wrestlerData?.division || '';
+        let divisionSlug = 'mens';
+        if (division.includes('Women') && !division.includes('Tag')) {
+            divisionSlug = 'womens';
+        } else if (division.includes('Men') && division.includes('Tag')) {
+            divisionSlug = 'menstag';
+        } else if (division.includes('Women') && division.includes('Tag')) {
+            divisionSlug = 'womenstag';
+        } else if (division.includes('Trio')) {
+            divisionSlug = 'trios';
+        }
+        
+        // Navigate to compare page with pre-filled wrestler
+        window.location.href = `wrestler-compare.html?division=${divisionSlug}&wrestlers=${currentWrestlerSlug}`;
+    }
     </script>
         <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
