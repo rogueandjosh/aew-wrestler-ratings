@@ -1011,7 +1011,7 @@ if (selectedYear !== 'ALL') {
 
 // Calculate stats based on filtered history
 const currentRating = selectedYear === 'ALL' 
-    ? (isCurrentlyRanked ? (data.currentRating || data.current) : 'N/A')
+    ? (isCurrentlyRanked ? (data.currentRating || data.current || 0) : 'N/A')
     : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
 
 const currentRank = selectedYear === 'ALL'
