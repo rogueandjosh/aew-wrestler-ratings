@@ -676,7 +676,7 @@
                 <div class="graph-container">
                     <h2>📈 Rating History</h2>
                     <div id="graphCanvas">
-                        <!-- Chart.js graph will be inserted here in Phase 3 -->
+                        <canvas id="comparisonChart"></canvas>
                     </div>
                 </div>
             </section>
@@ -688,6 +688,7 @@
         let statisticsData = null;
         let selectedDivision = 'mens';
         let selectedYear = 'ALL';
+        let comparisonChart = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', async () => {
@@ -902,12 +903,13 @@
                 // Build comparison table
                 statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
 
+                // Phase 3: Build line graph
+                createComparisonChart(wrestlerData);
+
             } catch (error) {
                 console.error('Error loading wrestler data:', error);
                 statsTableDiv.innerHTML = `<div class="error">Error loading wrestler data: ${error.message}</div>`;
             }
-            
-            // TODO: Phase 3 - Build line graph
         }
 
         // Clear all selections
@@ -1135,16 +1137,10 @@ const totalMatches = selectedYear !== 'ALL' && data.statsByYear && data.statsByY
 const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].rank > 0);
 
 // Calculate highest/lowest match for selected year
+// Calculate highest/lowest match for selected year
 let highestMatch = 'N/A';
 let lowestMatch = 'N/A';
-// ADD THIS DEBUG CODE:
-console.log('DEBUG for:', data.name);
-console.log('selectedYear:', selectedYear, 'type:', typeof selectedYear);
-if (data.statsByYear) {
-    console.log('statsByYear keys:', Object.keys(data.statsByYear));
-    console.log('Does 2024 exist?', data.statsByYear['2024']);
-    console.log('selectedYear value:', data.statsByYear[selectedYear]);
-}
+
 if (selectedYear === 'ALL') {
     highestMatch = (data.bestMatches && data.bestMatches[0]) ? data.bestMatches[0].rating : 'N/A';
     lowestMatch = (data.statsByYear && data.statsByYear.ALL) ? data.statsByYear.ALL.lowestRating : 'N/A';
@@ -1152,19 +1148,6 @@ if (selectedYear === 'ALL') {
     // Use the year-specific stats directly
     highestMatch = data.statsByYear[selectedYear].highestRating || 'N/A';
     lowestMatch = data.statsByYear[selectedYear].lowestRating || 'N/A';
-    console.log('SET lowestMatch to:', lowestMatch); // <-- ADD THIS LINE HERE
-}
-
-if (selectedYear === 'ALL') {
-    highestMatch = data.bestMatches?.[0]?.rating || 'N/A';
-    lowestMatch = data.statsByYear?.ALL?.lowestRating || 'N/A';
-} else if (data.bestMatches) {
-    // Filter matches by year
-    const yearMatches = data.bestMatches.filter(m => m.year === parseInt(selectedYear));
-    if (yearMatches.length > 0) {
-        highestMatch = Math.max(...yearMatches.map(m => m.rating));
-        lowestMatch = Math.min(...yearMatches.map(m => m.rating));
-    }
 }
 
             return `
@@ -1258,6 +1241,166 @@ if (selectedYear === 'ALL') {
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+
+        // ===== PHASE 3: CHART FUNCTIONS =====
+        
+        // Aggregate rating history by month
+        function aggregateByMonth(historyData) {
+            const monthlyMap = {};
+            
+            historyData.forEach(snapshot => {
+                const date = new Date(snapshot.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!monthlyMap[monthKey]) {
+                    monthlyMap[monthKey] = {
+                        ratings: [],
+                        date: date,
+                        label: date.toLocaleDateString('en-US', { month: 'short', year: '\'yy' })
+                    };
+                }
+                monthlyMap[monthKey].ratings.push(snapshot.rating);
+            });
+            
+            return Object.keys(monthlyMap)
+                .sort()
+                .map(key => ({
+                    label: monthlyMap[key].label,
+                    rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
+                    date: monthlyMap[key].date
+                }));
+        }
+
+        // Create comparison chart
+        function createComparisonChart(wrestlerDataArray) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            // Colors for up to 3 wrestlers
+            const colors = [
+                { border: '#ffd700', bg: 'rgba(255, 215, 0, 0.1)' },  // Gold
+                { border: '#00ffff', bg: 'rgba(0, 255, 255, 0.1)' },  // Cyan
+                { border: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)' }   // Orange
+            ];
+
+            // Create datasets for each wrestler
+            const datasets = wrestlerDataArray.map((data, index) => {
+                let historyData = data.ratingHistory || [];
+                
+                // Filter by year if not ALL
+                if (selectedYear !== 'ALL' && historyData.length > 0) {
+                    const targetYear = parseInt(selectedYear);
+                    historyData = historyData.filter(h => {
+                        const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
+                        return weekYear === targetYear;
+                    });
+                }
+
+                const monthlyData = aggregateByMonth(historyData);
+
+                return {
+                    label: data.name,
+                    data: monthlyData.map(m => ({ x: m.label, y: m.rating })),
+                    borderColor: colors[index].border,
+                    backgroundColor: colors[index].bg,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    tension: 0.3,
+                    fill: false
+                };
+            });
+
+            // Get all unique months across all wrestlers
+            const allMonths = new Set();
+            datasets.forEach(ds => {
+                ds.data.forEach(point => allMonths.add(point.x));
+            });
+            const sortedMonths = Array.from(allMonths).sort();
+
+            comparisonChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedMonths,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#ffd700',
+                                font: { size: 12 },
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffd700',
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                font: { size: 11 }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Rating',
+                                color: '#ffd700',
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0e0e0',
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: { size: 10 }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month',
+                                color: '#ffd700',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // ===== END PHASE 3 FUNCTIONS =====
 
         // ===== END PHASE 2 FUNCTIONS =====
 
