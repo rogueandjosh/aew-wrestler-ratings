@@ -1136,6 +1136,14 @@ const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHisto
 // Calculate highest/lowest match for selected year
 let highestMatch = 'N/A';
 let lowestMatch = 'N/A';
+// ADD THIS DEBUG CODE:
+console.log('DEBUG for:', data.name);
+console.log('selectedYear:', selectedYear, 'type:', typeof selectedYear);
+if (data.statsByYear) {
+    console.log('statsByYear keys:', Object.keys(data.statsByYear));
+    console.log('Does 2024 exist?', data.statsByYear['2024']);
+    console.log('selectedYear value:', data.statsByYear[selectedYear]);
+}
 if (selectedYear === 'ALL') {
     highestMatch = (data.bestMatches && data.bestMatches[0]) ? data.bestMatches[0].rating : 'N/A';
     lowestMatch = (data.statsByYear && data.statsByYear.ALL) ? data.statsByYear.ALL.lowestRating : 'N/A';
