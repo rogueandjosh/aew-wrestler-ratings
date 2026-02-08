@@ -1038,25 +1038,19 @@ const currentRank = selectedYear === 'ALL'
 
 const peakRating = filteredHistory.length > 0
     ? Math.max(...filteredHistory.map(h => h.rating))
-    : (selectedYear === 'ALL' ? (data.peakRating || data.peak || 0) : 0);
+    : (selectedYear === 'ALL' ? (data.peakRating || data.peak || 0) : 'N/A');
 
 const floorRating = filteredHistory.length > 0
     ? Math.min(...filteredHistory.map(h => h.rating))
-    : (selectedYear === 'ALL' ? calculateFloorRating(data) : 0);
+    : (selectedYear === 'ALL' ? calculateFloorRating(data) : 'N/A');
 
 const avgRating = filteredHistory.length > 0
-    ? (filteredHistory.reduce((sum, h) => sum + h.rating, 0) / filteredHistory.length).toFixed(2)
-    : (selectedYear === 'ALL' 
-        ? (data.ratingHistory && data.ratingHistory.length > 0
-            ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
-            : (data.average || 0).toFixed(2))
-        : '0.00');
+    ? ...
+    : (selectedYear === 'ALL' ? ... : 'N/A');
 
 const peakRank = filteredHistory.length > 0
     ? Math.min(...filteredHistory.map(h => h.rank))
-    : (selectedYear === 'ALL' 
-        ? (data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-')
-        : '-');
+    : (selectedYear === 'ALL' ? ... : 'N/A');
 
 const weeksAtOne = filteredHistory.length > 0
     ? filteredHistory.filter(h => h.rank === 1).length
@@ -1073,6 +1067,22 @@ const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
 
 // Active/Inactive status
 const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].rank > 0);
+
+            // Calculate highest/lowest match for selected year
+let highestMatch = 'N/A';
+let lowestMatch = 'N/A';
+
+if (selectedYear === 'ALL') {
+    highestMatch = data.bestMatches?.[0]?.rating || 'N/A';
+    lowestMatch = data.statsByYear?.ALL?.lowestRating || 'N/A';
+} else if (data.bestMatches) {
+    // Filter matches by year
+    const yearMatches = data.bestMatches.filter(m => m.year === parseInt(selectedYear));
+    if (yearMatches.length > 0) {
+        highestMatch = Math.max(...yearMatches.map(m => m.rating));
+        lowestMatch = Math.min(...yearMatches.map(m => m.rating));
+    }
+}
 
             return `
                 <div class="wrestler-card">
@@ -1128,17 +1138,17 @@ const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHisto
                             <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
                         </div>
                         ${data.bestMatches && data.bestMatches.length > 0 ? `
-                        <div class="stat-row-card">
-                            <span class="stat-label-card">Highest Match</span>
-                            <span class="stat-value-card good">${data.bestMatches[0].rating.toFixed(2)}</span>
-                        </div>
-                        ` : ''}
-                        ${data.statsByYear?.ALL ? `
-                        <div class="stat-row-card">
-                            <span class="stat-label-card">Lowest Match</span>
-                            <span class="stat-value-card poor">${data.statsByYear.ALL.lowestRating.toFixed(2)}</span>
-                        </div>
-                        ` : ''}
+    <div class="stat-row-card">
+    <span class="stat-label-card">Highest Match</span>
+    <span class="stat-value-card good">${highestMatch !== 'N/A' ? highestMatch.toFixed(2) : 'N/A'}</span>
+</div>
+` : ''}
+${data.statsByYear?.ALL ? `
+<div class="stat-row-card">
+    <span class="stat-label-card">Lowest Match</span>
+    <span class="stat-value-card poor">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
+</div>
+` : ''}
                         ${data.peakWeek ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
