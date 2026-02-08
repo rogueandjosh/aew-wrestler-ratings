@@ -1151,18 +1151,24 @@ if (selectedYear === 'ALL') {
                             <span class="stat-label-card">Weeks at #1</span>
                             <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
                         </div>
-                        ${data.bestMatches && data.bestMatches.length > 0 ? `
-    <div class="stat-row-card">
-    <span class="stat-label-card">Highest Match</span>
-    <span class="stat-value-card good">${highestMatch !== 'N/A' ? highestMatch.toFixed(2) : 'N/A'}</span>
-</div>
-` : ''}
-${data.statsByYear?.ALL ? `
-<div class="stat-row-card">
-    <span class="stat-label-card">Lowest Match</span>
-    <span class="stat-value-card poor">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
-</div>
-` : ''}
+                        ${highestMatch !== 'N/A' ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Highest Match</span>
+                            <span class="stat-value-card good">${highestMatch.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        ${lowestMatch !== 'N/A' ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Lowest Match</span>
+                            <span class="stat-value-card poor">${lowestMatch.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        ${data.statsByYear?.ALL ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Lowest Match</span>
+                            <span class="stat-value-card poor">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
+                        </div>
+                        ` : ''}
                         ${data.peakWeek ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
