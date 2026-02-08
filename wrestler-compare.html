@@ -1128,11 +1128,11 @@ if (selectedYear === 'ALL') {
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
-                            <span class="stat-value-card">${peakRating.toFixed(2)}</span>
+                            <span class="stat-value-card">${peakRating !== 'N/A' ? peakRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Floor Rating</span>
-                            <span class="stat-value-card">${floorRating.toFixed(2)}</span>
+                            <span class="stat-value-card">${floorRating !== 'N/A' ? floorRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Average Rating</span>
