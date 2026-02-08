@@ -1152,6 +1152,7 @@ if (selectedYear === 'ALL') {
     // Use the year-specific stats directly
     highestMatch = data.statsByYear[selectedYear].highestRating || 'N/A';
     lowestMatch = data.statsByYear[selectedYear].lowestRating || 'N/A';
+    console.log('SET lowestMatch to:', lowestMatch); // <-- ADD THIS LINE HERE
 }
 
 if (selectedYear === 'ALL') {
