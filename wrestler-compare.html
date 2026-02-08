@@ -1080,13 +1080,10 @@ let lowestMatch = 'N/A';
 if (selectedYear === 'ALL') {
     highestMatch = (data.bestMatches && data.bestMatches[0]) ? data.bestMatches[0].rating : 'N/A';
     lowestMatch = (data.statsByYear && data.statsByYear.ALL) ? data.statsByYear.ALL.lowestRating : 'N/A';
-} else if (data.bestMatches) {
-    // Filter matches by year
-    const yearMatches = data.bestMatches.filter(m => m.year === parseInt(selectedYear));
-    if (yearMatches.length > 0) {
-        highestMatch = Math.max(...yearMatches.map(m => m.rating));
-        lowestMatch = Math.min(...yearMatches.map(m => m.rating));
-    }
+} else if (data.statsByYear && data.statsByYear[selectedYear]) {
+    // Use the year-specific stats directly
+    highestMatch = data.statsByYear[selectedYear].highestRating || 'N/A';
+    lowestMatch = data.statsByYear[selectedYear].lowestRating || 'N/A';
 }
 
 if (selectedYear === 'ALL') {
