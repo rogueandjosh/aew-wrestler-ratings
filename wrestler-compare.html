@@ -429,6 +429,17 @@
             display: flex;
             align-items: flex-end;
             gap: 8px;
+            margin-bottom: 0;
+        }
+
+        .wrestler-selector-row .wrestler-selector {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .wrestler-selector-row .random-btn {
+            margin-bottom: 0;
+            flex-shrink: 0;
         }
 
         .wrestler-selector-row > .wrestler-selector {
@@ -1163,13 +1174,13 @@ if (selectedYear === 'ALL') {
                             <span class="stat-value-card poor">${lowestMatch.toFixed(2)}</span>
                         </div>
                         ` : ''}
-                        ${selectedYear === 'ALL' && data.peakWeek ?  `
+                        ${selectedYear === 'ALL' && data.peakWeek ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
                             <span class="stat-value-card" style="font-size: 0.85em;">${data.peakWeek}</span>
                         </div>
                         ` : ''}
-                    </div>
+                        </div>
                 </div>
             `;
         }
