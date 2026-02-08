@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         * {
             margin: 0;
@@ -440,16 +439,19 @@
         font-size: 0.7em;
     }
     
-    .stat-value-card {
+    stat-value-card {
     font-size: 0.85em;
     word-break: break-word;
-    }
-
-/* Specifically make Peak Week text smaller on mobile */
-    .stat-row-card:last-child .stat-value-card {
-    font-size: 0.7em;
-    line-height: 1.2;
     overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 50%;
+    line-height: 1.3;
+}
+    /* Add this right after */
+    .stat-row-card:last-child .stat-value-card {
+        font-size: 0.65em !important;
+        line-height: 1.2;
+        word-break: break-word;
     }
     
     /* Smaller photo */
@@ -1296,6 +1298,9 @@ if (selectedYear === 'ALL') {
                 { border: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)' }   // Orange
             ];
 
+            // Collect all month data with proper date objects for sorting
+            const allMonthsMap = new Map();
+            
             // Create datasets for each wrestler
             const datasets = wrestlerDataArray.map((data, index) => {
                 let historyData = data.ratingHistory || [];
@@ -1310,26 +1315,49 @@ if (selectedYear === 'ALL') {
                 }
 
                 const monthlyData = aggregateByMonth(historyData);
+                
+                // Store all months with their date objects for proper sorting
+                monthlyData.forEach(m => {
+                    const key = `${m.date.getFullYear()}-${String(m.date.getMonth() + 1).padStart(2, '0')}`;
+                    if (!allMonthsMap.has(key)) {
+                        allMonthsMap.set(key, { date: m.date, label: m.label });
+                    }
+                });
 
                 return {
                     label: data.name,
-                    data: monthlyData.map(m => ({ x: m.label, y: m.rating })),
+                    data: monthlyData,
+                    monthlyData: monthlyData, // Keep for mapping
                     borderColor: colors[index].border,
                     backgroundColor: colors[index].bg,
                     borderWidth: 2,
                     pointRadius: 3,
                     pointHoverRadius: 6,
                     tension: 0.3,
-                    fill: false
+                    fill: false,
+                    spanGaps: true // Connect lines even with missing data
                 };
             });
 
-            // Get all unique months across all wrestlers
-            const allMonths = new Set();
-            datasets.forEach(ds => {
-                ds.data.forEach(point => allMonths.add(point.x));
+            // Sort months chronologically by actual date
+            const sortedMonths = Array.from(allMonthsMap.entries())
+                .sort((a, b) => a[1].date - b[1].date)
+                .map(entry => entry[1].label);
+
+            // Reformat datasets to use sorted months with null for missing data
+            datasets.forEach(dataset => {
+                const monthDataMap = new Map();
+                dataset.monthlyData.forEach(m => {
+                    monthDataMap.set(m.label, m.rating);
+                });
+                
+                dataset.data = sortedMonths.map(label => {
+                    const rating = monthDataMap.get(label);
+                    return rating !== undefined ? rating : null;
+                });
+                
+                delete dataset.monthlyData; // Clean up temp data
             });
-            const sortedMonths = Array.from(allMonths).sort();
 
             comparisonChart = new Chart(ctx, {
                 type: 'line',
