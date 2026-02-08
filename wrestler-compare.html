@@ -544,36 +544,17 @@
             <!-- Year Filter -->
             <section class="division-section">
                 <h2>Select Year</h2>
-                <div class="division-options">
-                    <div class="division-option">
-                        <input type="radio" id="year-all" name="year" value="ALL" checked>
-                        <label for="year-all">All Years</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2026" name="year" value="2026">
-                        <label for="year-2026">2026</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2025" name="year" value="2025">
-                        <label for="year-2025">2025</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2024" name="year" value="2024">
-                        <label for="year-2024">2024</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2023" name="year" value="2023">
-                        <label for="year-2023">2023</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2022" name="year" value="2022">
-                        <label for="year-2022">2022</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="year-2019" name="year" value="2019">
-                        <label for="year-2019">2019-2021</label>
-                    </div>
-                </div>
+                <select id="yearFilter" style="width: 100%; padding: 12px; font-size: 1em; font-family: 'Overlock', cursive; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 5px; color: #fff; cursor: pointer;">
+                    <option value="ALL">All Years</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                </select>
             </section>
 
             <!-- Wrestler Selection -->
@@ -693,15 +674,13 @@
                 });
             });
 
-            // Year radio buttons
-            document.querySelectorAll('input[name="year"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    selectedYear = e.target.value;
-                    // If comparison is already displayed, refresh it
-                    if (document.getElementById('resultsSection').classList.contains('active')) {
-                        compareWrestlers();
-                    }
-                });
+            // Year dropdown
+            document.getElementById('yearFilter').addEventListener('change', (e) => {
+                selectedYear = e.target.value;
+                // If comparison is already displayed, refresh it
+                if (document.getElementById('resultsSection').classList.contains('active')) {
+                    compareWrestlers();
+                }
             });
 
             // Wrestler dropdowns
@@ -1023,17 +1002,17 @@ const isCurrentlyRanked = isInCurrentRankings(data.name, data.division);
 // Filter data by selected year
 let filteredHistory = data.ratingHistory || [];
 if (selectedYear !== 'ALL') {
-    const year = selectedYear === '2019' ? [2019, 2020, 2021] : [parseInt(selectedYear)];
+    const targetYear = parseInt(selectedYear);
     filteredHistory = filteredHistory.filter(h => {
         const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
-        return year.includes(weekYear);
+        return weekYear === targetYear;
     });
 }
 
 // Calculate stats based on filtered history
 const currentRating = selectedYear === 'ALL' 
     ? (isCurrentlyRanked ? (data.currentRating || data.current) : 'N/A')
-    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating.toFixed(2) : 'N/A');
+    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
 
 const currentRank = selectedYear === 'ALL'
     ? (isCurrentlyRanked && data.currentRank ? data.currentRank : 'N/A')
@@ -1074,6 +1053,9 @@ const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
     ? data.statsByYear[selectedYear].totalMatches
     : (selectedYear === 'ALL' ? (data.totalMatches || 0) : 0);
 
+// Active/Inactive status
+const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].rank > 0);
+
             return `
                 <div class="wrestler-card">
                     <div class="wrestler-header-card">
@@ -1083,8 +1065,8 @@ const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
                         <div>
                             <div class="wrestler-name-card">
                                 ${data.name}
-                                <span class="status-badge ${isCurrentlyRanked ? 'active' : 'inactive'}">
-                                    ${isCurrentlyRanked ? 'Active' : 'Inactive'}
+                                <span class="status-badge ${showAsActive ? 'active' : 'inactive'}">
+                                    ${showAsActive ? 'Active' : 'Inactive'}
                                 </span>
                             </div>
                             <div style="color: #999; font-size: 0.85em;">${getDivisionLabel(data.division)}</div>
@@ -1093,7 +1075,7 @@ const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
                     <div class="stats-list">
                         <div class="stat-row-card">
                             <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rating</span>
-                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(parseFloat(currentRating)) : ''}">${currentRating !== 'N/A' ? (typeof currentRating === 'string' && currentRating !== 'N/A' ? currentRating : currentRating.toFixed(2)) : 'N/A'}</span>
+                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(typeof currentRating === 'number' ? currentRating : parseFloat(currentRating)) : ''}">${currentRating !== 'N/A' ? (typeof currentRating === 'number' ? currentRating.toFixed(2) : currentRating) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                         <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rank</span>
