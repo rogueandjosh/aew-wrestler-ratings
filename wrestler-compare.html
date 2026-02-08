@@ -1045,12 +1045,18 @@ const floorRating = filteredHistory.length > 0
     : (selectedYear === 'ALL' ? calculateFloorRating(data) : 'N/A');
 
 const avgRating = filteredHistory.length > 0
-    ? ...
-    : (selectedYear === 'ALL' ? ... : 'N/A');
+    ? (filteredHistory.reduce((sum, h) => sum + h.rating, 0) / filteredHistory.length).toFixed(2)
+    : (selectedYear === 'ALL' 
+        ? (data.ratingHistory && data.ratingHistory.length > 0
+            ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
+            : (data.average || 0).toFixed(2))
+        : 'N/A');
 
 const peakRank = filteredHistory.length > 0
     ? Math.min(...filteredHistory.map(h => h.rank))
-    : (selectedYear === 'ALL' ? ... : 'N/A');
+    : (selectedYear === 'ALL' 
+        ? (data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-')
+        : 'N/A');
 
 const weeksAtOne = filteredHistory.length > 0
     ? filteredHistory.filter(h => h.rank === 1).length
@@ -1061,16 +1067,27 @@ const totalWeeks = filteredHistory.length > 0
     : (selectedYear === 'ALL' ? (data.totalWeeks || data.totalWeeksRanked || 0) : 0);
 
 // Total matches from statsByYear if available
-const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
+const totalMatches = selectedYear !== 'ALL' && data.statsByYear && data.statsByYear[selectedYear]
     ? data.statsByYear[selectedYear].totalMatches
     : (selectedYear === 'ALL' ? (data.totalMatches || 0) : 0);
 
 // Active/Inactive status
 const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].rank > 0);
 
-            // Calculate highest/lowest match for selected year
+// Calculate highest/lowest match for selected year
 let highestMatch = 'N/A';
 let lowestMatch = 'N/A';
+if (selectedYear === 'ALL') {
+    highestMatch = (data.bestMatches && data.bestMatches[0]) ? data.bestMatches[0].rating : 'N/A';
+    lowestMatch = (data.statsByYear && data.statsByYear.ALL) ? data.statsByYear.ALL.lowestRating : 'N/A';
+} else if (data.bestMatches) {
+    // Filter matches by year
+    const yearMatches = data.bestMatches.filter(m => m.year === parseInt(selectedYear));
+    if (yearMatches.length > 0) {
+        highestMatch = Math.max(...yearMatches.map(m => m.rating));
+        lowestMatch = Math.min(...yearMatches.map(m => m.rating));
+    }
+}
 
 if (selectedYear === 'ALL') {
     highestMatch = data.bestMatches?.[0]?.rating || 'N/A';
