@@ -1163,13 +1163,7 @@ if (selectedYear === 'ALL') {
                             <span class="stat-value-card poor">${lowestMatch.toFixed(2)}</span>
                         </div>
                         ` : ''}
-                        ${data.statsByYear?.ALL ? `
-                        <div class="stat-row-card">
-                            <span class="stat-label-card">Lowest Match</span>
-                            <span class="stat-value-card poor">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
-                        </div>
-                        ` : ''}
-                        ${data.peakWeek ? `
+                        ${selectedYear === 'ALL' && data.peakWeek ?  `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
                             <span class="stat-value-card" style="font-size: 0.85em;">${data.peakWeek}</span>
