@@ -302,15 +302,15 @@
         /* ===== PHASE 2: Stats Comparison Cards ===== */
         .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
         }
 
         .wrestler-card {
             background: rgba(255, 255, 255, 0.03);
             border: 2px solid rgba(255, 215, 0, 0.2);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             transition: all 0.3s;
         }
 
@@ -323,21 +323,21 @@
         .wrestler-header-card {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 2px solid rgba(255, 215, 0, 0.2);
         }
 
         .wrestler-photo {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
+            font-size: 1.2em;
             font-weight: bold;
             color: #1a1a2e;
             border: 2px solid #ffd700;
@@ -352,22 +352,23 @@
         }
 
         .wrestler-name-card {
-            font-size: 1.3em;
+            font-size: 1.1em;
             color: #ffd700;
             font-weight: bold;
+            line-height: 1.2;
         }
 
         .stats-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .stat-row-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 6px;
             transition: background 0.2s;
@@ -379,18 +380,18 @@
 
         .stat-label-card {
             color: #999;
-            font-size: 0.9em;
+            font-size: 0.75em;
         }
 
         .stat-value-card {
             color: #fff;
             font-weight: bold;
-            font-size: 1.05em;
+            font-size: 0.9em;
         }
 
         .stat-value-card.highlight {
             color: #ffd700;
-            font-size: 1.2em;
+            font-size: 1em;
         }
 
         .stat-value-card.good {
@@ -403,6 +404,57 @@
 
         .stat-value-card.poor {
             color: #f87171;
+        }
+
+        /* Random Wrestler Dice Button */
+        .random-btn {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+
+        .random-btn:hover {
+            background: #ffd700;
+            color: #1a1a2e;
+            transform: scale(1.1);
+        }
+
+        .wrestler-selector-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .wrestler-selector-row > .wrestler-selector {
+            flex: 1;
+        }
+
+        /* Active/Inactive Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .status-badge.active {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
+        .status-badge.inactive {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+            border: 1px solid #f87171;
         }
         /* ===== END PHASE 2 STYLES ===== */
 
@@ -489,6 +541,41 @@
                 </div>
             </section>
 
+            <!-- Year Filter -->
+            <section class="division-section">
+                <h2>Select Year</h2>
+                <div class="division-options">
+                    <div class="division-option">
+                        <input type="radio" id="year-all" name="year" value="ALL" checked>
+                        <label for="year-all">All Years</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2026" name="year" value="2026">
+                        <label for="year-2026">2026</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2025" name="year" value="2025">
+                        <label for="year-2025">2025</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2024" name="year" value="2024">
+                        <label for="year-2024">2024</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2023" name="year" value="2023">
+                        <label for="year-2023">2023</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2022" name="year" value="2022">
+                        <label for="year-2022">2022</label>
+                    </div>
+                    <div class="division-option">
+                        <input type="radio" id="year-2019" name="year" value="2019">
+                        <label for="year-2019">2019-2021</label>
+                    </div>
+                </div>
+            </section>
+
             <!-- Wrestler Selection -->
             <section class="selection-section">
                 <h2>Select Wrestlers to Compare</h2>
@@ -498,23 +585,32 @@
                 <div id="errorMessage" class="error" style="display: none;"></div>
                 
                 <div id="wrestlerSelectors" class="wrestler-selectors">
-                    <div class="wrestler-selector">
-                        <label for="wrestler1">Wrestler 1</label>
-                        <select id="wrestler1">
-                            <option value="">-- Select Wrestler --</option>
-                        </select>
+                    <div class="wrestler-selector-row">
+                        <div class="wrestler-selector">
+                            <label for="wrestler1">Wrestler 1</label>
+                            <select id="wrestler1">
+                                <option value="">-- Select Wrestler --</option>
+                            </select>
+                        </div>
+                        <button class="random-btn" onclick="randomWrestler(1)" title="Random wrestler">🎲</button>
                     </div>
-                    <div class="wrestler-selector">
-                        <label for="wrestler2">Wrestler 2</label>
-                        <select id="wrestler2">
-                            <option value="">-- Select Wrestler --</option>
-                        </select>
+                    <div class="wrestler-selector-row">
+                        <div class="wrestler-selector">
+                            <label for="wrestler2">Wrestler 2</label>
+                            <select id="wrestler2">
+                                <option value="">-- Select Wrestler --</option>
+                            </select>
+                        </div>
+                        <button class="random-btn" onclick="randomWrestler(2)" title="Random wrestler">🎲</button>
                     </div>
-                    <div class="wrestler-selector">
-                        <label for="wrestler3">Wrestler 3 (Optional)</label>
-                        <select id="wrestler3">
-                            <option value="">-- Select Wrestler --</option>
-                        </select>
+                    <div class="wrestler-selector-row">
+                        <div class="wrestler-selector">
+                            <label for="wrestler3">Wrestler 3 (Optional)</label>
+                            <select id="wrestler3">
+                                <option value="">-- Select Wrestler --</option>
+                            </select>
+                        </div>
+                        <button class="random-btn" onclick="randomWrestler(3)" title="Random wrestler">🎲</button>
                     </div>
                 </div>
 
@@ -550,6 +646,7 @@
         // Global variables
         let statisticsData = null;
         let selectedDivision = 'mens';
+        let selectedYear = 'ALL';
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', async () => {
@@ -593,6 +690,17 @@
                     selectedDivision = e.target.value;
                     populateWrestlerDropdowns();
                     validateSelection();
+                });
+            });
+
+            // Year radio buttons
+            document.querySelectorAll('input[name="year"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    selectedYear = e.target.value;
+                    // If comparison is already displayed, refresh it
+                    if (document.getElementById('resultsSection').classList.contains('active')) {
+                        compareWrestlers();
+                    }
                 });
             });
 
@@ -697,6 +805,18 @@
                 .replace(/\s+/g, '-')
                 .replace(/-+/g, '-')
                 .trim();
+        }
+
+        // Random wrestler picker
+        function randomWrestler(dropdownNum) {
+            const select = document.getElementById(`wrestler${dropdownNum}`);
+            const options = Array.from(select.options).filter(opt => opt.value !== '');
+            
+            if (options.length > 0) {
+                const randomIndex = Math.floor(Math.random() * options.length);
+                select.value = options[randomIndex].value;
+                validateSelection();
+            }
         }
 
         // Validate selection and enable/disable compare button
@@ -883,17 +1003,7 @@ async function loadCurrentRankings() {
 function isInCurrentRankings(wrestlerName, division) {
     if (!currentRankingsData) return false;
     
-    // Convert division name to key format
-    const divisionMap = {
-        'Men': 'mens',
-        'Women': 'womens',
-        "Men's Tag": 'menstag',
-        "Women's Tag": 'womenstag',
-        'Trios': 'trios'
-    };
-    
-    const divKey = divisionMap[division] || division;
-    const divisionData = currentRankingsData[divKey];
+    const divisionData = currentRankingsData[division];
     if (!divisionData) return false;
     
     return divisionData.some(w => w.name === wrestlerName);
@@ -902,27 +1012,67 @@ function isInCurrentRankings(wrestlerName, division) {
         // Create individual wrestler card
         function createWrestlerCard(data) {
             const initials = getInitials(data.name);
-            const photoHTML = data.photo 
-                ? `<img src="${data.photo}" alt="${data.name}">`
-                : initials;
+            // Try to load photo from images folder using wrestler slug
+            const wrestlerSlug = createSlug(data.name);
+            const photoHTML = `<img src="images/wrestlers/${wrestlerSlug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">`;
 
             // Calculate stats safely with fallbacks
 const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
 const isCurrentlyRanked = isInCurrentRankings(data.name, data.division);
-const currentRating = isCurrentlyRanked ? (data.currentRating || data.current) : 'N/A';
-const peakRating = data.peakRating || data.peak || 0;
-const floorRating = calculateFloorRating(data);
-const isActive = data.isActive !== undefined ? data.isActive : true;
 
-// Average rating - calculate from rating history or use fallback
-const avgRating = data.ratingHistory && data.ratingHistory.length > 0
-    ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
-    : (data.average || 0).toFixed(2);
+// Filter data by selected year
+let filteredHistory = data.ratingHistory || [];
+if (selectedYear !== 'ALL') {
+    const year = selectedYear === '2019' ? [2019, 2020, 2021] : [parseInt(selectedYear)];
+    filteredHistory = filteredHistory.filter(h => {
+        const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
+        return year.includes(weekYear);
+    });
+}
 
-const peakRank = data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-';
-const weeksAtOne = calculateWeeksAtOne(data);
-const totalWeeks = data.totalWeeks || data.totalWeeksRanked || (data.weeks?.length) || 0;
-const totalMatches = data.totalMatches || 0;
+// Calculate stats based on filtered history
+const currentRating = selectedYear === 'ALL' 
+    ? (isCurrentlyRanked ? (data.currentRating || data.current) : 'N/A')
+    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating.toFixed(2) : 'N/A');
+
+const currentRank = selectedYear === 'ALL'
+    ? (isCurrentlyRanked && data.currentRank ? data.currentRank : 'N/A')
+    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rank : 'N/A');
+
+const peakRating = filteredHistory.length > 0
+    ? Math.max(...filteredHistory.map(h => h.rating))
+    : (selectedYear === 'ALL' ? (data.peakRating || data.peak || 0) : 0);
+
+const floorRating = filteredHistory.length > 0
+    ? Math.min(...filteredHistory.map(h => h.rating))
+    : (selectedYear === 'ALL' ? calculateFloorRating(data) : 0);
+
+const avgRating = filteredHistory.length > 0
+    ? (filteredHistory.reduce((sum, h) => sum + h.rating, 0) / filteredHistory.length).toFixed(2)
+    : (selectedYear === 'ALL' 
+        ? (data.ratingHistory && data.ratingHistory.length > 0
+            ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
+            : (data.average || 0).toFixed(2))
+        : '0.00');
+
+const peakRank = filteredHistory.length > 0
+    ? Math.min(...filteredHistory.map(h => h.rank))
+    : (selectedYear === 'ALL' 
+        ? (data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-')
+        : '-');
+
+const weeksAtOne = filteredHistory.length > 0
+    ? filteredHistory.filter(h => h.rank === 1).length
+    : (selectedYear === 'ALL' ? calculateWeeksAtOne(data) : 0);
+
+const totalWeeks = filteredHistory.length > 0
+    ? filteredHistory.length
+    : (selectedYear === 'ALL' ? (data.totalWeeks || data.totalWeeksRanked || 0) : 0);
+
+// Total matches from statsByYear if available
+const totalMatches = selectedYear !== 'ALL' && data.statsByYear?.[selectedYear]
+    ? data.statsByYear[selectedYear].totalMatches
+    : (selectedYear === 'ALL' ? (data.totalMatches || 0) : 0);
 
             return `
                 <div class="wrestler-card">
@@ -931,18 +1081,23 @@ const totalMatches = data.totalMatches || 0;
                             ${photoHTML}
                         </div>
                         <div>
-                            <div class="wrestler-name-card">${data.name}</div>
+                            <div class="wrestler-name-card">
+                                ${data.name}
+                                <span class="status-badge ${isCurrentlyRanked ? 'active' : 'inactive'}">
+                                    ${isCurrentlyRanked ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
                             <div style="color: #999; font-size: 0.85em;">${getDivisionLabel(data.division)}</div>
                         </div>
                     </div>
                     <div class="stats-list">
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Current Rating</span>
-                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(currentRating) : ''}">${currentRating !== 'N/A' ? currentRating.toFixed(2) : 'N/A'}</span>
+                            <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rating</span>
+                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(parseFloat(currentRating)) : ''}">${currentRating !== 'N/A' ? (typeof currentRating === 'string' && currentRating !== 'N/A' ? currentRating : currentRating.toFixed(2)) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                        <span class="stat-label-card">Current Rank</span>
-                        <span class="stat-value-card">${isCurrentlyRanked && data.currentRank ? '#' + data.currentRank : 'N/A'}</span>
+                        <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rank</span>
+                        <span class="stat-value-card">${currentRank !== 'N/A' ? '#' + currentRank : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Rating</span>
