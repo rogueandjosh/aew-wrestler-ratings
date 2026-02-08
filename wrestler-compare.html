@@ -979,13 +979,30 @@ async function loadCurrentRankings() {
     return currentRankingsData;
 }
 
-function isInCurrentRankings(wrestlerName, division) {
-    if (!currentRankingsData) return false;
+// Check if wrestler is in current rankings and get their actual current data
+function getActualCurrentData(wrestlerName, division) {
+    if (!currentRankingsData) return { isRanked: false, rating: null, rank: null };
     
-    const divisionData = currentRankingsData[division];
-    if (!divisionData) return false;
+    // Convert division name to key format (if needed)
+    const divisionMap = {
+        'Men': 'mens',
+        'Women': 'womens',
+        "Men's Tag": 'menstag',
+        "Women's Tag": 'womenstag',
+        'Trios': 'trios'
+    };
     
-    return divisionData.some(w => w.name === wrestlerName);
+    const divKey = divisionMap[division] || division;
+    const divisionData = currentRankingsData[divKey];
+    
+    if (divisionData) {
+        const found = divisionData.find(w => w.name === wrestlerName);
+        if (found) {
+            return { isRanked: true, rating: found.rating, rank: found.rank };
+        }
+    }
+    
+    return { isRanked: false, rating: null, rank: null };
 }
 
         // Create individual wrestler card
@@ -997,7 +1014,8 @@ function isInCurrentRankings(wrestlerName, division) {
 
             // Calculate stats safely with fallbacks
 const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
-const isCurrentlyRanked = isInCurrentRankings(data.name, data.division);
+const actualCurrentData = getActualCurrentData(data.name, data.division);
+const isCurrentlyRanked = actualCurrentData.isRanked;
 
 // Filter data by selected year
 let filteredHistory = data.ratingHistory || [];
@@ -1011,11 +1029,11 @@ if (selectedYear !== 'ALL') {
 
 // Calculate stats based on filtered history
 const currentRating = selectedYear === 'ALL' 
-    ? (isCurrentlyRanked ? (data.currentRating || data.current || 0) : 'N/A')
+    ? (isCurrentlyRanked ? actualCurrentData.rating : 'N/A')
     : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
 
 const currentRank = selectedYear === 'ALL'
-    ? (isCurrentlyRanked ? data.currentRank : 'N/A')
+    ? (isCurrentlyRanked ? actualCurrentData.rank : 'N/A')
     : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rank : 'N/A');
 
 const peakRating = filteredHistory.length > 0
@@ -1109,6 +1127,18 @@ const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHisto
                             <span class="stat-label-card">Weeks at #1</span>
                             <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
                         </div>
+                        ${data.bestMatches && data.bestMatches.length > 0 ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Highest Match</span>
+                            <span class="stat-value-card good">${data.bestMatches[0].rating.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        ${data.statsByYear?.ALL ? `
+                        <div class="stat-row-card">
+                            <span class="stat-label-card">Lowest Match</span>
+                            <span class="stat-value-card poor">${data.statsByYear.ALL.lowestRating.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
                         ${data.peakWeek ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
