@@ -1015,7 +1015,7 @@ const currentRating = selectedYear === 'ALL'
     : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
 
 const currentRank = selectedYear === 'ALL'
-    ? (isCurrentlyRanked && data.currentRank ? data.currentRank : 'N/A')
+    ? (isCurrentlyRanked ? data.currentRank : 'N/A')
     : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rank : 'N/A');
 
 const peakRating = filteredHistory.length > 0
