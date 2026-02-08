@@ -1115,7 +1115,7 @@ const peakRank = filteredHistory.length > 0
     ? Math.min(...filteredHistory.map(h => h.rank))
     : (selectedYear === 'ALL' 
         ? (data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-')
-        : 'N/A');
+        : 'N/A'); // Changed from '-' to 'N/A'
 
 const weeksAtOne = filteredHistory.length > 0
     ? filteredHistory.filter(h => h.rank === 1).length
@@ -1204,24 +1204,20 @@ if (selectedYear === 'ALL') {
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Best Rank</span>
-                            <span class="stat-value-card">#${peakRank}</span>
+                            <span class="stat-value-card">${peakRank !== 'N/A' ? '#' + peakRank : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
                             <span class="stat-label-card">Weeks at #1</span>
                             <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
                         </div>
-                        ${highestMatch !== 'N/A' ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Highest Match</span>
-                            <span class="stat-value-card good">${highestMatch.toFixed(2)}</span>
+                            <span class="stat-value-card ${highestMatch !== 'N/A' ? 'good' : ''}">${highestMatch !== 'N/A' ? highestMatch.toFixed(2) : 'N/A'}</span>
                         </div>
-                        ` : ''}
-                        ${lowestMatch !== 'N/A' ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Lowest Match</span>
-                            <span class="stat-value-card poor">${lowestMatch.toFixed(2)}</span>
+                             <span class="stat-value-card ${lowestMatch !== 'N/A' ? 'poor' : ''}">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
                         </div>
-                        ` : ''}
                         ${selectedYear === 'ALL' && data.peakRatingWeek ? `
                         <div class="stat-row-card">
                             <span class="stat-label-card">Peak Week</span>
