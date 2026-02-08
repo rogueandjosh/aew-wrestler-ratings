@@ -439,8 +439,15 @@
     }
     
     .stat-value-card {
-        font-size: 0.85em;
-        word-break: break-word; /* Add this */
+    font-size: 0.85em;
+    word-break: break-word;
+    }
+
+/* Specifically make Peak Week text smaller on mobile */
+    .stat-row-card:last-child .stat-value-card {
+    font-size: 0.7em;
+    line-height: 1.2;
+    overflow-wrap: break-word;
     }
     
     /* Smaller photo */
