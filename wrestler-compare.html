@@ -368,10 +368,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
+            padding: 8px 10px; /* Changed from 8px */
             background: rgba(255, 255, 255, 0.02);
             border-radius: 6px;
             transition: background 0.2s;
+            gap: 10px; /* Add this line */
         }
 
         .stat-row-card:hover {
@@ -381,13 +382,18 @@
         .stat-label-card {
             color: #999;
             font-size: 0.75em;
+            flex: 0 0 auto; /* Add this */
+            max-width: 50%; /* Add this */
         }
 
         .stat-value-card {
             color: #fff;
             font-weight: bold;
             font-size: 0.9em;
+            flex: 0 0 auto; /* Add this */
+            text-align: right; /* Add this */
         }
+        
 
         .stat-value-card.highlight {
             color: #ffd700;
@@ -405,6 +411,48 @@
         .stat-value-card.poor {
             color: #f87171;
         }
+
+        /* Mobile: Hide 3rd wrestler and optimize for 2 side-by-side */
+@media (max-width: 768px) {
+    /* Hide third wrestler dropdown */
+    .wrestler-selectors .wrestler-selector-row:nth-child(3) {
+        display: none;
+    }
+    
+    /* Force exactly 2 columns */
+    .comparison-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    /* Tighter card spacing */
+    .wrestler-card {
+        padding: 10px;
+    }
+    
+    .stat-row-card {
+        padding: 6px 8px;
+    }
+    
+    .stat-label-card {
+        font-size: 0.7em;
+    }
+    
+    .stat-value-card {
+        font-size: 0.85em;
+    }
+    
+    /* Smaller photo */
+    .wrestler-photo {
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
+    }
+    
+    .wrestler-name-card {
+        font-size: 1em;
+    }
+}
 
         /* Random Wrestler Dice Button */
         .random-btn {
