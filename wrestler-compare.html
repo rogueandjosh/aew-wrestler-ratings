@@ -740,9 +740,6 @@
             // Division radio buttons
             document.querySelectorAll('input[name="division"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
-                    selectedDivision = e.target.value;
-                    console.log('Division changed to:', selectedDivision);
-                    populateWrestlerDropdowns();
                     validateSelection();
                 });
             });
@@ -817,10 +814,6 @@
                 const currentValue = select.value;
                 
                 select.innerHTML = '<option value="">-- Select Wrestler --</option>';
-                
-                wrestlers.forEach(wrestler => {
-    console.log('Processing wrestler:', wrestler, 'type:', typeof wrestler);
-    const option = document.createElement('option');
                     
                     // Show division label for "All Divisions" mode
                     if (selectedDivision === 'all') {
@@ -856,19 +849,6 @@
             };
             return labels[div] || div;
         }
-
-        // Create slug from wrestler name
-function createSlug(name) {
-    if (typeof name !== 'string') {
-        console.error('createSlug received non-string:', name, typeof name);
-        return '';
-    }
-    return name.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-}
 
         // Random wrestler picker
         function randomWrestler(dropdownNum) {
