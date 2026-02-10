@@ -741,6 +741,7 @@
             document.querySelectorAll('input[name="division"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     selectedDivision = e.target.value;
+                    console.log('Division changed to:', selectedDivision);
                     populateWrestlerDropdowns();
                     validateSelection();
                 });
