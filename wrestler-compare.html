@@ -842,6 +842,18 @@
             });
         }
 
+        // Create slug from wrestler name
+function createSlug(name) {
+    if (typeof name !== 'string') {
+        return '';
+    }
+    return name.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+}
+        
         // Get human-readable division label
         function getDivisionLabel(div) {
             const labels = {
