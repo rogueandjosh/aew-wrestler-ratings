@@ -802,7 +802,11 @@
             }
 
             // Sort alphabetically
-            wrestlers.sort((a, b) => a.name.localeCompare(b.name));
+            wrestlers.sort((a, b) => {
+            const nameA = typeof a.name === 'string' ? a.name : (a.name?.name || '');
+            const nameB = typeof b.name === 'string' ? b.name : (b.name?.name || '');
+            return nameA.localeCompare(nameB);
+            });
 
             // Populate each dropdown
             dropdowns.forEach(dropdownId => {
