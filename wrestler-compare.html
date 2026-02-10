@@ -794,17 +794,15 @@
             } else {
     // Single division
     if (statisticsData[selectedDivision]) {
-        console.log('Mapping division:', selectedDivision, 'Count:', statisticsData[selectedDivision].length);
-        wrestlers = statisticsData[selectedDivision].map(w => {
-            console.log('Wrestler object:', w);
-            return {
+        wrestlers = statisticsData[selectedDivision]
+            .filter(w => typeof w.name === 'string') // Filter out bad data
+            .map(w => ({
                 name: w.name,
                 division: selectedDivision
-            };
-        });
-        console.log('Mapped wrestlers:', wrestlers.length);
+            }));
+
+          }
     }
-}
 
             // Sort alphabetically
             wrestlers.sort((a, b) => {
