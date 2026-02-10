@@ -781,7 +781,7 @@
                 divisions.forEach(div => {
                     if (statisticsData[div]) {
                         statisticsData[div]
-                            .filter(w => typeof w.name === 'string') // ADD FILTER HERE TOO
+                            .filter(w => typeof w.name === 'string')
                             .forEach(w => {
                                 wrestlers.push({
                                     name: w.name,
@@ -794,7 +794,7 @@
                 // Single division
                 if (statisticsData[selectedDivision]) {
                     wrestlers = statisticsData[selectedDivision]
-                        .filter(w => typeof w.name === 'string') // Filter out bad data
+                        .filter(w => typeof w.name === 'string')
                         .map(w => ({
                             name: w.name,
                             division: selectedDivision
