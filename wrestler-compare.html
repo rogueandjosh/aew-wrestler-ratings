@@ -821,8 +821,8 @@
                 select.innerHTML = '<option value="">-- Select Wrestler --</option>';
                 
                 wrestlers.forEach(wrestler => {
-                    const option = document.createElement('option');
-                    option.value = createSlug(wrestler.name);
+    console.log('Processing wrestler:', wrestler, 'type:', typeof wrestler);
+    const option = document.createElement('option');
                     
                     // Show division label for "All Divisions" mode
                     if (selectedDivision === 'all') {
