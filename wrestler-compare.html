@@ -780,31 +780,33 @@
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
                 divisions.forEach(div => {
                     if (statisticsData[div]) {
-                        statisticsData[div].forEach(w => {
-                            wrestlers.push({
-                                name: w.name,
-                                division: div
+                        statisticsData[div]
+                            .filter(w => typeof w.name === 'string') // ADD FILTER HERE TOO
+                            .forEach(w => {
+                                wrestlers.push({
+                                    name: w.name,
+                                    division: div
+                                });
                             });
-                        });
                     }
                 });
             } else {
-    // Single division
-    if (statisticsData[selectedDivision]) {
-        wrestlers = statisticsData[selectedDivision]
-            .filter(w => typeof w.name === 'string') // Filter out bad data
-            .map(w => ({
-                name: w.name,
-                division: selectedDivision
-            }));
-        }
-    }
+                // Single division
+                if (statisticsData[selectedDivision]) {
+                    wrestlers = statisticsData[selectedDivision]
+                        .filter(w => typeof w.name === 'string') // Filter out bad data
+                        .map(w => ({
+                            name: w.name,
+                            division: selectedDivision
+                        }));
+                }
+            }
 
             // Sort alphabetically
             wrestlers.sort((a, b) => {
-            const nameA = typeof a.name === 'string' ? a.name : (a.name?.name || '');
-            const nameB = typeof b.name === 'string' ? b.name : (b.name?.name || '');
-            return nameA.localeCompare(nameB);
+                const nameA = typeof a.name === 'string' ? a.name : '';
+                const nameB = typeof b.name === 'string' ? b.name : '';
+                return nameA.localeCompare(nameB);
             });
 
             // Populate each dropdown
