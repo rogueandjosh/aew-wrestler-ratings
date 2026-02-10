@@ -1255,32 +1255,43 @@ if (selectedYear === 'ALL') {
 
         // ===== PHASE 3: CHART FUNCTIONS =====
         
-        // Aggregate rating history by month
         function aggregateByMonth(historyData) {
-            const monthlyMap = {};
+    const monthlyMap = {};
+    
+    historyData.forEach(snapshot => {
+        // Use the week label to determine month, not the date
+        // Example: "Jan '26 Week 1" -> extract "Jan '26"
+        const weekLabel = snapshot.week;
+        const monthMatch = weekLabel.match(/^([A-Za-z]{3}) '(\d{2})/);
+        
+        if (monthMatch) {
+            const monthStr = monthMatch[1]; // "Jan"
+            const yearStr = monthMatch[2];  // "26"
+            const monthKey = `20${yearStr}-${monthStr}`; // "2026-Jan"
             
-            historyData.forEach(snapshot => {
-                const date = new Date(snapshot.date);
-                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthlyMap[monthKey]) {
+                // Create a proper date for sorting (first day of that month)
+                const monthNum = new Date(`${monthStr} 1, 20${yearStr}`).getMonth();
+                const sortDate = new Date(2000 + parseInt(yearStr), monthNum, 1);
                 
-                if (!monthlyMap[monthKey]) {
-                    monthlyMap[monthKey] = {
-                        ratings: [],
-                        date: date,
-                        label: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
-                    };
-                }
-                monthlyMap[monthKey].ratings.push(snapshot.rating);
-            });
-            
-            return Object.keys(monthlyMap)
-                .sort()
-                .map(key => ({
-                    label: monthlyMap[key].label,
-                    rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
-                    date: monthlyMap[key].date
-                }));
+                monthlyMap[monthKey] = {
+                    ratings: [],
+                    date: sortDate,
+                    label: `${monthStr} ${yearStr}`
+                };
+            }
+            monthlyMap[monthKey].ratings.push(snapshot.rating);
         }
+    });
+    
+    return Object.keys(monthlyMap)
+        .sort((a, b) => monthlyMap[a].date - monthlyMap[b].date)
+        .map(key => ({
+            label: monthlyMap[key].label,
+            rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
+            date: monthlyMap[key].date
+        }));
+}
 
         // Create comparison chart
         function createComparisonChart(wrestlerDataArray) {
