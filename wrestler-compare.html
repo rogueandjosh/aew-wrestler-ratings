@@ -743,13 +743,30 @@
         let selectedDivision = 'mens';
         let selectedYear = 'ALL';
         let comparisonChart = null;
+        let allTeamMembers = null;
+        let allNameChanges = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', async () => {
             await loadStatisticsData();
+            await loadTeamData();
             setupEventListeners();
             checkURLParams();
         });
+
+        // Load team-members.json and name-changes.json for team photo lookups
+        async function loadTeamData() {
+            try {
+                const [teamRes, nameRes] = await Promise.all([
+                    fetch('team-members.json'),
+                    fetch('name-changes.json')
+                ]);
+                if (teamRes.ok) allTeamMembers = await teamRes.json();
+                if (nameRes.ok) allNameChanges = await nameRes.json();
+            } catch (error) {
+                console.log('Could not load team/name-change data:', error);
+            }
+        }
 
         // Load statistics.json to get wrestler lists
         async function loadStatisticsData() {
@@ -1134,9 +1151,48 @@ function getActualCurrentData(wrestlerName, division) {
     return { isRanked: false, rating: null, rank: null };
 }
 
+        // Helper: Find team members using team-members.json with fallbacks
+        function findTeamMembers(teamName) {
+            // Direct lookup
+            let members = allTeamMembers?.teams?.[teamName];
+            if (members && members.length >= 2) return members;
+
+            // Try without "The" prefix
+            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
+            members = allTeamMembers?.teams?.[nameWithoutThe];
+            if (members && members.length >= 2) return members;
+
+            // Try with "The" prefix
+            members = allTeamMembers?.teams?.['The ' + teamName];
+            if (members && members.length >= 2) return members;
+
+            // Check name-changes.json (old name → new name)
+            if (allNameChanges && Array.isArray(allNameChanges)) {
+                const nameChange = allNameChanges.find(c => c.oldName === teamName);
+                if (nameChange && nameChange.newName) {
+                    members = allTeamMembers?.teams?.[nameChange.newName];
+                    if (members && members.length >= 2) return members;
+                }
+                // Also try new name → old name
+                const reverseChange = allNameChanges.find(c => c.newName === teamName);
+                if (reverseChange && reverseChange.oldName) {
+                    members = allTeamMembers?.teams?.[reverseChange.oldName];
+                    if (members && members.length >= 2) return members;
+                }
+            }
+
+            // Last resort: parse "Name1 & Name2" or "Name1, Name2 & Name3" directly
+            if (teamName.includes(' & ') || teamName.includes(', ')) {
+                const parts = teamName.split(/[,&]/).map(n => n.trim()).filter(n => n);
+                if (parts.length >= 2) return parts;
+            }
+
+            return null;
+        }
+
         // Generate photo HTML - single photo for singles, multiple for teams
         function getPhotoHTML(data) {
-            const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' || 
+            const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' ||
                           data.division === "Men's Tag" || data.division === "Women's Tag";
             const isTrios = data.division === 'Trios';
 
@@ -1149,21 +1205,11 @@ function getActualCurrentData(wrestlerName, division) {
                 </div>`;
             }
 
-            // Team - try to extract member names from & pattern
-            const members = data.name.split(' & ').map(m => m.trim());
-            
-            // For trios with pattern like "Young Bucks & Perry", first part might be a tag team
-            // Also handle "A, B & C" pattern common in trios
-            let memberNames = [];
-            if (isTrios) {
-                // Handle comma-separated names: "Alexander, Fletcher & Takeshita"
-                memberNames = data.name.split(/[,&]/).map(m => m.trim()).filter(m => m);
-            } else {
-                memberNames = members;
-            }
+            // Team - look up members from team-members.json
+            const members = findTeamMembers(data.name);
 
-            // If we couldn't split into multiple members, show single team photo
-            if (memberNames.length <= 1) {
+            // If no members found, show single photo with team initials
+            if (!members || members.length < 2) {
                 const initials = getInitials(data.name);
                 const slug = createSlug(data.name);
                 return `<div class="wrestler-photo">
@@ -1171,8 +1217,8 @@ function getActualCurrentData(wrestlerName, division) {
                 </div>`;
             }
 
-            const photoClass = isTrios ? 'trios-photos' : 'tag-photos';
-            const photos = memberNames.map(member => {
+            const photoClass = (isTrios || members.length >= 3) ? 'trios-photos' : 'tag-photos';
+            const photos = members.map(member => {
                 const slug = createSlug(member);
                 const initials = getInitials(member);
                 return `<div class="wrestler-photo">
