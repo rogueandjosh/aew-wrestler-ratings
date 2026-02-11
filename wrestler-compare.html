@@ -352,6 +352,37 @@
             border-radius: 50%;
         }
 
+        /* Multi-photo container for tag teams and trios */
+        .team-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+        }
+
+        .team-photos .wrestler-photo {
+            border-width: 1.5px;
+        }
+
+        .team-photos.tag-photos .wrestler-photo {
+            width: 26px;
+            height: 26px;
+            font-size: 0.55em;
+        }
+
+        .team-photos.trios-photos {
+            width: 60px;
+        }
+
+        .team-photos.trios-photos .wrestler-photo {
+            width: 22px;
+            height: 22px;
+            font-size: 0.5em;
+        }
+
         .wrestler-name-card {
             font-size: 1.1em;
             color: #ffd700;
@@ -459,6 +490,18 @@
         width: 40px;
         height: 40px;
         font-size: 1em;
+    }
+
+    .team-photos.tag-photos .wrestler-photo {
+        width: 22px;
+        height: 22px;
+        font-size: 0.5em;
+    }
+
+    .team-photos.trios-photos .wrestler-photo {
+        width: 18px;
+        height: 18px;
+        font-size: 0.45em;
     }
     
     .wrestler-name-card {
@@ -1091,12 +1134,58 @@ function getActualCurrentData(wrestlerName, division) {
     return { isRanked: false, rating: null, rank: null };
 }
 
+        // Generate photo HTML - single photo for singles, multiple for teams
+        function getPhotoHTML(data) {
+            const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' || 
+                          data.division === "Men's Tag" || data.division === "Women's Tag";
+            const isTrios = data.division === 'Trios';
+
+            // Singles wrestler - single photo
+            if (!data.isTeam && !isTag && !isTrios) {
+                const initials = getInitials(data.name);
+                const slug = createSlug(data.name);
+                return `<div class="wrestler-photo">
+                    <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
+                </div>`;
+            }
+
+            // Team - try to extract member names from & pattern
+            const members = data.name.split(' & ').map(m => m.trim());
+            
+            // For trios with pattern like "Young Bucks & Perry", first part might be a tag team
+            // Also handle "A, B & C" pattern common in trios
+            let memberNames = [];
+            if (isTrios) {
+                // Handle comma-separated names: "Alexander, Fletcher & Takeshita"
+                memberNames = data.name.split(/[,&]/).map(m => m.trim()).filter(m => m);
+            } else {
+                memberNames = members;
+            }
+
+            // If we couldn't split into multiple members, show single team photo
+            if (memberNames.length <= 1) {
+                const initials = getInitials(data.name);
+                const slug = createSlug(data.name);
+                return `<div class="wrestler-photo">
+                    <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
+                </div>`;
+            }
+
+            const photoClass = isTrios ? 'trios-photos' : 'tag-photos';
+            const photos = memberNames.map(member => {
+                const slug = createSlug(member);
+                const initials = getInitials(member);
+                return `<div class="wrestler-photo">
+                    <img src="images/wrestlers/${slug}.jpg" alt="${member}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
+                </div>`;
+            }).join('');
+
+            return `<div class="team-photos ${photoClass}">${photos}</div>`;
+        }
+
         // Create individual wrestler card
         function createWrestlerCard(data) {
-            const initials = getInitials(data.name);
-            // Try to load photo from images folder using wrestler slug
-            const wrestlerSlug = createSlug(data.name);
-            const photoHTML = `<img src="images/wrestlers/${wrestlerSlug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">`;
+            const photoHTML = getPhotoHTML(data);
 
             // Calculate stats safely with fallbacks
 const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
@@ -1177,9 +1266,7 @@ if (selectedYear === 'ALL') {
             return `
                 <div class="wrestler-card">
                     <div class="wrestler-header-card">
-                        <div class="wrestler-photo">
-                            ${photoHTML}
-                        </div>
+                        ${photoHTML}
                         <div>
                             <div class="wrestler-name-card">
                                 ${data.name}
