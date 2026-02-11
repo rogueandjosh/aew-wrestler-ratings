@@ -740,6 +740,8 @@
             // Division radio buttons
             document.querySelectorAll('input[name="division"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
+                    selectedDivision = e.target.value;
+                    populateWrestlerDropdowns();
                     validateSelection();
                 });
             });
