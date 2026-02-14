@@ -213,7 +213,7 @@
                 align-items: flex-end;
             }
 
-            /* Dropdowns take full row */
+            /* Dropdowns take full first row */
             .filters-group {
                 width: 100%;
                 flex-direction: row;
@@ -236,15 +236,13 @@
                 font-size: 0.85em;
             }
 
-            /* Nav arrows go on second row with action buttons */
-            #prevWeekBtn,
-            #nextWeekBtn {
-                order: 2;
-            }
+            /* Arrows wrap to second row, spaced to edges */
+            #prevWeekBtn { order: 2; }
+            #nextWeekBtn { order: 3; }
 
             .week-selector button {
                 width: auto;
-                padding: 7px 10px;
+                padding: 6px 14px;
             }
 
             /* Hide text labels on nav arrows, keep arrows only */
@@ -892,7 +890,7 @@
                 padding: 10px;
             }
 
-            /* === HEADER COMPACTION === */
+            /* === HEADER === */
             header {
                 padding: 12px 10px;
                 margin-bottom: 15px;
@@ -911,7 +909,7 @@
             }
 
             .date-range {
-                font-size: 0.85em;
+                font-size: 0.82em;
                 margin-top: 6px;
             }
 
@@ -919,42 +917,25 @@
                 font-size: 0.75em;
             }
 
-            /* === WEEK SELECTOR LAYOUT === */
             .week-selector {
                 margin-top: 10px;
                 margin-bottom: 5px;
                 gap: 6px;
             }
 
-            /* Row with arrows: compact, spaced apart */
-            .selector-row {
-                gap: 6px;
-            }
-
-            .week-selector button {
-                padding: 6px 12px;
-                font-size: 0.9em;
-            }
-
-            .week-selector button .arrow {
-                font-size: 1em;
-            }
-
-            /* === ACTION BUTTONS — SIDE BY SIDE, COMPACT === */
+            /* === ARROWS + ACTION BUTTONS — ALL ON ONE ROW === */
             .action-buttons {
                 flex-direction: row;
-                gap: 6px;
+                gap: 4px;
                 width: 100%;
+                align-items: center;
             }
 
             .action-buttons .reset-btn {
                 min-width: unset;
                 flex: 1;
-                font-size: 0.75em !important;
-                padding: 6px 6px !important;
-                white-space: normal;
-                line-height: 1.2;
-                text-align: center;
+                font-size: 0.82em !important;
+                padding: 7px 10px !important;
             }
 
             /* === DIVISION TABS — HORIZONTAL SCROLL === */
@@ -987,7 +968,7 @@
                 font-size: 0.85em;
             }
 
-            /* === STATS SUMMARY BOXES — STAY IN ROW === */
+            /* === STATS SUMMARY BOXES === */
             .stats-summary {
                 flex-direction: row;
                 gap: 8px;
@@ -1008,7 +989,7 @@
                 font-size: 0.75em;
             }
 
-            /* === TABLE — KEEP PHOTOS, HORIZONTAL SCROLL === */
+            /* === TABLE — PHOTOS VISIBLE, HORIZONTAL SCROLL === */
             .table-container {
                 padding: 10px;
                 overflow-x: auto;
@@ -1024,7 +1005,7 @@
                 padding: 6px 5px;
             }
 
-            /* Smaller wrestler photos on mobile */
+            /* Smaller photos on mobile */
             .wrestler-image {
                 width: 55px;
                 padding: 4px;
@@ -1035,7 +1016,7 @@
                 height: 45px !important;
             }
 
-            /* Tag team/trio images - compact on mobile */
+            /* Tag/trio images compact */
             .wrestler-image div {
                 gap: 1px !important;
             }
@@ -1056,7 +1037,7 @@
                 margin-bottom: 12px;
             }
 
-            /* === ABOUT SECTION === */
+            /* === ABOUT === */
             .about {
                 padding: 15px;
                 margin-top: 25px;
@@ -1163,10 +1144,10 @@
                 
                 <div class="action-buttons">
                     <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                        ↻ Current Week
+                        ↻ Current
                     </button>
                     <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                        🎲 Random Week
+                        🎲 Random
                     </button>
                 </div>
             </div>
@@ -1278,9 +1259,13 @@
             return weekLabel;
         }
 
+        // Compact week label for dropdown: "Jan '26 Wk 1" instead of "January '26 Week 1"
+        function compactWeekLabel(label) {
+            return label.replace('Week ', 'Wk ');
+        }
+
         // Load name changes data
-        async function loadNameChanges() {
-            if (nameChangesData) return nameChangesData;
+        async function loadNameChanges() {            if (nameChangesData) return nameChangesData;
             
             try {
                 const response = await fetch('name-changes.json');
@@ -2074,10 +2059,10 @@ let visibleColumns = {
             ratingsData = await calculateArrowDirections(ratingsData);
             console.log('✅ Arrow directions calculated');
             
-            // Update Current Week button text to include the week label
+            // Keep Current button text simple
             const resetBtn = document.getElementById('resetBtn');
-            if (resetBtn && ratingsData.currentWeek) {
-                resetBtn.textContent = `↻ Current Week (${expandMonthName(ratingsData.currentWeek)})`;
+            if (resetBtn) {
+                resetBtn.textContent = '↻ Current';
             }
 
             // Load statistics if available
@@ -2088,9 +2073,10 @@ let visibleColumns = {
             // Populate week selector
             populateWeekSelector();
             
-            // Update date range and last updated
+            // Update date range and last updated — include week label in date range
             if (ratingsData.dateRange) {
-                document.getElementById('dateRange').textContent = ratingsData.dateRange;
+                const weekLabel = expandMonthName(ratingsData.currentWeek || '');
+                document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
             } else {
                 document.getElementById('dateRange').textContent = '';
             }
@@ -2123,7 +2109,7 @@ let visibleColumns = {
             // Add current week option with full month name
             const currentOption = document.createElement('option');
             currentOption.value = 'current';
-            currentOption.textContent = `Current (${expandMonthName(ratingsData.currentWeek)})`;
+            currentOption.textContent = `Current (${compactWeekLabel(ratingsData.currentWeek)})`;
             select.appendChild(currentOption);
             
             // Add archived weeks and populate filter dropdowns
@@ -2135,7 +2121,7 @@ let visibleColumns = {
                 archiveIndex.weeks.forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
-                    option.textContent = expandMonthName(week.label);
+                    option.textContent = compactWeekLabel(week.label);
                     select.appendChild(option);
                     
                     // Extract year and month
@@ -2239,7 +2225,7 @@ let visibleColumns = {
             // Populate week dropdown with filtered weeks
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
+                weekSelect.innerHTML += `<option value="archive/${week.filename}">${compactWeekLabel(week.label)}</option>`;
             });
             
             // If we're in the middle of navigation, skip auto-selection logic
@@ -2513,16 +2499,17 @@ let visibleColumns = {
                         }
                         console.log('🟢 Arrow directions processed');
                         
-                        // Update Current Week button text to include the week label
+                        // Keep Current button text simple
                         const resetBtn = document.getElementById('resetBtn');
-                        if (resetBtn && ratingsData.currentWeek) {
-                            resetBtn.textContent = `↻ Current Week (${expandMonthName(ratingsData.currentWeek)})`;
+                        if (resetBtn) {
+                            resetBtn.textContent = '↻ Current';
                         }
                         
                         // Data is already correct from JSON export - no processing needed
                         
                         if (ratingsData.dateRange) {
-                            document.getElementById('dateRange').textContent = ratingsData.dateRange;
+                            const weekLabel = expandMonthName(ratingsData.currentWeek || '');
+                            document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
                         } else {
                             document.getElementById('dateRange').textContent = '';
                         }
@@ -2550,14 +2537,15 @@ let visibleColumns = {
                         try {
                             ratingsData = fixEncodingIssues(data);
                             
-                            // Reset Current Week button text to simple version (no week label for archives)
+                            // Reset Current Week button text to simple version
                             const resetBtn = document.getElementById('resetBtn');
                             if (resetBtn) {
-                                resetBtn.textContent = '↻ Current Week';
+                                resetBtn.textContent = '↻ Current';
                             }
 
                             if (ratingsData.dateRange) {
-                                document.getElementById('dateRange').textContent = ratingsData.dateRange;
+                                const weekLabel = expandMonthName(ratingsData.currentWeek || '');
+                                document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
                             } else {
                                 document.getElementById('dateRange').textContent = '';
                             }
