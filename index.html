@@ -207,31 +207,48 @@
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .selector-row {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: space-between;
             }
 
             .filters-group {
                 width: 100%;
-                flex-direction: column;
+                flex-direction: row;
+                order: 2;
             }
 
             .filter-item,
             .week-item {
-                width: 100%;
-                min-width: unset;
+                flex: 1;
+                min-width: 0;
             }
 
+            /* Nav buttons stay compact on sides */
             .week-selector button {
-                width: 100%;
+                width: auto;
                 justify-content: center;
+                padding: 8px 10px;
+            }
+
+            /* Hide button text labels on mobile, keep arrows */
+            .week-selector button .btn-label {
+                display: none;
+            }
+
+            #prevWeekBtn {
+                order: 1;
+            }
+
+            #nextWeekBtn {
+                order: 3;
             }
 
             .reset-btn {
                 width: 100%;
             }
         }
-            min-width: 200px;
 
         .week-selector select:hover {
             background: rgba(255, 215, 0, 0.2);
@@ -863,29 +880,156 @@
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
+            /* === HEADER COMPACTION === */
+            body {
+                padding: 10px;
             }
 
+            header {
+                padding: 12px 10px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+                margin-right: 45px;
+                margin-bottom: 5px;
+            }
+
+            .subtitle {
+                font-size: 0.8em;
+                line-height: 1.3;
+            }
+
+            .date-range {
+                font-size: 0.85em;
+                margin-top: 6px;
+            }
+
+            .last-updated {
+                font-size: 0.75em;
+            }
+
+            .week-selector {
+                margin-top: 12px;
+                margin-bottom: 5px;
+                gap: 8px;
+            }
+
+            /* === DIVISION TABS — HORIZONTAL SCROLL === */
             .tabs {
-                flex-direction: column;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                gap: 6px;
+                margin-bottom: 15px;
+                padding-bottom: 5px;
+                justify-content: flex-start;
             }
 
             .tab {
-                width: 100%;
+                flex: 0 0 auto;
+                white-space: nowrap;
+                padding: 9px 14px;
+                font-size: 0.85em;
             }
 
+            /* === VIEW TOGGLE === */
+            .view-toggle {
+                margin-bottom: 12px;
+                max-width: 100%;
+            }
+
+            .toggle-btn {
+                padding: 10px 8px;
+                font-size: 0.85em;
+            }
+
+            /* === STATS SUMMARY BOXES === */
             .stats-summary {
-                flex-direction: column;
-                gap: 15px;
+                flex-direction: row;
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+
+            .stat-box {
+                padding: 10px 8px;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .stat-number {
+                font-size: 1.3em;
+            }
+
+            .stat-label {
+                font-size: 0.75em;
+            }
+
+            /* === TABLE — HIDE COLUMNS & COMPACT === */
+            .table-container {
+                padding: 10px;
             }
 
             table {
-                font-size: 0.9em;
+                font-size: 0.82em;
             }
 
             th, td {
-                padding: 8px 10px;
+                padding: 6px 5px;
+            }
+
+            /* Hide wrestler images on mobile to save horizontal space */
+            .wrestler-image,
+            .wrestler-image-header {
+                display: none;
+            }
+
+            .rank {
+                width: 30px;
+                font-size: 0.95em;
+            }
+
+            /* === FILTER CONTROLS === */
+            .filter-controls {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            /* === ACTION BUTTONS — SIDE BY SIDE === */
+            .action-buttons {
+                flex-direction: row;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .action-buttons .reset-btn {
+                min-width: unset;
+                flex: 1;
+                font-size: 0.82em !important;
+                padding: 7px 10px !important;
+            }
+
+            /* === ABOUT SECTION === */
+            .about {
+                padding: 15px;
+                margin-top: 25px;
+            }
+
+            .about h2 {
+                font-size: 1.1em;
+            }
+
+            /* === DROPPED OUT GRID === */
+            .dropped-out-list,
+            .recently-dropped-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* === FOOTER === */
+            footer {
+                font-size: 0.75em;
+                padding: 12px;
             }
         }
 
@@ -2741,7 +2885,7 @@ if (tableEl) {
             <thead>
                 <tr>
                     <th>Rank</th>
-                    <th></th>
+                    <th class="wrestler-image-header"></th>
                     <th>Name</th>
                     <th>Rating</th>
                     <th>Change</th>
