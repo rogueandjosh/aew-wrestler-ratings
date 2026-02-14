@@ -2533,7 +2533,15 @@ let visibleColumns = {
                             // Update three-line display
                             document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
                             document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
-                            document.getElementById('lastUpdated').textContent = 'Archived';
+                            
+                            // Show "Last Updated" for the newest week, "Archived Week" for older ones
+                            const isNewestWeek = archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0 
+                                && ratingsData.currentWeek === archiveIndex.weeks[0].label;
+                            if (isNewestWeek && ratingsData.lastUpdated) {
+                                document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+                            } else {
+                                document.getElementById('lastUpdated').textContent = 'Archived Week';
+                            }
                             
                             // Restore the previous view instead of always showing Men's
                             if (currentView === 'statistics') {
