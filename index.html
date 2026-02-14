@@ -236,7 +236,7 @@
                 font-size: 0.85em;
             }
 
-            /* Arrows wrap to second row, spaced to edges */
+            /* Arrows wrap to second row */
             #prevWeekBtn { order: 2; }
             #nextWeekBtn { order: 3; }
 
@@ -245,7 +245,7 @@
                 padding: 6px 14px;
             }
 
-            /* Hide text labels on nav arrows, keep arrows only */
+            /* Hide text labels on nav arrows */
             .week-selector button .btn-label {
                 display: none;
             }
@@ -885,12 +885,10 @@
         }
 
         @media (max-width: 768px) {
-            /* === BODY === */
             body {
                 padding: 10px;
             }
 
-            /* === HEADER === */
             header {
                 padding: 12px 10px;
                 margin-bottom: 15px;
@@ -910,7 +908,7 @@
 
             .date-range {
                 font-size: 0.82em;
-                margin-top: 6px;
+                margin-top: 4px;
             }
 
             .last-updated {
@@ -923,22 +921,21 @@
                 gap: 6px;
             }
 
-            /* === ARROWS + ACTION BUTTONS — ALL ON ONE ROW === */
+            /* Action buttons with proper gap */
             .action-buttons {
                 flex-direction: row;
-                gap: 4px;
+                gap: 12px;
                 width: 100%;
-                align-items: center;
             }
 
             .action-buttons .reset-btn {
                 min-width: unset;
                 flex: 1;
-                font-size: 0.82em !important;
-                padding: 7px 10px !important;
+                font-size: 0.85em !important;
+                padding: 8px 10px !important;
             }
 
-            /* === DIVISION TABS — HORIZONTAL SCROLL === */
+            /* Division tabs — horizontal scroll */
             .tabs {
                 flex-wrap: nowrap;
                 overflow-x: auto;
@@ -957,7 +954,7 @@
                 width: auto;
             }
 
-            /* === VIEW TOGGLE === */
+            /* View toggle */
             .view-toggle {
                 margin-bottom: 12px;
                 max-width: 100%;
@@ -968,7 +965,7 @@
                 font-size: 0.85em;
             }
 
-            /* === STATS SUMMARY BOXES === */
+            /* Stats summary boxes — stay in row */
             .stats-summary {
                 flex-direction: row;
                 gap: 8px;
@@ -989,7 +986,7 @@
                 font-size: 0.75em;
             }
 
-            /* === TABLE — PHOTOS VISIBLE, HORIZONTAL SCROLL === */
+            /* Table — photos visible, horizontal scroll */
             .table-container {
                 padding: 10px;
                 overflow-x: auto;
@@ -1031,13 +1028,11 @@
                 font-size: 0.95em;
             }
 
-            /* === FILTER CONTROLS === */
             .filter-controls {
                 padding: 12px;
                 margin-bottom: 12px;
             }
 
-            /* === ABOUT === */
             .about {
                 padding: 15px;
                 margin-top: 25px;
@@ -1047,13 +1042,11 @@
                 font-size: 1.1em;
             }
 
-            /* === DROPPED OUT GRID === */
             .dropped-out-list,
             .recently-dropped-grid {
                 grid-template-columns: 1fr;
             }
 
-            /* === FOOTER === */
             footer {
                 font-size: 0.75em;
                 padding: 12px;
@@ -1091,8 +1084,7 @@
     <div class="container">
         <header style="position: relative;">
             <h1>AEW Wrestler Ratings</h1>
-            <p class="subtitle">Fan-made wrestler ratings based on match quality from Cagematch.net</p>
-            <p class="subtitle">Performance-based rankings, not wins and losses</p>
+            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
             
             <!-- Hamburger menu in top-right corner -->
             <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
@@ -1131,7 +1123,7 @@
                         <div class="filter-item week-item">
                             <label>Week</label>
                             <select id="weekSelect" onchange="loadSelectedWeek()">
-                                <option value="current">Current Week</option>
+                                <option value="current">Current</option>
                             </select>
                         </div>
                     </div>
@@ -1151,7 +1143,8 @@
                     </button>
                 </div>
             </div>
-            <p class="date-range" id="dateRange">Loading...</p>
+            <p class="date-range" id="weekLabel">Loading...</p>
+            <p class="date-range" id="dateRange"></p>
             <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
@@ -1259,13 +1252,14 @@
             return weekLabel;
         }
 
-        // Compact week label for dropdown: "Jan '26 Wk 1" instead of "January '26 Week 1"
+        // Compact week label for dropdowns: "Jan '26 Wk 1" instead of "Jan '26 Week 1"
         function compactWeekLabel(label) {
             return label.replace('Week ', 'Wk ');
         }
 
         // Load name changes data
-        async function loadNameChanges() {            if (nameChangesData) return nameChangesData;
+        async function loadNameChanges() {
+            if (nameChangesData) return nameChangesData;
             
             try {
                 const response = await fetch('name-changes.json');
@@ -2073,13 +2067,9 @@ let visibleColumns = {
             // Populate week selector
             populateWeekSelector();
             
-            // Update date range and last updated — include week label in date range
-            if (ratingsData.dateRange) {
-                const weekLabel = expandMonthName(ratingsData.currentWeek || '');
-                document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
-            } else {
-                document.getElementById('dateRange').textContent = '';
-            }
+            // Update three-line display: week label, date range, last updated
+            document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
+            document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
             document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
             
             // Check for saved state from back button, otherwise show men's division
@@ -2109,7 +2099,7 @@ let visibleColumns = {
             // Add current week option with full month name
             const currentOption = document.createElement('option');
             currentOption.value = 'current';
-            currentOption.textContent = `Current (${compactWeekLabel(ratingsData.currentWeek)})`;
+            currentOption.textContent = 'Current';
             select.appendChild(currentOption);
             
             // Add archived weeks and populate filter dropdowns
@@ -2223,7 +2213,7 @@ let visibleColumns = {
             });
             
             // Populate week dropdown with filtered weeks
-            weekSelect.innerHTML = '<option value="current">Current Week</option>';
+            weekSelect.innerHTML = '<option value="current">Current</option>';
             filteredWeeks.forEach(week => {
                 weekSelect.innerHTML += `<option value="archive/${week.filename}">${compactWeekLabel(week.label)}</option>`;
             });
@@ -2507,12 +2497,9 @@ let visibleColumns = {
                         
                         // Data is already correct from JSON export - no processing needed
                         
-                        if (ratingsData.dateRange) {
-                            const weekLabel = expandMonthName(ratingsData.currentWeek || '');
-                            document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
-                        } else {
-                            document.getElementById('dateRange').textContent = '';
-                        }
+                        // Update three-line display
+                        document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
+                        document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
                         document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
                         
                         // Restore the previous view instead of always showing Men's
@@ -2537,19 +2524,16 @@ let visibleColumns = {
                         try {
                             ratingsData = fixEncodingIssues(data);
                             
-                            // Reset Current Week button text to simple version
+                            // Reset Current Week button text to simple version (no week label for archives)
                             const resetBtn = document.getElementById('resetBtn');
                             if (resetBtn) {
                                 resetBtn.textContent = '↻ Current';
                             }
 
-                            if (ratingsData.dateRange) {
-                                const weekLabel = expandMonthName(ratingsData.currentWeek || '');
-                                document.getElementById('dateRange').textContent = weekLabel ? `${weekLabel} — ${ratingsData.dateRange}` : ratingsData.dateRange;
-                            } else {
-                                document.getElementById('dateRange').textContent = '';
-                            }
-                            document.getElementById('lastUpdated').textContent = `Week: ${ratingsData.currentWeek} (Archived)`;
+                            // Update three-line display
+                            document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
+                            document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
+                            document.getElementById('lastUpdated').textContent = 'Archived';
                             
                             // Restore the previous view instead of always showing Men's
                             if (currentView === 'statistics') {
