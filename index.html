@@ -208,16 +208,17 @@
         @media (max-width: 768px) {
             .selector-row {
                 flex-direction: row;
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
                 gap: 4px;
                 align-items: flex-end;
             }
 
+            /* Dropdowns take full row */
             .filters-group {
-                flex: 1;
-                min-width: 0;
+                width: 100%;
                 flex-direction: row;
                 gap: 4px;
+                order: 1;
             }
 
             .filter-item,
@@ -231,17 +232,22 @@
             }
 
             .week-selector select {
-                padding: 8px 4px;
+                padding: 7px 4px;
                 font-size: 0.85em;
             }
 
-            /* Compact nav arrow buttons */
-            .week-selector button {
-                width: auto;
-                padding: 8px 10px;
+            /* Nav arrows go on second row with action buttons */
+            #prevWeekBtn,
+            #nextWeekBtn {
+                order: 2;
             }
 
-            /* Hide text labels, keep arrows only */
+            .week-selector button {
+                width: auto;
+                padding: 7px 10px;
+            }
+
+            /* Hide text labels on nav arrows, keep arrows only */
             .week-selector button .btn-label {
                 display: none;
             }
@@ -881,11 +887,12 @@
         }
 
         @media (max-width: 768px) {
-            /* === HEADER COMPACTION === */
+            /* === BODY === */
             body {
                 padding: 10px;
             }
 
+            /* === HEADER COMPACTION === */
             header {
                 padding: 12px 10px;
                 margin-bottom: 15px;
@@ -912,13 +919,28 @@
                 font-size: 0.75em;
             }
 
+            /* === WEEK SELECTOR LAYOUT === */
             .week-selector {
                 margin-top: 10px;
                 margin-bottom: 5px;
-                gap: 8px;
+                gap: 6px;
             }
 
-            /* === ACTION BUTTONS — FIT INSIDE HEADER === */
+            /* Row with arrows: compact, spaced apart */
+            .selector-row {
+                gap: 6px;
+            }
+
+            .week-selector button {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+
+            .week-selector button .arrow {
+                font-size: 1em;
+            }
+
+            /* === ACTION BUTTONS — SIDE BY SIDE, COMPACT === */
             .action-buttons {
                 flex-direction: row;
                 gap: 6px;
@@ -928,9 +950,11 @@
             .action-buttons .reset-btn {
                 min-width: unset;
                 flex: 1;
-                font-size: 0.78em !important;
-                padding: 7px 8px !important;
-                white-space: nowrap;
+                font-size: 0.75em !important;
+                padding: 6px 6px !important;
+                white-space: normal;
+                line-height: 1.2;
+                text-align: center;
             }
 
             /* === DIVISION TABS — HORIZONTAL SCROLL === */
@@ -963,7 +987,7 @@
                 font-size: 0.85em;
             }
 
-            /* === STATS SUMMARY BOXES — ROW NOT STACK === */
+            /* === STATS SUMMARY BOXES — STAY IN ROW === */
             .stats-summary {
                 flex-direction: row;
                 gap: 8px;
@@ -984,7 +1008,7 @@
                 font-size: 0.75em;
             }
 
-            /* === TABLE — KEEP PHOTOS, ALLOW HORIZONTAL SCROLL === */
+            /* === TABLE — KEEP PHOTOS, HORIZONTAL SCROLL === */
             .table-container {
                 padding: 10px;
                 overflow-x: auto;
@@ -1011,7 +1035,7 @@
                 height: 45px !important;
             }
 
-            /* Tag team/trio images - even smaller on mobile */
+            /* Tag team/trio images - compact on mobile */
             .wrestler-image div {
                 gap: 1px !important;
             }
