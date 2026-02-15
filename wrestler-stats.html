@@ -367,17 +367,175 @@
         }
 
         @media (max-width: 768px) {
+            /* === BODY === */
+            body {
+                padding: 10px;
+            }
+
+            /* === HEADER === */
+            header {
+                padding: 12px 10px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+                margin-bottom: 6px;
+            }
+
+            /* Nav buttons — wrap and compact */
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 6px !important;
+                justify-content: center;
+            }
+
+            .back-link {
+                padding: 6px 10px !important;
+                font-size: 0.8em !important;
+            }
+
+            /* === WRESTLER HEADER === */
             .wrestler-header {
                 flex-direction: column;
                 text-align: center;
+                padding: 12px;
+                gap: 12px;
             }
 
+            .wrestler-name {
+                font-size: 1.4em;
+            }
+
+            .wrestler-image-container img {
+                width: 80px !important;
+                height: 80px !important;
+            }
+
+            /* Active teams sidebar — remove border when stacked */
+            .active-teams-container {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                border-left: none !important;
+                padding-top: 10px;
+                border-top: 2px solid rgba(255, 215, 0, 0.3);
+            }
+
+            /* === YEAR FILTER === */
+            .year-filter {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .year-filter h2 {
+                font-size: 0.95em;
+                margin-bottom: 8px;
+            }
+
+            .year-btn {
+                padding: 5px 10px;
+                font-size: 0.78em;
+            }
+
+            /* === STATS GRID === */
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
 
+            .stat-card {
+                padding: 8px;
+            }
+
+            .stat-value {
+                font-size: 1.4em;
+            }
+
+            .stat-label {
+                font-size: 0.65em;
+            }
+
+            .stat-subtext {
+                font-size: 0.6em;
+            }
+
+            /* === SECTIONS GENERAL === */
+            .section {
+                margin-bottom: 15px;
+            }
+
+            .section-title {
+                font-size: 1em;
+                margin-bottom: 8px;
+            }
+
+            /* === CHART === */
+            .chart-box {
+                padding: 8px;
+            }
+
+            /* === DISTRIBUTION BARS === */
+            .distribution-bars {
+                padding: 10px;
+            }
+
+            .bar-label {
+                min-width: 60px;
+                font-size: 0.75em;
+            }
+
+            .bar-count {
+                font-size: 0.8em;
+            }
+
+            /* === RECENT MATCHES === */
+            .recent-matches-list {
+                padding: 10px;
+            }
+
+            .match-rating-badge {
+                padding: 6px 8px;
+                font-size: 0.95em;
+            }
+
+            /* Match detail popups — constrain to viewport */
+            .match-details {
+                position: relative !important;
+                min-width: unset !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                margin-top: 4px !important;
+                font-size: 0.85em;
+            }
+
+            /* === BEST & WORST === */
             .matches-tables {
                 grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .match-table {
+                padding: 10px;
+            }
+
+            .match-row {
+                padding: 6px 8px;
+            }
+
+            .match-info-col {
+                font-size: 0.78em;
+            }
+
+            /* === TEAM AFFILIATIONS === */
+            .team-affiliations-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* === FOOTER === */
+            footer {
+                font-size: 0.75em !important;
+                padding: 12px !important;
             }
         }
     </style>
@@ -386,12 +544,13 @@
     <div class="container">
         <header>
             <h1>AEW WRESTLER RATINGS</h1>
-            <div style="display: flex; gap: 12px;">
+            <div class="nav-buttons" style="display: flex; gap: 12px;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
                     ← Back
                 </button>
                 <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block;">
                     🏠 Home
+                </a>
                 <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer;">
                 🥊 Compare
                 </a>
@@ -476,7 +635,7 @@
             <div class="section" id="inactiveTeamsSection" style="display: none;">
                 <div class="section-title">👥 Past Team Affiliations</div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="team-affiliations-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <!-- Tag Teams Table (Left) -->
                     <div id="inactiveTagTeamsContainer" style="display: none;">
                         <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.1em; text-align: center;">Tag Teams</h3>
