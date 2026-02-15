@@ -470,7 +470,7 @@
         font-size: 0.7em;
     }
     
-    stat-value-card {
+    .stat-value-card {
     font-size: 0.85em;
     word-break: break-word;
     overflow-wrap: break-word;
@@ -574,45 +574,89 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             h1 {
-                font-size: 2em;
+                font-size: 1.4em;
+            }
+
+            .subtitle {
+                font-size: 0.9em;
+            }
+
+            .back-link {
+                padding: 6px 12px;
+                font-size: 0.85em;
+                margin-top: 10px;
+            }
+
+            header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            .division-section,
+            .selection-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .division-section h2,
+            .selection-section h2 {
+                font-size: 1.1em;
+                margin-bottom: 12px;
             }
 
             .division-options {
                 flex-direction: column;
+                gap: 8px;
             }
 
             .division-option {
                 min-width: 100%;
             }
 
+            .division-option label {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
             .wrestler-selectors {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .wrestler-selector select {
+                padding: 10px;
+                font-size: 0.9em;
             }
 
             .action-buttons {
                 flex-direction: column;
+                gap: 8px;
             }
 
             .btn {
                 width: 100%;
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+
+            .stats-table-container,
+            .graph-container {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+
+            .stats-table-container h2,
+            .graph-container h2 {
+                font-size: 1.1em;
+                margin-bottom: 12px;
             }
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 1.6em;
-            }
-
-            .division-section,
-            .selection-section {
-                padding: 15px;
-            }
-        }
     </style>
 </head>
 <body>
