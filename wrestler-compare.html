@@ -508,15 +508,20 @@
         font-size: 1em;
     }
 
-    /* Dice buttons and selector rows compact on mobile */
-    .random-btn {
-        padding: 6px;
-        font-size: 1em;
-        margin-left: 4px;
-    }
-
+    /* Selector rows — keep dice inside container */
     .wrestler-selector-row {
         gap: 4px;
+    }
+
+    .random-btn {
+        padding: 4px 6px;
+        font-size: 0.9em;
+        margin-left: 2px;
+        min-width: 32px;
+    }
+
+    .wrestler-selector select {
+        min-width: 0;
     }
 }
 
@@ -530,7 +535,8 @@
             cursor: pointer;
             font-size: 1.2em;
             transition: all 0.3s;
-            margin-left: 8px;
+            margin-left: 0;
+            flex-shrink: 0;
         }
 
         .random-btn:hover {
@@ -548,6 +554,7 @@
 
         .wrestler-selector-row .wrestler-selector {
             flex: 1;
+            min-width: 0;
             margin-bottom: 0;
         }
 
