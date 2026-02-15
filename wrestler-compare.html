@@ -508,7 +508,6 @@
         font-size: 1em;
     }
 
-    /* Selector rows — keep dice inside container */
     .wrestler-selector-row {
         gap: 4px;
     }
@@ -615,6 +614,12 @@
                 padding-bottom: 15px;
             }
 
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center;
+            }
+
             .division-section,
             .selection-section {
                 padding: 15px;
@@ -675,6 +680,16 @@
             }
         }
 
+        @media (max-width: 768px) and (orientation: landscape) {
+            .graph-container {
+                min-height: 350px;
+            }
+
+            .graph-container canvas {
+                min-height: 300px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -682,7 +697,14 @@
         <header>
             <h1>🥊 Compare Wrestlers</h1>
             <p class="subtitle">Side-by-side wrestler comparison</p>
-            <a href="index.html" class="back-link">← Back to Rankings</a>
+            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px;">
+                <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none;">
+                    ← Back
+                </button>
+                <a href="index.html" class="back-link">
+                    🏠 Home
+                </a>
+            </div>
         </header>
 
         <main>
@@ -978,6 +1000,12 @@ function createSlug(name) {
         .replace(/-+/g, '-')
         .trim();
 }
+
+        // Generate URL to wrestler stats page
+        function getWrestlerStatsUrl(name) {
+            const slug = createSlug(name);
+            return `wrestler-stats.html?wrestler=${slug}`;
+        }
         
         // Get human-readable division label
         function getDivisionLabel(div) {
@@ -1374,10 +1402,14 @@ if (selectedYear === 'ALL') {
             return `
                 <div class="wrestler-card">
                     <div class="wrestler-header-card">
+                        <a href="${getWrestlerStatsUrl(data.name)}" style="text-decoration: none; display: contents;">
                         ${photoHTML}
+                        </a>
                         <div>
                             <div class="wrestler-name-card">
+                                <a href="${getWrestlerStatsUrl(data.name)}" style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd700'">
                                 ${data.name}
+                                </a>
                                 <span class="status-badge ${showAsActive ? 'active' : 'inactive'}">
                                     ${showAsActive ? 'Active' : 'Inactive'}
                                 </span>
@@ -1689,6 +1721,17 @@ if (selectedYear === 'ALL') {
                         compareWrestlers();
                     }
                 }, 100);
+            }
+        }
+
+        function goBackToRankings() {
+            // If we came from another page on the site, go back
+            const referrer = document.referrer;
+            if (referrer && referrer.includes(window.location.origin)) {
+                window.history.back();
+            } else {
+                // Fallback to home
+                window.location.href = 'index.html';
             }
         }
     </script>
