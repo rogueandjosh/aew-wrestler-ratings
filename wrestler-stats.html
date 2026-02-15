@@ -367,12 +367,10 @@
         }
 
         @media (max-width: 768px) {
-            /* === BODY === */
             body {
                 padding: 10px;
             }
 
-            /* === HEADER === */
             header {
                 padding: 12px 10px;
                 margin-bottom: 15px;
@@ -383,7 +381,6 @@
                 margin-bottom: 6px;
             }
 
-            /* Nav buttons — wrap and compact */
             .nav-buttons {
                 flex-wrap: wrap;
                 gap: 6px !important;
@@ -395,7 +392,6 @@
                 font-size: 0.8em !important;
             }
 
-            /* === WRESTLER HEADER === */
             .wrestler-header {
                 flex-direction: column;
                 text-align: center;
@@ -412,7 +408,6 @@
                 height: 80px !important;
             }
 
-            /* Active teams sidebar — remove border when stacked */
             .active-teams-container {
                 margin-left: 0 !important;
                 padding-left: 0 !important;
@@ -421,7 +416,6 @@
                 border-top: 2px solid rgba(255, 215, 0, 0.3);
             }
 
-            /* === YEAR FILTER === */
             .year-filter {
                 padding: 10px;
                 margin-bottom: 15px;
@@ -437,7 +431,6 @@
                 font-size: 0.78em;
             }
 
-            /* === STATS GRID === */
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
@@ -459,7 +452,6 @@
                 font-size: 0.6em;
             }
 
-            /* === SECTIONS GENERAL === */
             .section {
                 margin-bottom: 15px;
             }
@@ -469,12 +461,10 @@
                 margin-bottom: 8px;
             }
 
-            /* === CHART === */
             .chart-box {
                 padding: 8px;
             }
 
-            /* === DISTRIBUTION BARS === */
             .distribution-bars {
                 padding: 10px;
             }
@@ -488,7 +478,6 @@
                 font-size: 0.8em;
             }
 
-            /* === RECENT MATCHES === */
             .recent-matches-list {
                 padding: 10px;
             }
@@ -498,7 +487,6 @@
                 font-size: 0.95em;
             }
 
-            /* Match detail popups — constrain to viewport */
             .match-details {
                 position: relative !important;
                 min-width: unset !important;
@@ -508,7 +496,6 @@
                 font-size: 0.85em;
             }
 
-            /* === BEST & WORST === */
             .matches-tables {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -526,16 +513,24 @@
                 font-size: 0.78em;
             }
 
-            /* === TEAM AFFILIATIONS === */
             .team-affiliations-grid {
                 grid-template-columns: 1fr !important;
                 gap: 15px !important;
             }
 
-            /* === FOOTER === */
             footer {
                 font-size: 0.75em !important;
                 padding: 12px !important;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chart-box {
+                min-height: 350px;
+            }
+
+            .chart-box canvas {
+                min-height: 300px;
             }
         }
     </style>
