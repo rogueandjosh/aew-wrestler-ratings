@@ -511,7 +511,6 @@
     }
 
     .wrestler-header-card {
-        min-height: 160px;
         align-items: flex-start;
     }
 
@@ -1087,6 +1086,19 @@ function createSlug(name) {
 
                 // Build comparison table
                 statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
+
+                // Match header heights across cards on mobile
+                setTimeout(() => {
+                    if (window.innerWidth <= 768) {
+                        const headers = document.querySelectorAll('.wrestler-header-card');
+                        let maxHeight = 0;
+                        headers.forEach(h => {
+                            h.style.minHeight = 'auto';
+                            maxHeight = Math.max(maxHeight, h.offsetHeight);
+                        });
+                        headers.forEach(h => h.style.minHeight = maxHeight + 'px');
+                    }
+                }, 50);
 
                 // Phase 3: Build line graph
                 createComparisonChart(wrestlerData);
