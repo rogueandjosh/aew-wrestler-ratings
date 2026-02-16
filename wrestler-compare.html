@@ -163,6 +163,7 @@
             color: #fff;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .wrestler-selector select:hover {
@@ -939,7 +940,7 @@
                 divisions.forEach(div => {
                     if (statisticsData[div]) {
                         statisticsData[div]
-                            .filter(w => typeof w.name === 'string')
+                            .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
                             .forEach(w => {
                                 wrestlers.push({
                                     name: w.name,
@@ -952,7 +953,7 @@
                 // Single division
                 if (statisticsData[selectedDivision]) {
                     wrestlers = statisticsData[selectedDivision]
-                        .filter(w => typeof w.name === 'string')
+                        .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
                         .map(w => ({
                             name: w.name,
                             division: selectedDivision
