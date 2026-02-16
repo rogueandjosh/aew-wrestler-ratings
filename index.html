@@ -1084,6 +1084,30 @@
     </style>
 </head>
 <body>
+
+    <!-- TEMPORARY ACCESS GATE - Remove before public launch -->
+<div id="accessGate" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;z-index:99999;">
+  <div style="text-align:center;font-family:sans-serif;">
+    <h2 style="color:#ffd700;margin-bottom:15px;">AEW Wrestler Ratings</h2>
+    <p style="color:#ccc;margin-bottom:20px;">This site is currently in preview. Enter the passphrase to continue.</p>
+    <input type="password" id="gateInput" placeholder="Enter passphrase" style="padding:10px 15px;font-size:1em;border:1px solid #ffd700;background:#0a0a1a;color:#fff;border-radius:5px;width:250px;" onkeydown="if(event.key==='Enter')checkGate()">
+    <br><br>
+    <button onclick="checkGate()" style="padding:10px 25px;background:#ffd700;color:#1a1a2e;border:none;border-radius:5px;font-weight:bold;cursor:pointer;">Enter</button>
+  </div>
+</div>
+<script>
+function checkGate(){
+  if(document.getElementById('gateInput').value==='george123'){
+    document.getElementById('accessGate').style.display='none';
+    sessionStorage.setItem('aewAccess','true');
+  } else {
+    document.getElementById('gateInput').style.value='';
+    document.getElementById('gateInput').placeholder='Incorrect - try again';
+  }
+}
+if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('accessGate').style.display='none';}
+</script>
+    
     <div class="container">
         <header style="position: relative;">
             <h1>AEW Wrestler Ratings</h1>
