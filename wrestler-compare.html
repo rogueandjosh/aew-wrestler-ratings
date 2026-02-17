@@ -163,6 +163,7 @@
             color: #fff;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .wrestler-selector select:hover {
@@ -506,6 +507,10 @@
     
     .wrestler-name-card {
         font-size: 1em;
+    }
+
+    .wrestler-header-card {
+        align-items: flex-start;
     }
 
     .wrestler-selector-row {
@@ -927,7 +932,7 @@
                 divisions.forEach(div => {
                     if (statisticsData[div]) {
                         statisticsData[div]
-                            .filter(w => typeof w.name === 'string')
+                            .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
                             .forEach(w => {
                                 wrestlers.push({
                                     name: w.name,
@@ -940,7 +945,7 @@
                 // Single division
                 if (statisticsData[selectedDivision]) {
                     wrestlers = statisticsData[selectedDivision]
-                        .filter(w => typeof w.name === 'string')
+                        .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
                         .map(w => ({
                             name: w.name,
                             division: selectedDivision
@@ -1074,6 +1079,19 @@ function createSlug(name) {
 
                 // Build comparison table
                 statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
+
+                // Match header heights across cards on mobile
+                setTimeout(() => {
+                    if (window.innerWidth <= 768) {
+                        const headers = document.querySelectorAll('.wrestler-header-card');
+                        let maxHeight = 0;
+                        headers.forEach(h => {
+                            h.style.minHeight = 'auto';
+                            maxHeight = Math.max(maxHeight, h.offsetHeight);
+                        });
+                        headers.forEach(h => h.style.minHeight = maxHeight + 'px');
+                    }
+                }, 50);
 
                 // Phase 3: Build line graph
                 createComparisonChart(wrestlerData);
