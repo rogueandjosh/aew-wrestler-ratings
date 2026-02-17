@@ -163,7 +163,6 @@
             color: #fff;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
         }
 
         .wrestler-selector select:hover {
@@ -465,8 +464,6 @@
     
     .stat-row-card {
         padding: 6px 8px;
-        min-height: 40px;
-        align-items: center;
     }
     
     .stat-label-card {
@@ -509,10 +506,6 @@
     
     .wrestler-name-card {
         font-size: 1em;
-    }
-
-    .wrestler-header-card {
-        align-items: flex-start;
     }
 
     .wrestler-selector-row {
@@ -680,10 +673,6 @@
                 margin-bottom: 20px;
             }
 
-            .graph-container canvas {
-                height: 300px;
-            }
-
             .stats-table-container h2,
             .graph-container h2 {
                 font-size: 1.1em;
@@ -692,11 +681,9 @@
         }
 
         @media (max-width: 768px) and (orientation: landscape) {
-            .graph-container canvas {
-                height: 60vh;
+            .graph-container {
                 min-height: 350px;
-             }
-        }
+            }
 
             .graph-container canvas {
                 min-height: 300px;
@@ -940,7 +927,7 @@
                 divisions.forEach(div => {
                     if (statisticsData[div]) {
                         statisticsData[div]
-                            .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
+                            .filter(w => typeof w.name === 'string')
                             .forEach(w => {
                                 wrestlers.push({
                                     name: w.name,
@@ -953,7 +940,7 @@
                 // Single division
                 if (statisticsData[selectedDivision]) {
                     wrestlers = statisticsData[selectedDivision]
-                        .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
+                        .filter(w => typeof w.name === 'string')
                         .map(w => ({
                             name: w.name,
                             division: selectedDivision
@@ -1087,19 +1074,6 @@ function createSlug(name) {
 
                 // Build comparison table
                 statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
-
-                // Match header heights across cards on mobile
-                setTimeout(() => {
-                    if (window.innerWidth <= 768) {
-                        const headers = document.querySelectorAll('.wrestler-header-card');
-                        let maxHeight = 0;
-                        headers.forEach(h => {
-                            h.style.minHeight = 'auto';
-                            maxHeight = Math.max(maxHeight, h.offsetHeight);
-                        });
-                        headers.forEach(h => h.style.minHeight = maxHeight + 'px');
-                    }
-                }, 50);
 
                 // Phase 3: Build line graph
                 createComparisonChart(wrestlerData);
@@ -1550,13 +1524,21 @@ if (selectedYear === 'ALL') {
         }
     });
     
+    // Exclude current incomplete month to prevent phantom data points
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    
     return Object.keys(monthlyMap)
         .sort((a, b) => monthlyMap[a].date - monthlyMap[b].date)
         .map(key => ({
             label: monthlyMap[key].label,
             rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
             date: monthlyMap[key].date
-        }));
+        }))
+        .filter(m => {
+            return !(m.date.getFullYear() === currentYear && m.date.getMonth() === currentMonth);
+        });
 }
 
         // Create comparison chart
@@ -1644,7 +1626,8 @@ if (selectedYear === 'ALL') {
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: {
                         legend: {
                             display: true,
