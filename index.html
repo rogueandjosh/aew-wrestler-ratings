@@ -36,11 +36,10 @@
             border: 2px solid #ffd700;
         }
 
-         h1 {
+        h1 {
             color: #ffd700;
             font-size: 2.5em;
             margin-bottom: 10px;
-            margin-left: 60px;
             margin-right: 60px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -80,6 +79,36 @@
             font-size: 1em;
             color: #ffd700;
             font-weight: 600;
+        }
+
+        .current-heading {
+            color: #ffd700;
+            font-size: 1.5em;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .expand-toggle {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.9em;
+            padding: 8px 16px;
+            margin-top: 8px;
+            transition: color 0.3s;
+        }
+
+        .expand-toggle:hover {
+            color: #ffd700;
+        }
+
+        .week-selector-panel {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
         }
 
         .week-selector {
@@ -208,53 +237,31 @@
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .selector-row {
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 4px;
-                align-items: flex-end;
+                flex-direction: column;
+                gap: 10px;
             }
 
-            /* Dropdowns take full first row */
             .filters-group {
                 width: 100%;
-                flex-direction: row;
-                gap: 4px;
-                order: 1;
+                flex-direction: column;
             }
 
             .filter-item,
             .week-item {
-                flex: 1;
-                min-width: 0;
+                width: 100%;
+                min-width: unset;
             }
-
-            .filter-item label {
-                font-size: 0.75em;
-            }
-
-            .week-selector select {
-                padding: 7px 4px;
-                font-size: 0.85em;
-            }
-
-            /* Arrows wrap to second row */
-            #prevWeekBtn { order: 2; }
-            #nextWeekBtn { order: 3; }
 
             .week-selector button {
-                width: auto;
-                padding: 6px 14px;
-            }
-
-            /* Hide text labels on nav arrows */
-            .week-selector button .btn-label {
-                display: none;
+                width: 100%;
+                justify-content: center;
             }
 
             .reset-btn {
                 width: 100%;
             }
         }
+            min-width: 200px;
 
         .week-selector select:hover {
             background: rgba(255, 215, 0, 0.2);
@@ -886,173 +893,39 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            header {
-                padding: 12px 10px;
-                margin-bottom: 15px;
-            }
-
             h1 {
-                font-size: 1.3em;
-                margin-left: 50px;
-                margin-right: 50px;
-                margin-bottom: 5px;
+                font-size: 1.8em;
             }
 
-            .subtitle {
-                font-size: 0.78em;
-                line-height: 1.3;
+            .current-heading {
+                font-size: 1.15em;
                 margin-left: 50px;
                 margin-right: 50px;
             }
 
-            .date-range {
-                font-size: 0.82em;
-                margin-top: 4px;
+            .expand-toggle {
+                font-size: 0.8em;
             }
 
-            .last-updated {
-                font-size: 0.75em;
-            }
-
-            .week-selector {
-                margin-top: 10px;
-                margin-bottom: 5px;
-                gap: 6px;
-            }
-
-            /* Action buttons with proper gap */
-            .action-buttons {
-                flex-direction: row;
-                gap: 12px;
-                width: 100%;
-            }
-
-            .action-buttons .reset-btn {
-                min-width: unset;
-                flex: 1;
-                font-size: 0.85em !important;
-                padding: 8px 14px !important;
-            }
-
-            /* Division tabs — horizontal scroll */
             .tabs {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                gap: 6px;
-                margin-bottom: 15px;
-                padding-bottom: 5px;
-                justify-content: flex-start;
+                flex-direction: column;
             }
 
             .tab {
-                flex: 0 0 auto;
-                white-space: nowrap;
-                padding: 9px 14px;
-                font-size: 0.85em;
-                width: auto;
+                width: 100%;
             }
 
-            /* View toggle */
-            .view-toggle {
-                margin-bottom: 12px;
-                max-width: 100%;
-            }
-
-            .toggle-btn {
-                padding: 10px 8px;
-                font-size: 0.85em;
-            }
-
-            /* Stats summary boxes — stay in row */
             .stats-summary {
-                flex-direction: row;
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-
-            .stat-box {
-                padding: 10px 8px;
-                flex: 1;
-                min-width: 0;
-            }
-
-            .stat-number {
-                font-size: 1.3em;
-            }
-
-            .stat-label {
-                font-size: 0.75em;
-            }
-
-            /* Table — photos visible, horizontal scroll */
-            .table-container {
-                padding: 10px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                flex-direction: column;
+                gap: 15px;
             }
 
             table {
-                font-size: 0.82em;
-                min-width: 550px;
+                font-size: 0.9em;
             }
 
             th, td {
-                padding: 6px 5px;
-            }
-
-            /* Smaller photos on mobile */
-            .wrestler-image {
-                width: 55px;
-                padding: 4px;
-            }
-
-            .wrestler-image img {
-                width: 45px !important;
-                height: 45px !important;
-            }
-
-            /* Tag/trio images compact */
-            .wrestler-image div {
-                gap: 1px !important;
-            }
-
-            .wrestler-image div img {
-                width: 28px !important;
-                height: 28px !important;
-            }
-
-            .rank {
-                width: 30px;
-                font-size: 0.95em;
-            }
-
-            .filter-controls {
-                padding: 12px;
-                margin-bottom: 12px;
-            }
-
-            .about {
-                padding: 15px;
-                margin-top: 25px;
-            }
-
-            .about h2 {
-                font-size: 1.1em;
-            }
-
-            .dropped-out-list,
-            .recently-dropped-grid {
-                grid-template-columns: 1fr;
-            }
-
-            footer {
-                font-size: 0.75em;
-                padding: 12px;
+                padding: 8px 10px;
             }
         }
 
@@ -1084,30 +957,6 @@
     </style>
 </head>
 <body>
-
-    <!-- TEMPORARY ACCESS GATE - Remove before public launch -->
-<div id="accessGate" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;z-index:99999;">
-  <div style="text-align:center;font-family:sans-serif;">
-    <h2 style="color:#ffd700;margin-bottom:15px;">AEW Wrestler Ratings</h2>
-    <p style="color:#ccc;margin-bottom:20px;">This site is currently in preview. Enter the passphrase to continue.</p>
-    <input type="password" id="gateInput" placeholder="Enter passphrase" style="padding:10px 15px;font-size:1em;border:1px solid #ffd700;background:#0a0a1a;color:#fff;border-radius:5px;width:250px;" onkeydown="if(event.key==='Enter')checkGate()">
-    <br><br>
-    <button onclick="checkGate()" style="padding:10px 25px;background:#ffd700;color:#1a1a2e;border:none;border-radius:5px;font-weight:bold;cursor:pointer;">Enter</button>
-  </div>
-</div>
-<script>
-function checkGate(){
-  if(document.getElementById('gateInput').value==='george123'){
-    document.getElementById('accessGate').style.display='none';
-    sessionStorage.setItem('aewAccess','true');
-  } else {
-    document.getElementById('gateInput').style.value='';
-    document.getElementById('gateInput').placeholder='Incorrect - try again';
-  }
-}
-if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('accessGate').style.display='none';}
-</script>
-    
     <div class="container">
         <header style="position: relative;">
             <h1>AEW Wrestler Ratings</h1>
@@ -1122,60 +971,64 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                     <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         🥊 Compare Wrestlers
                     </a>
-                    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-                        ℹ️ About
-                    </a>
                 </div>
             </div>
             
-            <div class="week-selector">
-                <div class="selector-row">
-                    <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
-                        <span class="arrow">◄</span>
-                        <span class="btn-label">Older</span>
-                    </button>
-                    
-                    <div class="filters-group">
-                        <div class="filter-item">
-                            <label>Year</label>
-                            <select id="yearFilter" onchange="filterWeeks()">
-                                <option value="">All</option>
-                            </select>
+            <h2 id="currentHeading" class="current-heading">Loading...</h2>
+            <p class="date-range" id="dateRange"></p>
+            
+            <button id="expandWeekBtn" class="expand-toggle" onclick="toggleWeekSelector()">
+                ▼ Change Week / Browse Archive
+            </button>
+            
+            <div id="weekSelectorPanel" class="week-selector-panel" style="display: none;">
+                <div class="week-selector">
+                    <div class="selector-row">
+                        <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
+                            <span class="arrow">◄</span>
+                            <span class="btn-label">Older</span>
+                        </button>
+                        
+                        <div class="filters-group">
+                            <div class="filter-item">
+                                <label>Year</label>
+                                <select id="yearFilter" onchange="filterWeeks()">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-item">
+                                <label>Month</label>
+                                <select id="monthFilter" onchange="filterWeeks()">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-item week-item">
+                                <label>Week</label>
+                                <select id="weekSelect" onchange="loadSelectedWeek()">
+                                    <option value="current">Current Week</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="filter-item">
-                            <label>Month</label>
-                            <select id="monthFilter" onchange="filterWeeks()">
-                                <option value="">All</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-item week-item">
-                            <label>Week</label>
-                            <select id="weekSelect" onchange="loadSelectedWeek()">
-                                <option value="current">Current</option>
-                            </select>
-                        </div>
+                        <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
+                            <span class="btn-label">Newer</span>
+                            <span class="arrow">►</span>
+                        </button>
                     </div>
                     
-                    <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
-                        <span class="btn-label">Newer</span>
-                        <span class="arrow">►</span>
-                    </button>
+                    <div class="action-buttons">
+                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                            ↻ Current
+                        </button>
+                        <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
+                            🎲 Random
+                        </button>
+                    </div>
                 </div>
-                
-                <div class="action-buttons">
-                    <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                        ↻ Current
-                    </button>
-                    <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                        🎲 Random
-                    </button>
-                </div>
+                <p class="last-updated" id="lastUpdated"></p>
             </div>
-            <p class="date-range" id="weekLabel">Loading...</p>
-            <p class="date-range" id="dateRange"></p>
-            <p class="last-updated" id="lastUpdated">Loading...</p>
         </header>
 
         <div class="view-toggle">
@@ -1199,9 +1052,9 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             <div class="loading">Loading rankings data...</div>
         </div>
 
-        <section class="about" id="about">
+        <section class="about">
             <h2>About the Ratings</h2>
-            <p>Wrestling is all about feelings and opinions. It will never be possible to completely accurately compare wrestlers' current form - there is so much to consider! However, this system takes account of multiple factors so that wrestlers can be directly compared and tracked over time. It equates them to a numerical value where '100' is average.</p>
+            <p>Wrestling is all about feelings, emotions and opinions. It will never be possible to completely accurately compare wrestlers' current form - there are so many factors to consider. However, this system takes account of multiple factors so that wrestlers can be directly compared and tracked over time. It equates them to a numerical value where '100' is average.</p>
             
             <p>The ratings are based on match performances from the excellent Cagematch.net site - not wins and losses, but how fans have received and rated each AEW wrestler's match.</p>
 
@@ -1209,9 +1062,9 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             <ul>
                 <li>All wrestlers start at 100 - points gained/lost based on Cagematch match ratings and votes</li>
                 <li>Factors include: current rating, opponent quality, show type, and match stakes</li>
-                <li>Five divisions: Men's, Women's, Men's Tag, Women's Tag and Trios (crossover allowed)</li>
+                <li>Five divisions: Men's, Women's, Men's Tag, Women's Tag, and Trios (crossover allowed)</li>
                 <li>Minimum 2 matches required to appear in rankings</li>
-                <li>Ratings degrade over time toward 100 - wrestlers drop out when they reach 100, or if they are inactive for 12 consecutive weeks</li>
+                <li>Ratings degrade over time toward 100 - wrestlers drop out when they reach 100</li>
             </ul>
 
             <div class="find-out-more">
@@ -1219,7 +1072,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                 
                 <div id="moreDetails" class="details-content">
                     <h3>📌 Important Context</h3>
-                    <p>This rating system does NOT account for intangibles like charisma or promo ability - it is purely based on match performance from Cagematch. It reflects both how well wrestlers have performed AND how well they are being booked (not for match outcomes, but for opportunities to perform).</p>
+                    <p>This rating system does NOT account for intangibles like charisma or promo ability - it is purely based on match performance from Cagematch. It reflects both how well wrestlers have performed AND how well they are being booked (not for wins, but for opportunities to perform).</p>
 
                     <h3>🎯 How Ratings Work</h3>
                     <p>All wrestlers start at 100 (average). Points are gained and lost depending on Cagematch match ratings and votes, plus show ratings and votes.</p>
@@ -1228,13 +1081,13 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                     <p>Multiple factors determine how much is gained or lost: the wrestler's rating before the match, opponent quality, the show type, match stakes, and other considerations.</p>
 
                     <h3>🏆 The Five Divisions</h3>
-                    <p>Men's, Women's, Men's Tag, Women's Tag and Trios. There is crossover - for example, a male wrestler in a trios team would contribute to both Men's ratings and potentially Men's Tag if part of a tag team within the trio.</p>
+                    <p>Men's, Women's, Men's Tag, Women's Tag, and Trios. There is crossover - for example, a male wrestler in a trios team would contribute to both Men's ratings and potentially Men's Tag if part of a tag team within the trio.</p>
 
                     <h3>✅ Entry Requirements</h3>
                     <p>Two matches are needed to gain a ranking.</p>
 
                     <h3>⏳ Time Degradation</h3>
-                    <p>Rating points gained degrade over time; rating points lost are gradually recovered. Eventually, after weeks, months, or possibly years, a wrestler/team's rating returns to 100. Once a rating reaches 100, the wrestler/team drops out of the rankings. They will also drop out if inactive for 12 consecutive weeks; they drop out the rankings either way.</p>
+                    <p>Rating points gained degrade over time; rating points lost are gradually recovered. Eventually, after weeks, months, or possibly years, a wrestler/team's rating returns to 100. Once a rating reaches 100, the wrestler/team drops out of the rankings.</p>
 
                     <h3>📅 Update Schedule</h3>
                     <p>Rankings refresh each Wednesday before Dynamite.</p>
@@ -1282,9 +1135,61 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             return weekLabel;
         }
 
-        // Compact week label for dropdowns: "Jan '26 Wk 1" instead of "Jan '26 Week 1"
-        function compactWeekLabel(label) {
-            return label.replace('Week ', 'Wk ');
+        // Toggle week selector panel visibility
+        function toggleWeekSelector() {
+            const panel = document.getElementById('weekSelectorPanel');
+            const btn = document.getElementById('expandWeekBtn');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                btn.textContent = '▲ Hide Week Selector';
+            } else {
+                panel.style.display = 'none';
+                btn.textContent = '▼ Change Week / Browse Archive';
+            }
+        }
+
+        // Smart date range formatting
+        // "4th February 2026 to 10th February 2026" → "4th to 10th February 2026"
+        // "25th February 2026 to 3rd March 2026" → stays as is (different months)
+        function formatSmartDateRange(dateStr) {
+            if (!dateStr) return '';
+            
+            // Match pattern: "Xth Month Year to Yth Month Year"
+            const match = dateStr.match(/^(\d+\w+)\s+(\w+)\s+(\d{4})\s+to\s+(\d+\w+)\s+(\w+)\s+(\d{4})$/);
+            if (!match) return dateStr;
+            
+            const [, startDay, startMonth, startYear, endDay, endMonth, endYear] = match;
+            
+            if (startYear !== endYear) {
+                // Cross year: "30th December 2025 to 5th January 2026"
+                return dateStr;
+            } else if (startMonth !== endMonth) {
+                // Cross month: "25th February to 3rd March 2026"
+                return `${startDay} ${startMonth} to ${endDay} ${endMonth} ${endYear}`;
+            } else {
+                // Same month: "4th to 10th February 2026"
+                return `${startDay} to ${endDay} ${endMonth} ${endYear}`;
+            }
+        }
+
+        // Update the header display with week info
+        function updateHeaderDisplay(weekLabel, dateRange, statusText) {
+            const heading = document.getElementById('currentHeading');
+            const dateEl = document.getElementById('dateRange');
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            
+            if (heading && weekLabel) {
+                const expandedWeek = expandMonthName(weekLabel);
+                heading.textContent = `Current Rankings — ${expandedWeek}`;
+            }
+            
+            if (dateEl) {
+                dateEl.textContent = dateRange ? formatSmartDateRange(dateRange) : '';
+            }
+            
+            if (lastUpdatedEl && statusText) {
+                lastUpdatedEl.textContent = statusText;
+            }
         }
 
         // Load name changes data
@@ -2083,7 +1988,7 @@ let visibleColumns = {
             ratingsData = await calculateArrowDirections(ratingsData);
             console.log('✅ Arrow directions calculated');
             
-            // Keep Current button text simple
+            // Update Current Week button text
             const resetBtn = document.getElementById('resetBtn');
             if (resetBtn) {
                 resetBtn.textContent = '↻ Current';
@@ -2097,10 +2002,12 @@ let visibleColumns = {
             // Populate week selector
             populateWeekSelector();
             
-            // Update three-line display: week label, date range, last updated
-            document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
-            document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
-            document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+            // Update header display
+            updateHeaderDisplay(
+                ratingsData.currentWeek,
+                ratingsData.dateRange,
+                `Last Updated: ${ratingsData.lastUpdated}`
+            );
             
             // Check for saved state from back button, otherwise show men's division
             const savedState = sessionStorage.getItem('aew_previous_state');
@@ -2129,7 +2036,7 @@ let visibleColumns = {
             // Add current week option with full month name
             const currentOption = document.createElement('option');
             currentOption.value = 'current';
-            currentOption.textContent = 'Current';
+            currentOption.textContent = `Current (${expandMonthName(ratingsData.currentWeek)})`;
             select.appendChild(currentOption);
             
             // Add archived weeks and populate filter dropdowns
@@ -2141,7 +2048,7 @@ let visibleColumns = {
                 archiveIndex.weeks.forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
-                    option.textContent = compactWeekLabel(week.label);
+                    option.textContent = expandMonthName(week.label);
                     select.appendChild(option);
                     
                     // Extract year and month
@@ -2243,9 +2150,9 @@ let visibleColumns = {
             });
             
             // Populate week dropdown with filtered weeks
-            weekSelect.innerHTML = '<option value="current">Current</option>';
+            weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="archive/${week.filename}">${compactWeekLabel(week.label)}</option>`;
+                weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
             });
             
             // If we're in the middle of navigation, skip auto-selection logic
@@ -2519,7 +2426,7 @@ let visibleColumns = {
                         }
                         console.log('🟢 Arrow directions processed');
                         
-                        // Keep Current button text simple
+                        // Update Current Week button text
                         const resetBtn = document.getElementById('resetBtn');
                         if (resetBtn) {
                             resetBtn.textContent = '↻ Current';
@@ -2527,10 +2434,12 @@ let visibleColumns = {
                         
                         // Data is already correct from JSON export - no processing needed
                         
-                        // Update three-line display
-                        document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
-                        document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
-                        document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
+                        // Update header display
+                        updateHeaderDisplay(
+                            ratingsData.currentWeek,
+                            ratingsData.dateRange,
+                            `Last Updated: ${ratingsData.lastUpdated}`
+                        );
                         
                         // Restore the previous view instead of always showing Men's
                         if (currentView === 'statistics') {
@@ -2554,24 +2463,28 @@ let visibleColumns = {
                         try {
                             ratingsData = fixEncodingIssues(data);
                             
-                            // Reset Current Week button text to simple version (no week label for archives)
+                            // Update button and header for archive week
                             const resetBtn = document.getElementById('resetBtn');
                             if (resetBtn) {
                                 resetBtn.textContent = '↻ Current';
                             }
 
-                            // Update three-line display
-                            document.getElementById('weekLabel').textContent = expandMonthName(ratingsData.currentWeek || '');
-                            document.getElementById('dateRange').textContent = ratingsData.dateRange || '';
-                            
-                            // Show "Last Updated" for the newest week, "Archived Week" for older ones
-                            const isNewestWeek = archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0 
-                                && ratingsData.currentWeek === archiveIndex.weeks[0].label;
-                            if (isNewestWeek && ratingsData.lastUpdated) {
-                                document.getElementById('lastUpdated').textContent = `Last Updated: ${ratingsData.lastUpdated}`;
-                            } else {
-                                document.getElementById('lastUpdated').textContent = 'Archived Week';
+                            // Check if this is the newest week
+                            const isNewestWeek = ratingsData.currentWeek === archiveIndex.weeks[0]?.label;
+                            const heading = document.getElementById('currentHeading');
+                            if (heading && ratingsData.currentWeek) {
+                                const expandedWeek = expandMonthName(ratingsData.currentWeek);
+                                heading.textContent = isNewestWeek 
+                                    ? `Current Rankings — ${expandedWeek}`
+                                    : `Rankings — ${expandedWeek}`;
                             }
+
+                            if (document.getElementById('dateRange')) {
+                                document.getElementById('dateRange').textContent = ratingsData.dateRange ? formatSmartDateRange(ratingsData.dateRange) : '';
+                            }
+                            document.getElementById('lastUpdated').textContent = isNewestWeek 
+                                ? `Last Updated: ${ratingsData.lastUpdated}`
+                                : 'Archived Week';
                             
                             // Restore the previous view instead of always showing Men's
                             if (currentView === 'statistics') {
