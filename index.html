@@ -109,6 +109,19 @@
             color: #ffd700;
         }
 
+        .show-all-toggle {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 20px;
+        }
+
+        .show-all-toggle:hover {
+            border-color: #ffd700;
+        }
+
         .week-selector-panel {
             margin-top: 10px;
             padding-top: 10px;
@@ -1113,6 +1126,8 @@
         let nameChangesData = null;
         let teamMembersData = null;
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
+        const TOP_N_WRESTLERS = 30; // Show top N wrestlers initially
+        let showAllWrestlers = {}; // Track expanded state per division
 
         function expandMonthName(weekLabel) {
             const monthMap = {
@@ -1149,6 +1164,16 @@
             } else {
                 panel.style.display = 'none';
                 btn.textContent = '▼ Change Week / Browse Archive';
+            }
+        }
+
+        // Toggle showing all wrestlers vs top N
+        function toggleShowAll(division) {
+            showAllWrestlers[division] = !showAllWrestlers[division];
+            // Re-render current data without resetting filters
+            const data = window.currentDivisionData;
+            if (data) {
+                updateDivisionData(division, data);
             }
         }
 
@@ -2546,8 +2571,18 @@ let visibleColumns = {
         }
 
         function renderDivisionStructure(division, data) {
-            // Build the STATIC structure with filter controls (only rendered once)
+            // Build the STATIC structure - table first, search/stats below
             let html = `
+                <div class="table-container" id="table-${division}">
+                </div>
+
+                <button class="expand-toggle show-all-toggle" id="showAllBtn-${division}" onclick="toggleShowAll('${division}')" style="display: none;">
+                    ▼ Show All Wrestlers
+                </button>
+
+                <div id="dropped-${division}">
+                </div>
+
                 <div class="filter-controls">
                     <div class="filter-row">
                         <div class="filter-group">
@@ -2577,12 +2612,6 @@ let visibleColumns = {
                 </div>
 
                 <div class="stats-summary" id="stats-${division}">
-                </div>
-
-                <div class="table-container" id="table-${division}">
-                </div>
-
-                <div id="dropped-${division}">
                 </div>
             `;
 
@@ -2850,6 +2879,29 @@ rows.push(`
 `);
 }
 
+            // Apply top-N limit unless expanded or searching
+            const isSearching = document.getElementById('search-' + division)?.value.length > 0;
+            const isExpanded = showAllWrestlers[division];
+            const totalRows = rows.length;
+            const displayRows = (!isSearching && !isExpanded && totalRows > TOP_N_WRESTLERS) 
+                ? rows.slice(0, TOP_N_WRESTLERS) 
+                : rows;
+
+            // Update Show All button
+            const showAllBtn = document.getElementById('showAllBtn-' + division);
+            if (showAllBtn) {
+                if (totalRows > TOP_N_WRESTLERS && !isSearching) {
+                    showAllBtn.style.display = 'block';
+                    if (isExpanded) {
+                        showAllBtn.textContent = '▲ Show Top 30 Only';
+                    } else {
+                        showAllBtn.textContent = `▼ Show All ${totalRows} Wrestlers`;
+                    }
+                } else {
+                    showAllBtn.style.display = 'none';
+                }
+            }
+
             // Update table
 const tableEl = document.getElementById('table-' + division);
 if (tableEl) {
@@ -2868,7 +2920,7 @@ if (tableEl) {
                 </tr>
             </thead>
             <tbody>
-                ${rows.join('')}
+                ${displayRows.join('')}
             </tbody>
         </table>
     `;
