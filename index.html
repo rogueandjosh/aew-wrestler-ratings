@@ -3961,14 +3961,16 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
 
     // Sort data
     const sortedData = [...divisionData];
-    sortData(sortedData, currentSortColumn, currentSortDirection);
+    // Filter out entries where name is a number (data quality issue)
+    const cleanData = sortedData.filter(w => typeof w.name === 'string' && isNaN(w.name) && w.name.trim() !== '');
+    sortData(cleanData, currentSortColumn, currentSortDirection);
 
     // Apply search filter
     const searchTerm = document.getElementById('stats-search-' + division)?.value?.toLowerCase() || '';
     const isSearching = searchTerm.length > 0;
     const filteredData = isSearching 
-        ? sortedData.filter(w => w.name.toLowerCase().includes(searchTerm))
-        : sortedData;
+        ? cleanData.filter(w => w.name.toLowerCase().includes(searchTerm))
+        : cleanData;
 
     // Apply top-N limit unless expanded or searching
     const isExpanded = showAllWrestlers['stats-' + division];
