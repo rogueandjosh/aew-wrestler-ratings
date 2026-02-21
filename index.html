@@ -1023,6 +1023,9 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                     <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         🥊 Compare Wrestlers
                     </a>
+                    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        ℹ️ About
+                    </a>
                 </div>
             </div>
             
@@ -1104,11 +1107,13 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             <div class="loading">Loading rankings data...</div>
         </div>
 
-        <section class="about">
+        <section class="about" id="about">
             <h2>About the Ratings</h2>
             <p>Wrestling is all about feelings, emotions and opinions. It will never be possible to completely accurately compare wrestlers' current form - there are so many factors to consider. However, this system takes account of multiple factors so that wrestlers can be directly compared and tracked over time. It equates them to a numerical value where '100' is average.</p>
             
             <p>The ratings are based on match performances from the excellent Cagematch.net site - not wins and losses, but how fans have received and rated each AEW wrestler's match.</p>
+
+            <p style="font-style: italic; color: #aaa; font-size: 0.9em;">This is an independent fan project. AEW and Cagematch are the property of their respective owners.</p>
 
             <h3>Key Points:</h3>
             <ul>
@@ -4201,6 +4206,7 @@ document.addEventListener('click', function(e) {
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
     </footer>
 </body>
 </html>
