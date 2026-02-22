@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
+        *, *::before, *::after {
             margin: 0;
-            padding: 0;xf
+            padding: 0;
             box-sizing: border-box;
         }
 
@@ -286,6 +286,11 @@
         .week-selector select:focus {
             outline: none;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .week-selector select option {
+            background: #1a1a2e;
+            color: #e0e0e0;
         }
 
         .view-toggle {
