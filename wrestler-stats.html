@@ -180,14 +180,14 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin-bottom: 25px;
         }
 
         .stat-card {
             background: rgba(255, 215, 0, 0.05);
-            padding: 12px;
+            padding: 10px 8px;
             border-radius: 8px;
             border: 2px solid #ffd700;
             text-align: center;
@@ -195,22 +195,22 @@
 
         .stat-label {
             color: #999;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             text-transform: uppercase;
             font-weight: 600;
-            font-size: 0.75em;
+            font-size: 0.7em;
         }
 
         .stat-value {
-            font-size: 1.8em;
+            font-size: 1.5em;
             color: #ffd700;
             font-weight: 700;
         }
 
         .stat-subtext {
             color: #999;
-            margin-top: 3px;
-            font-size: 0.7em;
+            margin-top: 2px;
+            font-size: 0.65em;
         }
 
         .section {
@@ -1697,6 +1697,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
                 { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
                 { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
+                { label: 'First Week', value: getFirstWeek(), subtext: 'Debut' },
+                { label: 'Last Week', value: getLastWeek(), subtext: getLastWeekSubtext() },
                 { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
                 { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
             ];
@@ -2126,6 +2128,44 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             });
             
             return yearWeeks.length;
+        }
+
+        function getFirstWeek() {
+            if (!wrestlerData.ratingHistory || wrestlerData.ratingHistory.length === 0) {
+                return 'N/A';
+            }
+            // ratingHistory is sorted chronologically, first entry is debut
+            const firstEntry = wrestlerData.ratingHistory[0];
+            return firstEntry.week || 'N/A';
+        }
+
+        function getLastWeek() {
+            if (!wrestlerData.ratingHistory || wrestlerData.ratingHistory.length === 0) {
+                return 'N/A';
+            }
+            // ratingHistory is sorted chronologically, last entry is most recent
+            const lastEntry = wrestlerData.ratingHistory[wrestlerData.ratingHistory.length - 1];
+            return lastEntry.week || 'N/A';
+        }
+
+        function getLastWeekSubtext() {
+            if (!wrestlerData.ratingHistory || wrestlerData.ratingHistory.length === 0) {
+                return '';
+            }
+            // Check if the last week matches the current week from rankings
+            const lastEntry = wrestlerData.ratingHistory[wrestlerData.ratingHistory.length - 1];
+            const lastWeek = lastEntry.week;
+            
+            // Get current week from rankings data
+            let currentWeek = null;
+            if (currentRankingsData && currentRankingsData.currentWeek) {
+                currentWeek = currentRankingsData.currentWeek;
+            }
+            
+            if (currentWeek && lastWeek === currentWeek) {
+                return '(Current)';
+            }
+            return 'Most Recent';
         }
 
         function formatDateShort(dateStr) {
