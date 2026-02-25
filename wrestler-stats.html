@@ -799,6 +799,34 @@
             }).join(', ');
         }
 
+        // Create links for ALL wrestlers in a match (current wrestler + opponents)
+        function createAllWrestlerLinks(opponents) {
+            // Combine current wrestler with opponents
+            const allWrestlers = [wrestlerData.name, ...(opponents || [])];
+            
+            if (allWrestlers.length === 0) {
+                return 'N/A';
+            }
+            
+            const currentWeek = document.getElementById('weekSelect')?.value || 'current';
+            const currentDivision = wrestlerData?.division || '';
+            
+            // Get division slug for return URL
+            let divisionSlug = 'mens';
+            if (currentDivision.includes('Women') && !currentDivision.includes('Tag')) divisionSlug = 'womens';
+            else if (currentDivision.includes('Men') && currentDivision.includes('Tag')) divisionSlug = 'menstag';
+            else if (currentDivision.includes('Women') && currentDivision.includes('Tag')) divisionSlug = 'womenstag';
+            else if (currentDivision.includes('Trio')) divisionSlug = 'trios';
+            
+            return allWrestlers.map(name => {
+                const slug = createSlug(name);
+                return `<a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
+                           style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                           onmouseover="this.style.color='#fff'"
+                           onmouseout="this.style.color='#ffd700'">${name}</a>`;
+            }).join(', ');
+        }
+
         // Helper function: Find team members, handling name changes
         function findTeamMembers(teamName) {
             // First try direct lookup
@@ -1812,8 +1840,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `recent-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers with hyperlinks
-                const wrestlersStr = createOpponentLinks(m.opponents);
+                // Show ALL wrestlers with hyperlinks (including current wrestler)
+                const wrestlersStr = createAllWrestlerLinks(m.opponents);
                 
                 return `
                     <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
@@ -1862,8 +1890,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `top-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers with hyperlinks
-                const wrestlersStr = createOpponentLinks(m.opponents);
+                // Show ALL wrestlers with hyperlinks (including current wrestler)
+                const wrestlersStr = createAllWrestlerLinks(m.opponents);
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
@@ -1899,8 +1927,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const matchId = `bottom-match-${index}`;
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // Show ALL wrestlers with hyperlinks
-                const wrestlersStr = createOpponentLinks(m.opponents);
+                // Show ALL wrestlers with hyperlinks (including current wrestler)
+                const wrestlersStr = createAllWrestlerLinks(m.opponents);
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
