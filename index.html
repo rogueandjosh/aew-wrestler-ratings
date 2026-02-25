@@ -1327,22 +1327,33 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
             
             // Determine which week we're viewing
-            const select = document.getElementById('weekSelect');
-            const selectedValue = select.value;
-            let currentWeekIndex = 0;
+const select = document.getElementById('weekSelect');
+const selectedValue = select.value;
+let currentWeekIndex = 0;
+let currentWeekUrl = null;
+
+console.log('🔍 Selected week:', selectedValue);
+
+if (selectedValue !== 'current') {
+    const currentFilename = selectedValue.replace('archive/', '');
+    currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+    console.log('🔍 Archive mode - currentWeekIndex:', currentWeekIndex);
+} else {
+    // Current week lives in current-rankings.json, not in the archive
+    currentWeekUrl = 'current-rankings.json';
+    currentWeekIndex = -1; // signals we need to prepend current week
+    console.log('🔍 Current week mode - will use current-rankings.json + archive weeks 0-3');
+}
             
-            console.log('🔍 Selected week:', selectedValue);
-            
-            if (selectedValue !== 'current') {
-                const currentFilename = selectedValue.replace('archive/', '');
-                currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                console.log('🔍 Archive mode - currentWeekIndex:', currentWeekIndex);
-            } else {
-                console.log('🔍 Current week mode - currentWeekIndex: 0');
-            }
-            
-            // Get 4 weeks starting from the current viewed week (not including it, starting from next)
-            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
+            let weeksToCheck = [];
+if (currentWeekIndex === -1) {
+    weeksToCheck = [
+        { url: currentWeekUrl, label: 'Current' },
+        ...archiveIndex.weeks.slice(0, 4)
+    ];
+} else {
+    weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
+}
             
             console.log('🔍 Weeks to check:', weeksToCheck.map(w => w.label));
             
