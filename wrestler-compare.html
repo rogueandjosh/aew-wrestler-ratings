@@ -767,7 +767,7 @@
 
             <!-- Wrestler Selection -->
             <section class="selection-section">
-                <h2>Select Wrestlers to Compare</h2>
+                <h2 id="selectionHeading">Select Wrestlers to Compare</h2>
                 <div id="loadingMessage" class="loading" style="display: none;">
                     Loading wrestler data
                 </div>
@@ -776,34 +776,34 @@
                 <div id="wrestlerSelectors" class="wrestler-selectors">
                     <div class="wrestler-selector-row">
                         <div class="wrestler-selector">
-                            <label for="wrestler1">Wrestler 1</label>
+                            <label for="wrestler1" id="label1">Wrestler 1</label>
                             <select id="wrestler1">
-                                <option value="">-- Select Wrestler --</option>
+                                <option value="" id="placeholder1">-- Select Wrestler --</option>
                             </select>
                         </div>
                         <button class="random-btn" onclick="randomWrestler(1)" title="Random wrestler">🎲</button>
                     </div>
                     <div class="wrestler-selector-row">
                         <div class="wrestler-selector">
-                            <label for="wrestler2">Wrestler 2</label>
+                            <label for="wrestler2" id="label2">Wrestler 2</label>
                             <select id="wrestler2">
-                                <option value="">-- Select Wrestler --</option>
+                                <option value="" id="placeholder2">-- Select Wrestler --</option>
                             </select>
                         </div>
                         <button class="random-btn" onclick="randomWrestler(2)" title="Random wrestler">🎲</button>
                     </div>
                     <div class="wrestler-selector-row">
                         <div class="wrestler-selector">
-                            <label for="wrestler3">Wrestler 3 (Optional)</label>
+                            <label for="wrestler3" id="label3">Wrestler 3 (Optional)</label>
                             <select id="wrestler3">
-                                <option value="">-- Select Wrestler --</option>
+                                <option value="" id="placeholder3">-- Select Wrestler --</option>
                             </select>
                         </div>
                         <button class="random-btn" onclick="randomWrestler(3)" title="Random wrestler">🎲</button>
                     </div>
                 </div>
 
-                <p class="info-message">Select at least 2 wrestlers to compare</p>
+                <p class="info-message" id="infoMessage">Select at least 2 wrestlers to compare</p>
 
                 <div class="action-buttons">
                     <button id="compareBtn" class="btn btn-primary" disabled>Compare Wrestlers</button>
@@ -891,10 +891,12 @@
 
         // Setup event listeners
         function setupEventListeners() {
+            updateSelectionLabels(selectedDivision); // Set initial labels based on default division
             // Division radio buttons
             document.querySelectorAll('input[name="division"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     selectedDivision = e.target.value;
+                    updateSelectionLabels(selectedDivision);
                     populateWrestlerDropdowns();
                     validateSelection();
                 });
@@ -922,6 +924,26 @@
 
             // Copy link button
             document.getElementById('copyLinkBtn').addEventListener('click', copyShareLink);
+        }
+
+        // Update labels/headings/placeholders based on whether division uses wrestlers or teams
+        function updateSelectionLabels(division) {
+            const isTeamDivision = ['menstag', 'womenstag', 'trios'].includes(division);
+            const word = isTeamDivision ? 'Team' : 'Wrestler';
+            const wordLower = word.toLowerCase();
+
+            document.getElementById('selectionHeading').textContent = `Select ${word}s to Compare`;
+            document.getElementById('label1').textContent = `${word} 1`;
+            document.getElementById('label2').textContent = `${word} 2`;
+            document.getElementById('label3').textContent = `${word} 3 (Optional)`;
+            document.getElementById('infoMessage').textContent = `Select at least 2 ${wordLower}s to compare`;
+            document.getElementById('compareBtn').textContent = `Compare ${word}s`;
+
+            // Update placeholder options in dropdowns
+            [1, 2, 3].forEach(n => {
+                const placeholder = document.getElementById(`placeholder${n}`);
+                if (placeholder) placeholder.textContent = `-- Select ${word} --`;
+            });
         }
 
         // Populate wrestler dropdowns based on selected division
@@ -970,7 +992,9 @@
                 const select = document.getElementById(dropdownId);
                 const currentValue = select.value;
                 
-                select.innerHTML = '<option value="">-- Select Wrestler --</option>';
+                const isTeamDiv = ['menstag', 'womenstag', 'trios'].includes(selectedDivision);
+                const placeholderWord = isTeamDiv ? 'Team' : 'Wrestler';
+                select.innerHTML = `<option value="">-- Select ${placeholderWord} --</option>`;
 
                 wrestlers.forEach(wrestler => {
                     const option = document.createElement('option');
