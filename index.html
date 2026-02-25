@@ -1016,7 +1016,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
 </script>
     <div class="container">
         <header style="position: relative;">
-            <h1>AEW Wrestler Ratings</h1>
+            <h1><a href="index.html" style="color: inherit; text-decoration: none;" title="Return to current rankings">AEW Wrestler Ratings</a></h1>
             <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
             
             <!-- Hamburger menu in top-right corner -->
@@ -2648,6 +2648,12 @@ let visibleColumns = {
                 <div id="dropped-${division}">
                 </div>
 
+                <div id="backToTopContainer-${division}" style="display: none; text-align: center; margin: 15px 0;">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: all 0.2s;">
+                        ▲ Back to Top
+                    </button>
+                </div>
+
                 <div class="filter-controls">
                     <div class="filter-row">
                         <div class="filter-group">
@@ -2965,6 +2971,12 @@ rows.push(`
                 } else {
                     showAllBtn.style.display = 'none';
                 }
+            }
+
+            // Show back to top button only when list is fully expanded
+            const backToTopContainer = document.getElementById('backToTopContainer-' + division);
+            if (backToTopContainer) {
+                backToTopContainer.style.display = (isExpanded && !isSearching) ? 'block' : 'none';
             }
 
             // Update table
@@ -4124,6 +4136,8 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         </div>
 
         ${showAllBtnHtml}
+
+        ${showAllWrestlers['stats-' + division] ? `<div style="text-align: center; margin: 15px 0;"><button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: all 0.2s;">▲ Back to Top</button></div>` : ''}
 
         <div class="filter-controls" style="margin-top: 20px;">
             <div class="filter-group">
