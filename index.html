@@ -1327,33 +1327,22 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
             
             // Determine which week we're viewing
-const select = document.getElementById('weekSelect');
-const selectedValue = select.value;
-let currentWeekIndex = 0;
-let currentWeekUrl = null;
-
-console.log('🔍 Selected week:', selectedValue);
-
-if (selectedValue !== 'current') {
-    const currentFilename = selectedValue.replace('archive/', '');
-    currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-    console.log('🔍 Archive mode - currentWeekIndex:', currentWeekIndex);
-} else {
-    // Current week lives in current-rankings.json, not in the archive
-    currentWeekUrl = 'current-rankings.json';
-    currentWeekIndex = -1; // signals we need to prepend current week
-    console.log('🔍 Current week mode - will use current-rankings.json + archive weeks 0-3');
-}
+            const select = document.getElementById('weekSelect');
+            const selectedValue = select.value;
+            let currentWeekIndex = 0;
             
-            let weeksToCheck = [];
-if (currentWeekIndex === -1) {
-    weeksToCheck = [
-        { url: currentWeekUrl, label: 'Current' },
-        ...archiveIndex.weeks.slice(0, 4)
-    ];
-} else {
-    weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
-}
+            console.log('🔍 Selected week:', selectedValue);
+            
+            if (selectedValue !== 'current') {
+                const currentFilename = selectedValue.replace('archive/', '');
+                currentWeekIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
+                console.log('🔍 Archive mode - currentWeekIndex:', currentWeekIndex);
+            } else {
+                console.log('🔍 Current week mode - currentWeekIndex: 0');
+            }
+            
+            // Get 4 weeks starting from the current viewed week (not including it, starting from next)
+            const weeksToCheck = archiveIndex.weeks.slice(currentWeekIndex, Math.min(currentWeekIndex + 5, archiveIndex.weeks.length));
             
             console.log('🔍 Weeks to check:', weeksToCheck.map(w => w.label));
             
@@ -2795,14 +2784,18 @@ for (let i = 0; i < filteredData.length; i++) {
             
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px; justify-content: center;">
-                    <img src="images/wrestlers/${slug1}.jpg" 
-                         alt="${members[0]}" 
-                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                         onerror="this.onerror=null; this.src='${initialsUrl1}';">
-                    <img src="images/wrestlers/${slug2}.jpg" 
-                         alt="${members[1]}" 
-                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                         onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                        <img src="images/wrestlers/${slug1}.jpg" 
+                             alt="${members[0]}" 
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
+                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                    </a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                        <img src="images/wrestlers/${slug2}.jpg" 
+                             alt="${members[1]}" 
+                             style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
+                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                    </a>
                 </div>
             </td>`;
         } else if (withinThreshold) {
@@ -2810,14 +2803,14 @@ for (let i = 0; i < filteredData.length; i++) {
             const teamInitials = generateInitials(wrestler.name);
             const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
             imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px; justify-content: center;">
+                <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
                     <img src="${teamInitialsUrl}" 
                          alt="Team" 
-                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
                     <img src="${teamInitialsUrl}" 
                          alt="Team" 
-                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                </div>
+                         style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                </a>
             </td>`;
         } else {
             // Beyond threshold - show individual wrestler initials (SMALLER SIZE)
@@ -2828,12 +2821,16 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initialsUrl2 = createInitialsCircle(initials2, 50);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
-                        <img src="${initialsUrl1}" 
-                             alt="${members[0]}" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                        <img src="${initialsUrl2}" 
-                             alt="${members[1]}" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                        <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="${initialsUrl1}" 
+                                 alt="${members[0]}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                        </a>
+                        <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="${initialsUrl2}" 
+                                 alt="${members[1]}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                        </a>
                     </div>
                 </td>`;
             } else {
@@ -2841,14 +2838,14 @@ for (let i = 0; i < filteredData.length; i++) {
                 const teamInitials = generateInitials(wrestler.name);
                 const teamInitialsUrl = createInitialsCircle(teamInitials, 50);
                 imageCell = `<td class="wrestler-image">
-                    <div style="display: flex; gap: 2px; justify-content: center;">
+                    <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
                         <img src="${teamInitialsUrl}" 
                              alt="Team" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
-                    </div>
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                    </a>
                 </td>`;
             }
         }
@@ -2871,18 +2868,24 @@ for (let i = 0; i < filteredData.length; i++) {
                 // Within threshold - try photos, fallback to initials
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
-                        <img src="images/wrestlers/${slug1}.jpg" 
-                             alt="${members[0]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
-                        <img src="images/wrestlers/${slug2}.jpg" 
-                             alt="${members[1]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
-                        <img src="images/wrestlers/${slug3}.jpg" 
-                             alt="${members[2]}" 
-                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;"
-                             onerror="this.onerror=null; this.src='${initialsUrl3}';">
+                        <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="images/wrestlers/${slug1}.jpg" 
+                                 alt="${members[0]}" 
+                                 style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                        </a>
+                        <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="images/wrestlers/${slug2}.jpg" 
+                                 alt="${members[1]}" 
+                                 style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                        </a>
+                        <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="images/wrestlers/${slug3}.jpg" 
+                                 alt="${members[2]}" 
+                                 style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl3}';">
+                        </a>
                     </div>
                 </td>`;
             } else {
@@ -2892,32 +2895,38 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initialsUrl3Small = createInitialsCircle(initials3, 35);
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
-                        <img src="${initialsUrl1Small}" 
-                             alt="${members[0]}" 
-                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
-                        <img src="${initialsUrl2Small}" 
-                             alt="${members[1]}" 
-                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
-                        <img src="${initialsUrl3Small}" 
-                             alt="${members[2]}" 
-                             style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700;">
+                        <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="${initialsUrl1Small}" 
+                                 alt="${members[0]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                        </a>
+                        <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="${initialsUrl2Small}" 
+                                 alt="${members[1]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                        </a>
+                        <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
+                            <img src="${initialsUrl3Small}" 
+                                 alt="${members[2]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                        </a>
                     </div>
                 </td>`;
             }
         } else {
             // No member data - show 3 placeholders
             imageCell = `<td class="wrestler-image">
-                <div style="display: flex; gap: 2px; justify-content: center;">
+                <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 1" 
-                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 2" 
-                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
                     <img src="images/placeholder.png" 
                          alt="Wrestler 3" 
-                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700;">
-                </div>
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                </a>
             </td>`;
         }
     } else {
@@ -2929,17 +2938,22 @@ for (let i = 0; i < filteredData.length; i++) {
         if (withinThreshold) {
             // Try to load wrestler's photo, fallback to initials, then placeholder
             imageCell = `<td class="wrestler-image">
-                <img src="images/wrestlers/${slug}.jpg" 
-                     alt="${wrestler.name}" 
-                     onerror="this.onerror=null; this.src='${initialsDataUrl}';">
+                <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display:block;">
+                    <img src="images/wrestlers/${slug}.jpg" 
+                         alt="${wrestler.name}" 
+                         style="cursor:pointer;"
+                         onerror="this.onerror=null; this.src='${initialsDataUrl}';">
+                </a>
             </td>`;
         } else {
             // Beyond threshold - show initials directly (SMALLER SIZE)
             const initialsDataUrlSmall = createInitialsCircle(initials, 70);
             imageCell = `<td class="wrestler-image">
-                <img src="${initialsDataUrlSmall}" 
-                     alt="${wrestler.name}" 
-                     style="width: 70px; height: 70px;">
+                <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display:block;">
+                    <img src="${initialsDataUrlSmall}" 
+                         alt="${wrestler.name}" 
+                         style="width: 70px; height: 70px; cursor:pointer;">
+                </a>
             </td>`;
         }
     }
@@ -4243,12 +4257,6 @@ document.addEventListener('click', function(e) {
         this.style.background = 'transparent';
     });
     </script>
-
-    <div style="text-align: center; margin: 30px 0 10px;">
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
-        ▲ Back to Top
-    </button>
-</div>
 
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
