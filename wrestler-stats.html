@@ -800,9 +800,23 @@
         }
 
         // Create links for ALL wrestlers in a match (current wrestler + opponents)
+        // For teams, we don't add the team name since individual members are already in opponents
         function createAllWrestlerLinks(opponents) {
-            // Combine current wrestler with opponents
-            const allWrestlers = [wrestlerData.name, ...(opponents || [])];
+            let allWrestlers;
+            
+            // Check if current wrestler is a team (tag team or trios)
+            const isTeam = wrestlerData.division && (
+                wrestlerData.division.includes('Tag') || 
+                wrestlerData.division.includes('Trio')
+            );
+            
+            if (isTeam) {
+                // For teams, just use opponents (individual members are already included)
+                allWrestlers = opponents || [];
+            } else {
+                // For singles wrestlers, add their name to the front
+                allWrestlers = [wrestlerData.name, ...(opponents || [])];
+            }
             
             if (allWrestlers.length === 0) {
                 return 'N/A';
