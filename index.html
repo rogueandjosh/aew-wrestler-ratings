@@ -2815,6 +2815,8 @@ for (let i = 0; i < filteredData.length; i++) {
         } else {
             // Beyond threshold - show individual wrestler initials (SMALLER SIZE)
             if (members.length >= 2) {
+                const slug1 = createSlug(members[0]);
+                const slug2 = createSlug(members[1]);
                 const initials1 = generateTagInitials(members[0]);
                 const initials2 = generateTagInitials(members[1]);
                 const initialsUrl1 = createInitialsCircle(initials1, 50);
