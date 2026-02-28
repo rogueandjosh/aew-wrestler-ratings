@@ -2511,7 +2511,7 @@ let visibleColumns = {
                                                     w.name.replace(/\s*\(.*?\)/g, '').trim() === wrestler.name.replace(/\s*\(.*?\)/g, '').trim()
                                                 );
                                                 
-                                                if (archivedWrestler && archivedWrestler.change) {
+                                                if (archivedWrestler && archivedWrestler.change !== undefined && archivedWrestler.change !== null) {
                                                     // Copy the change from archive (which has correct arrows)
                                                     wrestler.change = archivedWrestler.change;
                                                 }
