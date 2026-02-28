@@ -2053,8 +2053,8 @@ let visibleColumns = {
             fetch('statistics.json').catch(() => null)
         ])
         .then(async ([archiveResponse, currentResponse, statsResponse]) => {
-            // Load team members data (don't block on failure)
-            loadTeamMembers();
+            // Load team members data (await so it's ready before rendering)
+            await loadTeamMembers();
             
             // Load name changes (don't block on failure)
             try {
