@@ -1,0 +1,90 @@
+/* ===== SHARED TOOLTIP STYLES ===== */
+#ttBox {
+    display: none;
+    position: fixed;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border: 1px solid #ffd700;
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-size: 0.78em;
+    white-space: normal;
+    width: 200px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 99999;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    line-height: 1.4;
+}
+
+/* CSS tooltips for non-table elements (buttons etc) */
+.tt:not(th):not(td) {
+    position: relative;
+    display: inline-block;
+}
+.tt:not(th):not(td)::after {
+    content: attr(data-tt);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border: 1px solid #ffd700;
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-size: 0.78em;
+    font-weight: normal;
+    white-space: normal;
+    width: 200px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.4s;
+    z-index: 9999;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    line-height: 1.4;
+}
+.tt.tt-below:not(th):not(td)::after {
+    bottom: auto;
+    top: calc(100% + 8px);
+}
+.tt:not(th):not(td)::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #ffd700;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.4s;
+    z-index: 9999;
+}
+.tt.tt-below:not(th):not(td)::before {
+    bottom: auto;
+    top: calc(100% + 2px);
+    border-top-color: transparent;
+    border-bottom-color: #ffd700;
+}
+body.tooltips-on .tt:not(th):not(td):hover::after,
+body.tooltips-on .tt:not(th):not(td):hover::before {
+    opacity: 1;
+}
+
+/* Toggle button */
+#tooltipToggle {
+    background: none;
+    border: none;
+    color: #b8b8b8;
+    cursor: pointer;
+    font-size: 0.85em;
+    margin-left: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s;
+    vertical-align: middle;
+}
+#tooltipToggle:hover { color: #ffd700; }
+#tooltipToggle.active { color: #ffd700; }
