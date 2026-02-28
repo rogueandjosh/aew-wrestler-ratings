@@ -16,6 +16,15 @@
             box-sizing: border-box;
         }
 
+        #ratingHistoryTitle::after {
+            left: 0;
+            transform: none;
+        }
+        #ratingHistoryTitle::before {
+             left: 30px;
+            transform: none;
+        }
+
         body {
             font-family: 'Overlock', 'Arial', sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -578,7 +587,7 @@
                     </div>
                 </div>
                 <div id="activeTeamsContainer" class="active-teams-container" style="margin-left: auto; padding-left: 20px; border-left: 2px solid rgba(255, 215, 0, 0.3); display: none;">
-                    <div id="activeTeamsLabel" class="tt" style="font-size: 0.9em; color: #999; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: help;">Active Teams</div>
+                    <div id="activeTeamsLabel" class="tt" style="font-size: 0.9em; color: #999; margin-bottom: 5px; cursor: help;">Active Teams</div>
                     <div id="activeTeamsList"></div>
                 </div>
             </div>
