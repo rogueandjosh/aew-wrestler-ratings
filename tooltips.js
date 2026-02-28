@@ -1,6 +1,7 @@
 // ===== SHARED TOOLTIP SYSTEM =====
 
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
+
     // Inject #ttBox if not already present
     if (!document.getElementById('ttBox')) {
         const box = document.createElement('div');
@@ -16,7 +17,6 @@
             btn.id = 'tooltipToggle';
             btn.onclick = toggleTooltips;
             subtitle.appendChild(btn);
-            updateToggleBtn(btn);
         }
     }
 
@@ -52,7 +52,8 @@
         clearTimeout(ttTimer);
         ttBox.style.display = 'none';
     });
-})();
+
+});
 
 function toggleTooltips() {
     const on = document.body.classList.toggle('tooltips-on');
