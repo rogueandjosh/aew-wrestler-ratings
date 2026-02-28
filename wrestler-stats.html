@@ -578,13 +578,13 @@
                     </div>
                 </div>
                 <div id="activeTeamsContainer" class="active-teams-container" style="margin-left: auto; padding-left: 20px; border-left: 2px solid rgba(255, 215, 0, 0.3); display: none;">
-                    <div style="font-size: 0.9em; color: #999; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Active Teams</div>
+                    <div id="activeTeamsLabel" class="tt" style="font-size: 0.9em; color: #999; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: help;">Active Teams</div>
                     <div id="activeTeamsList"></div>
                 </div>
             </div>
 
             <div class="year-filter">
-                <h2>Filter by Year</h2>
+                <h2 class="tt" data-tt="All statistics will adjust to the year selected. Keep this at 'ALL' to see most recent and all statistics." style="cursor: help;">Filter by Year</h2>
                 <div class="year-buttons">
                     <button class="year-btn active" data-year="ALL">ALL</button>
                     <button class="year-btn" data-year="2026">2026</button>
@@ -602,7 +602,7 @@
 
             <!-- Rating History Chart -->
             <div class="section">
-                <div class="section-title">📈 Rating History</div>
+                <div class="section-title tt" id="ratingHistoryTitle" style="cursor: help;">📈 Rating History</div>
                 <div class="chart-box">
                     <canvas id="ratingChart"></canvas>
                 </div>
@@ -610,19 +610,19 @@
 
             <!-- Match Distribution Bar Chart -->
             <div class="section">
-                <div class="section-title">📊 Match Quality Distribution</div>
+                <div class="section-title tt" data-tt="This chart shows the spread of match ratings for this wrestler — how many matches fell into each quality range, from the lowest to highest rated." style="cursor: help;">📊 Match Quality Distribution</div>
                 <div class="distribution-bars" id="distributionBars"></div>
             </div>
 
             <!-- Recent Matches -->
             <div class="section">
-                <div class="section-title">🔥 Recent Match Ratings</div>
+                <div class="section-title tt" id="recentMatchesTitle" style="cursor: help;">🔥 Recent Match Ratings</div>
                 <div class="recent-matches-list" id="recentMatchesList"></div>
             </div>
 
             <!-- Top & Bottom Matches -->
             <div class="section">
-                <div class="section-title">⭐ Best & Worst Performances</div>
+                <div class="section-title tt" data-tt="The top 5 and bottom 5 match ratings are listed — click on each match rating button for more details!" style="cursor: help;">⭐ Best & Worst Performances</div>
                 <div class="matches-tables">
                     <div class="match-table">
                         <h3>Top 5 Matches</h3>
@@ -637,7 +637,7 @@
 
             <!-- Team Affiliations Section -->
             <div class="section" id="inactiveTeamsSection" style="display: none;">
-                <div class="section-title">👥 Past Team Affiliations</div>
+                <div class="section-title tt" id="pastTeamsTitle" style="cursor: help;">👥 Past Team Affiliations</div>
                 
                 <div class="team-affiliations-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <!-- Tag Teams Table (Left) -->
@@ -1260,6 +1260,31 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 division === 'trios'
             );
             
+            // Set dynamic tooltips based on division
+            const isWomensDivision = division && division.toLowerCase().includes('women');
+            const teamOrWrestler = (isTagTeam || isTrios) ? 'team' : 'wrestler';
+
+            const activeTeamsLabel = document.getElementById('activeTeamsLabel');
+            if (activeTeamsLabel) {
+                activeTeamsLabel.setAttribute('data-tt', `This shows the teams that this ${teamOrWrestler} is currently part of.`);
+            }
+
+            const ratingHistoryTitle = document.getElementById('ratingHistoryTitle');
+            if (ratingHistoryTitle) {
+                ratingHistoryTitle.setAttribute('data-tt', `This line graph shows the change in this ${teamOrWrestler}'s rating over time. Changing the year filter will adjust the line graph accordingly.`);
+            }
+
+            const recentMatchesTitle = document.getElementById('recentMatchesTitle');
+            if (recentMatchesTitle) {
+                recentMatchesTitle.setAttribute('data-tt', `These show up to the last ten match ratings this ${teamOrWrestler} has taken part in. Click on the match rating button to see more details for each one!`);
+            }
+
+            const pastTeamsTitle = document.getElementById('pastTeamsTitle');
+            if (pastTeamsTitle) {
+                const teamTypes = isWomensDivision ? 'tag' : 'tag and trio';
+                pastTeamsTitle.setAttribute('data-tt', `Here are all of the ${teamTypes} teams this ${teamOrWrestler} has been part of. Click on hyperlinks to go to that team's individual page.`);
+            }
+
             if (isTagTeam) {
                 // TAG TEAMS - 2 images at 90x90
                 const members = findTeamMembers(wrestlerData.name);
