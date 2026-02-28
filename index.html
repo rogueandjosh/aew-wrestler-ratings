@@ -992,11 +992,31 @@
         }
 
         /* ===== TOOLTIP STYLES ===== */
-        .tt {
+        .tt:not(th):not(td) {
             position: relative;
             display: inline-block;
         }
-        .tt::after {
+        /* JS-powered tooltip div */
+        #ttBox {
+            display: none;
+            position: fixed;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-size: 0.78em;
+            white-space: normal;
+            width: 200px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 99999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            line-height: 1.4;
+            transition: opacity 0.15s ease;
+        }
+        /* CSS tooltips only for non-table elements (buttons etc) */
+        .tt:not(th):not(td)::after {
             content: attr(data-tt);
             position: absolute;
             bottom: calc(100% + 8px);
@@ -1019,11 +1039,11 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.5);
             line-height: 1.4;
         }
-        .tt.tt-below::after {
+        .tt.tt-below:not(th):not(td)::after {
             bottom: auto;
             top: calc(100% + 8px);
         }
-        .tt::before {
+        .tt:not(th):not(td)::before {
             content: '';
             position: absolute;
             bottom: calc(100% + 2px);
@@ -1036,14 +1056,14 @@
             transition: opacity 0.2s ease 0.4s;
             z-index: 9999;
         }
-        .tt.tt-below::before {
+        .tt.tt-below:not(th):not(td)::before {
             bottom: auto;
             top: calc(100% + 2px);
             border-top-color: transparent;
             border-bottom-color: #ffd700;
         }
-        body.tooltips-on .tt:hover::after,
-        body.tooltips-on .tt:hover::before {
+        body.tooltips-on .tt:not(th):not(td):hover::after,
+        body.tooltips-on .tt:not(th):not(td):hover::before {
             opacity: 1;
         }
         #tooltipToggle {
@@ -1063,6 +1083,7 @@
     </style>
 </head>
 <body>
+<div id="ttBox"></div>
 <div id="accessGate" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;z-index:99999;">
   <div style="text-align:center;font-family:sans-serif;">
     <h2 style="color:#ffd700;margin-bottom:15px;">AEW Wrestler Ratings</h2>
@@ -1315,6 +1336,31 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                 btn.classList.toggle('active', on);
             }
         }
+
+        // JS-powered tooltips for table headers (CSS ::after doesn't work inside tables)
+        const ttBox = document.getElementById('ttBox');
+        let ttTimer = null;
+        document.addEventListener('mouseover', function(e) {
+            const el = e.target.closest('th.tt, td.tt');
+            if (!el || !document.body.classList.contains('tooltips-on')) return;
+            const text = el.getAttribute('data-tt');
+            if (!text) return;
+            ttTimer = setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                ttBox.textContent = text;
+                ttBox.style.display = 'block';
+                const left = rect.left + rect.width / 2 - 100; // centre 200px box
+                const top = rect.top - 70; // above the header
+                ttBox.style.left = Math.max(5, left) + 'px';
+                ttBox.style.top = Math.max(5, top) + 'px';
+            }, 400);
+        });
+        document.addEventListener('mouseout', function(e) {
+            const el = e.target.closest('th.tt, td.tt');
+            if (!el) return;
+            clearTimeout(ttTimer);
+            ttBox.style.display = 'none';
+        });
 
         // Toggle showing all wrestlers vs top N
         function toggleShowAll(division) {
