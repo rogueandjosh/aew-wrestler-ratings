@@ -1958,6 +1958,7 @@ let visibleColumns = {
                             wrestler.change = '—';
                         } else if (typeof wrestler.change !== 'string') {
                             // If it's a number or other type, convert to string first
+                            console.log('Non-string change value:', wrestler.change, typeof wrestler.change, 'for:', wrestler.name);
                             wrestler.change = String(wrestler.change);
                             // Then apply same arrow logic
                             if (wrestler.change.startsWith('-')) {
