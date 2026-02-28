@@ -424,6 +424,9 @@
             flex: 0 0 auto; /* Add this */
             max-width: 50%; /* Add this */
         }
+        .stat-label-card.tt {
+            cursor: help;
+        }
 
         .stat-value-card {
             color: #fff;
@@ -722,7 +725,7 @@
         <main>
             <!-- Division Selection -->
             <section class="division-section">
-                <h2>Select Division</h2>
+                <h2 class="tt" data-tt="Choose which division to compare wrestlers from. Select 'All Divisions' to compare across different divisions." style="cursor: help;">Select Division</h2>
                 <div class="division-options">
                     <div class="division-option">
                         <input type="radio" id="div-mens" name="division" value="mens" checked>
@@ -753,7 +756,7 @@
 
             <!-- Year Filter -->
             <section class="division-section">
-                <h2>Select Year</h2>
+                <h2 class="tt" data-tt="Filter all statistics to a specific year, or keep at 'ALL' to see career statistics." style="cursor: help;">Select Year</h2>
                 <select id="yearFilter" style="width: 100%; padding: 12px; font-size: 1em; font-family: 'Overlock', cursive; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 5px; color: #fff; cursor: pointer;">
                     <option value="ALL">All Years</option>
                     <option value="2026">2026</option>
@@ -769,7 +772,7 @@
 
             <!-- Wrestler Selection -->
             <section class="selection-section">
-                <h2 id="selectionHeading">Select Wrestlers to Compare</h2>
+                <h2 id="selectionHeading" class="tt" data-tt="Select two wrestlers to compare side by side. On larger screens a third can also be added." style="cursor: help;">Select Wrestlers to Compare</h2>
                 <div id="loadingMessage" class="loading" style="display: none;">
                     Loading wrestler data
                 </div>
@@ -824,7 +827,7 @@
                 </div>
 
                 <div class="graph-container">
-                    <h2>📈 Rating History</h2>
+                    <h2 class="tt" data-tt="This line graph shows the change in each wrestler's rating over time. Changing the year filter will adjust the graph accordingly." style="cursor: help;">📈 Rating History</h2>
                     <div id="graphCanvas">
                         <canvas id="comparisonChart"></canvas>
                     </div>
@@ -1468,52 +1471,52 @@ if (selectedYear === 'ALL') {
                     </div>
                     <div class="stats-list">
                         <div class="stat-row-card">
-                            <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rating</span>
+                            <span class="stat-label-card tt" data-tt="The current rating for this wrestler.">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rating</span>
                             <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(typeof currentRating === 'number' ? currentRating : parseFloat(currentRating)) : ''}">${currentRating !== 'N/A' ? (typeof currentRating === 'number' ? currentRating.toFixed(2) : currentRating) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                        <span class="stat-label-card">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rank</span>
+                        <span class="stat-label-card tt" data-tt="The current ranking position for this wrestler.">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rank</span>
                         <span class="stat-value-card">${currentRank !== 'N/A' ? '#' + currentRank : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Peak Rating</span>
+                            <span class="stat-label-card tt" data-tt="The highest rating this wrestler has achieved in the rankings.">Peak Rating</span>
                             <span class="stat-value-card">${peakRating !== 'N/A' ? peakRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Floor Rating</span>
+                            <span class="stat-label-card tt" data-tt="The lowest rating this wrestler has reached in the rankings.">Floor Rating</span>
                             <span class="stat-value-card">${floorRating !== 'N/A' ? floorRating.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Average Rating</span>
+                            <span class="stat-label-card tt" data-tt="The average rating — all weeks this wrestler has been in the rankings count towards this.">Average Rating</span>
                             <span class="stat-value-card">${avgRating}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Total Weeks</span>
+                            <span class="stat-label-card tt" data-tt="The number of weeks this wrestler has appeared in the rankings.">Total Weeks</span>
                             <span class="stat-value-card">${formatNumber(totalWeeks)}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Total Matches</span>
+                            <span class="stat-label-card tt" data-tt="The number of counting matches from Cagematch.net.">Total Matches</span>
                             <span class="stat-value-card">${formatNumber(totalMatches)}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Best Rank</span>
+                            <span class="stat-label-card tt" data-tt="The highest ranked position this wrestler has reached in the weekly rankings.">Best Rank</span>
                             <span class="stat-value-card">${peakRank !== 'N/A' ? '#' + peakRank : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Weeks at #1</span>
+                            <span class="stat-label-card tt" data-tt="Only a certain number of wrestlers have been ranked at number 1.">Weeks at #1</span>
                             <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Highest Match</span>
+                            <span class="stat-label-card tt" data-tt="The highest single match rating this wrestler has received.">Highest Match</span>
                             <span class="stat-value-card ${highestMatch !== 'N/A' ? 'good' : ''}">${highestMatch !== 'N/A' ? highestMatch.toFixed(2) : 'N/A'}</span>
                         </div>
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Lowest Match</span>
+                            <span class="stat-label-card tt" data-tt="The lowest single match rating this wrestler has received.">Lowest Match</span>
                              <span class="stat-value-card ${lowestMatch !== 'N/A' ? 'poor' : ''}">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
                         </div>
                         ${selectedYear === 'ALL' && data.peakRatingWeek ? `
                         <div class="stat-row-card">
-                            <span class="stat-label-card">Peak Week</span>
+                            <span class="stat-label-card tt" data-tt="The week where this wrestler had their highest rating.">Peak Week</span>
                             <span class="stat-value-card" style="font-size: 0.85em;">${data.peakRatingWeek}</span>
                         </div>
                         ` : ''}
