@@ -3358,9 +3358,28 @@ if (tableEl) {
                 }
             }
 
-            // Parse "Name1 & Name2" format directly
+            // Parse "Name1 & Name2" format directly (parentheses-aware)
+            // "Dark Order (Reynolds & Silver) & Page" → ["Dark Order (Reynolds & Silver)", "Page"]
             if (teamName.includes(' & ')) {
-                const parts = teamName.split(' & ').map(n => n.trim());
+                const parts = [];
+                let current = '';
+                let depth = 0;
+                for (let i = 0; i < teamName.length; i++) {
+                    const ch = teamName[i];
+                    if (ch === '(') depth++;
+                    else if (ch === ')') depth--;
+                    
+                    // Only split on ' & ' when NOT inside parentheses
+                    if (depth === 0 && teamName.substring(i, i + 3) === ' & ') {
+                        parts.push(current.trim());
+                        current = '';
+                        i += 2; // skip ' & '
+                    } else {
+                        current += ch;
+                    }
+                }
+                if (current.trim()) parts.push(current.trim());
+                
                 if (parts.length >= 2) {
                     return parts;
                 }
