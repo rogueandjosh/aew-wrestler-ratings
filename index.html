@@ -990,6 +990,76 @@
             color: #ffd700;
             text-decoration: underline;
         }
+
+        /* ===== TOOLTIP STYLES ===== */
+        .tt {
+            position: relative;
+            display: inline-block;
+        }
+        .tt::after {
+            content: attr(data-tt);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-size: 0.78em;
+            font-weight: normal;
+            white-space: normal;
+            width: 200px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.4s;
+            z-index: 9999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
+        .tt.tt-below::after {
+            bottom: auto;
+            top: calc(100% + 8px);
+        }
+        .tt::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #ffd700;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.4s;
+            z-index: 9999;
+        }
+        .tt.tt-below::before {
+            bottom: auto;
+            top: calc(100% + 2px);
+            border-top-color: transparent;
+            border-bottom-color: #ffd700;
+        }
+        body.tooltips-on .tt:hover::after,
+        body.tooltips-on .tt:hover::before {
+            opacity: 1;
+        }
+        #tooltipToggle {
+            background: none;
+            border: none;
+            color: #b8b8b8;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: color 0.2s;
+            vertical-align: middle;
+        }
+        #tooltipToggle:hover { color: #ffd700; }
+        #tooltipToggle.active { color: #ffd700; }
     </style>
 </head>
 <body>
@@ -1017,7 +1087,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
     <div class="container">
         <header style="position: relative;">
             <h1><a href="index.html" style="color: inherit; text-decoration: none;" title="Return to current rankings">AEW Wrestler Ratings</a></h1>
-            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
+            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net<button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle helpful tooltips on/off">ⓘ Tooltips ON</button></p>
             
             <!-- Hamburger menu in top-right corner -->
             <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
@@ -1092,10 +1162,10 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
         </header>
 
         <div class="view-toggle">
-            <button id="rankingsToggle" class="toggle-btn active" onclick="switchToRankings()">
+            <button id="rankingsToggle" class="toggle-btn active tt tt-below" onclick="switchToRankings()" data-tt="These are the rankings for all active wrestlers. Click on one of the division buttons below to change between men's, women's and team rankings.">
                 📊 Weekly Rankings
             </button>
-            <button id="statsToggle" class="toggle-btn" onclick="switchToStatistics()">
+            <button id="statsToggle" class="toggle-btn tt tt-below" onclick="switchToStatistics()" data-tt="This shows ALL wrestlers for each division, whether they are active or not.">
                 📈 All Wrestler Statistics
             </button>
         </div>
@@ -1221,6 +1291,28 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             } else {
                 panel.style.display = 'none';
                 btn.textContent = '▼ Change Week / Browse Archive';
+            }
+        }
+
+        // ===== TOOLTIP TOGGLE =====
+        (function() {
+            const stored = localStorage.getItem('aewTooltips');
+            const on = stored === null ? true : stored === 'true';
+            if (on) document.body.classList.add('tooltips-on');
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.classList.toggle('active', on);
+            }
+        })();
+
+        function toggleTooltips() {
+            const on = document.body.classList.toggle('tooltips-on');
+            localStorage.setItem('aewTooltips', on);
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.classList.toggle('active', on);
             }
         }
 
@@ -2871,11 +2963,11 @@ if (tableEl) {
                     <th>Rank</th>
                     <th></th>
                     <th>Name</th>
-                    <th>Rating</th>
-                    <th>Change</th>
-                    <th>Matches</th>
-                    <th>Peak</th>
-                    <th>Floor</th>
+                    <th class="tt" data-tt="This is the ${['menstag','womenstag','trios'].includes(division) ? 'team\'s' : 'wrestler\'s'} current rating.">Rating</th>
+                    <th class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
+                    <th class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
+                    <th class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
+                    <th class="tt" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>
                 </tr>
             </thead>
             <tbody>
@@ -3353,12 +3445,12 @@ function renderStatistics(division) {
                     <tr>
                         <th class="no-sort">#</th>
                         <th class="sortable" onclick="sortStatistics('name')">Name</th>
-                        <th class="sortable" onclick="sortStatistics('current')">Current</th>
-                        <th class="sortable" onclick="sortStatistics('peak')">Peak</th>
-                        <th class="sortable" onclick="sortStatistics('floor')">Floor</th>
-                        <th class="sortable" onclick="sortStatistics('average')">Average</th>
-                        <th class="sortable" onclick="sortStatistics('peakWeek')">Peak Week</th>
-                        <th class="sortable" onclick="sortStatistics('weeksAtNumber1')">Weeks at #1</th>
+                        <th class="sortable tt" onclick="sortStatistics('current')" data-tt="This is the wrestler's current rating.">Current</th>
+                        <th class="sortable tt" onclick="sortStatistics('peak')" data-tt="The highest rating the wrestler has achieved up to this week in the rankings.">Peak</th>
+                        <th class="sortable tt" onclick="sortStatistics('floor')" data-tt="The lowest rating the wrestler has reached in the rankings.">Floor</th>
+                        <th class="sortable tt" onclick="sortStatistics('average')" data-tt="The average rating — all weeks the wrestler has been in the rankings count towards this.">Average</th>
+                        <th class="sortable tt" onclick="sortStatistics('peakWeek')" data-tt="The week where this wrestler had their highest rating.">Peak Week</th>
+                        <th class="sortable tt" onclick="sortStatistics('weeksAtNumber1')" data-tt="Only a certain number of wrestlers have been ranked at number 1.">Weeks at #1</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -3963,7 +4055,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         <div class="table-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #ffd700; margin: 0;">📊 ${divisionNames[division]}</h2>
-                <button onclick="toggleColumnSelector()" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Click here to choose which statistics categories to include.">
                     ⚙️ Customize Columns
                 </button>
             </div>
@@ -4005,13 +4097,13 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 <thead><tr>
                         ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
                         <th class="sortable" onclick="sortStatsData('name')">Name</th>
-                        ${visibleColumns.current ? '<th class="sortable" onclick="sortStatsData(\'current\')">Current</th>' : ''}
-                        ${visibleColumns.peak ? '<th class="sortable" onclick="sortStatsData(\'peak\')">Peak</th>' : ''}
-                        ${visibleColumns.floor ? '<th class="sortable" onclick="sortStatsData(\'floor\')">Floor</th>' : ''}
-                        ${visibleColumns.average ? '<th class="sortable" onclick="sortStatsData(\'average\')">Average</th>' : ''}
-                        ${visibleColumns.peakWeek ? '<th class="sortable" onclick="sortStatsData(\'peakWeek\')">Peak Week</th>' : ''}
-                        ${visibleColumns.floorWeek ? '<th class="sortable" onclick="sortStatsData(\'floorWeek\')">Floor Week</th>' : ''}
-                        ${visibleColumns.weeksAtNumber1 ? '<th class="sortable" onclick="sortStatsData(\'weeksAtNumber1\')">Weeks at #1</th>' : ''}
+                        ${visibleColumns.current ? `<th class="sortable tt" onclick="sortStatsData('current')" data-tt="This is the ${['menstag','womenstag','trios'].includes(division) ? 'team\\'s' : 'wrestler\\'s'} current rating.">Current</th>` : ''}
+                        ${visibleColumns.peak ? `<th class="sortable tt" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
+                        ${visibleColumns.floor ? `<th class="sortable tt" onclick="sortStatsData('floor')" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>` : ''}
+                        ${visibleColumns.average ? `<th class="sortable tt" onclick="sortStatsData('average')" data-tt="The average rating — all weeks the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has been in the rankings count towards this.">Average</th>` : ''}
+                        ${visibleColumns.peakWeek ? `<th class="sortable tt" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
+                        ${visibleColumns.floorWeek ? `<th class="sortable tt" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
+                        ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
                     </tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
