@@ -1463,21 +1463,37 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
     section.innerHTML = '<p style="color: #b8b8b8;">Loading...</p>';
 
     try {
-        // Load current-rankings.json and up to 4 recent archive weeks
-        let currentData = null;
-        try {
-            currentData = await fetch('current-rankings.json').then(r => r.json());
-        } catch (e) {
-            console.log('Could not load current-rankings.json');
+        // Determine which week is being viewed
+        const weekSelect = document.getElementById('weekSelect');
+        const selectedValue = weekSelect ? weekSelect.value : 'current';
+        const isCurrentWeek = selectedValue === 'current';
+
+        // Find the starting index in the archive
+        let startIndex = 0;
+        if (!isCurrentWeek) {
+            const filename = selectedValue.replace('archive/', '');
+            startIndex = archiveIndex.weeks.findIndex(w => w.filename === filename);
+            if (startIndex < 0) startIndex = 0;
         }
 
-        const archiveWeeks = archiveIndex.weeks.slice(0, 5);
+        // Load the 5 weeks starting from the viewed week (for comparison pairs)
+        const archiveWeeks = archiveIndex.weeks.slice(startIndex, startIndex + 5);
         const weekDataCache = [];
         for (let i = 0; i < archiveWeeks.length; i++) {
             try {
                 weekDataCache.push(await fetch(archiveWeeks[i].url).then(r => r.json()));
             } catch (e) {
                 weekDataCache.push(null);
+            }
+        }
+
+        // For current week, also load current-rankings.json as the "newest" week
+        let currentData = null;
+        if (isCurrentWeek) {
+            try {
+                currentData = await fetch('current-rankings.json').then(r => r.json());
+            } catch (e) {
+                console.log('Could not load current-rankings.json');
             }
         }
 
@@ -1499,19 +1515,26 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             return map;
         }
 
-        // Build pairs: [current vs archive[0]], [archive[0] vs archive[1]], etc.
+        // Build pairs
         const pairs = [];
-        if (currentData && weekDataCache[0]) {
+        if (isCurrentWeek && currentData && weekDataCache[0]) {
             pairs.push({ newer: currentData, older: weekDataCache[0], olderLabel: archiveWeeks[0].label });
-        }
-        for (let i = 0; i < Math.min(3, weekDataCache.length - 1); i++) {
-            if (weekDataCache[i] && weekDataCache[i + 1]) {
-                pairs.push({ newer: weekDataCache[i], older: weekDataCache[i + 1], olderLabel: archiveWeeks[i].label });
+            for (let i = 0; i < Math.min(3, weekDataCache.length - 1); i++) {
+                if (weekDataCache[i] && weekDataCache[i + 1]) {
+                    pairs.push({ newer: weekDataCache[i], older: weekDataCache[i + 1], olderLabel: archiveWeeks[i].label });
+                }
+            }
+        } else {
+            for (let i = 0; i < Math.min(4, weekDataCache.length - 1); i++) {
+                if (weekDataCache[i] && weekDataCache[i + 1]) {
+                    pairs.push({ newer: weekDataCache[i], older: weekDataCache[i + 1], olderLabel: archiveWeeks[i].label });
+                }
             }
         }
 
-        // Current roster for re-entry filtering
-        const currentRosterMap = getRosterMap(currentData);
+        // Current roster for re-entry filtering — use the viewed week's data
+        const viewedWeekData = isCurrentWeek ? currentData : weekDataCache[0];
+        const currentRosterMap = getRosterMap(viewedWeekData);
 
         const recentlyDropped = {};
 
