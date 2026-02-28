@@ -2963,7 +2963,7 @@ if (tableEl) {
                     <th>Rank</th>
                     <th></th>
                     <th>Name</th>
-                    <th class="tt" data-tt="This is the ${['menstag','womenstag','trios'].includes(division) ? 'team\'s' : 'wrestler\'s'} current rating.">Rating</th>
+                    <th class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
                     <th class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
                     <th class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
                     <th class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
@@ -4097,7 +4097,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 <thead><tr>
                         ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
                         <th class="sortable" onclick="sortStatsData('name')">Name</th>
-                        ${visibleColumns.current ? `<th class="sortable tt" onclick="sortStatsData('current')" data-tt="This is the ${['menstag','womenstag','trios'].includes(division) ? 'team\\'s' : 'wrestler\\'s'} current rating.">Current</th>` : ''}
+                        ${visibleColumns.current ? `<th class="sortable tt" onclick="sortStatsData('current')" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Current</th>` : ''}
                         ${visibleColumns.peak ? `<th class="sortable tt" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
                         ${visibleColumns.floor ? `<th class="sortable tt" onclick="sortStatsData('floor')" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>` : ''}
                         ${visibleColumns.average ? `<th class="sortable tt" onclick="sortStatsData('average')" data-tt="The average rating — all weeks the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has been in the rankings count towards this.">Average</th>` : ''}
