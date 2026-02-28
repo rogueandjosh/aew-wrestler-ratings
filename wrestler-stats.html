@@ -546,7 +546,7 @@
 <body>
     <div class="container">
         <header>
-            <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html'" title="Reset to default">Individual Wrestler Statistics</h1>
+            <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
             <p class="subtitle">Detailed statistics for individual wrestlers and teams</p>
             <div class="nav-buttons" style="display: flex; gap: 12px;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
