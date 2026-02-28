@@ -541,6 +541,7 @@
     <div class="container">
         <header>
             <h1>AEW Wrestler Ratings</h1>
+            <p class="subtitle" id="pageSubtitle">Individual Wrestler Statistics</p>
             <div class="nav-buttons" style="display: flex; gap: 12px;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
                     ← Back
@@ -562,7 +563,6 @@
             <div class="wrestler-header">
                 <div id="wrestlerImageContainer" class="wrestler-image-container"></div>
                 <div class="wrestler-info">
-                    <div id="statsPageTitle" style="font-size: 0.75em; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;"></div>
                     <h2 id="wrestlerName" class="wrestler-name"></h2>
                     <div id="formerNames" class="former-names" style="display: none;"></div>
                     <div id="futureNames" class="former-names" style="display: none;"></div>
@@ -1183,7 +1183,7 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
         function displayWrestlerData() {
             document.getElementById('wrestlerName').textContent = wrestlerData.name;
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
-            document.getElementById('statsPageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
+            document.getElementById('pageSubtitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
             
             // Display wrestler/team image
