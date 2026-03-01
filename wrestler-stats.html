@@ -581,7 +581,7 @@
                     🥊 Compare
                 </a>
                 <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
-                    ⓘ Tooltips ON
+                    💡 Tooltips ON
                 </button>
             </div>
         </header>
@@ -2345,7 +2345,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         if (on) document.body.classList.add('tooltips-on');
         const btn = document.getElementById('tooltipToggle');
         if (btn) {
-            btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+            btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
             btn.classList.toggle('active', on);
         }
     })();
@@ -2355,7 +2355,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         localStorage.setItem('aewTooltips', on);
         const btn = document.getElementById('tooltipToggle');
         if (btn) {
-            btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+            btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
             btn.classList.toggle('active', on);
         }
     }
