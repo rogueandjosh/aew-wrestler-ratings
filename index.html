@@ -2218,9 +2218,10 @@ let visibleColumns = {
                         switchToStatistics();
                     }, 100);
                 } else {
-                    // Normal rankings view - show division and load week data
-                    showDivision(returnDivision);
-                    console.log('Division set to:', returnDivision);
+                    // Normal rankings view - set division first, then load week data
+                    // The loadSelectedWeek will call showDivision after data is loaded
+                    currentDivision = returnDivision;
+                    console.log('Division will be set to:', returnDivision);
                     loadSelectedWeek();
                     console.log('Loading week data...');
                 }
