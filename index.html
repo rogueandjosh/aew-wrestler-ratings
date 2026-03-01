@@ -1068,18 +1068,16 @@
         }
         #tooltipToggle {
             background: none;
-            border: none;
-            color: #b8b8b8;
+            border: 1px solid rgba(255,215,0,0.4);
+            color: #888;
             cursor: pointer;
-            font-size: 0.85em;
-            margin-left: 10px;
-            padding: 2px 6px;
+            font-size: 0.8em;
+            padding: 4px 10px;
             border-radius: 4px;
-            transition: color 0.2s;
-            vertical-align: middle;
+            transition: all 0.2s;
         }
-        #tooltipToggle:hover { color: #ffd700; }
-        #tooltipToggle.active { color: #ffd700; }
+        #tooltipToggle:hover { color: #ffd700; border-color: #ffd700; }
+        #tooltipToggle.active { color: #ffd700; border-color: rgba(255,215,0,0.6); }
     </style>
 </head>
 <body>
@@ -1108,7 +1106,12 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
     <div class="container">
         <header style="position: relative;">
             <h1><a href="index.html" style="color: inherit; text-decoration: none;" title="Return to current rankings">AEW Wrestler Ratings</a></h1>
-            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net<button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle helpful tooltips on/off">ⓘ Tooltips ON</button></p>
+            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
+            
+            <!-- Tooltip toggle in bottom-right corner -->
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" style="position: absolute; bottom: 15px; right: 15px; background: none; border: 1px solid rgba(255,215,0,0.4); color: #888; cursor: pointer; font-size: 0.8em; padding: 4px 10px; border-radius: 4px; transition: all 0.2s;">
+                💡 Tooltips ON
+            </button>
             
             <!-- Hamburger menu in top-right corner -->
             <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
@@ -1322,7 +1325,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             if (on) document.body.classList.add('tooltips-on');
             const btn = document.getElementById('tooltipToggle');
             if (btn) {
-                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
                 btn.classList.toggle('active', on);
             }
         })();
@@ -1332,7 +1335,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             localStorage.setItem('aewTooltips', on);
             const btn = document.getElementById('tooltipToggle');
             if (btn) {
-                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
                 btn.classList.toggle('active', on);
             }
         }
@@ -1920,8 +1923,6 @@ let visibleColumns = {
         function fixEncodingIssues(data) {
             if (!data) return data;
             
-            console.log('🔧 fixEncodingIssues called for week:', data.currentWeek);
-            
             // Fix divisions
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
             divisions.forEach(division => {
@@ -1931,7 +1932,6 @@ let visibleColumns = {
                         if (wrestler.change !== null && wrestler.change !== undefined && typeof wrestler.change === 'string') {
                             // Store original if it has ? for later processing
                             if (wrestler.change.includes('?')) {
-                                console.log('⚠️ Found ? in change for:', wrestler.name, 'value:', wrestler.change);
                                 wrestler.needsArrowCalculation = wrestler.change.replace('?', '');
                             }
                             
@@ -1978,18 +1978,6 @@ let visibleColumns = {
                 }
             });
             
-            // Verify no ? remain after fixing
-            const divisions2 = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-            divisions2.forEach(div => {
-                if (data[div]) {
-                    const remaining = data[div].filter(w => w.change && String(w.change).includes('?'));
-                    if (remaining.length > 0) {
-                        console.log('🚨 POST-FIX: ? still present in', div, ':', remaining.map(w => ({name: w.name, change: w.change})));
-                    }
-                }
-            });
-            
-            console.log('✅ fixEncodingIssues complete for:', data.currentWeek);
             return data;
         }
         
@@ -2207,36 +2195,21 @@ let visibleColumns = {
         }
         
         // Restore state from URL hash (when returning from wrestler stats)
-        console.log('🔍 Checking for state restoration...');
         setTimeout(() => {
             const hash = window.location.hash.substring(1);
-            console.log('Hash:', hash);
             if (hash) {
                 const params = new URLSearchParams(hash);
                 const returnWeek = params.get('week');
                 const returnDivision = params.get('division');
                 const returnView = params.get('view');
-                console.log('Return params:', { returnWeek, returnDivision, returnView });
-                console.log('🔍 Current ratingsData.currentWeek:', ratingsData?.currentWeek);
-                
-                // Check if current data has any ? values before restore
-                if (ratingsData && ratingsData.mens) {
-                    const withQuestion = ratingsData.mens.filter(w => w.change && String(w.change).includes('?'));
-                    if (withQuestion.length > 0) {
-                        console.log('🚨 PRE-RESTORE: Found ? in mens data:', withQuestion.map(w => ({name: w.name, change: w.change})));
-                    }
-                }
                 
                 if (returnWeek && returnDivision) {
-                console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
                 // Set the week selector
                 const weekSelect = document.getElementById('weekSelect');
                 weekSelect.value = decodeURIComponent(returnWeek);
-                console.log('Week selector set to:', weekSelect.value);
     
                 // If returning to statistics view, don't load week data
                 if (returnView === 'statistics') {
-                   console.log('✅ Switching to statistics view');
                     // Just switch to statistics - don't load rankings
                     setTimeout(() => {
                         switchToStatistics();
@@ -2245,15 +2218,10 @@ let visibleColumns = {
                     // Normal rankings view - set division first, then load week data
                     // The loadSelectedWeek will call showDivision after data is loaded
                     currentDivision = returnDivision;
-                    console.log('Division will be set to:', returnDivision);
                     loadSelectedWeek();
-                    console.log('Loading week data...');
                 }
-                    // Clear the hash
                     history.replaceState(null, '', window.location.pathname);
                 }
-            } else {
-                console.log('No hash found in URL');
             }
         }, 500); // Increased delay to ensure everything is loaded
         
@@ -2803,11 +2771,6 @@ for (let i = 0; i < filteredData.length; i++) {
     const ratingClass = getRatingClass(wrestler.rating);
     const changeClass = getChangeClass(wrestler.change);
     const changeSymbol = getChangeSymbol(wrestler.change);
-    
-    // Debug: log any remaining ? in change values
-    if (wrestler.change && String(wrestler.change).includes('?')) {
-        console.log('🚨 RENDER: ? still in change for:', wrestler.name, 'change:', wrestler.change, 'symbol:', changeSymbol);
-    }
     const teamMembers = getTeamMembers(wrestler.name, division);
     
     // Determine image threshold based on division size
