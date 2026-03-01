@@ -64,6 +64,6 @@ function toggleTooltips() {
 function updateToggleBtn(btn) {
     if (!btn) return;
     const on = document.body.classList.contains('tooltips-on');
-    btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+    btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
     btn.classList.toggle('active', on);
 }
