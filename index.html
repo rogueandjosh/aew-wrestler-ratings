@@ -2537,8 +2537,17 @@ let visibleColumns = {
                                                 );
                                                 
                                                 if (archivedWrestler && archivedWrestler.change !== undefined && archivedWrestler.change !== null) {
-                                                    // Copy the change from archive (which has correct arrows)
-                                                    wrestler.change = archivedWrestler.change;
+                                                    // Copy the change from archive, but clean any ? or encoding issues
+                                                    let cleanedChange = String(archivedWrestler.change);
+                                                    cleanedChange = cleanedChange.replace(/\?/g, '');
+                                                    cleanedChange = cleanedChange.replace(/�/g, '—');
+                                                    
+                                                    // If it's just "?" with nothing else, set to em dash
+                                                    if (cleanedChange === '' || cleanedChange === '-') {
+                                                        cleanedChange = '—';
+                                                    }
+                                                    
+                                                    wrestler.change = cleanedChange;
                                                 }
                                                 
                                                 return wrestler;
