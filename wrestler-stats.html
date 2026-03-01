@@ -549,14 +549,34 @@
                 min-height: 300px;
             }
         }
+        
+        /* Tooltip toggle */
+        #tooltipToggle {
+            background: none;
+            border: 1px solid rgba(136,136,136,0.5);
+            color: #888;
+            cursor: pointer;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        #tooltipToggle:hover { color: #ffd700; border-color: #ffd700; }
+        #tooltipToggle.active { color: #ffd700; border-color: rgba(255,215,0,0.6); }
     </style>
 </head>
     <script src="tooltips.js"></script>
 <body>
     <div class="container">
-        <header>
+        <header style="position: relative;">
             <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
             <p class="subtitle">Detailed statistics for individual wrestlers and teams</p>
+            
+            <!-- Tooltip toggle in top-left corner -->
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements" style="position: absolute; top: 15px; left: 15px; background: none; border: 1px solid rgba(136,136,136,0.5); cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">
+                💡 Tooltips ON
+            </button>
+            
             <div class="nav-buttons" style="display: flex; gap: 12px;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
                     ← Back
@@ -2320,6 +2340,28 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         
         // Navigate to compare page with pre-filled wrestler
         window.location.href = `wrestler-compare.html?division=${divisionSlug}&wrestlers=${currentWrestlerSlug}`;
+    }
+    
+    // ===== TOOLTIP TOGGLE =====
+    (function() {
+        const stored = localStorage.getItem('aewTooltips');
+        const on = stored === null ? true : stored === 'true';
+        if (on) document.body.classList.add('tooltips-on');
+        const btn = document.getElementById('tooltipToggle');
+        if (btn) {
+            btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+            btn.classList.toggle('active', on);
+        }
+    })();
+
+    function toggleTooltips() {
+        const on = document.body.classList.toggle('tooltips-on');
+        localStorage.setItem('aewTooltips', on);
+        const btn = document.getElementById('tooltipToggle');
+        if (btn) {
+            btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+            btn.classList.toggle('active', on);
+        }
     }
     </script>
         <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
