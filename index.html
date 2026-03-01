@@ -1920,6 +1920,8 @@ let visibleColumns = {
         function fixEncodingIssues(data) {
             if (!data) return data;
             
+            console.log('🔧 fixEncodingIssues called for week:', data.currentWeek);
+            
             // Fix divisions
             const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
             divisions.forEach(division => {
@@ -1929,6 +1931,7 @@ let visibleColumns = {
                         if (wrestler.change !== null && wrestler.change !== undefined && typeof wrestler.change === 'string') {
                             // Store original if it has ? for later processing
                             if (wrestler.change.includes('?')) {
+                                console.log('⚠️ Found ? in change for:', wrestler.name, 'value:', wrestler.change);
                                 wrestler.needsArrowCalculation = wrestler.change.replace('?', '');
                             }
                             
@@ -1975,6 +1978,18 @@ let visibleColumns = {
                 }
             });
             
+            // Verify no ? remain after fixing
+            const divisions2 = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+            divisions2.forEach(div => {
+                if (data[div]) {
+                    const remaining = data[div].filter(w => w.change && String(w.change).includes('?'));
+                    if (remaining.length > 0) {
+                        console.log('🚨 POST-FIX: ? still present in', div, ':', remaining.map(w => ({name: w.name, change: w.change})));
+                    }
+                }
+            });
+            
+            console.log('✅ fixEncodingIssues complete for:', data.currentWeek);
             return data;
         }
         
@@ -2202,6 +2217,15 @@ let visibleColumns = {
                 const returnDivision = params.get('division');
                 const returnView = params.get('view');
                 console.log('Return params:', { returnWeek, returnDivision, returnView });
+                console.log('🔍 Current ratingsData.currentWeek:', ratingsData?.currentWeek);
+                
+                // Check if current data has any ? values before restore
+                if (ratingsData && ratingsData.mens) {
+                    const withQuestion = ratingsData.mens.filter(w => w.change && String(w.change).includes('?'));
+                    if (withQuestion.length > 0) {
+                        console.log('🚨 PRE-RESTORE: Found ? in mens data:', withQuestion.map(w => ({name: w.name, change: w.change})));
+                    }
+                }
                 
                 if (returnWeek && returnDivision) {
                 console.log('✅ Restoring state:', returnWeek, returnDivision, returnView);
@@ -2770,6 +2794,11 @@ for (let i = 0; i < filteredData.length; i++) {
     const ratingClass = getRatingClass(wrestler.rating);
     const changeClass = getChangeClass(wrestler.change);
     const changeSymbol = getChangeSymbol(wrestler.change);
+    
+    // Debug: log any remaining ? in change values
+    if (wrestler.change && String(wrestler.change).includes('?')) {
+        console.log('🚨 RENDER: ? still in change for:', wrestler.name, 'change:', wrestler.change, 'symbol:', changeSymbol);
+    }
     const teamMembers = getTeamMembers(wrestler.name, division);
     
     // Determine image threshold based on division size
