@@ -553,13 +553,7 @@
         /* Tooltip toggle */
         #tooltipToggle {
             background: none;
-            border: 2px solid #ffd700;
-            color: #ffd700;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
             transition: all 0.3s;
             font-family: inherit;
             white-space: nowrap;
@@ -567,13 +561,6 @@
         #tooltipToggle:hover { background: rgba(255, 215, 0, 0.1); }
         #tooltipToggle:not(.active) { border-color: #888; color: #888; }
         #tooltipToggle:not(.active):hover { border-color: #ffd700; color: #ffd700; }
-        
-        @media (max-width: 600px) {
-            #tooltipToggle {
-                font-size: 12px;
-                padding: 6px 12px;
-            }
-        }
     </style>
 </head>
     <script src="tooltips.js"></script>
@@ -593,8 +580,8 @@
                 <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer;">
                     🥊 Compare
                 </a>
-                <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
-                    ⓘ Tips ON
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
+                    ⓘ Tooltips ON
                 </button>
             </div>
         </header>
@@ -2358,7 +2345,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         if (on) document.body.classList.add('tooltips-on');
         const btn = document.getElementById('tooltipToggle');
         if (btn) {
-            btn.textContent = on ? 'ⓘ Tips ON' : 'ⓘ Tips OFF';
+            btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
             btn.classList.toggle('active', on);
         }
     })();
@@ -2368,7 +2355,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         localStorage.setItem('aewTooltips', on);
         const btn = document.getElementById('tooltipToggle');
         if (btn) {
-            btn.textContent = on ? 'ⓘ Tips ON' : 'ⓘ Tips OFF';
+            btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
             btn.classList.toggle('active', on);
         }
     }
