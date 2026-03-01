@@ -1068,11 +1068,11 @@
         }
         #tooltipToggle {
             background: none;
-            border: 1px solid rgba(255,215,0,0.4);
+            border: 1px solid rgba(136,136,136,0.5);
             color: #888;
             cursor: pointer;
-            font-size: 0.8em;
-            padding: 4px 10px;
+            font-size: 0.75em;
+            padding: 4px 8px;
             border-radius: 4px;
             transition: all 0.2s;
         }
@@ -1109,7 +1109,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
             <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
             
             <!-- Tooltip toggle in bottom-right corner -->
-            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" style="position: absolute; bottom: 15px; right: 15px; background: none; border: 1px solid rgba(255,215,0,0.4); color: #888; cursor: pointer; font-size: 0.8em; padding: 4px 10px; border-radius: 4px; transition: all 0.2s;">
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements" style="position: absolute; top: 15px; left: 15px; background: none; border: 1px solid rgba(255,215,0,0.4); cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">
                 💡 Tooltips ON
             </button>
             
