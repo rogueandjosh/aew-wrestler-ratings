@@ -572,12 +572,7 @@
             <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
             <p class="subtitle">Detailed statistics for individual wrestlers and teams</p>
             
-            <!-- Tooltip toggle in top-left corner -->
-            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements" style="position: absolute; top: 15px; left: 15px; background: none; border: 1px solid rgba(136,136,136,0.5); cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">
-                💡 Tooltips ON
-            </button>
-            
-            <div class="nav-buttons" style="display: flex; gap: 12px;">
+            <div class="nav-buttons" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 500; transition: all 0.3s;">
                     ← Back
                 </button>
@@ -587,6 +582,9 @@
                 <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer;">
                 🥊 Compare
                 </a>
+                <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
+                    💡 Tooltips ON
+                </button>
             </div>
         </header>
 
