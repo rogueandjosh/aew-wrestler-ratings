@@ -713,6 +713,16 @@
             }
         }
 
+        /* Tooltip Toggle Button */
+        #tooltipToggle {
+            transition: all 0.3s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        #tooltipToggle:hover { background: rgba(255, 215, 0, 0.1) !important; }
+        #tooltipToggle:not(.active) { border-color: #888; color: #888; }
+        #tooltipToggle:not(.active):hover { border-color: #ffd700; color: #ffd700; }
+
     </style>
 </head>
     <script src="tooltips.js"></script>
@@ -721,13 +731,16 @@
         <header style="border: 2px solid #ffd700; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <h1 style="cursor: pointer;" onclick="window.location.href='wrestler-compare.html'" title="Reset to default">🥊 Compare Wrestlers</h1>
             <p class="subtitle">Side-by-side wrestler comparison</p>
-            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px;">
+            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none;">
                     ← Back
                 </button>
                 <a href="index.html" class="back-link">
                     🏠 Home
                 </a>
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Toggle on/off to show extra info when hovering over elements">
+                    ⓘ Tooltips ON
+                </button>
             </div>
         </header>
 
@@ -1801,6 +1814,28 @@ if (selectedYear === 'ALL') {
             } else {
                 // Fallback to home
                 window.location.href = 'index.html';
+            }
+        }
+
+        // Tooltip Toggle Functions
+        (function initTooltips() {
+            const stored = localStorage.getItem('aewTooltips');
+            const on = stored === null ? true : stored === 'true';
+            if (on) document.body.classList.add('tooltips-on');
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.classList.toggle('active', on);
+            }
+        })();
+
+        function toggleTooltips() {
+            const on = document.body.classList.toggle('tooltips-on');
+            localStorage.setItem('aewTooltips', on);
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? 'ⓘ Tooltips ON' : 'ⓘ Tooltips OFF';
+                btn.classList.toggle('active', on);
             }
         }
     </script>
