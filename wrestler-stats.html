@@ -553,16 +553,19 @@
         /* Tooltip toggle */
         #tooltipToggle {
             background: none;
-            border: 1px solid rgba(136,136,136,0.5);
-            color: #888;
+            border: 2px solid #ffd700;
+            color: #ffd700;
             cursor: pointer;
-            font-size: 0.75em;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
         }
-        #tooltipToggle:hover { color: #ffd700; border-color: #ffd700; }
-        #tooltipToggle.active { color: #ffd700; border-color: rgba(255,215,0,0.6); }
+        #tooltipToggle:hover { background: rgba(255, 215, 0, 0.1); }
+        #tooltipToggle:not(.active) { border-color: #888; color: #888; }
+        #tooltipToggle:not(.active):hover { border-color: #ffd700; color: #ffd700; }
     </style>
 </head>
     <script src="tooltips.js"></script>
@@ -580,7 +583,7 @@
                     🏠 Home
                 </a>
                 <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer;">
-                🥊 Compare
+                    🥊 Compare
                 </a>
                 <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
                     💡 Tooltips ON
