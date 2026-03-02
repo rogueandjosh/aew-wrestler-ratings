@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEW Wrestler Ratings - Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e0e0e0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .message {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            color: #e0e0e0;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .divider {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 30px auto;
+        }
+
+        .features {
+            text-align: left;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+        }
+
+        .features h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .features ul {
+            list-style: none;
+        }
+
+        .features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .features li::before {
+            content: "★";
+            color: #ffd700;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .data-source {
+            margin-top: 15px;
+            font-size: 0.85em;
+            opacity: 0.6;
+        }
+
+        .data-source a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .data-source a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AEW Wrestler Ratings</h1>
+        <div class="subtitle">Coming Soon</div>
+        
+        <div class="divider"></div>
+        
+        <p class="message">
+            A new way to track AEW wrestler performance based on 
+            <span class="highlight">match quality ratings</span> rather than wins and losses.
+        </p>
+
+        <div class="features">
+            <h3>What to expect:</h3>
+            <ul>
+                <li>Rankings across 5 divisions</li>
+                <li>6+ years of historical data</li>
+                <li>Individual wrestler statistics</li>
+                <li>Head-to-head comparisons</li>
+                <li>Weekly updates after each show</li>
+            </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="footer">
+            Check back soon for the full launch!
+        </div>
+
+        <div class="data-source">
+            Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a>
+        </div>
+    </div>
+</body>
+</html>
