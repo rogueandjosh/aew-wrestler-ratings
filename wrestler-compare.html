@@ -1084,7 +1084,7 @@ function createSlug(name) {
         
         // Get human-readable division label
         function getDivisionLabel(div) {
-            const isDesktop = !('ontouchstart' in window);
+            const isDesktop = window.matchMedia('(min-width: 601px)').matches;
             const labels = {
                 'mens': isDesktop ? "Men's Division" : 'Men',
                 'womens': isDesktop ? "Women's Division" : 'Women',
