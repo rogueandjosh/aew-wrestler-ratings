@@ -1086,11 +1086,11 @@ function createSlug(name) {
         function getDivisionLabel(div) {
             const isDesktop = window.innerWidth >= 769;
             const labels = {
-                'mens': isDesktop ? "Men's" : 'Men',
-                'womens': isDesktop ? "Women's" : 'Women',
-                'menstag': "Men's Tag",
-                'womenstag': "Women's Tag",
-                'trios': 'Trios'
+                'mens': isDesktop ? "Men's Division" : 'Men',
+                'womens': isDesktop ? "Women's Division" : 'Women',
+                'menstag': isDesktop ? "Men's Tag Division" : "Men's Tag",
+                'womenstag': isDesktop ? "Women's Tag Division" : "Women's Tag",
+                'trios': isDesktop ? "Trios Division" : 'Trios'
             };
             return labels[div] || div;
         }
