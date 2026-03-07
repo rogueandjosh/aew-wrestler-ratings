@@ -1084,9 +1084,10 @@ function createSlug(name) {
         
         // Get human-readable division label
         function getDivisionLabel(div) {
+            const isDesktop = window.innerWidth >= 769;
             const labels = {
-                'mens': 'Men',
-                'womens': 'Women',
+                'mens': isDesktop ? "Men's" : 'Men',
+                'womens': isDesktop ? "Women's" : 'Women',
                 'menstag': "Men's Tag",
                 'womenstag': "Women's Tag",
                 'trios': 'Trios'
