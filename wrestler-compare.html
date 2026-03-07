@@ -483,30 +483,25 @@
     
     .stat-row-card {
         padding: 6px 8px;
-        min-height: 32px;
-        align-items: center;
     }
     
     .stat-label-card {
         font-size: 0.7em;
-        white-space: nowrap;
-        flex-shrink: 0;
     }
-
-    .stat-value-card.highlight {
-        font-size: 0.85em;
-    }    
     
     .stat-value-card {
-        font-size: 0.85em;
-        text-align: right;
-        flex-shrink: 0;
-    }
+    font-size: 0.85em;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 50%;
+    line-height: 1.3;
+}
     /* Add this right after */
     .stat-row-card:last-child .stat-value-card {
         font-size: 0.65em !important;
         line-height: 1.2;
-        white-space: nowrap;
+        word-break: break-word;
     }
     
     /* Smaller photo */
@@ -739,37 +734,6 @@
     
     .stat-value-card {
         font-size: 1.15em;
-    }
-
-    .stat-value-card.highlight {
-    font-size: 1.15em;
-    }
-}
-
-        /* Division labels - mobile shows short, desktop shows full */
-        .division-full {
-            display: none;
-        }
-        .division-short {
-            display: inline;
-        }
-        
-        @media (min-width: 769px) {
-            .division-full {
-                display: inline;
-            }
-            .division-short {
-                display: none;
-            }
-        }
-
-        @media (max-width: 380px) {
-    .stat-label-card {
-        font-size: 0.65em;
-    }
-    
-    .stat-value-card {
-        font-size: 0.8em;
     }
 }
 
@@ -1120,37 +1084,14 @@ function createSlug(name) {
         
         // Get human-readable division label
         function getDivisionLabel(div) {
-            // Return short label + data attribute for CSS to handle desktop version
-            const shortLabels = {
+            const labels = {
                 'mens': 'Men',
                 'womens': 'Women',
                 'menstag': "Men's Tag",
                 'womenstag': "Women's Tag",
-                'trios': 'Trios',
-                'Men': 'Men',
-                'Women': 'Women',
-                "Men's Tag": "Men's Tag",
-                "Women's Tag": "Women's Tag",
-                'Trios': 'Trios'
+                'trios': 'Trios'
             };
-            return shortLabels[div] || div;
-        }
-        
-        function getDivisionLabelFull(div) {
-            // Full labels for desktop
-            const fullLabels = {
-                'mens': "Men's Division",
-                'womens': "Women's Division",
-                'menstag': "Men's Tag Division",
-                'womenstag': "Women's Tag Division",
-                'trios': "Trios Division",
-                'Men': "Men's Division",
-                'Women': "Women's Division",
-                "Men's Tag": "Men's Tag Division",
-                "Women's Tag": "Women's Tag Division",
-                'Trios': "Trios Division"
-            };
-            return fullLabels[div] || div;
+            return labels[div] || div;
         }
 
         // Random wrestler picker
@@ -1561,7 +1502,7 @@ if (selectedYear === 'ALL') {
                                     ${showAsActive ? 'Active' : 'Inactive'}
                                 </span>
                             </div>
-                            <div style="color: #999; font-size: 0.85em;"><span class="division-short">${getDivisionLabel(data.division)}</span><span class="division-full">${getDivisionLabelFull(data.division)}</span></div>
+                            <div style="color: #999; font-size: 0.85em;">${getDivisionLabel(data.division)}</div>
                         </div>
                     </div>
                     <div class="stats-list">
