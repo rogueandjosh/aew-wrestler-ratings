@@ -1,160 +1,685 @@
 {
   "name": "Allin & Cassidy",
   "slug": "allin-cassidy",
-  "isTeam": true,
+  "division": "Men Tag",
   "formerNames": [],
   "currentRating": 105.34484749173778,
   "currentRank": 8,
-  "division": "Men's Tag",
-  "totalMatches": 9,
-  "peak": 108.07936149231408,
-  "floor": 100.79804780155736,
-  "weeksRanked": 24,
+  "isActive": true,
+  "isTeam": true,
+  "peakRating": 108.07936149231408,
+  "peakRatingWeek": "Jul '23 Week 3",
+  "peakRank": 6,
+  "totalMatches": 18,
+  "totalWeeks": 24,
+  "firstAppearance": "Jun '23 Week 1",
+  "lastAppearance": "Mar '26 Week 2",
+  "weeksInTop10": 21,
+  "weeksInTop20": 23,
+  "statsByYear": {
+    "2023": {
+      "totalMatches": 8,
+      "averageRating": 7.08,
+      "highestRating": 7.58,
+      "lowestRating": 6.6,
+      "year": 2023
+    },
+    "2024": {
+      "totalMatches": 2,
+      "averageRating": 6.65,
+      "highestRating": 6.65,
+      "lowestRating": 6.65,
+      "year": 2024
+    },
+    "2025": {
+      "totalMatches": 2,
+      "averageRating": 6.85,
+      "highestRating": 6.85,
+      "lowestRating": 6.85,
+      "year": 2025
+    },
+    "2026": {
+      "totalMatches": 6,
+      "averageRating": 6.82,
+      "highestRating": 7.23,
+      "lowestRating": 6.5,
+      "year": 2026
+    },
+    "ALL": {
+      "totalMatches": 18,
+      "averageRating": 6.92,
+      "highestRating": 7.58,
+      "lowestRating": 6.5,
+      "year": null
+    }
+  },
+  "matchDistribution": {
+    "9.0+": 0,
+    "8.0-8.99": 0,
+    "7.0-7.99": 6,
+    "6.0-6.99": 12,
+    "Below 6.0": 0
+  },
+  "bestMatches": [
+    {
+      "date": "2023-07-04",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        231,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.58,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2023-07-04",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        231,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.58,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        299,
+        "Trios",
+        "None",
+        "Trios",
+        "Allin & Cassidy & Strong"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        299,
+        "Trios",
+        "None",
+        "Trios",
+        "Allin & Cassidy & Strong"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-30",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        211,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.17,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-30",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        211,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.17,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-16",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        230,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.98,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-16",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        230,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.98,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-10-28",
+      "year": 2025,
+      "event": "Dynamite",
+      "opponents": [
+        146,
+        "Tag Team",
+        "Trick or Treat Match",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.85,
+      "matchType": "Tag Team",
+      "matchStipulation": "Trick or Treat Match",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-10-28",
+      "year": 2025,
+      "event": "Dynamite",
+      "opponents": [
+        146,
+        "Tag Team",
+        "Trick or Treat Match",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.85,
+      "matchType": "Tag Team",
+      "matchStipulation": "Trick or Treat Match",
+      "stakes": "None"
+    }
+  ],
   "ratingHistory": [
     {
+      "date": "2023-05-31",
       "week": "Jun '23 Week 1",
       "rating": 105.30054613894248,
       "rank": 6,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-06-07",
       "week": "Jun '23 Week 2",
       "rating": 105.22161462824073,
       "rank": 6,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-06-14",
       "week": "Jun '23 Week 3",
       "rating": 105.11311841397972,
       "rank": 6,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-06-21",
       "week": "Jun '23 Week 4",
       "rating": 104.9226305470345,
       "rank": 7,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-06-30",
       "week": "Jul '23 Week 1",
       "rating": 104.81548651151289,
       "rank": 8,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-07-07",
       "week": "Jul '23 Week 2",
       "rating": 107.98105929810515,
       "rank": 7,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2023-07-14",
       "week": "Jul '23 Week 3",
       "rating": 108.07936149231408,
       "rank": 6,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2023-07-21",
       "week": "Jul '23 Week 4",
       "rating": 108.0066925545032,
       "rank": 6,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2023-07-28",
       "week": "Jul '23 Week 5",
       "rating": 107.88915244092931,
       "rank": 8,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2023-07-31",
       "week": "Aug '23 Week 1",
       "rating": 107.85095538554675,
       "rank": 10,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2023-08-07",
       "week": "Aug '23 Week 2",
       "rating": 107.73821027475839,
       "rank": 9,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-07",
       "week": "Nov '24 Week 2",
       "rating": 100.87993366907584,
       "rank": 7,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-14",
       "week": "Nov '24 Week 3",
       "rating": 100.85731153336599,
       "rank": 9,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-21",
       "week": "Nov '24 Week 4",
       "rating": 100.82989463074365,
       "rank": 9,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-30",
       "week": "Dec '24 Week 1",
       "rating": 100.81566851919341,
       "rank": 8,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2024-12-07",
       "week": "Dec '24 Week 2",
       "rating": 100.79804780155736,
       "rank": 7,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2025-10-31",
       "week": "Nov '25 Week 1",
       "rating": 102.43827355962718,
       "rank": 10,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2025-11-07",
       "week": "Nov '25 Week 2",
       "rating": 102.39005850083531,
       "rank": 9,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2025-11-07",
       "week": "Nov '25 Week 2",
       "rating": 102.39005850083531,
       "rank": 24,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2025-11-14",
       "week": "Nov '25 Week 3",
       "rating": 102.36382448075456,
       "rank": 10,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2025-11-21",
       "week": "Nov '25 Week 4",
       "rating": 102.26999811075255,
       "rank": 11,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2025-11-28",
       "week": "Nov '25 Week 5",
       "rating": 102.22092529185055,
       "rank": 11,
-      "matches": 6
+      "division": "Men Tag"
     },
     {
+      "date": "2026-02-28",
       "week": "Mar '26 Week 1",
       "rating": 103.21648108909176,
       "rank": 9,
-      "matches": 7
+      "division": "Men Tag"
     },
     {
+      "date": "2026-03-07",
       "week": "Mar '26 Week 2",
       "rating": 105.34484749173778,
       "rank": 8,
-      "matches": 9
+      "division": "Men Tag"
     }
   ],
-  "recentMatches": []
+  "allMatches": [
+    {
+      "date": "2023-05-16",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        230,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.98,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-16",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        230,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.98,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-30",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        211,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.17,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-05-30",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        211,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.17,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-07-04",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        231,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.58,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2023-07-04",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        231,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.58,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2023-07-11",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        193,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.6,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2023-07-11",
+      "year": 2023,
+      "event": "Dynamite",
+      "opponents": [
+        193,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.6,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "Tournament Match"
+    },
+    {
+      "date": "2024-11-05",
+      "year": 2024,
+      "event": "Dynamite",
+      "opponents": [
+        184,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.65,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2024-11-05",
+      "year": 2024,
+      "event": "Dynamite",
+      "opponents": [
+        184,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.65,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-10-28",
+      "year": 2025,
+      "event": "Dynamite",
+      "opponents": [
+        146,
+        "Tag Team",
+        "Trick or Treat Match",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.85,
+      "matchType": "Tag Team",
+      "matchStipulation": "Trick or Treat Match",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-10-28",
+      "year": 2025,
+      "event": "Dynamite",
+      "opponents": [
+        146,
+        "Tag Team",
+        "Trick or Treat Match",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.85,
+      "matchType": "Tag Team",
+      "matchStipulation": "Trick or Treat Match",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-03",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        140,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.72,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-03",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        140,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.72,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-10",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        134,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.5,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-10",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        134,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.5,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        299,
+        "Trios",
+        "None",
+        "Trios",
+        "Allin & Cassidy & Strong"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        299,
+        "Trios",
+        "None",
+        "Trios",
+        "Allin & Cassidy & Strong"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    }
+  ]
 }
