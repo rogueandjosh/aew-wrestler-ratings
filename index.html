@@ -3979,13 +3979,31 @@ if (weekLabel === selectedWeekLabel ||
             const wrestler = statistics[divKey][canonicalName];
             if (wrestler.ratings.length === 0) return;
 
-            const peak = Math.max(...wrestler.ratings);
-            const peakIndex = wrestler.ratings.indexOf(peak);
-            const peakWeek = wrestler.weeks[peakIndex];
+            // For current week view, use statistics.json values for peak/floor if available
+            let peak, peakWeek, floor, floorWeek;
             
-            const floor = Math.min(...wrestler.ratings);
-            const floorIndex = wrestler.ratings.indexOf(floor);
-            const floorWeek = wrestler.weeks[floorIndex];
+            if (selectedWeekLabel === 'current' && statisticsData && statisticsData[divKey]) {
+                const preCalc = statisticsData[divKey].find(w => w.canonicalName === canonicalName || w.name === canonicalName);
+                if (preCalc) {
+                    peak = preCalc.peak;
+                    peakWeek = preCalc.peakWeek;
+                    floor = preCalc.floor;
+                    floorWeek = preCalc.floorWeek;
+                }
+            }
+            
+            // Fallback to calculated values if not found in statistics.json
+            if (peak === undefined) {
+                peak = Math.max(...wrestler.ratings);
+                const peakIndex = wrestler.ratings.indexOf(peak);
+                peakWeek = wrestler.weeks[peakIndex];
+            }
+            
+            if (floor === undefined) {
+                floor = Math.min(...wrestler.ratings);
+                const floorIndex = wrestler.ratings.indexOf(floor);
+                floorWeek = wrestler.weeks[floorIndex];
+            }
             
             const sum = wrestler.ratings.reduce((a, b) => a + b, 0);
             const average = sum / wrestler.ratings.length;
