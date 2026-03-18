@@ -10,29 +10,80 @@
   "peakRating": 100.54778288096874,
   "peakRatingWeek": "Mar '26 Week 2",
   "peakRank": 53,
-  "totalMatches": 0,
+  "totalMatches": 3,
   "totalWeeks": 1,
   "firstAppearance": "Mar '26 Week 2",
   "lastAppearance": "Mar '26 Week 2",
   "weeksInTop10": 0,
   "weeksInTop20": 0,
   "statsByYear": {
+    "2022": {
+      "totalMatches": 1,
+      "averageRating": 6.71,
+      "highestRating": 6.71,
+      "lowestRating": 6.71,
+      "year": 2022
+    },
+    "2026": {
+      "totalMatches": 2,
+      "averageRating": 6.87,
+      "highestRating": 7.23,
+      "lowestRating": 6.5,
+      "year": 2026
+    },
     "ALL": {
-      "totalMatches": 0,
-      "averageRating": 0,
-      "highestRating": 0,
-      "lowestRating": 0,
+      "totalMatches": 3,
+      "averageRating": 6.81,
+      "highestRating": 7.23,
+      "lowestRating": 6.5,
       "year": null
     }
   },
   "matchDistribution": {
     "9.0+": 0,
     "8.0-8.99": 0,
-    "7.0-7.99": 0,
-    "6.0-6.99": 0,
+    "7.0-7.99": 1,
+    "6.0-6.99": 2,
     "Below 6.0": 0
   },
-  "bestMatches": [],
+  "bestMatches": [
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        "Gabe Kidd"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2022-06-07",
+      "year": 2022,
+      "event": "Dynamite",
+      "opponents": [],
+      "rating": 6.71,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-10",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        "Gabe Kidd",
+        "Darby Allin",
+        "Orange Cassidy"
+      ],
+      "rating": 6.5,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    }
+  ],
   "ratingHistory": [
     {
       "date": "2026-03-07",
@@ -42,5 +93,42 @@
       "division": "Men"
     }
   ],
-  "allMatches": []
+  "allMatches": [
+    {
+      "date": "2022-06-07",
+      "year": 2022,
+      "event": "Dynamite",
+      "opponents": [],
+      "rating": 6.71,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-10",
+      "year": 2026,
+      "event": "Dynamite",
+      "opponents": [
+        "Gabe Kidd",
+        "Darby Allin",
+        "Orange Cassidy"
+      ],
+      "rating": 6.5,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-14",
+      "year": 2026,
+      "event": "Revolution '26",
+      "opponents": [
+        "Gabe Kidd"
+      ],
+      "rating": 7.23,
+      "matchType": "Trios",
+      "matchStipulation": "None",
+      "stakes": "None"
+    }
+  ]
 }
