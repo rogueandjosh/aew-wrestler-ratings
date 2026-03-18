@@ -2082,7 +2082,7 @@ let visibleColumns = {
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
             fetch('current-rankings.json'),
-            fetch('statistics.json').catch(() => null)
+            fetch('statistics.json?v=2').catch(() => null)
         ])
         .then(async ([archiveResponse, currentResponse, statsResponse]) => {
             // Load team members data (await so it's ready before rendering)
