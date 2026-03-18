@@ -1,118 +1,508 @@
 {
   "name": "LFI (Dralistico & Rush)",
   "slug": "lfi-dralistico-rush",
-  "isTeam": true,
+  "division": "Men Tag",
   "formerNames": [],
   "currentRating": 101.93007166178047,
   "currentRank": 12,
-  "division": "Men's Tag",
-  "totalMatches": 5,
-  "peak": 104.09161090836217,
-  "floor": 101.93007166178047,
-  "weeksRanked": 17,
+  "isActive": true,
+  "isTeam": true,
+  "peakRating": 104.09161090836217,
+  "peakRatingWeek": "May '25 Week 4",
+  "peakRank": 7,
+  "totalMatches": 10,
+  "totalWeeks": 17,
+  "firstAppearance": "Nov '23 Week 3",
+  "lastAppearance": "Mar '26 Week 2",
+  "weeksInTop10": 15,
+  "weeksInTop20": 17,
+  "statsByYear": {
+    "2023": {
+      "totalMatches": 4,
+      "averageRating": 7.09,
+      "highestRating": 7.79,
+      "lowestRating": 6.39,
+      "year": 2023
+    },
+    "2024": {
+      "totalMatches": 2,
+      "averageRating": 7.35,
+      "highestRating": 7.35,
+      "lowestRating": 7.35,
+      "year": 2024
+    },
+    "2025": {
+      "totalMatches": 2,
+      "averageRating": 7.53,
+      "highestRating": 7.53,
+      "lowestRating": 7.53,
+      "year": 2025
+    },
+    "2026": {
+      "totalMatches": 2,
+      "averageRating": 6.97,
+      "highestRating": 6.97,
+      "lowestRating": 6.97,
+      "year": 2026
+    },
+    "ALL": {
+      "totalMatches": 10,
+      "averageRating": 7.21,
+      "highestRating": 7.79,
+      "lowestRating": 6.39,
+      "year": null
+    }
+  },
+  "matchDistribution": {
+    "9.0+": 0,
+    "8.0-8.99": 0,
+    "7.0-7.99": 6,
+    "6.0-6.99": 4,
+    "Below 6.0": 0
+  },
+  "bestMatches": [
+    {
+      "date": "2023-11-17",
+      "year": 2023,
+      "event": "Full Gear '23",
+      "opponents": [
+        548,
+        "4 Way Tag",
+        "Ladder",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.79,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "Ladder",
+      "stakes": "Title Match"
+    },
+    {
+      "date": "2023-11-17",
+      "year": 2023,
+      "event": "Full Gear '23",
+      "opponents": [
+        548,
+        "4 Way Tag",
+        "Ladder",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.79,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "Ladder",
+      "stakes": "Title Match"
+    },
+    {
+      "date": "2025-05-21",
+      "year": 2025,
+      "event": "Collision",
+      "opponents": [
+        80,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.53,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-05-21",
+      "year": 2025,
+      "event": "Collision",
+      "opponents": [
+        80,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.53,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2024-10-25",
+      "year": 2024,
+      "event": "Collision",
+      "opponents": [
+        126,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.35,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2024-10-25",
+      "year": 2024,
+      "event": "Collision",
+      "opponents": [
+        126,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.35,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-06",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        89,
+        "4 Way Tag",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.97,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "None",
+      "stakes": "Cash"
+    },
+    {
+      "date": "2026-03-06",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        89,
+        "4 Way Tag",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.97,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "None",
+      "stakes": "Cash"
+    },
+    {
+      "date": "2023-11-10",
+      "year": 2023,
+      "event": "Collision",
+      "opponents": [
+        106,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.39,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-11-10",
+      "year": 2023,
+      "event": "Collision",
+      "opponents": [
+        106,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.39,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    }
+  ],
   "ratingHistory": [
     {
+      "date": "2023-11-14",
       "week": "Nov '23 Week 3",
       "rating": 103.35093467703261,
       "rank": 8,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-11-21",
       "week": "Nov '23 Week 4",
       "rating": 103.2830846134329,
       "rank": 8,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-11-30",
       "week": "Dec '23 Week 1",
       "rating": 103.26693559759426,
       "rank": 8,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-12-07",
       "week": "Dec '23 Week 2",
       "rating": 103.1953871098529,
       "rank": 8,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2023-12-14",
       "week": "Dec '23 Week 3",
       "rating": 103.12911231633748,
       "rank": 7,
-      "matches": 2
+      "division": "Men Tag"
     },
     {
+      "date": "2024-10-21",
       "week": "Oct '24 Week 4",
       "rating": 102.04458693759375,
       "rank": 5,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2024-10-31",
       "week": "Nov '24 Week 1",
       "rating": 102.37034685091011,
       "rank": 5,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-07",
       "week": "Nov '24 Week 2",
       "rating": 102.32781723243613,
       "rank": 6,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-14",
       "week": "Nov '24 Week 3",
       "rating": 102.30048363864098,
       "rank": 7,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2024-11-21",
       "week": "Nov '24 Week 4",
       "rating": 102.25157966821453,
       "rank": 6,
-      "matches": 3
+      "division": "Men Tag"
     },
     {
+      "date": "2025-05-21",
       "week": "May '25 Week 4",
       "rating": 104.09161090836217,
       "rank": 7,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2025-05-31",
       "week": "Jun '25 Week 1",
       "rating": 104.0068115273126,
       "rank": 7,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2025-06-07",
       "week": "Jun '25 Week 2",
       "rating": 103.928089853546,
       "rank": 9,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2025-06-14",
       "week": "Jun '25 Week 3",
       "rating": 103.84784089586948,
       "rank": 9,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2025-06-21",
       "week": "Jun '25 Week 4",
       "rating": 103.74342209315401,
       "rank": 9,
-      "matches": 4
+      "division": "Men Tag"
     },
     {
+      "date": "2026-02-28",
       "week": "Mar '26 Week 1",
       "rating": 102.32321052834281,
       "rank": 11,
-      "matches": 5
+      "division": "Men Tag"
     },
     {
+      "date": "2026-03-07",
       "week": "Mar '26 Week 2",
       "rating": 101.93007166178047,
       "rank": 12,
-      "matches": 5
+      "division": "Men Tag"
     }
   ],
-  "recentMatches": []
+  "allMatches": [
+    {
+      "date": "2023-11-10",
+      "year": 2023,
+      "event": "Collision",
+      "opponents": [
+        106,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.39,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-11-10",
+      "year": 2023,
+      "event": "Collision",
+      "opponents": [
+        106,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.39,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2023-11-17",
+      "year": 2023,
+      "event": "Full Gear '23",
+      "opponents": [
+        548,
+        "4 Way Tag",
+        "Ladder",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.79,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "Ladder",
+      "stakes": "Title Match"
+    },
+    {
+      "date": "2023-11-17",
+      "year": 2023,
+      "event": "Full Gear '23",
+      "opponents": [
+        548,
+        "4 Way Tag",
+        "Ladder",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.79,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "Ladder",
+      "stakes": "Title Match"
+    },
+    {
+      "date": "2024-10-25",
+      "year": 2024,
+      "event": "Collision",
+      "opponents": [
+        126,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.35,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2024-10-25",
+      "year": 2024,
+      "event": "Collision",
+      "opponents": [
+        126,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.35,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-05-21",
+      "year": 2025,
+      "event": "Collision",
+      "opponents": [
+        80,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.53,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2025-05-21",
+      "year": 2025,
+      "event": "Collision",
+      "opponents": [
+        80,
+        "Tag Team",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 7.53,
+      "matchType": "Tag Team",
+      "matchStipulation": "None",
+      "stakes": "None"
+    },
+    {
+      "date": "2026-03-06",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        89,
+        "4 Way Tag",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.97,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "None",
+      "stakes": "Cash"
+    },
+    {
+      "date": "2026-03-06",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        89,
+        "4 Way Tag",
+        "None",
+        "Tag",
+        "N/A"
+      ],
+      "rating": 6.97,
+      "matchType": "4 Way Tag",
+      "matchStipulation": "None",
+      "stakes": "Cash"
+    }
+  ]
 }
