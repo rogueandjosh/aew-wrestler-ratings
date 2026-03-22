@@ -595,8 +595,11 @@
                                 <th style="text-align: center;">#</th>
                                 <th>Title</th>
                                 <th>Rating</th>
+                                <th>Peak</th>
+                                <th>Floor</th>
+                                <th>Best Match</th>
+                                <th>Worst Match</th>
                                 <th>Streak</th>
-                                <th>Δ Rating</th>
                                 <th>Δ Rank</th>
                             </tr>
                         </thead>
@@ -604,7 +607,6 @@
             `;
 
             championships.forEach((champ, index) => {
-                const ratingChange = formatRatingChange(champ.ratingChange);
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
 
@@ -613,8 +615,11 @@
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${champ.title} ${isExpanded ? '▲' : '▼'}</td>
                         <td class="rating-cell">${formatRating(champ.rating)}</td>
+                        <td class="rating-cell">${formatRating(champ.peak)}</td>
+                        <td class="rating-cell">${formatRating(champ.floor)}</td>
+                        <td class="rating-cell">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
+                        <td class="rating-cell">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak} ${champ.streak === 1 ? 'defense' : 'defenses'}</td>
-                        <td class="${ratingChange.class}">${ratingChange.text}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
