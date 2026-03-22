@@ -503,6 +503,7 @@
 
                     <div class="action-buttons">
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
+                        <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn">🎲 Random</button>
                     </div>
                 </div>
             </div>
@@ -860,6 +861,18 @@
             document.getElementById('weekSelect').value = 'current';
             loadChampionshipData('current');
         }
+
+        function loadRandomWeek() {
+    if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
+        return;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
+    const randomWeek = archiveIndex.weeks[randomIndex];
+    
+    document.getElementById('weekSelect').value = randomWeek.file;
+    loadChampionshipData(randomWeek.file);
+}
     </script>
 </body>
 </html>
