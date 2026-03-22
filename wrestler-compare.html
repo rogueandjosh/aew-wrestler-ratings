@@ -1616,8 +1616,6 @@ if (selectedYear === 'ALL') {
         }
     });
     
-    const currentMonth = now.getMonth();
-    
     return Object.keys(monthlyMap)
         .sort((a, b) => monthlyMap[a].date - monthlyMap[b].date)
         .map(key => ({
@@ -1648,6 +1646,8 @@ if (selectedYear === 'ALL') {
             // Create datasets for each wrestler
             const datasets = wrestlerDataArray.map((data, index) => {
                 let historyData = data.ratingHistory || [];
+
+                
                 
                 // Filter by year if not ALL
                 if (selectedYear !== 'ALL' && historyData.length > 0) {
