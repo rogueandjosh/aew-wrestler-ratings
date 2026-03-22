@@ -414,6 +414,46 @@
             color: #f87171;
         }
 
+        /* ===== TOOLTIP STYLES ===== */
+        .tt {
+            position: relative;
+        }
+
+        #ttBox {
+            position: fixed;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            max-width: 280px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            line-height: 1.5;
+        }
+
+        #ttBox.visible {
+            opacity: 1;
+        }
+
+        #tooltipToggle {
+            font-family: 'Overlock', 'Arial', sans-serif;
+        }
+
+        #tooltipToggle.active {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        #tooltipToggle:not(.active) {
+            color: #666;
+            border-color: #444;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             h1 {
@@ -450,16 +490,28 @@
             .dropped-out-grid {
                 grid-template-columns: 1fr;
             }
+
+            #ttBox {
+                max-width: 220px;
+                font-size: 0.85em;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="ttBox"></div>
+    
     <div class="container">
         <header>
             <div class="nav-buttons">
                 <a href="javascript:history.back()" class="back-link">← Back</a>
                 <a href="index.html" class="back-link">🏠 Home</a>
             </div>
+
+            <!-- Tooltip toggle -->
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements" style="position: absolute; top: 15px; right: 15px; background: none; border: 1px solid rgba(255,215,0,0.4); cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">
+                💡 Tooltips ON
+            </button>
 
             <h1><a href="championships.html">🏆 Championship Ratings</a></h1>
             <p class="subtitle">Title prestige based on match quality</p>
@@ -532,6 +584,7 @@
         let archiveIndex = null;
         let currentWeekValue = 'current';
         let expandedRows = new Set();
+        let tooltipsEnabled = true;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', init);
@@ -542,12 +595,73 @@
                 await loadArchiveIndex();
                 // Load current championship data
                 await loadChampionshipData('current');
+                // Setup tooltips
+                setupTooltips();
             } catch (error) {
                 console.error('Init error:', error);
                 document.getElementById('content').innerHTML = `<div class="error">Failed to load data: ${error.message}</div>`;
             }
         }
 
+        // ===== TOOLTIP SYSTEM =====
+        function setupTooltips() {
+            const ttBox = document.getElementById('ttBox');
+            
+            document.addEventListener('mouseover', function(e) {
+                const ttEl = e.target.closest('.tt');
+                if (ttEl && tooltipsEnabled && ttEl.dataset.tt) {
+                    ttBox.textContent = ttEl.dataset.tt;
+                    ttBox.classList.add('visible');
+                    positionTooltip(e, ttBox);
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (ttBox.classList.contains('visible')) {
+                    positionTooltip(e, ttBox);
+                }
+            });
+
+            document.addEventListener('mouseout', function(e) {
+                const ttEl = e.target.closest('.tt');
+                if (ttEl) {
+                    ttBox.classList.remove('visible');
+                }
+            });
+        }
+
+        function positionTooltip(e, ttBox) {
+            const padding = 15;
+            let x = e.clientX + padding;
+            let y = e.clientY + padding;
+
+            // Keep tooltip on screen
+            const rect = ttBox.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth) {
+                x = e.clientX - rect.width - padding;
+            }
+            if (y + rect.height > window.innerHeight) {
+                y = e.clientY - rect.height - padding;
+            }
+
+            ttBox.style.left = x + 'px';
+            ttBox.style.top = y + 'px';
+        }
+
+        function toggleTooltips() {
+            tooltipsEnabled = !tooltipsEnabled;
+            const btn = document.getElementById('tooltipToggle');
+            if (tooltipsEnabled) {
+                btn.textContent = '💡 Tooltips ON';
+                btn.classList.add('active');
+            } else {
+                btn.textContent = '💡 Tooltips OFF';
+                btn.classList.remove('active');
+                document.getElementById('ttBox').classList.remove('visible');
+            }
+        }
+
+        // ===== DATA LOADING =====
         async function loadArchiveIndex() {
             try {
                 const response = await fetch('championship-archive/index.json');
@@ -602,13 +716,13 @@
                             <tr>
                                 <th style="text-align: center;">#</th>
                                 <th>Title</th>
-                                <th>Rating</th>
-                                <th>Peak</th>
-                                <th>Floor</th>
-                                <th>Best Match</th>
-                                <th>Worst Match</th>
-                                <th>Streak</th>
-                                <th>Δ Rank</th>
+                                <th class="tt" data-tt="This is the current rating of this championship. It must have been defended in the last six weeks to appear on the rankings list.">Rating</th>
+                                <th class="tt" data-tt="The highest rating of this championship within the most recent reign.">Peak</th>
+                                <th class="tt" data-tt="The lowest rating of this championship within the most recent reign.">Floor</th>
+                                <th class="tt" data-tt="The highest rated match from Cagematch.net during the most recent reign.">Best Match</th>
+                                <th class="tt" data-tt="The lowest rated match from Cagematch.net during the most recent reign.">Worst Match</th>
+                                <th class="tt" data-tt="The number of defenses within the most recent reign. Note: new reigns are only shown when the championship has been defended for the first time.">Streak</th>
+                                <th class="tt" data-tt="This shows the change in ranking position compared to last week.">Δ Rank</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -634,8 +748,8 @@
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
-                                    <div class="details-section">
-                                        <h4>📊 Current Reign</h4>
+                                    <div class="details-section tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">
+                                        <h4>📊 Most Recent Reign</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -653,7 +767,7 @@
                                             <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section">
+                                    <div class="details-section tt" data-tt="This shows the statistics for all matches for this specific championship.">
                                         <h4>🏆 All-Time</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
@@ -672,7 +786,7 @@
                                             <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section">
+                                    <div class="details-section tt" data-tt="Some additional information about this championship.">
                                         <h4>📈 Stats</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Total Title Matches</span>
@@ -696,7 +810,7 @@
             if (droppedOut.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle" onclick="toggleDroppedOut(event)">
+                        <button class="dropped-out-toggle tt" data-tt="This shows a list of all titles that have been active before but have not been defended within the past six weeks." onclick="toggleDroppedOut(event)">
                             ▼ Show Inactive Titles (${droppedOut.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
@@ -760,7 +874,7 @@
             return { text: '—', class: 'no-change' };
         }
 
-        // Week Selector Functions
+        // ===== WEEK SELECTOR FUNCTIONS =====
         function toggleWeekSelector() {
             const panel = document.getElementById('weekSelectorPanel');
             const btn = document.getElementById('expandWeekBtn');
@@ -863,16 +977,16 @@
         }
 
         function loadRandomWeek() {
-    if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
-        return;
-    }
-    
-    const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
-    const randomWeek = archiveIndex.weeks[randomIndex];
-    
-    document.getElementById('weekSelect').value = randomWeek.file;
-    loadChampionshipData(randomWeek.file);
-}
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
+            const randomWeek = archiveIndex.weeks[randomIndex];
+            
+            document.getElementById('weekSelect').value = randomWeek.file;
+            loadChampionshipData(randomWeek.file);
+        }
     </script>
 </body>
 </html>
