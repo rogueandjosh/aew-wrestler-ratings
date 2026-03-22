@@ -251,6 +251,18 @@
             color: #e0e0e0;
         }
 
+        .rating-high {
+    color: #22c55e;
+}
+
+.rating-medium {
+    color: #ffd700;
+}
+
+.rating-low {
+    color: #ef4444;
+}
+
         .streak-cell {
             color: #b8b8b8;
         }
@@ -582,6 +594,15 @@
             const heading = document.getElementById('currentHeading');
             heading.textContent = championshipData.currentWeek || 'Current Week';
         }
+
+        function getRatingClass(rating) {
+    // Rating is stored as decimal (1.0 = 100)
+    // High = green, Medium = yellow/gold, Low = red
+    if (rating >= 1.15) return 'rating-high';
+    if (rating >= 1.05) return 'rating-medium';
+    if (rating < 1.0) return 'rating-low';
+    return '';
+}
 
         function renderChampionships() {
             const championships = championshipData.championships || [];
