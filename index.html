@@ -1080,31 +1080,33 @@
         #tooltipToggle:hover { color: #ffd700; border-color: #ffd700; }
         #tooltipToggle.active { color: #ffd700; border-color: rgba(255,215,0,0.6); }
         
-        /* Desktop/Laptop - larger table text */
-        @media (min-width: 769px) {
+        /* Tablet */
+        @media (min-width: 769px) and (max-width: 1024px) {
             table {
-                font-size: 1.25em;
+                font-size: 1em;
             }
             
             th {
-                padding: 18px;
-                font-size: 1.15em;
+                padding: 14px;
             }
             
             td {
-                padding: 14px 18px;
+                padding: 10px 14px;
+            }
+        }
+
+        /* Desktop/Laptop */
+        @media (min-width: 1025px) {
+            table {
+                font-size: 1.1em;
             }
             
-            .rank {
-                font-size: 1.35em;
+            th {
+                padding: 16px;
             }
             
-            .name {
-                font-size: 1.2em;
-            }
-            
-            .rating {
-                font-size: 1.25em;
+            td {
+                padding: 12px 16px;
             }
         }
     </style>
@@ -1148,16 +1150,13 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                     ☰
                 </button>
                 <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 180px; z-index: 1001; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-    <a href="championships.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        🏆 Championships
-    </a>
-    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        🥊 Compare Wrestlers
-    </a>
-    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        ℹ️ About
-    </a>
-</div>
+                    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        🥊 Compare Wrestlers
+                    </a>
+                    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        ℹ️ About
+                    </a>
+                </div>
             </div>
             
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
