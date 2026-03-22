@@ -920,9 +920,158 @@
             font-size: 1.1em;
         }
 
+        .details-content h4 {
+            color: #e0e0e0;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
         .details-content p {
             margin-bottom: 15px;
             line-height: 1.7;
+        }
+
+        /* Worked Example Visual Cards */
+        .worked-example-cards {
+            display: flex;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .example-card {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 380px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .swerve-card {
+            border: 3px solid #1a9a6a;
+        }
+
+        .ciampa-card {
+            border: 3px solid #7c5cbf;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .wrestler-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: white;
+        }
+
+        .swerve-badge {
+            background: #1a9a6a;
+        }
+
+        .ciampa-badge {
+            background: #7c5cbf;
+        }
+
+        .wrestler-info {
+            flex: 1;
+        }
+
+        .wrestler-name {
+            font-weight: bold;
+            font-size: 1.15em;
+            color: #1a1a2e;
+        }
+
+        .opponent-name {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .points-section {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .points-label {
+            font-size: 0.75em;
+            color: #888;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .points-value {
+            font-size: 2.2em;
+            font-weight: bold;
+        }
+
+        .swerve-points {
+            color: #1a9a6a;
+        }
+
+        .ciampa-points {
+            color: #7c5cbf;
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #555;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .swerve-check {
+            color: #1a9a6a;
+        }
+
+        .ciampa-check {
+            color: #7c5cbf;
+        }
+
+        @media (max-width: 640px) {
+            .worked-example-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .example-card {
+                max-width: 100%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1150,16 +1299,16 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
                     ☰
                 </button>
                 <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 180px; z-index: 1001; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        ℹ️ About
-    </a>
-    <a href="championships.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        🏆 Championships
-    </a>
-    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
-        🥊 Compare Wrestlers
-    </a>
-</div>
+                    <a href="#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        ℹ️ About
+                    </a>
+                    <a href="championships.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        🏆 Championships
+                    </a>
+                    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        🥊 Compare Wrestlers
+                    </a>
+                </div>
             </div>
             
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
@@ -1241,57 +1390,142 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
         </div>
 
         <section class="about" id="about">
-            <h2>About the Ratings</h2>
-            <p>Wrestling is all about feelings, emotions and opinions. It will never be possible to completely accurately compare wrestlers' current form - there are so many factors to consider. However, this system takes account of multiple factors so that wrestlers can be directly compared and tracked over time. It equates them to a numerical value where '100' is average.</p>
+            <h2>About</h2>
+            <p>I love AEW. As a wrestling fan for most of my life, it was such a relief when this promotion came along. For several years before that, I had at various times nearly given up on the dross that WWE were feeding wrestling fans. Yes, there were other promotions, but none that I consistently stuck with — not until AEW came along.</p>
             
-            <p>The ratings are based on match performances from the excellent Cagematch.net site - not wins and losses, but how fans have received and rated each AEW wrestler's match.</p>
+            <p>The longer I've watched AEW, the more I've marvelled at the match quality and incredible stories these athletes tell us. For me, wrestling is all about feelings and opinions. But another passion of mine is data — analysing and interpreting it — and around the start of 2025, I embarked on a project to create a wrestling rating system.</p>
+            
+            <p>What I've found most fascinating is comparing wrestlers and seeing how their ratings evolve over time — the peaks, the valleys, the comebacks. It tells a story that complements what we see on screen.</p>
+
+            <h3>AEW Wrestler Ratings</h3>
+            <p>The ratings are based on match performances from the excellent <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700;">Cagematch.net</a> — not wins and losses, but how fans have received and rated each AEW wrestler's matches.</p>
 
             <p style="font-style: italic; color: #aaa; font-size: 0.9em;">This is an independent fan project. AEW and Cagematch are the property of their respective owners.</p>
 
             <h3>Key Points:</h3>
             <ul>
-                <li>All wrestlers start at 100 - points gained/lost based on Cagematch match ratings and votes</li>
-                <li>Factors include: current rating, opponent quality, show type, and match stakes</li>
-                <li>Five divisions: Men's, Women's, Men's Tag, Women's Tag, and Trios (crossover allowed)</li>
-                <li>Minimum 2 matches required to appear in rankings</li>
-                <li>Ratings degrade over time toward 100 - wrestlers drop out when they reach 100</li>
+                <li>All wrestlers start at 100</li>
+                <li>Gain/lose points based on Cagematch match ratings and votes</li>
+                <li>Factors that affect the gains/losses include: rating before the match, opponent quality, show type, show votes, match stakes, and more</li>
+                <li>Five divisions: Men's, Women's, Men's Tag, Women's Tag, Trios</li>
+                <li>There is a time "pull" effect — points gained or lost recover over time, back towards the starting rating of 100</li>
+                <li>Wrestlers drop out after 6 weeks of inactivity, but re-enter using their rating (which has continued to degrade/recover) if it hasn't reached 100</li>
+                <li>Updated weekly (Wednesdays before Dynamite)</li>
             </ul>
 
             <div class="find-out-more">
                 <button class="expand-btn" onclick="toggleDetails()">Find out more ▼</button>
                 
                 <div id="moreDetails" class="details-content">
-                    <h3>📌 Important Context</h3>
-                    <p>This rating system does NOT account for intangibles like charisma or promo ability - it is purely based on match performance from Cagematch. It reflects both how well wrestlers have performed AND how well they are being booked (not for wins, but for opportunities to perform).</p>
+                    <h3>How the Ratings Work</h3>
+                    
+                    <h4>Starting Point</h4>
+                    <p>All wrestlers start at 100 (average).</p>
 
-                    <h3>🎯 How Ratings Work</h3>
-                    <p>All wrestlers start at 100 (average). Points are gained and lost depending on Cagematch match ratings and votes, plus show ratings and votes.</p>
+                    <h4>Gaining & Losing Points</h4>
+                    <p>Points are gained or lost based on Cagematch match ratings and votes, plus show ratings and votes. Higher-voted matches and shows carry more weight.</p>
 
-                    <h3>⚙️ Factors Affecting Rating Changes</h3>
-                    <p>Multiple factors determine how much is gained or lost: the wrestler's rating before the match, opponent quality, the show type, match stakes, and other considerations.</p>
+                    <h4>Factors Affecting Changes</h4>
+                    <p><strong>Wrestler's rating before the match</strong> — lower rating means more room to climb.</p>
+                    <p><strong>Opponent quality</strong> — a great match vs a lower-rated opponent gains more points (it's more impressive); a great match vs a top-rated opponent gains fewer points (it's expected).</p>
+                    <p><strong>Show type and show rating/votes</strong> — PPV matches carry more weight than Dynamite, which carries more than Dark.</p>
+                    <p><strong>Match stakes</strong> — titles and stipulations add boosts.</p>
+                    <p><strong>Card position</strong> — main event matches get a spotlight bonus.</p>
 
-                    <h3>🏆 The Five Divisions</h3>
-                    <p>Men's, Women's, Men's Tag, Women's Tag, and Trios. There is crossover - for example, a male wrestler in a trios team would contribute to both Men's ratings and potentially Men's Tag if part of a tag team within the trio.</p>
+                    <h4>Time Pull</h4>
+                    <p>Gains fade over time. Losses recover. Eventually, inactive wrestlers return to 100 and drop out of the rankings.</p>
 
-                    <h3>✅ Entry Requirements</h3>
-                    <p>Two matches are needed to gain a ranking.</p>
+                    <h4>Inactivity</h4>
+                    <p>Wrestlers drop out after 6 consecutive weeks without a match. If they return, they re-enter using their rating at that point (which has continued to degrade/recover while inactive) — unless it has already reached 100.</p>
 
-                    <h3>⏳ Time Degradation</h3>
-                    <p>Rating points gained degrade over time; rating points lost are gradually recovered. Eventually, after weeks, months, or possibly years, a wrestler/team's rating returns to 100. Once a rating reaches 100, the wrestler/team drops out of the rankings.</p>
+                    <h4>The Five Divisions</h4>
+                    <p>Men's, Women's, Men's Tag, Women's Tag, Trios. Crossover is allowed — e.g. a male wrestler in a trios team contributes to both Men's and Trios.</p>
 
-                    <h3>📅 Update Schedule</h3>
-                    <p>Rankings refresh each Wednesday before Dynamite.</p>
+                    <h4>Entry Requirements</h4>
+                    <p>Minimum 2 matches to appear in rankings.</p>
 
-                    <h3>📊 How It Works — Example</h3>
-                    <p>Two matches, both rated 9.08 on Cagematch with approximately 275 votes each. But the rating points gained were very different:</p>
-                    <p><strong>Swerve Strickland vs Kenny Omega → Swerve gained 6.54 points</strong><br>
-                    <strong>Tommaso Ciampa vs Kyle Fletcher → Tommaso gained 11.63 points</strong></p>
-                    <p>Why did Tommaso gain almost double? Several factors were at play:</p>
-                    <p><strong>Tommaso's lower rating going in (109.06 vs Swerve's 124.14)</strong> — a lower-rated wrestler gains more from a strong performance, just as you'd expect in any ranking system. There's more room to climb.</p>
-                    <p><strong>A title was on the line</strong> — the TNT Championship has its own rating which boosts points gained, and a title change adds further.</p>
-                    <p><strong>The show rating was higher</strong> — the Dynamite episode featuring Tommaso's match was rated 9.11 overall, compared to 8.47 for Swerve's. A higher show rating amplifies the gains.</p>
-                    <p><strong>Swerve did have some advantages</strong> — Kenny Omega's rating (128.05) was lower than Kyle Fletcher's (149.46), meaning Swerve was facing a relatively lower-rated opponent. You'd expect a high-rated match against a higher-rated opponent to count for less — because that result is less surprising. Swerve also benefited from being in the main event, which carries a spotlight bonus.</p>
-                    <p><strong>The key takeaway:</strong> the same match quality score can produce very different rating changes depending on the wrestler's current rating, opponent quality, match stakes, card position, and show quality. If we swapped the opponents and moved Tommaso's match to the main event, he'd have gained even more and Swerve would have gained less.</p>
+                    <h3>Worked Example</h3>
+                    <p>Two matches, both rated 9.08 on Cagematch with ~275 votes each. But the rating points gained were very different:</p>
+                    
+                    <!-- Visual Comparison Cards -->
+                    <div class="worked-example-cards">
+                        <div class="example-card swerve-card">
+                            <div class="card-header">
+                                <div class="wrestler-badge swerve-badge">SS</div>
+                                <div class="wrestler-info">
+                                    <div class="wrestler-name">Swerve Strickland</div>
+                                    <div class="opponent-name">vs Kenny Omega</div>
+                                </div>
+                            </div>
+                            <div class="points-section">
+                                <div class="points-label">POINTS GAINED</div>
+                                <div class="points-value swerve-points">+6.67</div>
+                            </div>
+                            <div class="stats-list">
+                                <div class="stat-row">
+                                    <span class="stat-label">Rating before</span>
+                                    <span class="stat-value">118.60</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Opponent rating</span>
+                                    <span class="stat-value has-check swerve-check">125.40 ✓</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Match rating</span>
+                                    <span class="stat-value">9.08</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Title match</span>
+                                    <span class="stat-value">No</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Main event</span>
+                                    <span class="stat-value has-check swerve-check">Yes ✓</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-card ciampa-card">
+                            <div class="card-header">
+                                <div class="wrestler-badge ciampa-badge">TC</div>
+                                <div class="wrestler-info">
+                                    <div class="wrestler-name">Tommaso Ciampa</div>
+                                    <div class="opponent-name">vs Kyle Fletcher</div>
+                                </div>
+                            </div>
+                            <div class="points-section">
+                                <div class="points-label">POINTS GAINED</div>
+                                <div class="points-value ciampa-points">+10.26</div>
+                            </div>
+                            <div class="stats-list">
+                                <div class="stat-row">
+                                    <span class="stat-label">Rating before</span>
+                                    <span class="stat-value has-check ciampa-check">107.42 ✓</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Opponent rating</span>
+                                    <span class="stat-value">141.76</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Match rating</span>
+                                    <span class="stat-value">9.08</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Title match</span>
+                                    <span class="stat-value has-check ciampa-check">TNT Title ✓</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Higher show rating</span>
+                                    <span class="stat-value has-check ciampa-check">Yes ✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Why the difference?</h4>
+                    <p>Same match quality (9.08) but Ciampa gained <strong>+3.59 more points</strong>. His lower starting rating (107.42) meant more room to climb. The TNT title on the line and a higher-rated show added further boosts.</p>
+                    <p>Meanwhile, Swerve's higher starting rating (118.60) limited his upside — and while Omega's lower rating (125.40 vs Fletcher's 141.76) actually <em>helped</em> Swerve slightly (a 9.08 match against a lower-rated opponent is more impressive), it wasn't enough to close the gap.</p>
+                    <p><strong>Key takeaway:</strong> The same match quality score can produce very different rating changes. Ciampa's advantages in starting rating, title stakes, and show quality outweighed the opponent factor working against him.</p>
 
                 </div>
             </div>
