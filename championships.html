@@ -592,11 +592,8 @@
 
         async function init() {
             try {
-                // Load archive index first
                 await loadArchiveIndex();
-                // Load current championship data
                 await loadChampionshipData('current');
-                // Setup tooltips
                 setupTooltips();
             } catch (error) {
                 console.error('Init error:', error);
@@ -636,7 +633,6 @@
             let x = e.clientX + padding;
             let y = e.clientY + padding;
 
-            // Keep tooltip on screen
             const rect = ttBox.getBoundingClientRect();
             if (x + rect.width > window.innerWidth) {
                 x = e.clientX - rect.width - padding;
@@ -670,7 +666,6 @@
                     archiveIndex = await response.json();
                     populateWeekSelector();
                 } else {
-                    console.log('Archive index not found (404)');
                     archiveIndex = { weeks: [] };
                 }
             } catch (error) {
@@ -687,7 +682,6 @@
                 if (weekValue === 'current') {
                     url = 'current-championship-rankings.json';
                 } else {
-                    // weekValue already includes the path prefix
                     url = weekValue;
                 }
 
@@ -699,6 +693,7 @@
 
                 renderChampionships();
                 updateHeader();
+                updateNavigationButtons();
             } catch (error) {
                 console.error('Load error:', error);
                 document.getElementById('content').innerHTML = `<div class="error">Failed to load championship data</div>`;
@@ -811,7 +806,6 @@
 
             html += '</tbody></table></div>';
 
-            // Dropped Out Section
             if (droppedOut.length > 0) {
                 html += `
                     <div class="dropped-out-section">
@@ -888,7 +882,6 @@
 
         function populateWeekSelector() {
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
-                console.log('No archive weeks to populate');
                 return;
             }
 
@@ -896,29 +889,24 @@
             const yearFilter = document.getElementById('yearFilter');
             const monthFilter = document.getElementById('monthFilter');
 
-            // Clear existing options (except current)
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
 
-            // Extract unique years and months (using 2-digit year format like index.html)
             const years = new Set();
             const months = new Set();
 
             archiveIndex.weeks.forEach(week => {
-                // Parse week label like "Mar '26 Week 2"
                 const match = week.week.match(/^(\w+)\s+'(\d{2})/);
                 if (match) {
-                    years.add(match[2]); // Store as '26' not '2026'
+                    years.add(match[2]);
                     months.add(match[1]);
                 }
             });
 
-            // Populate year filter (newest first)
             const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
             sortedYears.forEach(year => {
                 yearFilter.innerHTML += `<option value="${year}">20${year}</option>`;
             });
 
-            // Populate month filter with full names
             const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const sortedMonths = Array.from(months).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
@@ -927,7 +915,6 @@
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
 
-            // Populate all weeks
             archiveIndex.weeks.forEach(week => {
                 weekSelect.innerHTML += `<option value="championship-archive/${week.file}">${week.week}</option>`;
             });
@@ -942,45 +929,46 @@
 
             if (!archiveIndex || !archiveIndex.weeks) return;
 
-            // Store current week selection before rebuilding
             const currentWeekSelection = weekSelect.value;
 
             // Filter weeks based on year and month
             const filteredWeeks = archiveIndex.weeks.filter(week => {
-                // Check year filter (using '26 format like index.html)
                 if (yearFilter && !week.week.includes(`'${yearFilter}`)) return false;
-                // Check month filter
                 if (monthFilter && !week.week.startsWith(monthFilter)) return false;
                 return true;
             });
 
-            // Populate week dropdown with filtered weeks
+            // Rebuild dropdown
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
             filteredWeeks.forEach(week => {
                 weekSelect.innerHTML += `<option value="championship-archive/${week.file}">${week.week}</option>`;
             });
 
-            // If navigating, skip auto-selection logic
+            // If navigating, don't auto-select - the navigate function handles selection
             if (isNavigating) {
-                weekSelect.value = currentWeekSelection;
                 return;
             }
 
-            // Try to restore previous week selection if it's still in the filtered list
+            // Auto-select logic when filters change (user changed year/month dropdown)
             const weekStillAvailable = Array.from(weekSelect.options).some(opt => opt.value === currentWeekSelection);
 
-            // If filters are active, select an archived week
             if (filteredWeeks.length > 0 && (yearFilter || monthFilter)) {
                 if (weekStillAvailable && currentWeekSelection !== 'current') {
+                    // Current selection still valid in filtered list - keep it
                     weekSelect.value = currentWeekSelection;
                 } else {
-                    // Select oldest archived week in filtered list
+                    // Current selection not valid - select OLDEST week in filtered list and LOAD it
                     const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
                     weekSelect.value = `championship-archive/${oldestWeek.file}`;
                     loadSelectedWeek();
                 }
-            } else if (weekStillAvailable && currentWeekSelection === 'current') {
-                weekSelect.value = 'current';
+            } else if (!yearFilter && !monthFilter) {
+                // Filters cleared - stay on current selection or default to current week
+                if (weekStillAvailable) {
+                    weekSelect.value = currentWeekSelection;
+                } else {
+                    weekSelect.value = 'current';
+                }
             }
 
             updateNavigationButtons();
@@ -989,23 +977,61 @@
         function loadSelectedWeek() {
             const weekValue = document.getElementById('weekSelect').value;
             loadChampionshipData(weekValue);
-            updateNavigationButtons();
         }
 
+        // Navigate using ALL weeks (not just filtered), matching index.html behavior
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
-            const options = Array.from(weekSelect.options);
-            const currentIndex = weekSelect.selectedIndex;
-            const newIndex = currentIndex + direction;
+            let currentValue = weekSelect.value;
 
-            if (newIndex >= 0 && newIndex < options.length) {
-                isNavigating = true;
-                weekSelect.selectedIndex = newIndex;
-                loadSelectedWeek();
-                isNavigating = false;
+            if (!archiveIndex || !archiveIndex.weeks) return;
+
+            // Build full weeks array from ALL archive weeks
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `championship-archive/${w.file}`)];
+            let currentIndex = allWeeks.indexOf(currentValue);
+
+            if (currentIndex === -1) return;
+
+            let newIndex = currentIndex + direction;
+
+            if (newIndex < 0 || newIndex >= allWeeks.length) return;
+
+            const targetWeek = allWeeks[newIndex];
+
+            // Set navigation flag BEFORE any changes
+            isNavigating = true;
+
+            // Update filters to match target week
+            if (targetWeek !== 'current') {
+                const filename = targetWeek.replace('championship-archive/', '');
+                const week = archiveIndex.weeks.find(w => w.file === filename);
+                if (week) {
+                    const match = week.week.match(/^(\w+)\s+'(\d{2})/);
+                    const year = match ? match[2] : '';
+                    const month = match ? match[1] : '';
+
+                    document.getElementById('yearFilter').value = year;
+                    document.getElementById('monthFilter').value = month;
+
+                    // Rebuild dropdown with new filter
+                    filterWeeks();
+
+                    // NOW set the value after dropdown is rebuilt with correct filter
+                    weekSelect.value = targetWeek;
+                }
+            } else {
+                document.getElementById('yearFilter').value = '';
+                document.getElementById('monthFilter').value = '';
+
+                filterWeeks();
+                weekSelect.value = 'current';
             }
 
-            updateNavigationButtons();
+            // Clear navigation flag AFTER all dropdown changes
+            isNavigating = false;
+
+            // Load the selected week
+            loadSelectedWeek();
         }
 
         function updateNavigationButtons() {
@@ -1013,27 +1039,29 @@
             const prevBtn = document.getElementById('prevWeekBtn');
             const nextBtn = document.getElementById('nextWeekBtn');
 
-            if (!weekSelect || !prevBtn || !nextBtn) return;
+            if (!archiveIndex || !archiveIndex.weeks) return;
 
-            const currentIndex = weekSelect.selectedIndex;
-            const totalOptions = weekSelect.options.length;
+            const currentValue = weekSelect.value;
 
-            // Disable prev (older) if at the last option
-            prevBtn.disabled = currentIndex >= totalOptions - 1;
+            // Build full weeks array
+            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `championship-archive/${w.file}`)];
+            const currentIndex = allWeeks.indexOf(currentValue);
+
+            // Disable prev (older) if at oldest week
+            prevBtn.disabled = (currentIndex >= allWeeks.length - 1);
             prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
 
-            // Disable next (newer) if at Current Week (first option)
-            nextBtn.disabled = currentIndex <= 0;
+            // Disable next (newer) if at current week
+            nextBtn.disabled = (currentIndex <= 0);
             nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
         }
 
         function resetToCurrent() {
             document.getElementById('yearFilter').value = '';
             document.getElementById('monthFilter').value = '';
-            filterWeeks();
             document.getElementById('weekSelect').value = 'current';
+            filterWeeks();
             loadChampionshipData('current');
-            updateNavigationButtons();
         }
 
         function loadRandomWeek() {
@@ -1044,28 +1072,21 @@
             const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
             const randomWeek = archiveIndex.weeks[randomIndex];
 
-            // Extract year and month from the random week
             const match = randomWeek.week.match(/^(\w+)\s+'(\d{2})/);
             const month = match ? match[1] : '';
             const year = match ? match[2] : '';
 
-            // Set navigation flag
             isNavigating = true;
 
-            // Update filters
             document.getElementById('yearFilter').value = year;
             document.getElementById('monthFilter').value = month;
 
-            // Filter weeks to populate dropdown
             filterWeeks();
 
-            // Select the random week
             document.getElementById('weekSelect').value = `championship-archive/${randomWeek.file}`;
 
-            // Clear navigation flag
             isNavigating = false;
 
-            // Load the random week
             loadSelectedWeek();
         }
     </script>
