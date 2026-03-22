@@ -1616,14 +1616,23 @@ if (selectedYear === 'ALL') {
         }
     });
     
+    // Exclude current incomplete month to prevent phantom data points
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    
     return Object.keys(monthlyMap)
         .sort((a, b) => monthlyMap[a].date - monthlyMap[b].date)
         .map(key => ({
             label: monthlyMap[key].label,
             rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
             date: monthlyMap[key].date
-        }));
-     }
+        }))
+        .filter(m => {
+            return !(m.date.getFullYear() === currentYear && m.date.getMonth() === currentMonth);
+        });
+}
+
         // Create comparison chart
         function createComparisonChart(wrestlerDataArray) {
             const ctx = document.getElementById('comparisonChart').getContext('2d');
@@ -1646,8 +1655,6 @@ if (selectedYear === 'ALL') {
             // Create datasets for each wrestler
             const datasets = wrestlerDataArray.map((data, index) => {
                 let historyData = data.ratingHistory || [];
-
-                
                 
                 // Filter by year if not ALL
                 if (selectedYear !== 'ALL' && historyData.length > 0) {
