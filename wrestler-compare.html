@@ -1616,9 +1616,6 @@ if (selectedYear === 'ALL') {
         }
     });
     
-    // Exclude current incomplete month to prevent phantom data points
-    const now = new Date();
-    const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
     
     return Object.keys(monthlyMap)
@@ -1627,7 +1624,7 @@ if (selectedYear === 'ALL') {
             label: monthlyMap[key].label,
             rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
             date: monthlyMap[key].date
-        }))
+        }));
         .filter(m => {
             return !(m.date.getFullYear() === currentYear && m.date.getMonth() === currentMonth);
         });
