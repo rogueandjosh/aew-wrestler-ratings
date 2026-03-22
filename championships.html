@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Championship Ratings | AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            position: relative;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1em;
+        }
+
+        .nav-buttons {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .back-link {
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .current-heading {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin-top: 12px;
+            font-weight: 700;
+        }
+
+        .expand-toggle {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.9em;
+            padding: 8px 16px;
+            margin-top: 8px;
+            transition: color 0.3s;
+        }
+
+        .expand-toggle:hover {
+            color: #ffd700;
+        }
+
+        .week-selector-panel {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .week-selector {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selector-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filters-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 100px;
+        }
+
+        .week-item {
+            min-width: 180px;
+        }
+
+        .filter-item label {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .week-selector button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .week-selector button:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .week-selector select {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .week-selector select:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reset-btn {
+            background: rgba(255, 215, 0, 0.2) !important;
+            font-size: 0.9em !important;
+            padding: 8px 15px !important;
+        }
+
+        /* Championships Table */
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            color: #ffd700;
+            width: 50px;
+            text-align: center;
+        }
+
+        .title-cell {
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .title-cell:hover {
+            color: #ffd700;
+        }
+
+        .rating-cell {
+            font-weight: 700;
+            color: #e0e0e0;
+        }
+
+        .streak-cell {
+            color: #b8b8b8;
+        }
+
+        .rank-up {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .rank-down {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .no-change {
+            color: #9ca3af;
+        }
+
+        /* Expandable Details Row */
+        .details-row {
+            display: none;
+        }
+
+        .details-row.expanded {
+            display: table-row;
+        }
+
+        .details-row td {
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .details-content {
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .details-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .details-section h4 {
+            color: #ffd700;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #b8b8b8;
+            font-size: 0.9em;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        /* Dropped Out Section */
+        .dropped-out-section {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .dropped-out-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .dropped-out-toggle {
+            background: none;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #999;
+            cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.9em;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .dropped-out-toggle:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        .dropped-out-list {
+            display: none;
+        }
+
+        .dropped-out-list.visible {
+            display: block;
+        }
+
+        .dropped-out-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .dropped-out-item {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 5px;
+            border-left: 3px solid #ef4444;
+            color: #b8b8b8;
+            font-size: 0.95em;
+        }
+
+        /* Loading & Error States */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #ffd700;
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.1em;
+            color: #f87171;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6em;
+            }
+
+            header {
+                padding: 15px 20px;
+                padding-top: 60px;
+            }
+
+            .nav-buttons {
+                top: 10px;
+                left: 10px;
+            }
+
+            .back-link {
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dropped-out-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-buttons">
+                <a href="index.html" class="back-link">🏠 Home</a>
+            </div>
+
+            <h1><a href="championships.html">🏆 Championship Ratings</a></h1>
+            <p class="subtitle">Title prestige based on match quality</p>
+
+            <h2 id="currentHeading" class="current-heading">Loading...</h2>
+
+            <button id="expandWeekBtn" class="expand-toggle" onclick="toggleWeekSelector()">
+                ▼ Change Week / Browse Archive
+            </button>
+
+            <div id="weekSelectorPanel" class="week-selector-panel" style="display: none;">
+                <div class="week-selector">
+                    <div class="selector-row">
+                        <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">◄ Older</button>
+
+                        <div class="filters-group">
+                            <div class="filter-item">
+                                <label>Year</label>
+                                <select id="yearFilter" onchange="filterWeeks()">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-item">
+                                <label>Month</label>
+                                <select id="monthFilter" onchange="filterWeeks()">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-item week-item">
+                                <label>Week</label>
+                                <select id="weekSelect" onchange="loadSelectedWeek()">
+                                    <option value="current">Current Week</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">Newer ►</button>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="content">
+            <div class="loading">Loading championship data...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let championshipData = null;
+        let archiveIndex = null;
+        let currentWeekValue = 'current';
+        let expandedRows = new Set();
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            try {
+                // Load archive index first
+                await loadArchiveIndex();
+                // Load current championship data
+                await loadChampionshipData('current');
+            } catch (error) {
+                console.error('Init error:', error);
+                document.getElementById('content').innerHTML = `<div class="error">Failed to load data: ${error.message}</div>`;
+            }
+        }
+
+        async function loadArchiveIndex() {
+            try {
+                const response = await fetch('championship-archive/index.json');
+                if (response.ok) {
+                    archiveIndex = await response.json();
+                    populateWeekSelector();
+                }
+            } catch (error) {
+                console.log('No archive index found, using current only');
+                archiveIndex = { weeks: [] };
+            }
+        }
+
+        async function loadChampionshipData(weekValue) {
+            document.getElementById('content').innerHTML = '<div class="loading">Loading championship data...</div>';
+
+            try {
+                let url;
+                if (weekValue === 'current') {
+                    url = 'current-championship-rankings.json';
+                } else {
+                    url = `championship-archive/${weekValue}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Data not found');
+
+                championshipData = await response.json();
+                currentWeekValue = weekValue;
+
+                renderChampionships();
+                updateHeader();
+            } catch (error) {
+                console.error('Load error:', error);
+                document.getElementById('content').innerHTML = `<div class="error">Failed to load championship data</div>`;
+            }
+        }
+
+        function updateHeader() {
+            const heading = document.getElementById('currentHeading');
+            heading.textContent = championshipData.currentWeek || 'Current Week';
+        }
+
+        function renderChampionships() {
+            const championships = championshipData.championships || [];
+            const droppedOut = championshipData.droppedOut || [];
+
+            let html = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">#</th>
+                                <th>Title</th>
+                                <th>Rating</th>
+                                <th>Streak</th>
+                                <th>Δ Rating</th>
+                                <th>Δ Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            championships.forEach((champ, index) => {
+                const ratingChange = formatRatingChange(champ.ratingChange);
+                const rankChange = formatRankChange(champ.rankChange);
+                const isExpanded = expandedRows.has(index);
+
+                html += `
+                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
+                        <td class="rank-cell">${champ.rank}</td>
+                        <td class="title-cell">${champ.title} ${isExpanded ? '▲' : '▼'}</td>
+                        <td class="rating-cell">${formatRating(champ.rating)}</td>
+                        <td class="streak-cell">${champ.streak} ${champ.streak === 1 ? 'defense' : 'defenses'}</td>
+                        <td class="${ratingChange.class}">${ratingChange.text}</td>
+                        <td class="${rankChange.class}">${rankChange.text}</td>
+                    </tr>
+                    <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
+                        <td colspan="6">
+                            <div class="details-content">
+                                <div class="details-grid">
+                                    <div class="details-section">
+                                        <h4>📊 Current Reign</h4>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Peak Rating</span>
+                                            <span class="detail-value">${formatRating(champ.peak)}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Floor Rating</span>
+                                            <span class="detail-value">${formatRating(champ.floor)}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Best Match</span>
+                                            <span class="detail-value">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Worst Match</span>
+                                            <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="details-section">
+                                        <h4>🏆 All-Time</h4>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Peak Rating</span>
+                                            <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Floor Rating</span>
+                                            <span class="detail-value">${formatRating(champ.allTimeFloor)}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Best Match Ever</span>
+                                            <span class="detail-value">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Worst Match Ever</span>
+                                            <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="details-section">
+                                        <h4>📈 Stats</h4>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Total Title Matches</span>
+                                            <span class="detail-value">${champ.totalMatches || '—'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Current Streak</span>
+                                            <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'defense' : 'defenses'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+
+            // Dropped Out Section
+            if (droppedOut.length > 0) {
+                html += `
+                    <div class="dropped-out-section">
+                        <button class="dropped-out-toggle" onclick="toggleDroppedOut(event)">
+                            ▼ Show Inactive Titles (${droppedOut.length})
+                        </button>
+                        <div id="droppedOutList" class="dropped-out-list">
+                            <div class="dropped-out-grid">
+                                ${droppedOut.map(title => `
+                                    <div class="dropped-out-item">${title.name}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function toggleDetails(index) {
+            if (expandedRows.has(index)) {
+                expandedRows.delete(index);
+            } else {
+                expandedRows.add(index);
+            }
+            renderChampionships();
+        }
+
+        function toggleDroppedOut(event) {
+            event.stopPropagation();
+            const list = document.getElementById('droppedOutList');
+            const btn = event.target;
+            const isVisible = list.classList.contains('visible');
+
+            list.classList.toggle('visible');
+            btn.textContent = isVisible
+                ? `▼ Show Inactive Titles (${championshipData.droppedOut.length})`
+                : `▲ Hide Inactive Titles`;
+        }
+
+        function formatRating(value) {
+            if (!value && value !== 0) return '—';
+            // Convert to display format (multiply by 100 for display if needed, or show as-is)
+            // Based on your data, ratings are like 1.2885 which should display as 128.85
+            return (value * 100).toFixed(2);
+        }
+
+        function formatRatingChange(change) {
+            if (!change && change !== 0) return { text: '—', class: 'no-change' };
+
+            const displayChange = (change * 100).toFixed(2);
+
+            if (change > 0) {
+                return { text: `↑${displayChange}`, class: 'rank-up' };
+            } else if (change < 0) {
+                return { text: `↓${Math.abs(displayChange)}`, class: 'rank-down' };
+            }
+            return { text: '—', class: 'no-change' };
+        }
+
+        function formatRankChange(change) {
+            if (!change && change !== 0) return { text: '—', class: 'no-change' };
+
+            if (change > 0) {
+                return { text: `↑${change}`, class: 'rank-up' };
+            } else if (change < 0) {
+                return { text: `↓${Math.abs(change)}`, class: 'rank-down' };
+            }
+            return { text: '—', class: 'no-change' };
+        }
+
+        // Week Selector Functions
+        function toggleWeekSelector() {
+            const panel = document.getElementById('weekSelectorPanel');
+            const btn = document.getElementById('expandWeekBtn');
+            const isHidden = panel.style.display === 'none';
+
+            panel.style.display = isHidden ? 'block' : 'none';
+            btn.textContent = isHidden ? '▲ Hide Week Selector' : '▼ Change Week / Browse Archive';
+        }
+
+        function populateWeekSelector() {
+            if (!archiveIndex || !archiveIndex.weeks) return;
+
+            const weekSelect = document.getElementById('weekSelect');
+            const yearFilter = document.getElementById('yearFilter');
+            const monthFilter = document.getElementById('monthFilter');
+
+            // Clear existing options (except current)
+            weekSelect.innerHTML = '<option value="current">Current Week</option>';
+
+            // Extract unique years and months
+            const years = new Set();
+            const months = new Set();
+
+            archiveIndex.weeks.forEach(week => {
+                // Parse week label like "Mar '26 Week 2"
+                const match = week.label.match(/([A-Za-z]+)\s+'(\d{2})/);
+                if (match) {
+                    years.add('20' + match[2]);
+                    months.add(match[1]);
+                }
+            });
+
+            // Populate year filter
+            Array.from(years).sort().reverse().forEach(year => {
+                yearFilter.innerHTML += `<option value="${year}">${year}</option>`;
+            });
+
+            // Populate month filter
+            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            monthOrder.forEach(month => {
+                if (months.has(month)) {
+                    monthFilter.innerHTML += `<option value="${month}">${month}</option>`;
+                }
+            });
+
+            // Populate all weeks
+            archiveIndex.weeks.forEach(week => {
+                weekSelect.innerHTML += `<option value="${week.filename}">${week.label}</option>`;
+            });
+        }
+
+        function filterWeeks() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            const weekSelect = document.getElementById('weekSelect');
+
+            weekSelect.innerHTML = '<option value="current">Current Week</option>';
+
+            if (!archiveIndex || !archiveIndex.weeks) return;
+
+            archiveIndex.weeks.forEach(week => {
+                const match = week.label.match(/([A-Za-z]+)\s+'(\d{2})/);
+                if (match) {
+                    const weekYear = '20' + match[2];
+                    const weekMonth = match[1];
+
+                    const yearMatch = !yearFilter || weekYear === yearFilter;
+                    const monthMatch = !monthFilter || weekMonth === monthFilter;
+
+                    if (yearMatch && monthMatch) {
+                        weekSelect.innerHTML += `<option value="${week.filename}">${week.label}</option>`;
+                    }
+                }
+            });
+        }
+
+        function loadSelectedWeek() {
+            const weekValue = document.getElementById('weekSelect').value;
+            loadChampionshipData(weekValue);
+        }
+
+        function navigateWeek(direction) {
+            const weekSelect = document.getElementById('weekSelect');
+            const options = Array.from(weekSelect.options);
+            const currentIndex = weekSelect.selectedIndex;
+            const newIndex = currentIndex + direction;
+
+            if (newIndex >= 0 && newIndex < options.length) {
+                weekSelect.selectedIndex = newIndex;
+                loadSelectedWeek();
+            }
+        }
+
+        function resetToCurrent() {
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+            filterWeeks();
+            document.getElementById('weekSelect').value = 'current';
+            loadChampionshipData('current');
+        }
+    </script>
+</body>
+</html>
