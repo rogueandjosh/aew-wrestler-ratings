@@ -251,18 +251,6 @@
             color: #e0e0e0;
         }
 
-        .rating-high {
-    color: #22c55e;
-}
-
-.rating-medium {
-    color: #ffd700;
-}
-
-.rating-low {
-    color: #ef4444;
-}
-
         .streak-cell {
             color: #b8b8b8;
         }
@@ -279,6 +267,19 @@
 
         .no-change {
             color: #9ca3af;
+        }
+
+        /* Rating color classes */
+        .rating-high {
+            color: #22c55e;
+        }
+
+        .rating-medium {
+            color: #ffd700;
+        }
+
+        .rating-low {
+            color: #ef4444;
         }
 
         /* Expandable Details Row */
@@ -413,21 +414,6 @@
             color: #f87171;
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
-            color: #999;
-            font-size: 0.85em;
-        }
-
-        footer a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             h1 {
@@ -471,6 +457,7 @@
     <div class="container">
         <header>
             <div class="nav-buttons">
+                <a href="javascript:history.back()" class="back-link">← Back</a>
                 <a href="index.html" class="back-link">🏠 Home</a>
             </div>
 
@@ -526,8 +513,16 @@
         </div>
     </div>
 
-    <footer>
-        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a>.</p>
+    <div style="text-align: center; margin: 30px 0 10px;">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
+            ▲ Back to Top
+        </button>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
+        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
         <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
     </footer>
 
@@ -595,15 +590,6 @@
             heading.textContent = championshipData.currentWeek || 'Current Week';
         }
 
-        function getRatingClass(rating) {
-    // Rating is stored as decimal (1.0 = 100)
-    // High = green, Medium = yellow/gold, Low = red
-    if (rating >= 1.15) return 'rating-high';
-    if (rating >= 1.05) return 'rating-medium';
-    if (rating < 1.0) return 'rating-low';
-    return '';
-}
-
         function renderChampionships() {
             const championships = championshipData.championships || [];
             const droppedOut = championshipData.droppedOut || [];
@@ -635,7 +621,7 @@
                     <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${champ.title} ${isExpanded ? '▲' : '▼'}</td>
-                        <td class="rating-cell">${formatRating(champ.rating)}</td>
+                        <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
                         <td class="rating-cell">${formatRating(champ.peak)}</td>
                         <td class="rating-cell">${formatRating(champ.floor)}</td>
                         <td class="rating-cell">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
@@ -644,7 +630,7 @@
                         <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
-                        <td colspan="6">
+                        <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
                                     <div class="details-section">
@@ -747,24 +733,19 @@
                 : `▲ Hide Inactive Titles`;
         }
 
-        function formatRating(value) {
-            if (!value && value !== 0) return '—';
-            // Convert to display format (multiply by 100 for display if needed, or show as-is)
-            // Based on your data, ratings are like 1.2885 which should display as 128.85
-            return (value * 100).toFixed(2);
+        function getRatingClass(rating) {
+            // Rating is stored as decimal (1.0 = 100)
+            // High = green, Medium = yellow/gold, Low = red
+            if (rating >= 1.15) return 'rating-high';
+            if (rating >= 1.05) return 'rating-medium';
+            if (rating < 1.0) return 'rating-low';
+            return '';
         }
 
-        function formatRatingChange(change) {
-            if (!change && change !== 0) return { text: '—', class: 'no-change' };
-
-            const displayChange = (change * 100).toFixed(2);
-
-            if (change > 0) {
-                return { text: `↑${displayChange}`, class: 'rank-up' };
-            } else if (change < 0) {
-                return { text: `↓${Math.abs(displayChange)}`, class: 'rank-down' };
-            }
-            return { text: '—', class: 'no-change' };
+        function formatRating(value) {
+            if (!value && value !== 0) return '—';
+            // Convert to display format (multiply by 100 for display)
+            return (value * 100).toFixed(2);
         }
 
         function formatRankChange(change) {
@@ -804,7 +785,7 @@
 
             archiveIndex.weeks.forEach(week => {
                 // Parse week label like "Mar '26 Week 2"
-                const match = week.label.match(/([A-Za-z]+)\s+'(\d{2})/);
+                const match = week.week.match(/([A-Za-z]+)\s+'(\d{2})/);
                 if (match) {
                     years.add('20' + match[2]);
                     months.add(match[1]);
@@ -826,7 +807,7 @@
 
             // Populate all weeks
             archiveIndex.weeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="${week.filename}">${week.label}</option>`;
+                weekSelect.innerHTML += `<option value="${week.file}">${week.week}</option>`;
             });
         }
 
@@ -840,7 +821,7 @@
             if (!archiveIndex || !archiveIndex.weeks) return;
 
             archiveIndex.weeks.forEach(week => {
-                const match = week.label.match(/([A-Za-z]+)\s+'(\d{2})/);
+                const match = week.week.match(/([A-Za-z]+)\s+'(\d{2})/);
                 if (match) {
                     const weekYear = '20' + match[2];
                     const weekMonth = match[1];
@@ -849,7 +830,7 @@
                     const monthMatch = !monthFilter || weekMonth === monthFilter;
 
                     if (yearMatch && monthMatch) {
-                        weekSelect.innerHTML += `<option value="${week.filename}">${week.label}</option>`;
+                        weekSelect.innerHTML += `<option value="${week.file}">${week.week}</option>`;
                     }
                 }
             });
