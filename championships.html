@@ -721,7 +721,7 @@
                                 <th class="tt" data-tt="The lowest rating of this championship within the most recent reign.">Floor</th>
                                 <th class="tt" data-tt="The highest rated match from Cagematch.net during the most recent reign.">Best Match</th>
                                 <th class="tt" data-tt="The lowest rated match from Cagematch.net during the most recent reign.">Worst Match</th>
-                                <th class="tt" data-tt="The number of defenses within the most recent reign. Note: new reigns are only shown when the championship has been defended for the first time.">Streak</th>
+                                <th class="tt" data-tt="The number of matches within the most recent reign. Note: new reigns are only shown when the championship has been defended for the first time.">Streak</th>
                                 <th class="tt" data-tt="This shows the change in ranking position compared to last week.">Δ Rank</th>
                             </tr>
                         </thead>
@@ -741,7 +741,7 @@
                         <td class="rating-cell">${formatRating(champ.floor)}</td>
                         <td class="rating-cell">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
-                        <td class="streak-cell">${champ.streak} ${champ.streak === 1 ? 'defense' : 'defenses'}</td>
+                        <td class="streak-cell">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
@@ -794,7 +794,7 @@
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Current Streak</span>
-                                            <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'defense' : 'defenses'}</span>
+                                            <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
                                     </div>
                                 </div>
