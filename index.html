@@ -1847,7 +1847,7 @@ if(sessionStorage.getItem('aewAccess')==='true'){document.getElementById('access
         let html = '<div class="recently-dropped-grid">';
         wrestlers.forEach(wrestler => {
             const inactiveClass = wrestler.isInactive ? 'inactive' : '';
-            let displayName = wrestler.name.replace(/\s*\(Inactive[^)]*\)/gi, '');
+            let displayName = wrestler.name.replace(/\s*\(Inactive.*$/gi, '');
             if (wrestler.isNameChange) {
                 displayName += ` (Name Change → ${wrestler.newName})`;
             } else if (wrestler.isInactive) {
@@ -3518,7 +3518,7 @@ if (tableEl) {
                                 console.log(`nameChanges[${actualName}] = ${nameChanges[actualName]}`);
                             }
                             
-                            let displayName = wrestler.name.replace(/\s*\(Inactive[^)]*\)/gi, '');
+                            let displayName = wrestler.name.replace(/\s*\(Inactive.*$/gi, '');
                             if (isNameChange) {
                                 displayName = `${actualName} (Name Change → ${nameChanges[actualName]})`;
                             }
