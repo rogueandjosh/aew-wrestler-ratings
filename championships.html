@@ -343,6 +343,14 @@
             font-weight: 600;
         }
 
+        .extra-col {
+            display: none;
+        }
+
+        body.show-extra-cols .extra-col {
+            display: table-cell;
+        }
+
         /* Dropped Out Section */
         .dropped-out-section {
             margin-top: 30px;
@@ -515,6 +523,10 @@
 
             <h1><a href="championships.html">🏆 Championship Ratings</a></h1>
             <p class="subtitle">Title prestige based on match quality</p>
+
+            <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85em; margin-top: 15px;">
+            ◀ Show More Columns
+            </button>
 
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
 
@@ -717,10 +729,10 @@
                                 <th style="text-align: center;">#</th>
                                 <th>Title</th>
                                 <th class="tt" data-tt="This is the current rating of this championship. It must have been defended in the last six weeks to appear on the rankings list.">Rating</th>
-                                <th class="tt" data-tt="The highest rating of this championship within the most recent reign.">Peak</th>
-                                <th class="tt" data-tt="The lowest rating of this championship within the most recent reign.">Floor</th>
-                                <th class="tt" data-tt="The highest rated match from Cagematch.net during the most recent reign.">Best Match</th>
-                                <th class="tt" data-tt="The lowest rated match from Cagematch.net during the most recent reign.">Worst Match</th>
+                                <th class="tt extra-col" data-tt="The highest rating of this championship within the most recent reign.">Peak</th>
+                                <th class="tt extra-col" data-tt="The lowest rating of this championship within the most recent reign.">Floor</th>
+                                <th class="tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign.">Best Match</th>
+                                <th class="tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign.">Worst Match</th>
                                 <th class="tt" data-tt="The number of matches within the most recent reign. Note: new reigns are only shown when the championship has been defended for the first time.">Streak</th>
                                 <th class="tt" data-tt="This shows the change in ranking position compared to last week.">Δ Rank</th>
                             </tr>
@@ -737,10 +749,10 @@
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${champ.title} ${isExpanded ? '▲' : '▼'}</td>
                         <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
-                        <td class="rating-cell">${formatRating(champ.peak)}</td>
-                        <td class="rating-cell">${formatRating(champ.floor)}</td>
-                        <td class="rating-cell">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
-                        <td class="rating-cell">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
+                        <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
+                        <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
+                        <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
+                        <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
@@ -833,6 +845,12 @@
                 expandedRows.add(index);
             }
             renderChampionships();
+        }
+
+        function toggleExtraColumns() {
+            const btn = document.getElementById('toggleExtraCols');
+            const isShowing = document.body.classList.toggle('show-extra-cols');
+            btn.textContent = isShowing ? '▶ Hide Extra Columns' : '◀ Show More Columns';
         }
 
         function toggleDroppedOut(event) {
