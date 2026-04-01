@@ -980,58 +980,6 @@
             }
         }
 
-        // Title icon configuration
-        const titleConfigs = {
-            // AEW Titles
-            'AEW World Heavyweight Title': { initials: 'WH', color: '#3b82f6', isWorld: true },
-            'AEW TNT Title': { initials: 'TNT', color: '#ec4899', isWorld: false },
-            'AEW TBS Title': { initials: 'TBS', color: '#14b8a6', isWorld: false },
-            'AEW Continental Title': { initials: 'CON', color: '#22c55e', isWorld: false },
-            'AEW National Title': { initials: 'NAT', color: '#dc2626', isWorld: false },
-            'AEW World Tag Team Titles': { initials: 'TAG', color: '#2563eb', isWorld: true },
-            'AEW World Trios Titles': { initials: 'TRI', color: '#7c3aed', isWorld: true },
-            'AEW Women\'s World Title': { initials: 'WOM', color: '#a855f7', isWorld: true },
-            'AEW Women\'s World Tag Team Titles': { initials: 'WTAG', color: '#ec4899', isWorld: true },
-            'AEW International Title': { initials: 'INT', color: '#cd7f32', isWorld: false },
-            'AEW All-Atlantic Title': { initials: 'AA', color: '#cd7f32', isWorld: false },
-            'AEW American Title': { initials: 'AM', color: '#cd7f32', isWorld: false },
-            'AEW Unified Title': { initials: 'UNI', color: '#6366f1', isWorld: true },
-            'AEW Interim World Title': { initials: 'iWH', color: '#3b82f6', isWorld: true },
-            'AEW Interim TNT Title': { initials: 'iTNT', color: '#ec4899', isWorld: false },
-            // ROH Titles
-            'ROH World Heavyweight Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
-            'ROH World TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            'ROH World Six Man Tag Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            'ROH Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            'ROH World Tag Team Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            'ROH Women\'s World Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
-            'ROH Pure Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            'ROH Interim Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
-            // IWGP/NJPW Titles
-            'IWGP World Heavyweight Title': { initials: 'IWGP', color: '#dc2626', isWorld: true },
-            'IWGP United States Title': { initials: 'IWGP', color: '#dc2626', isWorld: false },
-            'IWGP Tag Team Titles': { initials: 'IWGP', color: '#dc2626', isWorld: false },
-            'NJPW World TV Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
-            'NJPW STRONG Women\'s Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
-            'NJPW STRONG Openweight Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
-            // CMLL Titles
-            'CMLL World Heavyweight Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
-            'CMLL Women\'s World Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
-            'CMLL World Trios Titles': { initials: 'CMLL', color: '#fbbf24', isWorld: false, textDark: true },
-            // AAA Titles
-            'AAA Mega Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
-            'AAA World Tag Team Titles': { initials: 'AAA', color: '#f59e0b', isWorld: false },
-            'AAA Latin American Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
-            // Impact Titles
-            'Impact World Title': { initials: 'IMP', color: '#0284c7', isWorld: true },
-            'Impact World Tag Team Titles': { initials: 'IMP', color: '#0284c7', isWorld: false },
-            // Other Titles
-            'FTW Title': { initials: 'FTW', color: '#ff6b35', isWorld: false },
-            'NWA World Women\'s Title': { initials: 'NWA', color: '#1d4ed8', isWorld: true },
-            'RevPro Undisputed British Women\'s Title': { initials: 'REV', color: '#7c2d12', isWorld: false },
-            'Regina Di WAVE Title': { initials: 'WAVE', color: '#06b6d4', isWorld: false },
-        };
-
         function getTitleConfig(title) {
             // Return config if exists
             if (titleConfigs[title]) {
