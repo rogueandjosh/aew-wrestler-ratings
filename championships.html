@@ -539,6 +539,100 @@
                 padding: 12px 16px;
             }
         }
+
+        /* Championship belt icons */
+        .belt-icon {
+            display: inline-block;
+            position: relative;
+            width: 40px;
+            height: 32px;
+            vertical-align: middle;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .belt-strap {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 40px;
+            height: 22px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            border: 0.5px solid #333;
+        }
+
+        .belt-plate {
+            position: absolute;
+            top: 0;
+            left: 6px;
+            width: 28px;
+            height: 32px;
+            border-radius: 3px;
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        .belt-plate.gold {
+            background: #ffd700;
+            border-color: #b8860b;
+        }
+
+        .belt-plate.silver {
+            background: #c0c0c0;
+            border-color: #888;
+        }
+
+        .belt-center {
+            position: absolute;
+            top: 5px;
+            left: 9px;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .belt-center.circle {
+            border-radius: 50%;
+        }
+
+        .belt-center.square {
+            border-radius: 2px;
+        }
+
+        /* Gold circle for non-top ranks (AEW) */
+        .title-circle {
+            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 600;
+            color: #ffd700;
+            vertical-align: middle;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Silver circle for non-top ranks (non-AEW) */
+        .title-circle.silver {
+            border-color: #c0c0c0;
+            color: #c0c0c0;
+        }
+
+        .title-cell {
+            display: flex;
+            align-items: center;
+        }
         
     </style>
 </head>
@@ -634,6 +728,144 @@
         let expandedRows = new Set();
         let tooltipsEnabled = true;
         let isNavigating = false;
+
+        // ===== TITLE ICON SYSTEM =====
+        const titleConfigs = {
+            // AEW Titles
+            'AEW World Heavyweight Title': { initials: 'WH', color: '#3b82f6', isWorld: true },
+            'AEW TNT Title': { initials: 'TNT', color: '#ec4899', isWorld: false },
+            'AEW TBS Title': { initials: 'TBS', color: '#14b8a6', isWorld: false },
+            'AEW Continental Title': { initials: 'CON', color: '#22c55e', isWorld: false },
+            'AEW National Title': { initials: 'NAT', color: '#dc2626', isWorld: false },
+            'AEW World Tag Team Titles': { initials: 'TAG', color: '#2563eb', isWorld: true },
+            'AEW World Trios Titles': { initials: 'TRI', color: '#7c3aed', isWorld: true },
+            'AEW Women\'s World Title': { initials: 'WOM', color: '#a855f7', isWorld: true },
+            'AEW Women\'s World Tag Team Titles': { initials: 'WTAG', color: '#ec4899', isWorld: true },
+            'AEW International Title': { initials: 'INT', color: '#cd7f32', isWorld: false },
+            'AEW All-Atlantic Title': { initials: 'AA', color: '#cd7f32', isWorld: false },
+            'AEW American Title': { initials: 'AM', color: '#cd7f32', isWorld: false },
+            'AEW Unified Title': { initials: 'UNI', color: '#6366f1', isWorld: true },
+            'AEW Interim World Title': { initials: 'iWH', color: '#3b82f6', isWorld: true },
+            'AEW Interim TNT Title': { initials: 'iTNT', color: '#ec4899', isWorld: false },
+            
+            // ROH Titles
+            'ROH World Heavyweight Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
+            'ROH World TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH World Six Man Tag Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH World Tag Team Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Women\'s World Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
+            'ROH Pure Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Interim Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            
+            // IWGP/NJPW Titles
+            'IWGP World Heavyweight Title': { initials: 'IWGP', color: '#dc2626', isWorld: true },
+            'IWGP United States Title': { initials: 'IWGP', color: '#dc2626', isWorld: false },
+            'IWGP Tag Team Titles': { initials: 'IWGP', color: '#dc2626', isWorld: false },
+            'NJPW World TV Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            'NJPW STRONG Women\'s Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            'NJPW STRONG Openweight Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            
+            // CMLL Titles
+            'CMLL World Heavyweight Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
+            'CMLL Women\'s World Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
+            'CMLL World Trios Titles': { initials: 'CMLL', color: '#fbbf24', isWorld: false, textDark: true },
+            
+            // AAA Titles
+            'AAA Mega Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            'AAA World Tag Team Titles': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            'AAA Latin American Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            
+            // Impact Titles
+            'Impact World Title': { initials: 'IMP', color: '#0284c7', isWorld: true },
+            'Impact World Tag Team Titles': { initials: 'IMP', color: '#0284c7', isWorld: false },
+            
+            // Other Titles
+            'FTW Title': { initials: 'FTW', color: '#ff6b35', isWorld: false },
+            'NWA World Women\'s Title': { initials: 'NWA', color: '#1d4ed8', isWorld: true },
+            'RevPro Undisputed British Women\'s Title': { initials: 'REV', color: '#7c2d12', isWorld: false },
+            'Regina Di WAVE Title': { initials: 'WAVE', color: '#06b6d4', isWorld: false },
+        };
+
+        function getTitleConfig(title) {
+            // Check if we have a predefined config
+            if (titleConfigs[title]) {
+                return titleConfigs[title];
+            }
+            
+            // Auto-generate config for unknown titles
+            const isAEW = title.startsWith('AEW');
+            const isWorld = title.toLowerCase().includes('world');
+            const isInterim = title.toLowerCase().includes('interim');
+            
+            // Generate initials from title
+            let initials;
+            if (title.startsWith('AEW ')) {
+                // For AEW titles, use meaningful part after "AEW"
+                const parts = title.replace('AEW ', '').split(' ');
+                if (parts[0] === 'Interim' && parts.length > 1) {
+                    initials = 'i' + parts[1].substring(0, 2).toUpperCase();
+                } else if (parts[0] === "Women's" && parts.length > 1) {
+                    initials = 'W' + parts[1].substring(0, 2).toUpperCase();
+                } else {
+                    initials = parts[0].substring(0, 3).toUpperCase();
+                }
+            } else {
+                // For non-AEW, use first word or acronym
+                const firstWord = title.split(' ')[0];
+                initials = firstWord.length <= 4 ? firstWord.toUpperCase() : firstWord.substring(0, 4).toUpperCase();
+            }
+            
+            // Generate color based on title characteristics
+            let color;
+            if (isAEW) {
+                if (isInterim) {
+                    color = '#6366f1'; // Indigo for interim
+                } else if (isWorld) {
+                    color = '#3b82f6'; // Blue for world
+                } else {
+                    color = '#ffd700'; // Gold default for AEW
+                }
+            } else {
+                // Non-AEW gets a generated color based on first letter
+                const colorMap = {
+                    'R': '#991b1b', 'I': '#dc2626', 'N': '#dc2626', 'C': '#fbbf24',
+                    'A': '#f59e0b', 'F': '#ff6b35', 'W': '#06b6d4', 'T': '#14b8a6'
+                };
+                color = colorMap[title[0]] || '#888888';
+            }
+            
+            return { initials, color, isWorld, textDark: color === '#fbbf24' };
+        }
+
+        function getTitleIcon(title, rank, totalCount) {
+            const topCutoff = totalCount >= 10 ? 5 : 3;
+            const isTopRank = rank <= topCutoff;
+            
+            // Determine if AEW or non-AEW
+            const isAEW = title.startsWith('AEW');
+            const plateClass = isAEW ? 'gold' : 'silver';
+            const circleClass = isAEW ? '' : 'silver';
+            
+            // Get config
+            const config = getTitleConfig(title);
+            const textStyle = config.textDark ? 'color: #1a1a1a;' : '';
+            
+            if (isTopRank) {
+                // Belt icon
+                const shapeClass = config.isWorld ? 'circle' : 'square';
+                return `
+                    <span class="belt-icon">
+                        <span class="belt-strap"></span>
+                        <span class="belt-plate ${plateClass}"></span>
+                        <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
+                    </span>
+                `;
+            } else {
+                // Circle icon
+                return `<span class="title-circle ${circleClass}">${config.initials}</span>`;
+            }
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', init);
@@ -748,6 +980,126 @@
             }
         }
 
+        // Title icon configuration
+        const titleConfigs = {
+            // AEW Titles
+            'AEW World Heavyweight Title': { initials: 'WH', color: '#3b82f6', isWorld: true },
+            'AEW TNT Title': { initials: 'TNT', color: '#ec4899', isWorld: false },
+            'AEW TBS Title': { initials: 'TBS', color: '#14b8a6', isWorld: false },
+            'AEW Continental Title': { initials: 'CON', color: '#22c55e', isWorld: false },
+            'AEW National Title': { initials: 'NAT', color: '#dc2626', isWorld: false },
+            'AEW World Tag Team Titles': { initials: 'TAG', color: '#2563eb', isWorld: true },
+            'AEW World Trios Titles': { initials: 'TRI', color: '#7c3aed', isWorld: true },
+            'AEW Women\'s World Title': { initials: 'WOM', color: '#a855f7', isWorld: true },
+            'AEW Women\'s World Tag Team Titles': { initials: 'WTAG', color: '#ec4899', isWorld: true },
+            'AEW International Title': { initials: 'INT', color: '#cd7f32', isWorld: false },
+            'AEW All-Atlantic Title': { initials: 'AA', color: '#cd7f32', isWorld: false },
+            'AEW American Title': { initials: 'AM', color: '#cd7f32', isWorld: false },
+            'AEW Unified Title': { initials: 'UNI', color: '#6366f1', isWorld: true },
+            'AEW Interim World Title': { initials: 'iWH', color: '#3b82f6', isWorld: true },
+            'AEW Interim TNT Title': { initials: 'iTNT', color: '#ec4899', isWorld: false },
+            // ROH Titles
+            'ROH World Heavyweight Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
+            'ROH World TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH World Six Man Tag Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH World Tag Team Titles': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Women\'s World Title': { initials: 'ROH', color: '#991b1b', isWorld: true },
+            'ROH Pure Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            'ROH Interim Women\'s TV Title': { initials: 'ROH', color: '#991b1b', isWorld: false },
+            // IWGP/NJPW Titles
+            'IWGP World Heavyweight Title': { initials: 'IWGP', color: '#dc2626', isWorld: true },
+            'IWGP United States Title': { initials: 'IWGP', color: '#dc2626', isWorld: false },
+            'IWGP Tag Team Titles': { initials: 'IWGP', color: '#dc2626', isWorld: false },
+            'NJPW World TV Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            'NJPW STRONG Women\'s Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            'NJPW STRONG Openweight Title': { initials: 'NJPW', color: '#dc2626', isWorld: false },
+            // CMLL Titles
+            'CMLL World Heavyweight Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
+            'CMLL Women\'s World Title': { initials: 'CMLL', color: '#fbbf24', isWorld: true, textDark: true },
+            'CMLL World Trios Titles': { initials: 'CMLL', color: '#fbbf24', isWorld: false, textDark: true },
+            // AAA Titles
+            'AAA Mega Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            'AAA World Tag Team Titles': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            'AAA Latin American Title': { initials: 'AAA', color: '#f59e0b', isWorld: false },
+            // Impact Titles
+            'Impact World Title': { initials: 'IMP', color: '#0284c7', isWorld: true },
+            'Impact World Tag Team Titles': { initials: 'IMP', color: '#0284c7', isWorld: false },
+            // Other Titles
+            'FTW Title': { initials: 'FTW', color: '#ff6b35', isWorld: false },
+            'NWA World Women\'s Title': { initials: 'NWA', color: '#1d4ed8', isWorld: true },
+            'RevPro Undisputed British Women\'s Title': { initials: 'REV', color: '#7c2d12', isWorld: false },
+            'Regina Di WAVE Title': { initials: 'WAVE', color: '#06b6d4', isWorld: false },
+        };
+
+        function getTitleConfig(title) {
+            // Return config if exists
+            if (titleConfigs[title]) {
+                return titleConfigs[title];
+            }
+            
+            // Auto-generate for unknown titles
+            const isAEW = title.startsWith('AEW');
+            const isWorld = title.toLowerCase().includes('world');
+            const isInterim = title.toLowerCase().includes('interim');
+            
+            // Generate initials from title words (skip common words)
+            const skipWords = ['title', 'titles', 'championship', 'championships', 'world', 'the', 'of'];
+            const words = title.split(/\s+/).filter(w => !skipWords.includes(w.toLowerCase()));
+            let initials = words.map(w => w[0]).join('').toUpperCase().substring(0, 4);
+            
+            // If interim, prefix with 'i'
+            if (isInterim && initials.length > 0) {
+                initials = 'i' + initials.substring(0, 3);
+            }
+            
+            // Determine color based on promotion
+            let color = '#888888'; // default gray
+            if (isAEW) color = '#ffd700';
+            else if (title.startsWith('ROH')) color = '#991b1b';
+            else if (title.startsWith('IWGP') || title.startsWith('NJPW')) color = '#dc2626';
+            else if (title.startsWith('CMLL')) color = '#fbbf24';
+            else if (title.startsWith('AAA')) color = '#f59e0b';
+            else if (title.startsWith('Impact')) color = '#0284c7';
+            else if (title.startsWith('NWA')) color = '#1d4ed8';
+            
+            return { 
+                initials: initials || '?', 
+                color: color, 
+                isWorld: isWorld,
+                textDark: title.startsWith('CMLL')
+            };
+        }
+
+        function getTitleIcon(title, rank, totalCount) {
+            const topCutoff = 5; // Top 5 get belt icons
+            const isTopRank = rank <= topCutoff;
+            
+            // Determine if AEW or non-AEW
+            const isAEW = title.startsWith('AEW');
+            const plateClass = isAEW ? 'gold' : 'silver';
+            const circleClass = isAEW ? '' : 'silver';
+            
+            // Get config
+            const config = getTitleConfig(title);
+            const textStyle = config.textDark ? 'color: #1a1a1a;' : '';
+            
+            if (isTopRank) {
+                // Belt icon
+                const shapeClass = config.isWorld ? 'circle' : 'square';
+                return `
+                    <span class="belt-icon">
+                        <span class="strap"></span>
+                        <span class="plate ${plateClass}"></span>
+                        <span class="center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
+                    </span>
+                `;
+            } else {
+                // Circle icon
+                return `<span class="title-circle ${circleClass}">${config.initials}</span>`;
+            }
+        }
+
         function updateHeader() {
             const heading = document.getElementById('currentHeading');
             heading.textContent = championshipData.currentWeek || 'Current Week';
@@ -779,11 +1131,12 @@
             championships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
+                const titleIcon = getTitleIcon(champ.title, champ.rank, championships.length);
 
                 html += `
                     <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.rank}</td>
-                        <td class="title-cell">${champ.title}</td>
+                        <td class="title-cell">${titleIcon}${champ.title}</td>
                         <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
