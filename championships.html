@@ -1194,11 +1194,7 @@
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
                                             <div class="details-grid">
                                                 <div class="details-section">
-                                                    <h4>📊 Last Active Stats</h4>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Last Rating</span>
-                                                        <span class="detail-value">${formatRating(title.rating)}</span>
-                                                    </div>
+                                                    <h4>📊 Most Recent Reign</h4>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Peak Rating</span>
                                                         <span class="detail-value">${formatRating(title.peak)}</span>
@@ -1207,9 +1203,6 @@
                                                         <span class="detail-label">Floor Rating</span>
                                                         <span class="detail-value">${formatRating(title.floor)}</span>
                                                     </div>
-                                                </div>
-                                                <div class="details-section">
-                                                    <h4>🎯 Match Quality</h4>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Best Match</span>
                                                         <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
@@ -1218,9 +1211,35 @@
                                                         <span class="detail-label">Worst Match</span>
                                                         <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
                                                     </div>
+                                                </div>
+                                                <div class="details-section">
+                                                    <h4>🏆 All-Time</h4>
                                                     <div class="detail-item">
-                                                        <span class="detail-label">Match Streak</span>
-                                                        <span class="detail-value">${title.streak || '—'}</span>
+                                                        <span class="detail-label">Peak Rating</span>
+                                                        <span class="detail-value">${formatRating(title.allTimePeak)}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Floor Rating</span>
+                                                        <span class="detail-value">${formatRating(title.allTimeFloor)}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Best Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Worst Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="details-section">
+                                                    <h4>📈 Stats</h4>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Total Title Matches</span>
+                                                        <span class="detail-value">${title.totalMatches || '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Last Streak</span>
+                                                        <span class="detail-value">${title.streak} ${title.streak === 1 ? 'match' : 'matches'}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1240,12 +1259,29 @@
         }
 
         function toggleDetails(index) {
-            if (expandedRows.has(index)) {
-                expandedRows.delete(index);
+            const championships = championshipData.championships || [];
+            const isDroppedOutItem = index >= championships.length;
+            
+            if (isDroppedOutItem) {
+                // For dropped out items, just toggle the class without re-rendering
+                const detailsEl = document.getElementById(`details-${index}`);
+                if (detailsEl) {
+                    detailsEl.classList.toggle('expanded');
+                    if (expandedRows.has(index)) {
+                        expandedRows.delete(index);
+                    } else {
+                        expandedRows.add(index);
+                    }
+                }
             } else {
-                expandedRows.add(index);
+                // For main rankings, use the full re-render
+                if (expandedRows.has(index)) {
+                    expandedRows.delete(index);
+                } else {
+                    expandedRows.add(index);
+                }
+                renderChampionships();
             }
-            renderChampionships();
         }
 
         function toggleExtraColumns() {
