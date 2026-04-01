@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -444,6 +445,20 @@
 
         .dropped-details.expanded {
             display: block;
+        }
+
+        .belt-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px;
+        }
+
+        .belt-display .belt-icon {
+            width: 80px;
+            height: 64px;
+            transform: scale(2);
         }
 
         /* Loading & Error States */
@@ -1163,6 +1178,9 @@
                                             <span class="detail-label">Current Streak</span>
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
+                                        <div class="belt-display">
+                                            ${getTitleIcon(champ.title, 1, 10)}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1240,6 +1258,9 @@
                                                     <div class="detail-item">
                                                         <span class="detail-label">Last Streak</span>
                                                         <span class="detail-value">${title.streak} ${title.streak === 1 ? 'match' : 'matches'}</span>
+                                                    </div>
+                                                    <div class="belt-display">
+                                                        ${getTitleIcon(title.title, 1, 10)}
                                                     </div>
                                                 </div>
                                             </div>
