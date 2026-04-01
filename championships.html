@@ -462,7 +462,7 @@
             border-color: #444;
         }
 
-        /* Responsive */
+        /* Mobile */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.6em;
@@ -503,7 +503,43 @@
                 max-width: 220px;
                 font-size: 0.85em;
             }
+
+            /* Hide extra columns on mobile */
+            .extra-col {
+                display: none !important;
+            }
         }
+
+        /* Tablet */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            table {
+                font-size: 1em;
+            }
+
+            th {
+                padding: 14px;
+            }
+
+            td {
+                padding: 10px 14px;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1025px) {
+            table {
+                font-size: 1.1em;
+            }
+
+            th {
+                padding: 16px;
+            }
+
+            td {
+                padding: 12px 16px;
+            }
+        }
+        
     </style>
 </head>
 <body>
