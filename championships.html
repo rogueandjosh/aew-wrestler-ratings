@@ -990,9 +990,56 @@
             heading.textContent = championshipData.currentWeek || 'Current Week';
         }
 
-        function renderChampionships() {
+        async function renderChampionships() {
             const championships = championshipData.championships || [];
             const droppedOut = championshipData.droppedOut || [];
+            
+            // Fetch previous week data to get stats for dropped out titles
+            let prevWeekData = null;
+            if (droppedOut.length > 0 && archiveIndex && archiveIndex.weeks) {
+                try {
+                    // Find current week in archive
+                    const currentWeekLabel = championshipData.currentWeek;
+                    let prevWeekFile = null;
+                    
+                    if (currentWeekValue === 'current') {
+                        // For current week, previous is the first archive entry
+                        prevWeekFile = archiveIndex.weeks[0]?.file;
+                    } else {
+                        // For archive weeks, find the next older week
+                        const currentIndex = archiveIndex.weeks.findIndex(w => 
+                            `championship-archive/${w.file}` === currentWeekValue
+                        );
+                        if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
+                            prevWeekFile = archiveIndex.weeks[currentIndex + 1]?.file;
+                        }
+                    }
+                    
+                    if (prevWeekFile) {
+                        const prevUrl = `championship-archive/${prevWeekFile}`;
+                        console.log('📅 Loading previous championship week:', prevUrl);
+                        prevWeekData = await fetch(prevUrl + '?t=' + Date.now()).then(r => r.json());
+                        console.log('✅ Loaded previous week data');
+                    }
+                } catch (error) {
+                    console.log('⚠️ Could not load previous week data:', error);
+                }
+            }
+            
+            // Enrich dropped out titles with data from previous week
+            const enrichedDroppedOut = droppedOut.map(title => {
+                if (prevWeekData && prevWeekData.championships) {
+                    const prevChamp = prevWeekData.championships.find(c => c.title === title.name);
+                    if (prevChamp) {
+                        return {
+                            ...title,
+                            ...prevChamp,
+                            name: title.name
+                        };
+                    }
+                }
+                return title;
+            });
 
             let html = `
                 <div class="table-container">
@@ -1092,18 +1139,76 @@
 
             html += '</tbody></table></div>';
 
-            if (droppedOut.length > 0) {
+            if (enrichedDroppedOut.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle tt" data-tt="This shows a list of all titles that have been active before but have not been defended within the past six weeks." onclick="toggleDroppedOut(event)">
-                            ▼ Show Inactive Titles (${droppedOut.length})
+                        <button class="dropped-out-toggle tt" data-tt="Titles that were active last week but have now become inactive (not defended in 6+ weeks)." onclick="toggleDroppedOut(event)">
+                            ▼ Dropped Out This Week (${enrichedDroppedOut.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
-                            <div class="dropped-out-grid">
-                                ${droppedOut.map(title => `
-                                    <div class="dropped-out-item">${title.name}</div>
-                                `).join('')}
-                            </div>
+                            <table style="width: 100%;">
+                                <tbody>
+                                    ${enrichedDroppedOut.map((title, idx) => {
+                                        const dropIndex = championships.length + idx;
+                                        const isExpanded = expandedRows.has(dropIndex);
+                                        const hasStats = title.rating !== undefined;
+                                        const titleIcon = getTitleIcon(title.name, title.rank || 99, championships.length);
+                                        
+                                        let rowHtml = `
+                                            <tr onclick="toggleDetails(${dropIndex})" style="cursor: pointer;">
+                                                <td class="title-cell">${titleIcon}${title.name}</td>
+                                                <td class="rating-cell">${hasStats ? `Was #${title.rank}` : '—'}</td>
+                                                <td class="rating-cell ${hasStats ? getRatingClass(title.rating) : ''}">${hasStats ? formatRating(title.rating) : '—'}</td>
+                                            </tr>
+                                        `;
+                                        
+                                        if (hasStats) {
+                                            rowHtml += `
+                                                <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
+                                                    <td colspan="3">
+                                                        <div class="details-content">
+                                                            <div class="details-grid">
+                                                                <div class="details-section">
+                                                                    <h4>📊 Last Active Stats</h4>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Last Rating</span>
+                                                                        <span class="detail-value">${formatRating(title.rating)}</span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Peak Rating</span>
+                                                                        <span class="detail-value">${formatRating(title.peak)}</span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Floor Rating</span>
+                                                                        <span class="detail-value">${formatRating(title.floor)}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="details-section">
+                                                                    <h4>🎯 Match Quality</h4>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Best Match</span>
+                                                                        <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Worst Match</span>
+                                                                        <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Match Streak</span>
+                                                                        <span class="detail-value">${title.streak || '—'}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }
+                                        
+                                        return rowHtml;
+                                    }).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
@@ -1132,11 +1237,12 @@
             const list = document.getElementById('droppedOutList');
             const btn = event.target;
             const isVisible = list.classList.contains('visible');
+            const count = championshipData.droppedOut?.length || 0;
 
             list.classList.toggle('visible');
             btn.textContent = isVisible
-                ? `▼ Show Inactive Titles (${championshipData.droppedOut.length})`
-                : `▲ Hide Inactive Titles`;
+                ? `▼ Dropped Out This Week (${count})`
+                : `▲ Hide Dropped Out`;
         }
 
         function getRatingClass(rating) {
