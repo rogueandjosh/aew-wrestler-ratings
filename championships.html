@@ -401,10 +401,49 @@
         .dropped-out-item {
             padding: 10px 15px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 5px;
-            border-left: 3px solid #ef4444;
-            color: #b8b8b8;
+            border-radius: 8px;
+            border-left: 3px solid rgba(255, 215, 0, 0.3);
+            color: #e0e0e0;
             font-size: 0.95em;
+        }
+
+        .dropped-out-item.clickable {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .dropped-out-item.clickable:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .dropped-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .dropped-info {
+            color: #ffd700;
+            font-size: 0.9em;
+        }
+
+        .dropped-out-item-wrapper {
+            margin-bottom: 10px;
+        }
+
+        .dropped-details {
+            display: none;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 8px 8px;
+            margin-top: -3px;
+            padding-top: 20px;
+        }
+
+        .dropped-details.expanded {
+            display: block;
         }
 
         /* Loading & Error States */
@@ -1146,69 +1185,62 @@
                             ▼ Dropped Out This Week (${enrichedDroppedOut.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
-                            <table style="width: 100%;">
-                                <tbody>
-                                    ${enrichedDroppedOut.map((title, idx) => {
-                                        const dropIndex = championships.length + idx;
-                                        const isExpanded = expandedRows.has(dropIndex);
-                                        const hasStats = title.rating !== undefined;
-                                        const titleIcon = getTitleIcon(title.name, title.rank || 99, championships.length);
-                                        
-                                        let rowHtml = `
-                                            <tr onclick="toggleDetails(${dropIndex})" style="cursor: pointer;">
-                                                <td class="title-cell">${titleIcon}${title.name}</td>
-                                                <td class="rating-cell">${hasStats ? `Was #${title.rank}` : '—'}</td>
-                                                <td class="rating-cell ${hasStats ? getRatingClass(title.rating) : ''}">${hasStats ? formatRating(title.rating) : '—'}</td>
-                                            </tr>
-                                        `;
-                                        
-                                        if (hasStats) {
-                                            rowHtml += `
-                                                <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
-                                                    <td colspan="3">
-                                                        <div class="details-content">
-                                                            <div class="details-grid">
-                                                                <div class="details-section">
-                                                                    <h4>📊 Last Active Stats</h4>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Last Rating</span>
-                                                                        <span class="detail-value">${formatRating(title.rating)}</span>
-                                                                    </div>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Peak Rating</span>
-                                                                        <span class="detail-value">${formatRating(title.peak)}</span>
-                                                                    </div>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Floor Rating</span>
-                                                                        <span class="detail-value">${formatRating(title.floor)}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="details-section">
-                                                                    <h4>🎯 Match Quality</h4>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Best Match</span>
-                                                                        <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
-                                                                    </div>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Worst Match</span>
-                                                                        <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
-                                                                    </div>
-                                                                    <div class="detail-item">
-                                                                        <span class="detail-label">Match Streak</span>
-                                                                        <span class="detail-value">${title.streak || '—'}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            `;
-                                        }
-                                        
-                                        return rowHtml;
-                                    }).join('')}
-                                </tbody>
-                            </table>
+                            ${enrichedDroppedOut.map((title, idx) => {
+                                const dropIndex = championships.length + idx;
+                                const isExpanded = expandedRows.has(dropIndex);
+                                const hasStats = title.rating !== undefined;
+                                const titleIcon = getTitleIcon(title.name, title.rank || 99, championships.length);
+                                
+                                let itemHtml = `
+                                    <div class="dropped-out-item-wrapper">
+                                        <div class="dropped-out-item clickable" onclick="toggleDetails(${dropIndex})">
+                                            <span class="dropped-title">${titleIcon}${title.name}</span>
+                                            <span class="dropped-info">${hasStats ? `Was #${title.rank} • ${formatRating(title.rating)}` : ''}</span>
+                                        </div>
+                                `;
+                                
+                                if (hasStats) {
+                                    itemHtml += `
+                                        <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
+                                            <div class="details-grid">
+                                                <div class="details-section">
+                                                    <h4>📊 Last Active Stats</h4>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Last Rating</span>
+                                                        <span class="detail-value">${formatRating(title.rating)}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Peak Rating</span>
+                                                        <span class="detail-value">${formatRating(title.peak)}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Floor Rating</span>
+                                                        <span class="detail-value">${formatRating(title.floor)}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="details-section">
+                                                    <h4>🎯 Match Quality</h4>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Best Match</span>
+                                                        <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Worst Match</span>
+                                                        <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Match Streak</span>
+                                                        <span class="detail-value">${title.streak || '—'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                                
+                                itemHtml += `</div>`;
+                                return itemHtml;
+                            }).join('')}
                         </div>
                     </div>
                 `;
