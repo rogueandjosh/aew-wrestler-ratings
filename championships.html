@@ -559,7 +559,11 @@
             height: 22px;
             background: #1a1a1a;
             border-radius: 4px;
-            border: 0.5px solid #333;
+            border: 1px solid #b8860b;
+        }
+
+        .belt-strap.silver {
+            border-color: #888;
         }
 
         .belt-plate {
@@ -854,9 +858,10 @@
             if (isTopRank) {
                 // Belt icon
                 const shapeClass = config.isWorld ? 'circle' : 'square';
+                const strapClass = isAEW ? '' : 'silver';
                 return `
                     <span class="belt-icon">
-                        <span class="belt-strap"></span>
+                        <span class="belt-strap ${strapClass}"></span>
                         <span class="belt-plate ${plateClass}"></span>
                         <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
                     </span>
