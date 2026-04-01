@@ -1031,14 +1031,13 @@
 
         async function renderChampionships() {
             const championships = championshipData.championships || [];
-            const droppedOut = championshipData.droppedOut || [];
             
-            // Fetch previous week data to get stats for dropped out titles
+            // Fetch previous week data to find titles that dropped out
             let prevWeekData = null;
-            if (droppedOut.length > 0 && archiveIndex && archiveIndex.weeks) {
+            let droppedOutTitles = [];
+            
+            if (archiveIndex && archiveIndex.weeks) {
                 try {
-                    // Find current week in archive
-                    const currentWeekLabel = championshipData.currentWeek;
                     let prevWeekFile = null;
                     
                     if (currentWeekValue === 'current') {
@@ -1059,26 +1058,22 @@
                         console.log('📅 Loading previous championship week:', prevUrl);
                         prevWeekData = await fetch(prevUrl + '?t=' + Date.now()).then(r => r.json());
                         console.log('✅ Loaded previous week data');
+                        
+                        // Find titles that were in previous week but not in this week
+                        const currentTitles = new Set(championships.map(c => c.title));
+                        const prevChampionships = prevWeekData.championships || [];
+                        
+                        droppedOutTitles = prevChampionships.filter(prevChamp => 
+                            !currentTitles.has(prevChamp.title)
+                        );
+                        
+                        console.log(`📉 Found ${droppedOutTitles.length} titles that dropped out:`, 
+                            droppedOutTitles.map(t => t.title));
                     }
                 } catch (error) {
                     console.log('⚠️ Could not load previous week data:', error);
                 }
             }
-            
-            // Enrich dropped out titles with data from previous week
-            const enrichedDroppedOut = droppedOut.map(title => {
-                if (prevWeekData && prevWeekData.championships) {
-                    const prevChamp = prevWeekData.championships.find(c => c.title === title.name);
-                    if (prevChamp) {
-                        return {
-                            ...title,
-                            ...prevChamp,
-                            name: title.name
-                        };
-                    }
-                }
-                return title;
-            });
 
             let html = `
                 <div class="table-container">
@@ -1178,29 +1173,24 @@
 
             html += '</tbody></table></div>';
 
-            if (enrichedDroppedOut.length > 0) {
+            if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle tt" data-tt="Titles that were active last week but have now become inactive (not defended in 6+ weeks)." onclick="toggleDroppedOut(event)">
-                            ▼ Dropped Out This Week (${enrichedDroppedOut.length})
+                        <button class="dropped-out-toggle tt" data-tt="Titles that were in the rankings last week but are no longer active this week." onclick="toggleDroppedOut(event)">
+                            ▼ Dropped Out This Week (${droppedOutTitles.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
-                            ${enrichedDroppedOut.map((title, idx) => {
+                            ${droppedOutTitles.map((title, idx) => {
                                 const dropIndex = championships.length + idx;
                                 const isExpanded = expandedRows.has(dropIndex);
-                                const hasStats = title.rating !== undefined;
-                                const titleIcon = getTitleIcon(title.name, title.rank || 99, championships.length);
+                                const titleIcon = getTitleIcon(title.title, title.rank || 99, championships.length);
                                 
-                                let itemHtml = `
+                                return `
                                     <div class="dropped-out-item-wrapper">
                                         <div class="dropped-out-item clickable" onclick="toggleDetails(${dropIndex})">
-                                            <span class="dropped-title">${titleIcon}${title.name}</span>
-                                            <span class="dropped-info">${hasStats ? `Was #${title.rank} • ${formatRating(title.rating)}` : ''}</span>
+                                            <span class="dropped-title">${titleIcon}${title.title}</span>
+                                            <span class="dropped-info">Was #${title.rank} • ${formatRating(title.rating)}</span>
                                         </div>
-                                `;
-                                
-                                if (hasStats) {
-                                    itemHtml += `
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
                                             <div class="details-grid">
                                                 <div class="details-section">
@@ -1235,15 +1225,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    `;
-                                }
-                                
-                                itemHtml += `</div>`;
-                                return itemHtml;
+                                    </div>
+                                `;
                             }).join('')}
                         </div>
                     </div>
                 `;
+                
+                // Store count for toggle button
+                window.droppedOutCount = droppedOutTitles.length;
             }
 
             document.getElementById('content').innerHTML = html;
@@ -1269,7 +1259,7 @@
             const list = document.getElementById('droppedOutList');
             const btn = event.target;
             const isVisible = list.classList.contains('visible');
-            const count = championshipData.droppedOut?.length || 0;
+            const count = window.droppedOutCount || 0;
 
             list.classList.toggle('visible');
             btn.textContent = isVisible
