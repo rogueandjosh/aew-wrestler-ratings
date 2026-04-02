@@ -537,11 +537,27 @@
             }
 
             table {
-                font-size: 0.85em;
+                font-size: 0.75em;
+                table-layout: fixed;
+                width: 100%;
             }
 
             th, td {
-                padding: 8px 10px;
+                padding: 6px 3px;
+                text-align: center;
+            }
+
+            /* Column widths for mobile - total must fit screen */
+            th:nth-child(1), td:nth-child(1) { width: 25px; } /* # */
+            th:nth-child(2), td:nth-child(2) { width: 42%; text-align: left; } /* Title */
+            th:nth-child(3), td:nth-child(3) { width: 50px; } /* Rating */
+            th:nth-child(4), td:nth-child(4) { width: 35px; } /* Streak */
+            th:nth-child(5), td:nth-child(5) { width: 40px; } /* Δ Rank */
+
+            .title-cell {
+                text-align: left;
+                word-break: break-word;
+                font-size: 0.9em;
             }
 
             .details-grid {
@@ -565,12 +581,65 @@
             .streak-text {
                 display: none;
             }
+
+            /* Smaller belt icons on mobile */
+            .belt-icon {
+                width: 28px;
+                height: 22px;
+                margin-right: 4px;
+            }
+
+            .belt-strap {
+                top: 3px;
+                width: 28px;
+                height: 16px;
+            }
+
+            .belt-plate {
+                left: 4px;
+                width: 20px;
+                height: 22px;
+            }
+
+            .belt-center {
+                top: 3px;
+                left: 6px;
+                width: 16px;
+                height: 16px;
+                font-size: 5px;
+            }
+
+            .title-circle {
+                width: 22px;
+                height: 22px;
+                font-size: 7px;
+                margin-right: 4px;
+            }
         }
 
         /* Tablet */
         @media (min-width: 769px) and (max-width: 1024px) {
             table {
-                font-size: 1em;
+                font-size: 0.95em;
+                max-width: 900px;
+                margin: 0 auto;
+            }
+
+            th {
+                padding: 12px;
+            }
+
+            td {
+                padding: 10px 12px;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1025px) {
+            table {
+                font-size: 1.05em;
+                max-width: 1100px;
+                margin: 0 auto;
             }
 
             th {
@@ -578,22 +647,7 @@
             }
 
             td {
-                padding: 10px 14px;
-            }
-        }
-
-        /* Desktop */
-        @media (min-width: 1025px) {
-            table {
-                font-size: 1.1em;
-            }
-
-            th {
-                padding: 16px;
-            }
-
-            td {
-                padding: 12px 16px;
+                padding: 12px 14px;
             }
         }
 
