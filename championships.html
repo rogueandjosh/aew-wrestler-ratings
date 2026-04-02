@@ -1198,7 +1198,7 @@
                             <span class="view-toggle-label ${viewMode === 'alltime' ? 'active' : ''}">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
-                     ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
+                        ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
                     </button>
                     </div>
                     <table>
@@ -1218,7 +1218,7 @@
                                 <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
-                                <th class="sortable tt" data-tt="Total number of title matches for this championship." onclick="sortBy('totalMatches', event)">Total ${getSortArrow('totalMatches')}</th>
+                                <th class="sortable tt" data-tt="Total number of title matches for this championship." onclick="sortBy('totalMatches', event)">Matches ${getSortArrow('totalMatches')}</th>
                                 `}
                                 <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
                             </tr>
