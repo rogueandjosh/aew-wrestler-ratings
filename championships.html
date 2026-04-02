@@ -260,6 +260,57 @@
             opacity: 1;
         }
 
+        /* View mode toggle switch */
+        .view-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .view-toggle-label {
+            font-size: 0.9em;
+            color: #888;
+            transition: color 0.2s;
+        }
+
+        .view-toggle-label.active {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .view-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 13px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .view-toggle:hover {
+            border-color: #ffd700;
+        }
+
+        .view-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .view-toggle.alltime::after {
+            transform: translateX(24px);
+        }
+
         .title-cell {
             font-weight: 600;
             cursor: pointer;
@@ -830,6 +881,7 @@
         let tooltipsEnabled = true;
         let isNavigating = false;
         let currentSort = { column: 'rank', direction: 'asc' };
+        let viewMode = 'reign'; // 'reign' or 'alltime'
 
         // ===== TITLE ICON SYSTEM =====
         const titleConfigs = {
@@ -1139,7 +1191,12 @@
 
             let html = `
                 <div class="table-container">
-                    <div style="text-align: right; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                        <div class="view-toggle-container">
+                            <span class="view-toggle-label ${viewMode === 'reign' ? 'active' : ''}">Current Reign</span>
+                            <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
+                            <span class="view-toggle-label ${viewMode === 'alltime' ? 'active' : ''}">All-Time</span>
+                        </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
                             ◀ Show More Columns
                         </button>
@@ -1149,12 +1206,20 @@
                             <tr>
                                 <th class="sortable" style="text-align: center;" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
                                 <th class="sortable" onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
-                                <th class="sortable tt" data-tt="This is the current rating of this championship. It must have been fought over in the last six weeks to appear on the rankings list." onclick="sortBy('rating', event)">Rating ${getSortArrow('rating')}</th>
+                                <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Rating ${getSortArrow('rating')}</th>
+                                ${viewMode === 'reign' ? `
                                 <th class="sortable tt extra-col" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
-                                <th class="sortable tt" data-tt="The number of matches within the most recent reign. Note: reigns include the title winning match, so the first defense of a title would count as 2 in that streak." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
+                                <th class="sortable tt" data-tt="The number of matches within the most recent reign." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
+                                ` : `
+                                <th class="sortable tt extra-col" data-tt="The highest rating this championship has ever achieved." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
+                                <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
+                                <th class="sortable tt" data-tt="Total number of title matches for this championship." onclick="sortBy('totalMatches', event)">Total ${getSortArrow('totalMatches')}</th>
+                                `}
                                 <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
                             </tr>
                         </thead>
@@ -1171,11 +1236,19 @@
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}</td>
                         <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
+                        ${viewMode === 'reign' ? `
                         <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
                         <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak}<span class="streak-text"> ${champ.streak === 1 ? 'match' : 'matches'}</span></td>
+                        ` : `
+                        <td class="rating-cell extra-col">${formatRating(champ.allTimePeak)}</td>
+                        <td class="rating-cell extra-col">${formatRating(champ.allTimeFloor)}</td>
+                        <td class="rating-cell extra-col">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</td>
+                        <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
+                        <td class="streak-cell">${champ.totalMatches || '—'}</td>
+                        `}
                         <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
@@ -1363,6 +1436,11 @@
             btn.textContent = isShowing ? '▶ Hide Extra Columns' : '◀ Show More Columns';
         }
 
+        function toggleViewMode() {
+            viewMode = viewMode === 'reign' ? 'alltime' : 'reign';
+            renderChampionships();
+        }
+
         function sortBy(column, event) {
             if (event) event.stopPropagation();
             
@@ -1431,6 +1509,26 @@
                     case 'rankChange':
                         valA = a.rankChange || 0;
                         valB = b.rankChange || 0;
+                        break;
+                    case 'allTimePeak':
+                        valA = a.allTimePeak || 0;
+                        valB = b.allTimePeak || 0;
+                        break;
+                    case 'allTimeFloor':
+                        valA = a.allTimeFloor || 0;
+                        valB = b.allTimeFloor || 0;
+                        break;
+                    case 'allTimeHighest':
+                        valA = a.allTimeHighest || 0;
+                        valB = b.allTimeHighest || 0;
+                        break;
+                    case 'allTimeLowest':
+                        valA = a.allTimeLowest || 0;
+                        valB = b.allTimeLowest || 0;
+                        break;
+                    case 'totalMatches':
+                        valA = a.totalMatches || 0;
+                        valB = b.totalMatches || 0;
                         break;
                     default:
                         valA = a.rank || 0;
