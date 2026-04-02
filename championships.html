@@ -1198,8 +1198,8 @@
                             <span class="view-toggle-label ${viewMode === 'alltime' ? 'active' : ''}">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
-                            ◀ Show More Columns
-                        </button>
+                     ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
+                    </button>
                     </div>
                     <table>
                         <thead>
