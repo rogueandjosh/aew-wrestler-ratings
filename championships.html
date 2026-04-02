@@ -237,6 +237,29 @@
             text-align: center;
         }
 
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .sort-arrow {
+            margin-left: 4px;
+            font-size: 0.7em;
+        }
+
+        .sort-arrow.inactive {
+            opacity: 0.3;
+        }
+
+        .sort-arrow.active {
+            color: #ffd700;
+            opacity: 1;
+        }
+
         .title-cell {
             font-weight: 600;
             cursor: pointer;
@@ -577,6 +600,11 @@
             .streak-text {
                 display: none;
             }
+
+            /* Hide extra columns toggle on mobile since they don't show anyway */
+            #toggleExtraCols {
+                display: none;
+            }
         }
 
         /* Tablet */
@@ -801,6 +829,7 @@
         let expandedRows = new Set();
         let tooltipsEnabled = true;
         let isNavigating = false;
+        let currentSort = { column: 'rank', direction: 'asc' };
 
         // ===== TITLE ICON SYSTEM =====
         const titleConfigs = {
@@ -1105,6 +1134,9 @@
                 }
             }
 
+            // Sort championships
+            const sortedChampionships = sortChampionships(championships);
+
             let html = `
                 <div class="table-container">
                     <div style="text-align: right; margin-bottom: 10px;">
@@ -1115,21 +1147,21 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="text-align: center;">#</th>
-                                <th>Title</th>
-                                <th class="tt" data-tt="This is the current rating of this championship. It must have been fought over in the last six weeks to appear on the rankings list.">Rating</th>
-                                <th class="tt extra-col" data-tt="The highest rating of this championship within the most recent reign.">Peak</th>
-                                <th class="tt extra-col" data-tt="The lowest rating of this championship within the most recent reign.">Floor</th>
-                                <th class="tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign.">Best Match</th>
-                                <th class="tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign.">Worst Match</th>
-                                <th class="tt" data-tt="The number of matches within the most recent reign. Note: reigns include the title winning match, so the first defense of a title would count as 2 in that streak.">Streak</th>
-                                <th class="tt" data-tt="This shows the change in ranking position compared to last week.">Δ Rank</th>
+                                <th class="sortable" style="text-align: center;" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
+                                <th class="sortable" onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th class="sortable tt" data-tt="This is the current rating of this championship. It must have been fought over in the last six weeks to appear on the rankings list." onclick="sortBy('rating', event)">Rating ${getSortArrow('rating')}</th>
+                                <th class="sortable tt extra-col" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
+                                <th class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
+                                <th class="sortable tt" data-tt="The number of matches within the most recent reign. Note: reigns include the title winning match, so the first defense of a title would count as 2 in that streak." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
+                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Rank ${getSortArrow('rankChange')}</th>
                             </tr>
                         </thead>
                         <tbody>
             `;
 
-            championships.forEach((champ, index) => {
+            sortedChampionships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
                 const titleIcon = getTitleIcon(champ.title, champ.rank, championships.length);
@@ -1329,6 +1361,86 @@
             const btn = document.getElementById('toggleExtraCols');
             const isShowing = document.body.classList.toggle('show-extra-cols');
             btn.textContent = isShowing ? '▶ Hide Extra Columns' : '◀ Show More Columns';
+        }
+
+        function sortBy(column, event) {
+            if (event) event.stopPropagation();
+            
+            // Toggle direction if same column, otherwise default to desc (highest first) except for rank/title
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                // Rank and title default to ascending, others to descending
+                currentSort.direction = (column === 'rank' || column === 'title') ? 'asc' : 'desc';
+            }
+            
+            renderChampionships();
+        }
+
+        function getSortArrow(column) {
+            if (currentSort.column !== column) {
+                return '<span class="sort-arrow inactive">⇅</span>';
+            }
+            return currentSort.direction === 'asc' 
+                ? '<span class="sort-arrow active">▲</span>' 
+                : '<span class="sort-arrow active">▼</span>';
+        }
+
+        function sortChampionships(championships) {
+            const sorted = [...championships];
+            const col = currentSort.column;
+            const dir = currentSort.direction === 'asc' ? 1 : -1;
+            
+            sorted.sort((a, b) => {
+                let valA, valB;
+                
+                switch(col) {
+                    case 'rank':
+                        valA = a.rank || 0;
+                        valB = b.rank || 0;
+                        break;
+                    case 'title':
+                        valA = a.title || '';
+                        valB = b.title || '';
+                        return dir * valA.localeCompare(valB);
+                    case 'rating':
+                        valA = a.rating || 0;
+                        valB = b.rating || 0;
+                        break;
+                    case 'peak':
+                        valA = a.peak || 0;
+                        valB = b.peak || 0;
+                        break;
+                    case 'floor':
+                        valA = a.floor || 0;
+                        valB = b.floor || 0;
+                        break;
+                    case 'highestMatch':
+                        valA = a.highestMatch || 0;
+                        valB = b.highestMatch || 0;
+                        break;
+                    case 'lowestMatch':
+                        valA = a.lowestMatch || 0;
+                        valB = b.lowestMatch || 0;
+                        break;
+                    case 'streak':
+                        valA = a.streak || 0;
+                        valB = b.streak || 0;
+                        break;
+                    case 'rankChange':
+                        valA = a.rankChange || 0;
+                        valB = b.rankChange || 0;
+                        break;
+                    default:
+                        valA = a.rank || 0;
+                        valB = b.rank || 0;
+                }
+                
+                return dir * (valA - valB);
+            });
+            
+            return sorted;
         }
 
         function toggleDroppedOut(event) {
