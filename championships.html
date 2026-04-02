@@ -1193,19 +1193,19 @@
                 <div class="table-container">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                         <div class="view-toggle-container">
-                            <span class="view-toggle-label ${viewMode === 'reign' ? 'active' : ''}">Current Reign</span>
+                            <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="Shows statistics for the most recent championship reign only.">Current Reign</span>
                             <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
-                            <span class="view-toggle-label ${viewMode === 'alltime' ? 'active' : ''}">All-Time</span>
+                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
-                        ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
-                    </button>
+                            ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
+                        </button>
                     </div>
                     <table>
                         <thead>
                             <tr>
-                                <th class="sortable" style="text-align: center;" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th class="sortable" onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
+                                <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Rating ${getSortArrow('rating')}</th>
                                 ${viewMode === 'reign' ? `
                                 <th class="sortable tt extra-col" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
@@ -1214,11 +1214,11 @@
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
                                 <th class="sortable tt" data-tt="The number of matches within the most recent reign." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
                                 ` : `
-                                <th class="sortable tt extra-col" data-tt="The highest rating this championship has ever achieved." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
-                                <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
-                                <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
-                                <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
-                                <th class="sortable tt" data-tt="Total number of title matches for this championship." onclick="sortBy('totalMatches', event)">Matches ${getSortArrow('totalMatches')}</th>
+                                <th class="sortable tt extra-col" data-tt="The highest rating this championship has ever achieved across all reigns." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had across all reigns." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
+                                <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
+                                <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
+                                <th class="sortable tt" data-tt="Total number of title matches for this championship across all reigns." onclick="sortBy('totalMatches', event)">Matches ${getSortArrow('totalMatches')}</th>
                                 `}
                                 <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
                             </tr>
@@ -1303,7 +1303,7 @@
                                             <span class="detail-label">Current Streak</span>
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
-                                        <div class="belt-display">
+                                        <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
                                             ${getTitleIcon(champ.title, 1, 10)}
                                         </div>
                                     </div>
@@ -1319,7 +1319,7 @@
             if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle tt" data-tt="Titles that were in the rankings last week but are no longer active this week." onclick="toggleDroppedOut(event)">
+                        <button class="dropped-out-toggle tt" data-tt="Titles that were ranked last week but have no matches this week and are now inactive." onclick="toggleDroppedOut(event)">
                             ▼ Dropped Out This Week (${droppedOutTitles.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
@@ -1384,7 +1384,7 @@
                                                         <span class="detail-label">Last Streak</span>
                                                         <span class="detail-value">${title.streak} ${title.streak === 1 ? 'match' : 'matches'}</span>
                                                     </div>
-                                                    <div class="belt-display">
+                                                    <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
                                                         ${getTitleIcon(title.title, 1, 10)}
                                                     </div>
                                                 </div>
