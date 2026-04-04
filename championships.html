@@ -1168,8 +1168,8 @@
             const sorted = sortCompetitors(titleData.competitors, titleName);
             
             return `
-                <div class="details-section competitors-section tt" data-tt="All-time top 5 competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">
-                    <h4>👤 Top Competitors</h4>
+                <div class="details-section competitors-section">
+                    <h4 class="tt" data-tt="All-time top 5 competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">👤 Top Competitors (All-Time)</h4>
                     <table class="competitors-table">
                         <thead>
                             <tr>
@@ -1413,8 +1413,8 @@
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
-                                    <div class="details-section tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">
-                                        <h4>📊 Most Recent Reign</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -1432,8 +1432,8 @@
                                             <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section tt" data-tt="This shows the statistics for all matches for this specific championship.">
-                                        <h4>🏆 All-Time</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
@@ -1451,8 +1451,8 @@
                                             <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section tt" data-tt="Some additional information about this championship.">
-                                        <h4>📈 Stats</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="Some additional information about this championship.">📈 Stats</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Total Title Matches</span>
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
