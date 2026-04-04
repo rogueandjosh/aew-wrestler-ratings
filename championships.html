@@ -535,6 +535,52 @@
             transform: scale(2);
         }
 
+        /* Competitors table in expanded section */
+        .competitors-section {
+            min-width: 200px;
+        }
+
+        .competitors-table {
+            width: 100%;
+            font-size: 0.85em;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .competitors-table th,
+        .competitors-table td {
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .competitors-table th {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+
+        .competitors-table th:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .competitors-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .competitors-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .competitors-table td:first-child {
+            font-weight: 500;
+        }
+
+        .competitors-table td:not(:first-child) {
+            text-align: center;
+            color: #ccc;
+        }
+
         /* Loading & Error States */
         .loading {
             text-align: center;
@@ -876,12 +922,14 @@
     <script>
         let championshipData = null;
         let archiveIndex = null;
+        let competitorData = null;
         let currentWeekValue = 'current';
         let expandedRows = new Set();
         let tooltipsEnabled = true;
         let isNavigating = false;
         let currentSort = { column: 'rank', direction: 'asc' };
         let viewMode = 'reign'; // 'reign' or 'alltime'
+        let competitorSort = {}; // Track sort state per title
 
         // ===== TITLE ICON SYSTEM =====
         const titleConfigs = {
@@ -1028,12 +1076,122 @@
         async function init() {
             try {
                 await loadArchiveIndex();
+                await loadCompetitorData();
                 await loadChampionshipData('current');
                 setupTooltips();
             } catch (error) {
                 console.error('Init error:', error);
                 document.getElementById('content').innerHTML = `<div class="error">Failed to load data: ${error.message}</div>`;
             }
+        }
+
+        async function loadCompetitorData() {
+            try {
+                const response = await fetch('championship-competitors.json');
+                if (response.ok) {
+                    competitorData = await response.json();
+                    console.log('✅ Loaded competitor data for', competitorData.titles?.length, 'titles');
+                }
+            } catch (error) {
+                console.log('⚠️ Could not load competitor data:', error);
+            }
+        }
+
+        function getCompetitorsForTitle(titleName) {
+            if (!competitorData || !competitorData.titles) return null;
+            return competitorData.titles.find(t => t.title === titleName);
+        }
+
+        function sortCompetitors(competitors, titleName) {
+            const sortState = competitorSort[titleName] || { column: 'matches', direction: 'desc' };
+            const sorted = [...competitors];
+            const dir = sortState.direction === 'asc' ? 1 : -1;
+            
+            sorted.sort((a, b) => {
+                let valA, valB;
+                switch(sortState.column) {
+                    case 'name':
+                        return dir * a.name.localeCompare(b.name);
+                    case 'matches':
+                        valA = a.matches || 0;
+                        valB = b.matches || 0;
+                        break;
+                    case 'avg':
+                        valA = a.avg || 0;
+                        valB = b.avg || 0;
+                        break;
+                    case 'high':
+                        valA = a.high || 0;
+                        valB = b.high || 0;
+                        break;
+                    default:
+                        valA = a.matches || 0;
+                        valB = b.matches || 0;
+                }
+                return dir * (valA - valB);
+            });
+            
+            return sorted.slice(0, 5); // Top 5
+        }
+
+        function sortCompetitorColumn(titleName, column, event) {
+            if (event) event.stopPropagation();
+            
+            const current = competitorSort[titleName] || { column: 'matches', direction: 'desc' };
+            
+            if (current.column === column) {
+                competitorSort[titleName] = { column, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+            } else {
+                // Default to desc for numbers, asc for name
+                competitorSort[titleName] = { column, direction: column === 'name' ? 'asc' : 'desc' };
+            }
+            
+            renderChampionships();
+        }
+
+        function getCompetitorSortArrow(titleName, column) {
+            const sortState = competitorSort[titleName] || { column: 'matches', direction: 'desc' };
+            if (sortState.column !== column) {
+                return '<span class="sort-arrow inactive">⇅</span>';
+            }
+            return sortState.direction === 'asc' 
+                ? '<span class="sort-arrow active">▲</span>' 
+                : '<span class="sort-arrow active">▼</span>';
+        }
+
+        function renderCompetitorsSection(titleName) {
+            const titleData = getCompetitorsForTitle(titleName);
+            if (!titleData || !titleData.competitors || titleData.competitors.length === 0) {
+                return '<div class="details-section"><h4>👤 Top Competitors</h4><p style="color: #888;">No competitor data available</p></div>';
+            }
+            
+            const sorted = sortCompetitors(titleData.competitors, titleName);
+            
+            return `
+                <div class="details-section competitors-section tt" data-tt="Top 5 competitors for this championship by selected sort. Click column headers to sort.">
+                    <h4>👤 Top Competitors</h4>
+                    <table class="competitors-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortCompetitorColumn('${titleName}', 'name', event)">Name ${getCompetitorSortArrow(titleName, 'name')}</th>
+                                <th class="sortable" onclick="sortCompetitorColumn('${titleName}', 'matches', event)">M ${getCompetitorSortArrow(titleName, 'matches')}</th>
+                                <th class="sortable" onclick="sortCompetitorColumn('${titleName}', 'avg', event)">Avg ${getCompetitorSortArrow(titleName, 'avg')}</th>
+                                <th class="sortable" onclick="sortCompetitorColumn('${titleName}', 'high', event)">Best ${getCompetitorSortArrow(titleName, 'high')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sorted.map(c => `
+                                <tr>
+                                    <td>${c.name}</td>
+                                    <td>${c.matches}</td>
+                                    <td>${c.avg.toFixed(2)}</td>
+                                    <td>${c.high.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         // ===== TOOLTIP SYSTEM =====
@@ -1307,6 +1465,7 @@
                                             ${getTitleIcon(champ.title, 1, 10)}
                                         </div>
                                     </div>
+                                    ${renderCompetitorsSection(champ.title)}
                                 </div>
                             </div>
                         </td>
