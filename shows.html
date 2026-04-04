@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Stats | AEW Wrestler Ratings</title>
+    <title>Show Stats - AEW Wrestler Ratings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="tooltips.css">
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ============================================
-           BASE STYLES - MATCHING INDEX.HTML
-           ============================================ */
-        *, *::before, *::after {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        h2.tt::after {
+            left: 0 !important;
+            transform: none !important;
+        }
+        h2.tt::before {
+            left: 30px !important;
+            transform: none !important;
+        }
+
         body {
-            font-family: 'Overlock', 'Arial', sans-serif;
+            font-family: 'Overlock', cursive;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
+            color: #fff;
             min-height: 100vh;
             padding: 20px;
         }
@@ -30,29 +37,19 @@
             margin: 0 auto;
         }
 
-        /* ============================================
-           HEADER - MATCHING INDEX.HTML
-           ============================================ */
+        /* Header */
         header {
             text-align: center;
             margin-bottom: 40px;
-            padding: 20px 60px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 15px;
-            border: 2px solid #ffd700;
-            position: relative;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
         }
 
         h1 {
-            color: #ffd700;
             font-size: 2.5em;
+            color: #ffd700;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        h1 a {
-            color: inherit;
-            text-decoration: none;
         }
 
         .subtitle {
@@ -60,108 +57,70 @@
             font-size: 1.1em;
         }
 
-        .page-subtitle {
-            color: #ffd700;
-            font-size: 1.3em;
-            margin-top: 15px;
-            font-weight: 700;
-        }
-
         /* Navigation Buttons */
-        .nav-buttons {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            display: flex;
-            gap: 10px;
-            z-index: 100;
+        .back-link {
+            display: inline-block;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-family: 'Overlock', cursive;
         }
 
-        .nav-btn {
+        .back-link:hover {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+
+        #tooltipToggle {
             cursor: pointer;
             background: none;
-            border: 2px solid #ffd700;
-            padding: 8px 16px;
-            border-radius: 8px;
+        }
+        #tooltipToggle:hover { background: rgba(255, 215, 0, 0.1) !important; }
+        #tooltipToggle:not(.active) { border-color: #888; color: #888; }
+        #tooltipToggle:not(.active):hover { border-color: #ffd700; color: #ffd700; }
+
+        /* Year Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .filter-section h2 {
             color: #ffd700;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 1.2em;
+            margin-bottom: 15px;
         }
 
-        .nav-btn:hover {
-            background: rgba(255, 215, 0, 0.2);
-            transform: scale(1.05);
-        }
-
-        /* Hamburger Menu */
-        .menu-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-        }
-
-        .menu-btn {
-            padding: 10px;
+        .filter-section select {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            font-size: 1em;
+            font-family: 'Overlock', cursive;
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 5px;
-            color: #ffd700;
+            color: #fff;
             cursor: pointer;
-            font-size: 1.5em;
-            line-height: 1;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .menu-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 5px;
+        .filter-section select:hover {
+            border-color: #ffd700;
+        }
+
+        .filter-section select option {
             background: #1a1a2e;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            min-width: 180px;
-            z-index: 1001;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            color: #fff;
         }
 
-        .menu-dropdown.show {
-            display: block;
-        }
-
-        .menu-dropdown a {
-            display: block;
-            padding: 12px 16px;
-            color: #ffd700;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.95em;
-        }
-
-        .menu-dropdown a:hover {
-            background: rgba(255, 215, 0, 0.2);
-        }
-
-        .menu-dropdown a.active {
-            background: rgba(255, 215, 0, 0.15);
-            border-left: 3px solid #ffd700;
-        }
-
-        /* ============================================
-           TABS - MATCHING INDEX.HTML DIVISION TABS
-           ============================================ */
+        /* Tabs */
         .tabs {
             display: flex;
             justify-content: center;
@@ -180,7 +139,7 @@
             transition: all 0.3s ease;
             font-size: 1em;
             font-weight: bold;
-            font-family: 'Overlock', 'Arial', sans-serif;
+            font-family: 'Overlock', cursive;
         }
 
         .tab:hover {
@@ -208,9 +167,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============================================
-           STATS SUMMARY - MATCHING INDEX.HTML
-           ============================================ */
+        /* Stats Summary */
         .stats-summary {
             display: flex;
             justify-content: center;
@@ -240,9 +197,7 @@
             font-size: 0.9em;
         }
 
-        /* ============================================
-           TABLE CONTAINER - MATCHING INDEX.HTML
-           ============================================ */
+        /* Table Container */
         .table-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
@@ -310,7 +265,7 @@
             color: #ffd700;
         }
 
-        /* Rating Colors - matching index.html */
+        /* Rating Colors */
         .rating-excellent { color: #4ade80; }
         .rating-great { color: #86efac; }
         .rating-good { color: #a3e635; }
@@ -318,9 +273,7 @@
         .rating-below { color: #fb923c; }
         .rating-poor { color: #f87171; }
 
-        /* ============================================
-           BREAKDOWN CARDS
-           ============================================ */
+        /* Breakdown Cards */
         .breakdown-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -339,13 +292,6 @@
             color: #ffd700;
             font-size: 1.1rem;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .breakdown-card .icon {
-            font-size: 1.3rem;
         }
 
         .breakdown-item {
@@ -367,15 +313,9 @@
             font-weight: 700;
         }
 
-        /* ============================================
-           BEST MATCH CARD
-           ============================================ */
+        /* Best Match Card */
         .best-match-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 20px 0;
         }
 
         .best-match-card .match-rating {
@@ -401,9 +341,7 @@
             color: #e0e0e0;
         }
 
-        /* ============================================
-           PPV/EVENT GRID
-           ============================================ */
+        /* Event Grid */
         .event-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -451,9 +389,7 @@
             font-size: 0.75rem;
         }
 
-        /* ============================================
-           STIPULATION LIST
-           ============================================ */
+        /* Stipulation List */
         .stip-list {
             display: flex;
             flex-direction: column;
@@ -498,29 +434,60 @@
             font-size: 0.75rem;
         }
 
-        /* ============================================
-           RESPONSIVE
-           ============================================ */
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: #b8b8b8;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-progress {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ffd700;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            header {
-                padding: 60px 20px 20px;
+            body {
+                padding: 10px;
             }
 
             h1 {
                 font-size: 1.8em;
             }
 
-            .nav-buttons {
-                position: static;
-                justify-content: center;
-                margin-bottom: 15px;
+            .subtitle {
+                font-size: 0.9em;
             }
 
-            .menu-container {
-                position: static;
-                display: flex;
-                justify-content: center;
-                margin-bottom: 15px;
+            .back-link {
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+
+            header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 6px;
             }
 
             .tabs {
@@ -565,14 +532,6 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            header {
-                padding: 50px 15px 15px;
-            }
-
             h1 {
                 font-size: 1.5em;
             }
@@ -592,29 +551,36 @@
     <div class="container">
         <!-- Header -->
         <header>
-            <!-- Navigation Buttons -->
-            <div class="nav-buttons">
-                <button onclick="goBack()" class="nav-btn">← Back</button>
-                <a href="index.html" class="nav-btn">🏠 Home</a>
+            <h1 style="cursor: pointer;" onclick="window.location.href='shows.html'" title="Reset to default">📺 Show Performance Stats</h1>
+            <p class="subtitle">How do wrestlers perform across different show types?</p>
+            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
+                <button onclick="goBack()" class="back-link" style="cursor: pointer; background: none;">
+                    ← Back
+                </button>
+                <a href="index.html" class="back-link">
+                    🏠 Home
+                </a>
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Toggle on/off to show extra info when hovering over elements">
+                    💡 Tooltips ON
+                </button>
             </div>
-
-            <!-- Hamburger Menu -->
-            <div class="menu-container">
-                <button id="menuBtn" class="menu-btn">☰</button>
-                <div id="menuDropdown" class="menu-dropdown">
-                    <a href="index.html">📊 Rankings</a>
-                    <a href="wrestler-stats.html">👤 Wrestler Stats</a>
-                    <a href="wrestler-compare.html">🥊 Compare Wrestlers</a>
-                    <a href="championships.html">🏆 Championships</a>
-                    <a href="shows.html" class="active">📺 Shows</a>
-                    <a href="#about">ℹ️ About</a>
-                </div>
-            </div>
-
-            <h1><a href="index.html" title="Return to current rankings">AEW Wrestler Ratings</a></h1>
-            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
-            <p class="page-subtitle">📺 Show Performance Stats</p>
         </header>
+
+        <!-- Year Filter -->
+        <section class="filter-section">
+            <h2 class="tt" data-tt="Filter all statistics to a specific year, or keep at 'All Years' to see all-time statistics." style="cursor: help;">Select Year</h2>
+            <select id="yearFilter">
+                <option value="ALL">All Years</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+            </select>
+        </section>
 
         <!-- Tab Navigation -->
         <div class="tabs">
@@ -624,8 +590,15 @@
             <button class="tab" data-tab="stips">Match Types</button>
         </div>
 
+        <!-- Loading State -->
+        <div id="loadingContainer" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading wrestler data...</p>
+            <p class="loading-progress" id="loadingProgress">0 / 0 wrestlers loaded</p>
+        </div>
+
         <!-- Weekly TV Tab -->
-        <div class="tab-content active" id="weekly">
+        <div class="tab-content active" id="weekly" style="display: none;">
             <div class="stats-summary">
                 <div class="stat-box">
                     <div class="stat-number" id="weekly-total-matches">--</div>
@@ -647,25 +620,25 @@
 
             <div class="breakdown-grid">
                 <div class="breakdown-card">
-                    <h4><span class="icon">📺</span> Dynamite</h4>
+                    <h4>Dynamite</h4>
                     <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dynamite-matches">--</span></div>
                     <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dynamite-avg">--</span></div>
                     <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="dynamite-best">--</span></div>
                 </div>
                 <div class="breakdown-card">
-                    <h4><span class="icon">💥</span> Collision</h4>
+                    <h4>Collision</h4>
                     <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="collision-matches">--</span></div>
                     <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="collision-avg">--</span></div>
                     <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="collision-best">--</span></div>
                 </div>
                 <div class="breakdown-card">
-                    <h4><span class="icon">🌙</span> Rampage</h4>
+                    <h4>Rampage</h4>
                     <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="rampage-matches">--</span></div>
                     <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="rampage-avg">--</span></div>
                     <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="rampage-best">--</span></div>
                 </div>
                 <div class="breakdown-card">
-                    <h4><span class="icon">🎬</span> Dark / Elevation</h4>
+                    <h4>Dark / Elevation</h4>
                     <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dark-matches">--</span></div>
                     <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dark-avg">--</span></div>
                     <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-great" id="dark-best">--</span></div>
@@ -673,13 +646,13 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title">Top Dynamite Performers</h3>
+                <h3 class="section-title tt" data-tt="Top performers on Dynamite, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Dynamite Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="dynamite-leaderboard"></tbody></table>
             </div>
 
             <div class="table-container">
-                <h3 class="section-title">Top Collision Performers</h3>
+                <h3 class="section-title tt" data-tt="Top performers on Collision, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Collision Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="collision-leaderboard"></tbody></table>
             </div>
@@ -695,17 +668,17 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title">🏆 Best PPV Match</h3>
-                <div class="best-match-card" id="best-ppv-match" style="border: none; margin: 0; padding: 20px 0;">
+                <h3 class="section-title tt" data-tt="The highest-rated PPV match based on Cagematch community ratings." style="cursor: help;">Best PPV Match</h3>
+                <div class="best-match-card" id="best-ppv-match">
                     <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
             </div>
 
-            <h3 class="section-title" style="margin-top: 20px;">PPV Performance by Event</h3>
+            <h3 class="section-title tt" data-tt="Performance breakdown for each PPV event, showing match count, average rating, and best match rating." style="cursor: help; margin-bottom: 20px;">PPV Performance by Event</h3>
             <div class="event-grid" id="ppv-grid"></div>
 
             <div class="table-container">
-                <h3 class="section-title">Top PPV Performers</h3>
+                <h3 class="section-title tt" data-tt="Top PPV performers ranked by average match rating. Minimum 3 PPV matches to qualify." style="cursor: help;">Top PPV Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="ppv-leaderboard"></tbody></table>
             </div>
@@ -719,11 +692,11 @@
                 <div class="stat-box"><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
             </div>
 
-            <h3 class="section-title">Special Event Performance</h3>
+            <h3 class="section-title tt" data-tt="Performance breakdown for special TV events like Grand Slam, Winter Is Coming, and Blood & Guts." style="cursor: help; margin-bottom: 20px;">Special Event Performance</h3>
             <div class="event-grid" id="specials-grid"></div>
 
             <div class="table-container">
-                <h3 class="section-title">Top Specials Performers</h3>
+                <h3 class="section-title tt" data-tt="Top performers on special events, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Specials Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="specials-leaderboard"></tbody></table>
             </div>
@@ -738,52 +711,83 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title">🏆 Best Stipulation Match</h3>
-                <div class="best-match-card" id="best-stip-match" style="border: none; margin: 0; padding: 20px 0;">
+                <h3 class="section-title tt" data-tt="The highest-rated stipulation match based on Cagematch community ratings." style="cursor: help;">Best Stipulation Match</h3>
+                <div class="best-match-card" id="best-stip-match">
                     <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
             </div>
 
-            <h3 class="section-title" style="margin-top: 20px;">Performance by Stipulation</h3>
+            <h3 class="section-title tt" data-tt="Performance breakdown by stipulation type, showing match count, average rating, and best match rating." style="cursor: help; margin-bottom: 20px;">Performance by Stipulation</h3>
             <div class="stip-list" id="stip-list"></div>
 
             <div class="table-container">
-                <h3 class="section-title">Top Stipulation Match Performers</h3>
+                <h3 class="section-title tt" data-tt="Top stipulation match performers ranked by average rating. Minimum 3 stipulation matches to qualify." style="cursor: help;">Top Stipulation Match Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="stip-leaderboard"></tbody></table>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer style="text-align: center; padding: 30px 20px; color: #888; font-size: 0.9em; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.2);">
-            <p>Data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700;">Cagematch.net</a> community ratings</p>
-            <p style="margin-top: 5px;">Built by <a href="https://www.reddit.com/user/RogueJoshg" target="_blank" style="color: #ffd700;">RogueJoshg</a></p>
-        </footer>
     </div>
 
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+    </footer>
+
+    <script src="tooltips.js"></script>
     <script>
+        // ===========================================
+        // CONFIGURATION
+        // ===========================================
+        
+        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End'];
+        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night'];
+        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'], dark: ['Dark', 'Elevation'] };
+
+        // ===========================================
+        // STATE
+        // ===========================================
+        
+        let allWrestlerData = [];
+        let selectedYear = 'ALL';
+        let showStats = { weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, ppv: {}, specials: {}, stipulations: {} };
+
         // ===========================================
         // NAVIGATION
         // ===========================================
         
         function goBack() {
-            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+            const referrer = document.referrer;
+            if (referrer && referrer.includes(window.location.origin)) {
                 window.history.back();
             } else {
                 window.location.href = 'index.html';
             }
         }
 
-        document.getElementById('menuBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.getElementById('menuDropdown').classList.toggle('show');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.menu-container')) {
-                document.getElementById('menuDropdown').classList.remove('show');
+        // ===========================================
+        // TOOLTIP FUNCTIONS
+        // ===========================================
+        
+        (function initTooltips() {
+            const stored = localStorage.getItem('aewTooltips');
+            const on = stored === null ? true : stored === 'true';
+            if (on) document.body.classList.add('tooltips-on');
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+                btn.classList.toggle('active', on);
             }
-        });
+        })();
+
+        function toggleTooltips() {
+            const on = document.body.classList.toggle('tooltips-on');
+            localStorage.setItem('aewTooltips', on);
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+                btn.classList.toggle('active', on);
+            }
+        }
 
         // ===========================================
         // TAB SWITCHING
@@ -799,14 +803,14 @@
         });
 
         // ===========================================
-        // CONFIGURATION
+        // YEAR FILTER
         // ===========================================
         
-        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End'];
-        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night'];
-        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'], dark: ['Dark', 'Elevation'] };
-
-        let showStats = { weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, ppv: {}, specials: {}, stipulations: {} };
+        document.getElementById('yearFilter').addEventListener('change', function() {
+            selectedYear = this.value;
+            processAllData();
+            renderAllTabs();
+        });
 
         // ===========================================
         // HELPERS
@@ -831,24 +835,60 @@
             return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
         }
 
+        function matchesYear(match) {
+            if (selectedYear === 'ALL') return true;
+            if (!match.date) return false;
+            return match.date.startsWith(selectedYear);
+        }
+
         // ===========================================
         // DATA PROCESSING
         // ===========================================
         
-        function processWrestlerData(wrestler) {
-            if (!wrestler.allMatches) return;
-            wrestler.allMatches.forEach(match => {
-                const category = categorizeEvent(match.event);
-                const matchData = { wrestler: wrestler.name, slug: wrestler.slug || createSlug(wrestler.name), rating: match.rating, event: match.event, date: match.date, matchType: match.matchType, stipulation: match.matchStipulation, stakes: match.stakes, opponents: match.opponents };
-                
-                if (category.type === 'weekly') showStats.weekly[category.name].push(matchData);
-                else if (category.type === 'ppv') { if (!showStats.ppv[category.name]) showStats.ppv[category.name] = []; showStats.ppv[category.name].push(matchData); }
-                else if (category.type === 'special') { if (!showStats.specials[category.name]) showStats.specials[category.name] = []; showStats.specials[category.name].push(matchData); }
-                
-                if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
-                    if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
-                    showStats.stipulations[match.matchStipulation].push(matchData);
-                }
+        function resetShowStats() {
+            showStats = { 
+                weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, 
+                ppv: {}, 
+                specials: {}, 
+                stipulations: {} 
+            };
+        }
+
+        function processAllData() {
+            resetShowStats();
+            allWrestlerData.forEach(wrestler => {
+                if (!wrestler.allMatches) return;
+                wrestler.allMatches.forEach(match => {
+                    if (!matchesYear(match)) return;
+                    
+                    const category = categorizeEvent(match.event);
+                    const matchData = { 
+                        wrestler: wrestler.name, 
+                        slug: wrestler.slug || createSlug(wrestler.name), 
+                        rating: match.rating, 
+                        event: match.event, 
+                        date: match.date, 
+                        matchType: match.matchType, 
+                        stipulation: match.matchStipulation, 
+                        stakes: match.stakes, 
+                        opponents: match.opponents 
+                    };
+                    
+                    if (category.type === 'weekly') {
+                        showStats.weekly[category.name].push(matchData);
+                    } else if (category.type === 'ppv') {
+                        if (!showStats.ppv[category.name]) showStats.ppv[category.name] = [];
+                        showStats.ppv[category.name].push(matchData);
+                    } else if (category.type === 'special') {
+                        if (!showStats.specials[category.name]) showStats.specials[category.name] = [];
+                        showStats.specials[category.name].push(matchData);
+                    }
+                    
+                    if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
+                        if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
+                        showStats.stipulations[match.matchStipulation].push(matchData);
+                    }
+                });
             });
         }
         
@@ -856,7 +896,8 @@
             const map = {};
             matches.forEach(m => {
                 if (!map[m.wrestler]) map[m.wrestler] = { name: m.wrestler, slug: m.slug, matches: 0, totalRating: 0, best: 0 };
-                map[m.wrestler].matches++; map[m.wrestler].totalRating += m.rating;
+                map[m.wrestler].matches++; 
+                map[m.wrestler].totalRating += m.rating;
                 if (m.rating > map[m.wrestler].best) map[m.wrestler].best = m.rating;
             });
             return Object.values(map).map(w => ({ ...w, avg: w.totalRating / w.matches })).filter(w => w.matches >= 3).sort((a, b) => b.avg - a.avg);
@@ -951,79 +992,78 @@
             renderLeaderboard('stip-leaderboard', calculateWrestlerStats(all));
         }
 
+        function renderAllTabs() {
+            renderWeeklyTab();
+            renderPPVTab();
+            renderSpecialsTab();
+            renderStipsTab();
+        }
+
         // ===========================================
         // DATA LOADING
         // ===========================================
         
         async function loadAllWrestlerData() {
+            const loadingContainer = document.getElementById('loadingContainer');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
             try {
+                // Get list of all wrestlers from statistics.json
                 const statsData = await (await fetch('data/statistics.json')).json();
                 const allWrestlers = [];
                 ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(div => {
-                    if (statsData[div]) statsData[div].forEach(w => { if (w.name) allWrestlers.push({ name: w.name, slug: createSlug(w.name) }); });
+                    if (statsData[div]) {
+                        statsData[div].forEach(w => { 
+                            if (w.name && !allWrestlers.find(x => x.name === w.name)) {
+                                allWrestlers.push({ name: w.name, slug: createSlug(w.name) }); 
+                            }
+                        });
+                    }
                 });
                 
-                const wrestlers = (await Promise.all(allWrestlers.slice(0, 100).map(async w => {
-                    try { const r = await fetch(`wrestlers/${w.slug}.json`); if (r.ok) return await r.json(); } catch (e) {}
-                    return null;
-                }))).filter(w => w !== null);
+                const total = allWrestlers.length;
+                let loaded = 0;
+                loadingProgress.textContent = `0 / ${total} wrestlers loaded`;
                 
-                wrestlers.forEach(processWrestlerData);
-                renderWeeklyTab(); renderPPVTab(); renderSpecialsTab(); renderStipsTab();
+                // Load all wrestler JSONs in batches for better performance
+                const batchSize = 50;
+                const results = [];
+                
+                for (let i = 0; i < allWrestlers.length; i += batchSize) {
+                    const batch = allWrestlers.slice(i, i + batchSize);
+                    const batchResults = await Promise.all(batch.map(async w => {
+                        try { 
+                            const r = await fetch(`wrestlers/${w.slug}.json`); 
+                            if (r.ok) return await r.json(); 
+                        } catch (e) {}
+                        return null;
+                    }));
+                    
+                    results.push(...batchResults);
+                    loaded += batch.length;
+                    loadingProgress.textContent = `${loaded} / ${total} wrestlers loaded`;
+                }
+                
+                allWrestlerData = results.filter(w => w !== null);
+                
+                // Process and render
+                processAllData();
+                renderAllTabs();
+                
+                // Hide loading, show content
+                loadingContainer.style.display = 'none';
+                document.getElementById('weekly').style.display = 'block';
+                
             } catch (error) {
                 console.error('Error loading data:', error);
-                loadDemoData();
+                loadingProgress.textContent = 'Error loading data. Please refresh.';
             }
         }
 
-        function loadDemoData() {
-            const demoWrestlers = [
-                { name: "Adam Page", slug: "adam-page", allMatches: [
-                    { event: "Dynamite", rating: 7.5, matchType: "One on One", matchStipulation: "None", opponents: ["MJF"], date: "2025-01-15" },
-                    { event: "Dynamite", rating: 8.2, matchType: "One on One", matchStipulation: "None", opponents: ["Kenny Omega"], date: "2025-02-12" },
-                    { event: "Dynamite", rating: 7.8, matchType: "One on One", matchStipulation: "None", opponents: ["Swerve Strickland"], date: "2025-03-05" },
-                    { event: "Collision", rating: 7.1, matchType: "Tag Team", matchStipulation: "None", opponents: ["FTR"], date: "2025-01-20" },
-                    { event: "Full Gear '25", rating: 9.2, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Swerve Strickland"], date: "2025-11-22" },
-                    { event: "Revolution '26", rating: 8.98, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["MJF"], date: "2026-03-15" },
-                    { event: "Double or Nothing '25", rating: 9.63, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-05-25" },
-                    { event: "Winter Is Coming '25", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Swerve Strickland"], date: "2025-12-10" },
-                ]},
-                { name: "Kenny Omega", slug: "kenny-omega", allMatches: [
-                    { event: "Dynamite", rating: 8.5, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-03-01" },
-                    { event: "Dynamite", rating: 8.1, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-02-12" },
-                    { event: "Dynamite", rating: 7.9, matchType: "Tag Team", matchStipulation: "None", opponents: ["The Young Bucks"], date: "2025-04-02" },
-                    { event: "Full Gear '25", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-11-22" },
-                    { event: "Collision", rating: 7.8, matchType: "Tag Team", matchStipulation: "None", opponents: ["FTR"], date: "2025-02-15" },
-                ]},
-                { name: "MJF", slug: "mjf", allMatches: [
-                    { event: "Dynamite", rating: 7.9, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-04-02" },
-                    { event: "Dynamite", rating: 7.5, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-01-15" },
-                    { event: "Dynamite", rating: 8.0, matchType: "One on One", matchStipulation: "None", opponents: ["Samoa Joe"], date: "2025-05-14" },
-                    { event: "Revolution '26", rating: 8.98, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2026-03-15" },
-                    { event: "All Out '25", rating: 8.7, matchType: "One on One", matchStipulation: "None", opponents: ["Samoa Joe"], date: "2025-09-20" },
-                ]},
-                { name: "Will Ospreay", slug: "will-ospreay", allMatches: [
-                    { event: "Dynamite", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kenny Omega"], date: "2025-03-01" },
-                    { event: "Dynamite", rating: 8.7, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-06-04" },
-                    { event: "Dynamite", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Swerve Strickland"], date: "2025-07-09" },
-                    { event: "Double or Nothing '25", rating: 9.63, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-05-25" },
-                    { event: "Forbidden Door '25", rating: 9.4, matchType: "One on One", matchStipulation: "None", opponents: ["Shingo Takagi"], date: "2025-08-24" },
-                    { event: "Collision", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-05-10" },
-                ]},
-                { name: "Swerve Strickland", slug: "swerve-strickland", allMatches: [
-                    { event: "Dynamite", rating: 7.6, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-06-11" },
-                    { event: "Dynamite", rating: 7.8, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-03-05" },
-                    { event: "Dynamite", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-07-09" },
-                    { event: "Full Gear '25", rating: 9.2, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2025-11-22" },
-                    { event: "Winter Is Coming '25", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Adam Page"], date: "2025-12-10" },
-                    { event: "Grand Slam '25", rating: 8.1, matchType: "One on One", matchStipulation: "Ladder Match", opponents: ["Hangman Page"], date: "2025-09-25" },
-                ]}
-            ];
-            
-            demoWrestlers.forEach(processWrestlerData);
-            renderWeeklyTab(); renderPPVTab(); renderSpecialsTab(); renderStipsTab();
-        }
-
+        // ===========================================
+        // INITIALIZATION
+        // ===========================================
+        
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
     </script>
 </body>
