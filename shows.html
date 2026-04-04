@@ -4,259 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show Stats | AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #FFD700;
-            --gold-dim: #B8960F;
-            --dark-blue: #1a1a2e;
-            --darker-blue: #0f0f1a;
-            --card-bg: #16213e;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border-color: rgba(255, 215, 0, 0.3);
-            --rating-excellent: #00ff88;
-            --rating-great: #7fff00;
-            --rating-good: #ffd700;
-            --rating-average: #ff8c00;
-            --rating-poor: #ff4444;
-        }
-
-        * {
+        /* ============================================
+           BASE STYLES - MATCHING INDEX.HTML
+           ============================================ */
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: 'Overlock', sans-serif;
-            background: linear-gradient(135deg, var(--darker-blue) 0%, var(--dark-blue) 100%);
-            color: var(--text-primary);
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
             min-height: 100vh;
-            padding-bottom: 40px;
-        }
-
-        /* Header */
-        .header {
-            background: var(--card-bg);
-            border-bottom: 2px solid var(--gold);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .header h1 {
-            color: var(--gold);
-            font-size: 1.5rem;
-            font-weight: 900;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--gold);
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
             padding: 20px;
         }
 
-        /* Page Title */
-        .page-title {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           HEADER - MATCHING INDEX.HTML
+           ============================================ */
+        header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            padding: 20px 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            position: relative;
         }
 
-        .page-title h2 {
-            color: var(--gold);
-            font-size: 2rem;
-            font-weight: 900;
-            margin-bottom: 8px;
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .page-title p {
-            color: var(--text-secondary);
-            font-size: 1rem;
+        h1 a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        /* Tab Navigation */
-        .tab-nav {
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1.1em;
+        }
+
+        .page-subtitle {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-top: 15px;
+            font-weight: 700;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            cursor: pointer;
+            background: none;
+            border: 2px solid #ffd700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Hamburger Menu */
+        .menu-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        .menu-btn {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            color: #ffd700;
+            cursor: pointer;
+            font-size: 1.5em;
+            line-height: 1;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            min-width: 180px;
+            z-index: 1001;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-dropdown a {
+            display: block;
+            padding: 12px 16px;
+            color: #ffd700;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+
+        .menu-dropdown a:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .menu-dropdown a.active {
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 3px solid #ffd700;
+        }
+
+        /* ============================================
+           TABS - MATCHING INDEX.HTML DIVISION TABS
+           ============================================ */
+        .tabs {
             display: flex;
             justify-content: center;
-            gap: 5px;
-            margin-bottom: 25px;
+            gap: 10px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
-        .tab-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 12px 24px;
-            font-family: 'Overlock', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
+        .tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 12px 25px;
             border-radius: 8px;
-            transition: all 0.2s;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: bold;
+            font-family: 'Overlock', 'Arial', sans-serif;
         }
 
-        .tab-btn:hover {
-            border-color: var(--gold);
-            color: var(--gold);
+        .tab:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
         }
 
-        .tab-btn.active {
-            background: var(--gold);
-            color: var(--dark-blue);
-            border-color: var(--gold);
+        .tab.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
         }
 
-        /* Tab Content */
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Stats Summary Cards */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           STATS SUMMARY - MATCHING INDEX.HTML
+           ============================================ */
         .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ffd700;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px 25px;
             text-align: center;
+            min-width: 140px;
         }
 
-        .stat-card .stat-value {
-            color: var(--gold);
-            font-size: 2rem;
-            font-weight: 900;
+        .stat-number {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
         }
 
-        .stat-card .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
+        .stat-label {
+            color: #b8b8b8;
             margin-top: 5px;
+            font-size: 0.9em;
         }
 
-        /* Leaderboard Section */
-        .section-title {
-            color: var(--gold);
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* Leaderboard Table */
-        .leaderboard {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            overflow: hidden;
+        /* ============================================
+           TABLE CONTAINER - MATCHING INDEX.HTML
+           ============================================ */
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
             margin-bottom: 30px;
         }
 
-        .leaderboard-header {
-            display: grid;
-            grid-template-columns: 50px 1fr 100px 80px 100px;
-            padding: 12px 15px;
-            background: rgba(255, 215, 0, 0.1);
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border-color);
+        .section-title {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .leaderboard-row {
-            display: grid;
-            grid-template-columns: 50px 1fr 100px 80px 100px;
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            align-items: center;
-            transition: background 0.2s;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .leaderboard-row:hover {
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:hover {
             background: rgba(255, 215, 0, 0.05);
         }
 
-        .leaderboard-row:last-child {
-            border-bottom: none;
-        }
-
         .rank {
-            font-weight: 900;
-            color: var(--gold);
+            width: 50px;
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.1em;
+            text-align: center;
         }
 
         .rank.top3 {
-            font-size: 1.1rem;
+            font-size: 1.2em;
         }
 
-        .wrestler-name {
-            font-weight: 700;
+        .name {
+            font-weight: bold;
+            color: #fff;
         }
 
-        .wrestler-name a {
-            color: var(--text-primary);
+        .name a {
+            color: #fff;
             text-decoration: none;
             transition: color 0.2s;
         }
 
-        .wrestler-name a:hover {
-            color: var(--gold);
+        .name a:hover {
+            color: #ffd700;
         }
 
-        .avg-rating {
-            font-weight: 700;
-        }
+        /* Rating Colors - matching index.html */
+        .rating-excellent { color: #4ade80; }
+        .rating-great { color: #86efac; }
+        .rating-good { color: #a3e635; }
+        .rating-average { color: #fbbf24; }
+        .rating-below { color: #fb923c; }
+        .rating-poor { color: #f87171; }
 
-        .matches-count {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .best-rating {
-            font-weight: 700;
-        }
-
-        /* Rating Colors */
-        .rating-9plus { color: var(--rating-excellent); }
-        .rating-8plus { color: var(--rating-great); }
-        .rating-7plus { color: var(--rating-good); }
-        .rating-6plus { color: var(--rating-average); }
-        .rating-below6 { color: var(--rating-poor); }
-
-        /* Match Type Breakdown */
+        /* ============================================
+           BREAKDOWN CARDS
+           ============================================ */
         .breakdown-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -265,14 +329,14 @@
         }
 
         .breakdown-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 10px;
             padding: 20px;
         }
 
         .breakdown-card h4 {
-            color: var(--gold);
+            color: #ffd700;
             font-size: 1.1rem;
             margin-bottom: 15px;
             display: flex;
@@ -280,7 +344,7 @@
             gap: 8px;
         }
 
-        .breakdown-card h4 .icon {
+        .breakdown-card .icon {
             font-size: 1.3rem;
         }
 
@@ -296,119 +360,128 @@
         }
 
         .breakdown-item .label {
-            color: var(--text-secondary);
+            color: #b8b8b8;
         }
 
         .breakdown-item .value {
             font-weight: 700;
         }
 
-        /* Best Match Card */
+        /* ============================================
+           BEST MATCH CARD
+           ============================================ */
         .best-match-card {
-            background: var(--card-bg);
-            border: 2px solid var(--gold);
-            border-radius: 10px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 30px;
         }
 
         .best-match-card .match-rating {
             font-size: 2.5rem;
             font-weight: 900;
-            color: var(--rating-excellent);
             margin-bottom: 10px;
         }
 
         .best-match-card .match-event {
             font-size: 1.2rem;
             font-weight: 700;
-            color: var(--gold);
+            color: #ffd700;
             margin-bottom: 5px;
         }
 
         .best-match-card .match-details {
-            color: var(--text-secondary);
+            color: #b8b8b8;
             font-size: 0.95rem;
         }
 
         .best-match-card .match-participants {
             margin-top: 10px;
-            color: var(--text-primary);
+            color: #e0e0e0;
         }
 
-        /* PPV Grid */
-        .ppv-grid {
+        /* ============================================
+           PPV/EVENT GRID
+           ============================================ */
+        .event-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
 
-        .ppv-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+        .event-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 10px;
             padding: 15px;
             transition: all 0.2s;
         }
 
-        .ppv-card:hover {
-            border-color: var(--gold);
+        .event-card:hover {
+            border-color: #ffd700;
             transform: translateY(-2px);
         }
 
-        .ppv-card .ppv-name {
-            color: var(--gold);
+        .event-card .event-name {
+            color: #ffd700;
             font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 10px;
         }
 
-        .ppv-card .ppv-stats {
+        .event-card .event-stats {
             display: flex;
             justify-content: space-between;
             gap: 10px;
         }
 
-        .ppv-card .ppv-stat {
+        .event-card .event-stat {
             text-align: center;
         }
 
-        .ppv-card .ppv-stat-value {
+        .event-card .event-stat-value {
             font-weight: 700;
             font-size: 1.2rem;
         }
 
-        .ppv-card .ppv-stat-label {
-            color: var(--text-secondary);
+        .event-card .event-stat-label {
+            color: #b8b8b8;
             font-size: 0.75rem;
         }
 
-        /* Stipulation Stats */
+        /* ============================================
+           STIPULATION LIST
+           ============================================ */
         .stip-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-bottom: 30px;
         }
 
         .stip-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 8px;
             padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .stip-item .stip-name {
             font-weight: 700;
+            color: #fff;
+            min-width: 200px;
         }
 
         .stip-item .stip-stats {
             display: flex;
-            gap: 20px;
-            font-size: 0.9rem;
+            gap: 25px;
         }
 
         .stip-item .stip-stat {
@@ -417,460 +490,345 @@
 
         .stip-item .stip-stat-value {
             font-weight: 700;
-            color: var(--gold);
+            color: #ffd700;
         }
 
         .stip-item .stip-stat-label {
-            color: var(--text-secondary);
+            color: #b8b8b8;
             font-size: 0.75rem;
         }
 
-        /* Responsive */
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.2rem;
+            header {
+                padding: 60px 20px 20px;
             }
 
-            .page-title h2 {
-                font-size: 1.5rem;
+            h1 {
+                font-size: 1.8em;
             }
 
-            .tab-btn {
-                padding: 10px 16px;
-                font-size: 0.9rem;
+            .nav-buttons {
+                position: static;
+                justify-content: center;
+                margin-bottom: 15px;
             }
 
-            .leaderboard-header,
-            .leaderboard-row {
-                grid-template-columns: 40px 1fr 70px 60px;
-                font-size: 0.85rem;
+            .menu-container {
+                position: static;
+                display: flex;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
+            .stats-summary {
+                gap: 15px;
+            }
+
+            .stat-box {
+                min-width: 100px;
+                padding: 12px 15px;
+            }
+
+            .stat-number {
+                font-size: 1.5em;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+
+            th, td {
                 padding: 10px;
+                font-size: 0.9em;
             }
 
-            .leaderboard-header .best-col,
-            .leaderboard-row .best-rating {
-                display: none;
+            .stip-item {
+                flex-direction: column;
+                text-align: center;
             }
 
-            .stat-card .stat-value {
-                font-size: 1.5rem;
+            .stip-item .stip-name {
+                min-width: auto;
             }
         }
 
         @media (max-width: 480px) {
-            .tab-nav {
-                gap: 3px;
+            body {
+                padding: 10px;
             }
 
-            .tab-btn {
+            header {
+                padding: 50px 15px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .tab {
                 padding: 8px 12px;
-                font-size: 0.8rem;
+                font-size: 0.85em;
             }
 
-            .leaderboard-header,
-            .leaderboard-row {
-                grid-template-columns: 35px 1fr 65px;
-            }
-
-            .leaderboard-header .matches-col,
-            .leaderboard-row .matches-count {
+            .hide-mobile {
                 display: none;
             }
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 40px;
-        }
-
-        .footer a {
-            color: var(--gold);
-            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <h1>AEW Wrestler Ratings</h1>
-        <nav class="nav-links">
-            <a href="index.html">Rankings</a>
-            <a href="wrestler-stats.html">Wrestler Stats</a>
-            <a href="wrestler-compare.html">Compare</a>
-            <a href="championships.html">Championships</a>
-            <a href="shows.html" style="color: var(--gold);">Shows</a>
-            <a href="about.html">About</a>
-        </nav>
-    </header>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <button onclick="goBack()" class="nav-btn">← Back</button>
+                <a href="index.html" class="nav-btn">🏠 Home</a>
+            </div>
 
-    <main class="container">
-        <!-- Page Title -->
-        <div class="page-title">
-            <h2>Show Performance Stats</h2>
-            <p>How do wrestlers perform across different show types?</p>
-        </div>
+            <!-- Hamburger Menu -->
+            <div class="menu-container">
+                <button id="menuBtn" class="menu-btn">☰</button>
+                <div id="menuDropdown" class="menu-dropdown">
+                    <a href="index.html">📊 Rankings</a>
+                    <a href="wrestler-stats.html">👤 Wrestler Stats</a>
+                    <a href="wrestler-compare.html">🥊 Compare Wrestlers</a>
+                    <a href="championships.html">🏆 Championships</a>
+                    <a href="shows.html" class="active">📺 Shows</a>
+                    <a href="#about">ℹ️ About</a>
+                </div>
+            </div>
+
+            <h1><a href="index.html" title="Return to current rankings">AEW Wrestler Ratings</a></h1>
+            <p class="subtitle">Fan-made ratings based on match quality from Cagematch.net</p>
+            <p class="page-subtitle">📺 Show Performance Stats</p>
+        </header>
 
         <!-- Tab Navigation -->
-        <div class="tab-nav">
-            <button class="tab-btn active" data-tab="weekly">Weekly TV</button>
-            <button class="tab-btn" data-tab="ppv">PPVs</button>
-            <button class="tab-btn" data-tab="specials">Specials</button>
-            <button class="tab-btn" data-tab="stips">Match Types</button>
+        <div class="tabs">
+            <button class="tab active" data-tab="weekly">Weekly TV</button>
+            <button class="tab" data-tab="ppv">PPVs</button>
+            <button class="tab" data-tab="specials">Specials</button>
+            <button class="tab" data-tab="stips">Match Types</button>
         </div>
 
         <!-- Weekly TV Tab -->
         <div class="tab-content active" id="weekly">
             <div class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-value" id="weekly-total-matches">--</div>
+                <div class="stat-box">
+                    <div class="stat-number" id="weekly-total-matches">--</div>
                     <div class="stat-label">Total Matches</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="weekly-avg-rating">--</div>
+                <div class="stat-box">
+                    <div class="stat-number" id="weekly-avg-rating">--</div>
                     <div class="stat-label">Average Rating</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="weekly-9plus">--</div>
-                    <div class="stat-label">9+ Rated Matches</div>
+                <div class="stat-box">
+                    <div class="stat-number" id="weekly-9plus">--</div>
+                    <div class="stat-label">9+ Matches</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="weekly-wrestlers">--</div>
-                    <div class="stat-label">Wrestlers Tracked</div>
+                <div class="stat-box">
+                    <div class="stat-number" id="weekly-wrestlers">--</div>
+                    <div class="stat-label">Wrestlers</div>
                 </div>
             </div>
 
             <div class="breakdown-grid">
                 <div class="breakdown-card">
                     <h4><span class="icon">📺</span> Dynamite</h4>
-                    <div class="breakdown-item">
-                        <span class="label">Total Matches</span>
-                        <span class="value" id="dynamite-matches">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Average Rating</span>
-                        <span class="value" id="dynamite-avg">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Best Rating</span>
-                        <span class="value rating-9plus" id="dynamite-best">--</span>
-                    </div>
+                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dynamite-matches">--</span></div>
+                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dynamite-avg">--</span></div>
+                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="dynamite-best">--</span></div>
                 </div>
-
                 <div class="breakdown-card">
                     <h4><span class="icon">💥</span> Collision</h4>
-                    <div class="breakdown-item">
-                        <span class="label">Total Matches</span>
-                        <span class="value" id="collision-matches">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Average Rating</span>
-                        <span class="value" id="collision-avg">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Best Rating</span>
-                        <span class="value rating-9plus" id="collision-best">--</span>
-                    </div>
+                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="collision-matches">--</span></div>
+                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="collision-avg">--</span></div>
+                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="collision-best">--</span></div>
                 </div>
-
                 <div class="breakdown-card">
                     <h4><span class="icon">🌙</span> Rampage</h4>
-                    <div class="breakdown-item">
-                        <span class="label">Total Matches</span>
-                        <span class="value" id="rampage-matches">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Average Rating</span>
-                        <span class="value" id="rampage-avg">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Best Rating</span>
-                        <span class="value rating-9plus" id="rampage-best">--</span>
-                    </div>
+                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="rampage-matches">--</span></div>
+                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="rampage-avg">--</span></div>
+                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="rampage-best">--</span></div>
                 </div>
-
                 <div class="breakdown-card">
                     <h4><span class="icon">🎬</span> Dark / Elevation</h4>
-                    <div class="breakdown-item">
-                        <span class="label">Total Matches</span>
-                        <span class="value" id="dark-matches">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Average Rating</span>
-                        <span class="value" id="dark-avg">--</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="label">Best Rating</span>
-                        <span class="value rating-8plus" id="dark-best">--</span>
-                    </div>
+                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dark-matches">--</span></div>
+                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dark-avg">--</span></div>
+                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-great" id="dark-best">--</span></div>
                 </div>
             </div>
 
-            <h3 class="section-title">Top Dynamite Performers (by Average Rating)</h3>
-            <div class="leaderboard" id="dynamite-leaderboard">
-                <div class="leaderboard-header">
-                    <span>#</span>
-                    <span>Wrestler</span>
-                    <span>Avg Rating</span>
-                    <span class="matches-col">Matches</span>
-                    <span class="best-col">Best</span>
-                </div>
-                <!-- Rows populated by JS -->
+            <div class="table-container">
+                <h3 class="section-title">Top Dynamite Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="dynamite-leaderboard"></tbody></table>
             </div>
 
-            <h3 class="section-title">Top Collision Performers</h3>
-            <div class="leaderboard" id="collision-leaderboard">
-                <div class="leaderboard-header">
-                    <span>#</span>
-                    <span>Wrestler</span>
-                    <span>Avg Rating</span>
-                    <span class="matches-col">Matches</span>
-                    <span class="best-col">Best</span>
-                </div>
-                <!-- Rows populated by JS -->
+            <div class="table-container">
+                <h3 class="section-title">Top Collision Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="collision-leaderboard"></tbody></table>
             </div>
         </div>
 
         <!-- PPV Tab -->
         <div class="tab-content" id="ppv">
             <div class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-value" id="ppv-total-matches">--</div>
-                    <div class="stat-label">Total PPV Matches</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="ppv-avg-rating">--</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="ppv-9plus">--</div>
-                    <div class="stat-label">9+ Rated Matches</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="ppv-events">--</div>
-                    <div class="stat-label">PPV Events</div>
+                <div class="stat-box"><div class="stat-number" id="ppv-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                <div class="stat-box"><div class="stat-number" id="ppv-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box"><div class="stat-number" id="ppv-9plus">--</div><div class="stat-label">9+ Matches</div></div>
+                <div class="stat-box"><div class="stat-number" id="ppv-events">--</div><div class="stat-label">PPV Events</div></div>
+            </div>
+
+            <div class="table-container">
+                <h3 class="section-title">🏆 Best PPV Match</h3>
+                <div class="best-match-card" id="best-ppv-match" style="border: none; margin: 0; padding: 20px 0;">
+                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
             </div>
 
-            <h3 class="section-title">Best PPV Match</h3>
-            <div class="best-match-card" id="best-ppv-match">
-                <div class="match-rating">--</div>
-                <div class="match-event">Loading...</div>
-                <div class="match-details">--</div>
-                <div class="match-participants">--</div>
-            </div>
+            <h3 class="section-title" style="margin-top: 20px;">PPV Performance by Event</h3>
+            <div class="event-grid" id="ppv-grid"></div>
 
-            <h3 class="section-title">PPV Performance by Event</h3>
-            <div class="ppv-grid" id="ppv-grid">
-                <!-- PPV cards populated by JS -->
-            </div>
-
-            <h3 class="section-title">Top PPV Performers</h3>
-            <div class="leaderboard" id="ppv-leaderboard">
-                <div class="leaderboard-header">
-                    <span>#</span>
-                    <span>Wrestler</span>
-                    <span>Avg Rating</span>
-                    <span class="matches-col">Matches</span>
-                    <span class="best-col">Best</span>
-                </div>
-                <!-- Rows populated by JS -->
+            <div class="table-container">
+                <h3 class="section-title">Top PPV Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="ppv-leaderboard"></tbody></table>
             </div>
         </div>
 
         <!-- Specials Tab -->
         <div class="tab-content" id="specials">
             <div class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-value" id="specials-total-matches">--</div>
-                    <div class="stat-label">Total Matches</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="specials-avg-rating">--</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="specials-events">--</div>
-                    <div class="stat-label">Special Events</div>
-                </div>
+                <div class="stat-box"><div class="stat-number" id="specials-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                <div class="stat-box"><div class="stat-number" id="specials-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box"><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
             </div>
 
             <h3 class="section-title">Special Event Performance</h3>
-            <div class="ppv-grid" id="specials-grid">
-                <!-- Specials cards populated by JS -->
-            </div>
+            <div class="event-grid" id="specials-grid"></div>
 
-            <h3 class="section-title">Top Specials Performers</h3>
-            <div class="leaderboard" id="specials-leaderboard">
-                <div class="leaderboard-header">
-                    <span>#</span>
-                    <span>Wrestler</span>
-                    <span>Avg Rating</span>
-                    <span class="matches-col">Matches</span>
-                    <span class="best-col">Best</span>
-                </div>
-                <!-- Rows populated by JS -->
+            <div class="table-container">
+                <h3 class="section-title">Top Specials Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="specials-leaderboard"></tbody></table>
             </div>
         </div>
 
         <!-- Match Types Tab -->
         <div class="tab-content" id="stips">
             <div class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-value" id="stip-total">--</div>
-                    <div class="stat-label">Stipulation Matches</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="stip-avg">--</div>
-                    <div class="stat-label">Avg Stip Rating</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="stip-types">--</div>
-                    <div class="stat-label">Unique Stipulations</div>
+                <div class="stat-box"><div class="stat-number" id="stip-total">--</div><div class="stat-label">Stip Matches</div></div>
+                <div class="stat-box"><div class="stat-number" id="stip-avg">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box"><div class="stat-number" id="stip-types">--</div><div class="stat-label">Stipulation Types</div></div>
+            </div>
+
+            <div class="table-container">
+                <h3 class="section-title">🏆 Best Stipulation Match</h3>
+                <div class="best-match-card" id="best-stip-match" style="border: none; margin: 0; padding: 20px 0;">
+                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
             </div>
 
-            <h3 class="section-title">Best Stipulation Match</h3>
-            <div class="best-match-card" id="best-stip-match">
-                <div class="match-rating">--</div>
-                <div class="match-event">Loading...</div>
-                <div class="match-details">--</div>
-                <div class="match-participants">--</div>
-            </div>
+            <h3 class="section-title" style="margin-top: 20px;">Performance by Stipulation</h3>
+            <div class="stip-list" id="stip-list"></div>
 
-            <h3 class="section-title">Performance by Stipulation</h3>
-            <div class="stip-list" id="stip-list">
-                <!-- Stipulation items populated by JS -->
-            </div>
-
-            <h3 class="section-title">Top Stipulation Match Performers</h3>
-            <div class="leaderboard" id="stip-leaderboard">
-                <div class="leaderboard-header">
-                    <span>#</span>
-                    <span>Wrestler</span>
-                    <span>Avg Rating</span>
-                    <span class="matches-col">Matches</span>
-                    <span class="best-col">Best</span>
-                </div>
-                <!-- Rows populated by JS -->
+            <div class="table-container">
+                <h3 class="section-title">Top Stipulation Match Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="stip-leaderboard"></tbody></table>
             </div>
         </div>
-    </main>
 
-    <footer class="footer">
-        <p>Data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a> community ratings</p>
-        <p>Built by <a href="https://www.reddit.com/user/RogueJoshg" target="_blank">RogueJoshg</a></p>
-    </footer>
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 30px 20px; color: #888; font-size: 0.9em; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.2);">
+            <p>Data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700;">Cagematch.net</a> community ratings</p>
+            <p style="margin-top: 5px;">Built by <a href="https://www.reddit.com/user/RogueJoshg" target="_blank" style="color: #ffd700;">RogueJoshg</a></p>
+        </footer>
+    </div>
 
     <script>
+        // ===========================================
+        // NAVIGATION
+        // ===========================================
+        
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.getElementById('menuBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('menuDropdown').classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.menu-container')) {
+                document.getElementById('menuDropdown').classList.remove('show');
+            }
+        });
+
+        // ===========================================
+        // TAB SWITCHING
+        // ===========================================
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
         // ===========================================
         // CONFIGURATION
         // ===========================================
         
-        // PPV names to identify (add year suffix pattern)
-        const PPV_NAMES = [
-            'Revolution', 'Double or Nothing', 'Forbidden Door', 
-            'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End'
-        ];
-        
-        // Special events (not standard PPVs, not weekly)
-        const SPECIAL_NAMES = [
-            'Winter Is Coming', 'Grand Slam', 'Blood and Guts', 
-            'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts',
-            'Maximum Carnage', 'Bash at the Beach', 'Beach Break',
-            'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night'
-        ];
-        
-        // Weekly show identifiers
-        const WEEKLY_SHOWS = {
-            dynamite: ['Dynamite'],
-            collision: ['Collision'],
-            rampage: ['Rampage'],
-            dark: ['Dark', 'Elevation']
-        };
+        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End'];
+        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night'];
+        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'], dark: ['Dark', 'Elevation'] };
+
+        let showStats = { weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, ppv: {}, specials: {}, stipulations: {} };
 
         // ===========================================
-        // DATA STORAGE
-        // ===========================================
-        
-        let allWrestlerData = [];
-        let showStats = {
-            weekly: { dynamite: [], collision: [], rampage: [], dark: [] },
-            ppv: {},
-            specials: {},
-            stipulations: {}
-        };
-
-        // ===========================================
-        // HELPER FUNCTIONS
+        // HELPERS
         // ===========================================
         
         function categorizeEvent(eventName) {
-            // Check PPVs first
-            for (const ppv of PPV_NAMES) {
-                if (eventName.includes(ppv)) {
-                    return { type: 'ppv', name: ppv };
-                }
-            }
-            
-            // Check Specials
-            for (const special of SPECIAL_NAMES) {
-                if (eventName.includes(special)) {
-                    return { type: 'special', name: special };
-                }
-            }
-            
-            // Check Weekly
-            for (const [show, keywords] of Object.entries(WEEKLY_SHOWS)) {
-                for (const keyword of keywords) {
-                    if (eventName.includes(keyword)) {
-                        return { type: 'weekly', name: show };
-                    }
-                }
-            }
-            
-            // Default to other/unknown
+            for (const ppv of PPV_NAMES) if (eventName.includes(ppv)) return { type: 'ppv', name: ppv };
+            for (const special of SPECIAL_NAMES) if (eventName.includes(special)) return { type: 'special', name: special };
+            for (const [show, keywords] of Object.entries(WEEKLY_SHOWS)) for (const keyword of keywords) if (eventName.includes(keyword)) return { type: 'weekly', name: show };
             return { type: 'other', name: eventName };
         }
         
         function getRatingClass(rating) {
-            if (rating >= 9) return 'rating-9plus';
-            if (rating >= 8) return 'rating-8plus';
-            if (rating >= 7) return 'rating-7plus';
-            if (rating >= 6) return 'rating-6plus';
-            return 'rating-below6';
+            if (rating >= 9) return 'rating-excellent';
+            if (rating >= 8) return 'rating-great';
+            if (rating >= 7) return 'rating-good';
+            if (rating >= 6) return 'rating-average';
+            return 'rating-poor';
         }
         
         function createSlug(name) {
-            return name.toLowerCase()
-                .replace(/[^a-z0-9\s-]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/-+/g, '-')
-                .trim();
+            return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
         }
 
         // ===========================================
@@ -879,330 +837,119 @@
         
         function processWrestlerData(wrestler) {
             if (!wrestler.allMatches) return;
-            
             wrestler.allMatches.forEach(match => {
                 const category = categorizeEvent(match.event);
-                const matchData = {
-                    wrestler: wrestler.name,
-                    slug: wrestler.slug || createSlug(wrestler.name),
-                    rating: match.rating,
-                    event: match.event,
-                    date: match.date,
-                    matchType: match.matchType,
-                    stipulation: match.matchStipulation,
-                    stakes: match.stakes,
-                    opponents: match.opponents
-                };
+                const matchData = { wrestler: wrestler.name, slug: wrestler.slug || createSlug(wrestler.name), rating: match.rating, event: match.event, date: match.date, matchType: match.matchType, stipulation: match.matchStipulation, stakes: match.stakes, opponents: match.opponents };
                 
-                // Categorize by show type
-                if (category.type === 'weekly') {
-                    showStats.weekly[category.name].push(matchData);
-                } else if (category.type === 'ppv') {
-                    if (!showStats.ppv[category.name]) showStats.ppv[category.name] = [];
-                    showStats.ppv[category.name].push(matchData);
-                } else if (category.type === 'special') {
-                    if (!showStats.specials[category.name]) showStats.specials[category.name] = [];
-                    showStats.specials[category.name].push(matchData);
-                }
+                if (category.type === 'weekly') showStats.weekly[category.name].push(matchData);
+                else if (category.type === 'ppv') { if (!showStats.ppv[category.name]) showStats.ppv[category.name] = []; showStats.ppv[category.name].push(matchData); }
+                else if (category.type === 'special') { if (!showStats.specials[category.name]) showStats.specials[category.name] = []; showStats.specials[category.name].push(matchData); }
                 
-                // Track stipulations (non-standard matches)
                 if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
-                    if (!showStats.stipulations[match.matchStipulation]) {
-                        showStats.stipulations[match.matchStipulation] = [];
-                    }
+                    if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
                     showStats.stipulations[match.matchStipulation].push(matchData);
                 }
             });
         }
         
         function calculateWrestlerStats(matches) {
-            const wrestlerMap = {};
-            
+            const map = {};
             matches.forEach(m => {
-                if (!wrestlerMap[m.wrestler]) {
-                    wrestlerMap[m.wrestler] = {
-                        name: m.wrestler,
-                        slug: m.slug,
-                        matches: 0,
-                        totalRating: 0,
-                        best: 0
-                    };
-                }
-                wrestlerMap[m.wrestler].matches++;
-                wrestlerMap[m.wrestler].totalRating += m.rating;
-                if (m.rating > wrestlerMap[m.wrestler].best) {
-                    wrestlerMap[m.wrestler].best = m.rating;
-                }
+                if (!map[m.wrestler]) map[m.wrestler] = { name: m.wrestler, slug: m.slug, matches: 0, totalRating: 0, best: 0 };
+                map[m.wrestler].matches++; map[m.wrestler].totalRating += m.rating;
+                if (m.rating > map[m.wrestler].best) map[m.wrestler].best = m.rating;
             });
-            
-            return Object.values(wrestlerMap)
-                .map(w => ({
-                    ...w,
-                    avg: w.totalRating / w.matches
-                }))
-                .filter(w => w.matches >= 3) // Minimum 3 matches to qualify
-                .sort((a, b) => b.avg - a.avg);
+            return Object.values(map).map(w => ({ ...w, avg: w.totalRating / w.matches })).filter(w => w.matches >= 3).sort((a, b) => b.avg - a.avg);
         }
 
         // ===========================================
-        // UI RENDERING
+        // RENDERING
         // ===========================================
         
-        function renderLeaderboard(containerId, wrestlers, limit = 10) {
-            const container = document.getElementById(containerId);
-            const header = container.querySelector('.leaderboard-header');
-            
-            // Clear existing rows
-            container.innerHTML = '';
-            container.appendChild(header);
-            
-            wrestlers.slice(0, limit).forEach((w, i) => {
-                const row = document.createElement('div');
-                row.className = 'leaderboard-row';
-                row.innerHTML = `
-                    <span class="rank ${i < 3 ? 'top3' : ''}">${i + 1}</span>
-                    <span class="wrestler-name"><a href="wrestler-stats.html?wrestler=${encodeURIComponent(w.name)}">${w.name}</a></span>
-                    <span class="avg-rating ${getRatingClass(w.avg)}">${w.avg.toFixed(2)}</span>
-                    <span class="matches-count">${w.matches}</span>
-                    <span class="best-rating ${getRatingClass(w.best)}">${w.best.toFixed(2)}</span>
-                `;
-                container.appendChild(row);
-            });
-            
-            if (wrestlers.length === 0) {
-                const noData = document.createElement('div');
-                noData.className = 'leaderboard-row';
-                noData.innerHTML = '<span colspan="5" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No data available</span>';
-                container.appendChild(noData);
-            }
+        function renderLeaderboard(id, wrestlers, limit = 10) {
+            const el = document.getElementById(id);
+            el.innerHTML = wrestlers.slice(0, limit).map((w, i) => `
+                <tr><td class="rank ${i < 3 ? 'top3' : ''}">${i + 1}</td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${encodeURIComponent(w.name)}">${w.name}</a></td>
+                <td class="${getRatingClass(w.avg)}" style="font-weight: bold;">${w.avg.toFixed(2)}</td>
+                <td class="hide-mobile">${w.matches}</td>
+                <td class="hide-mobile ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
+            `).join('') || '<tr><td colspan="5" style="text-align: center; color: #888;">No data available</td></tr>';
         }
         
         function renderWeeklyTab() {
-            // Calculate totals
-            const allWeekly = [
-                ...showStats.weekly.dynamite,
-                ...showStats.weekly.collision,
-                ...showStats.weekly.rampage,
-                ...showStats.weekly.dark
-            ];
+            const all = [...showStats.weekly.dynamite, ...showStats.weekly.collision, ...showStats.weekly.rampage, ...showStats.weekly.dark];
+            document.getElementById('weekly-total-matches').textContent = all.length;
+            document.getElementById('weekly-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            document.getElementById('weekly-9plus').textContent = all.filter(m => m.rating >= 9).length;
+            document.getElementById('weekly-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
             
-            const totalMatches = allWeekly.length;
-            const avgRating = totalMatches > 0 
-                ? (allWeekly.reduce((sum, m) => sum + m.rating, 0) / totalMatches).toFixed(2)
-                : '--';
-            const ninePlus = allWeekly.filter(m => m.rating >= 9).length;
-            const uniqueWrestlers = new Set(allWeekly.map(m => m.wrestler)).size;
-            
-            document.getElementById('weekly-total-matches').textContent = totalMatches;
-            document.getElementById('weekly-avg-rating').textContent = avgRating;
-            document.getElementById('weekly-9plus').textContent = ninePlus;
-            document.getElementById('weekly-wrestlers').textContent = uniqueWrestlers;
-            
-            // Show breakdown per show
-            const shows = ['dynamite', 'collision', 'rampage', 'dark'];
-            shows.forEach(show => {
+            ['dynamite', 'collision', 'rampage', 'dark'].forEach(show => {
                 const matches = showStats.weekly[show];
                 document.getElementById(`${show}-matches`).textContent = matches.length;
-                document.getElementById(`${show}-avg`).textContent = matches.length > 0
-                    ? (matches.reduce((sum, m) => sum + m.rating, 0) / matches.length).toFixed(2)
-                    : '--';
-                const best = matches.length > 0 ? Math.max(...matches.map(m => m.rating)) : 0;
-                document.getElementById(`${show}-best`).textContent = best > 0 ? best.toFixed(2) : '--';
+                document.getElementById(`${show}-avg`).textContent = matches.length > 0 ? (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2) : '--';
+                document.getElementById(`${show}-best`).textContent = matches.length > 0 ? Math.max(...matches.map(m => m.rating)).toFixed(2) : '--';
             });
             
-            // Render leaderboards
             renderLeaderboard('dynamite-leaderboard', calculateWrestlerStats(showStats.weekly.dynamite));
             renderLeaderboard('collision-leaderboard', calculateWrestlerStats(showStats.weekly.collision));
         }
         
         function renderPPVTab() {
-            const allPPV = Object.values(showStats.ppv).flat();
+            const all = Object.values(showStats.ppv).flat();
+            document.getElementById('ppv-total-matches').textContent = all.length;
+            document.getElementById('ppv-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            document.getElementById('ppv-9plus').textContent = all.filter(m => m.rating >= 9).length;
+            document.getElementById('ppv-events').textContent = Object.keys(showStats.ppv).length;
             
-            const totalMatches = allPPV.length;
-            const avgRating = totalMatches > 0
-                ? (allPPV.reduce((sum, m) => sum + m.rating, 0) / totalMatches).toFixed(2)
-                : '--';
-            const ninePlus = allPPV.filter(m => m.rating >= 9).length;
-            const eventCount = Object.keys(showStats.ppv).length;
-            
-            document.getElementById('ppv-total-matches').textContent = totalMatches;
-            document.getElementById('ppv-avg-rating').textContent = avgRating;
-            document.getElementById('ppv-9plus').textContent = ninePlus;
-            document.getElementById('ppv-events').textContent = eventCount;
-            
-            // Best PPV match
-            if (allPPV.length > 0) {
-                const bestMatch = allPPV.reduce((best, m) => m.rating > best.rating ? m : best);
-                const bestCard = document.getElementById('best-ppv-match');
-                bestCard.innerHTML = `
-                    <div class="match-rating ${getRatingClass(bestMatch.rating)}">${bestMatch.rating.toFixed(2)}</div>
-                    <div class="match-event">${bestMatch.event}</div>
-                    <div class="match-details">${bestMatch.matchType}${bestMatch.stipulation && bestMatch.stipulation !== 'None' ? ' • ' + bestMatch.stipulation : ''}</div>
-                    <div class="match-participants">Featuring: ${bestMatch.wrestler}${bestMatch.opponents ? ' vs ' + bestMatch.opponents.join(', ') : ''}</div>
-                `;
+            if (all.length > 0) {
+                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
+                document.getElementById('best-ppv-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.matchType}${best.stipulation && best.stipulation !== 'None' ? ' • ' + best.stipulation : ''}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
             }
             
-            // PPV Grid
-            const ppvGrid = document.getElementById('ppv-grid');
-            ppvGrid.innerHTML = '';
+            document.getElementById('ppv-grid').innerHTML = Object.entries(showStats.ppv).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
+                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
+                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
+                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${matches.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
+            }).join('');
             
-            Object.entries(showStats.ppv)
-                .sort((a, b) => b[1].length - a[1].length)
-                .forEach(([ppvName, matches]) => {
-                    const avg = (matches.reduce((sum, m) => sum + m.rating, 0) / matches.length).toFixed(2);
-                    const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                    
-                    const card = document.createElement('div');
-                    card.className = 'ppv-card';
-                    card.innerHTML = `
-                        <div class="ppv-name">${ppvName}</div>
-                        <div class="ppv-stats">
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value">${matches.length}</div>
-                                <div class="ppv-stat-label">Matches</div>
-                            </div>
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div>
-                                <div class="ppv-stat-label">Avg Rating</div>
-                            </div>
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value ${getRatingClass(parseFloat(best))}">${best}</div>
-                                <div class="ppv-stat-label">Best</div>
-                            </div>
-                        </div>
-                    `;
-                    ppvGrid.appendChild(card);
-                });
-            
-            // Leaderboard
-            renderLeaderboard('ppv-leaderboard', calculateWrestlerStats(allPPV));
+            renderLeaderboard('ppv-leaderboard', calculateWrestlerStats(all));
         }
         
         function renderSpecialsTab() {
-            const allSpecials = Object.values(showStats.specials).flat();
+            const all = Object.values(showStats.specials).flat();
+            document.getElementById('specials-total-matches').textContent = all.length;
+            document.getElementById('specials-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
             
-            const totalMatches = allSpecials.length;
-            const avgRating = totalMatches > 0
-                ? (allSpecials.reduce((sum, m) => sum + m.rating, 0) / totalMatches).toFixed(2)
-                : '--';
-            const eventCount = Object.keys(showStats.specials).length;
+            document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
+                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
+                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
+                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${matches.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
+            }).join('');
             
-            document.getElementById('specials-total-matches').textContent = totalMatches;
-            document.getElementById('specials-avg-rating').textContent = avgRating;
-            document.getElementById('specials-events').textContent = eventCount;
-            
-            // Specials Grid
-            const specialsGrid = document.getElementById('specials-grid');
-            specialsGrid.innerHTML = '';
-            
-            Object.entries(showStats.specials)
-                .sort((a, b) => b[1].length - a[1].length)
-                .forEach(([specialName, matches]) => {
-                    const avg = (matches.reduce((sum, m) => sum + m.rating, 0) / matches.length).toFixed(2);
-                    const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                    
-                    const card = document.createElement('div');
-                    card.className = 'ppv-card';
-                    card.innerHTML = `
-                        <div class="ppv-name">${specialName}</div>
-                        <div class="ppv-stats">
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value">${matches.length}</div>
-                                <div class="ppv-stat-label">Matches</div>
-                            </div>
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div>
-                                <div class="ppv-stat-label">Avg Rating</div>
-                            </div>
-                            <div class="ppv-stat">
-                                <div class="ppv-stat-value ${getRatingClass(parseFloat(best))}">${best}</div>
-                                <div class="ppv-stat-label">Best</div>
-                            </div>
-                        </div>
-                    `;
-                    specialsGrid.appendChild(card);
-                });
-            
-            // Leaderboard
-            renderLeaderboard('specials-leaderboard', calculateWrestlerStats(allSpecials));
+            renderLeaderboard('specials-leaderboard', calculateWrestlerStats(all));
         }
         
         function renderStipsTab() {
-            const allStips = Object.values(showStats.stipulations).flat();
+            const all = Object.values(showStats.stipulations).flat();
+            document.getElementById('stip-total').textContent = all.length;
+            document.getElementById('stip-avg').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            document.getElementById('stip-types').textContent = Object.keys(showStats.stipulations).length;
             
-            const totalMatches = allStips.length;
-            const avgRating = totalMatches > 0
-                ? (allStips.reduce((sum, m) => sum + m.rating, 0) / totalMatches).toFixed(2)
-                : '--';
-            const stipCount = Object.keys(showStats.stipulations).length;
-            
-            document.getElementById('stip-total').textContent = totalMatches;
-            document.getElementById('stip-avg').textContent = avgRating;
-            document.getElementById('stip-types').textContent = stipCount;
-            
-            // Best stipulation match
-            if (allStips.length > 0) {
-                const bestMatch = allStips.reduce((best, m) => m.rating > best.rating ? m : best);
-                const bestCard = document.getElementById('best-stip-match');
-                bestCard.innerHTML = `
-                    <div class="match-rating ${getRatingClass(bestMatch.rating)}">${bestMatch.rating.toFixed(2)}</div>
-                    <div class="match-event">${bestMatch.event}</div>
-                    <div class="match-details">${bestMatch.stipulation}</div>
-                    <div class="match-participants">Featuring: ${bestMatch.wrestler}${bestMatch.opponents ? ' vs ' + bestMatch.opponents.join(', ') : ''}</div>
-                `;
+            if (all.length > 0) {
+                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
+                document.getElementById('best-stip-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.stipulation}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
             }
             
-            // Stipulation list
-            const stipList = document.getElementById('stip-list');
-            stipList.innerHTML = '';
+            document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
+                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
+                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
+                return `<div class="stip-item"><span class="stip-name">${name}</span><div class="stip-stats"><div class="stip-stat"><div class="stip-stat-value">${matches.length}</div><div class="stip-stat-label">Matches</div></div><div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="stip-stat-label">Avg</div></div><div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="stip-stat-label">Best</div></div></div></div>`;
+            }).join('');
             
-            Object.entries(showStats.stipulations)
-                .sort((a, b) => b[1].length - a[1].length)
-                .forEach(([stipName, matches]) => {
-                    const avg = (matches.reduce((sum, m) => sum + m.rating, 0) / matches.length).toFixed(2);
-                    const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                    
-                    const item = document.createElement('div');
-                    item.className = 'stip-item';
-                    item.innerHTML = `
-                        <span class="stip-name">${stipName}</span>
-                        <div class="stip-stats">
-                            <div class="stip-stat">
-                                <div class="stip-stat-value">${matches.length}</div>
-                                <div class="stip-stat-label">Matches</div>
-                            </div>
-                            <div class="stip-stat">
-                                <div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div>
-                                <div class="stip-stat-label">Avg</div>
-                            </div>
-                            <div class="stip-stat">
-                                <div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div>
-                                <div class="stip-stat-label">Best</div>
-                            </div>
-                        </div>
-                    `;
-                    stipList.appendChild(item);
-                });
-            
-            // Leaderboard
-            renderLeaderboard('stip-leaderboard', calculateWrestlerStats(allStips));
+            renderLeaderboard('stip-leaderboard', calculateWrestlerStats(all));
         }
-
-        // ===========================================
-        // TAB SWITCHING
-        // ===========================================
-        
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Update active button
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                // Update active content
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(btn.dataset.tab).classList.add('active');
-            });
-        });
 
         // ===========================================
         // DATA LOADING
@@ -1210,146 +957,74 @@
         
         async function loadAllWrestlerData() {
             try {
-                // Load the statistics.json to get list of all wrestlers
-                const statsResponse = await fetch('data/statistics.json');
-                const statsData = await statsResponse.json();
-                
-                // Get all wrestler slugs from all divisions
+                const statsData = await (await fetch('data/statistics.json')).json();
                 const allWrestlers = [];
                 ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(div => {
-                    if (statsData[div]) {
-                        statsData[div].forEach(w => {
-                            if (w.name) {
-                                allWrestlers.push({
-                                    name: w.name,
-                                    slug: createSlug(w.name),
-                                    division: div
-                                });
-                            }
-                        });
-                    }
+                    if (statsData[div]) statsData[div].forEach(w => { if (w.name) allWrestlers.push({ name: w.name, slug: createSlug(w.name) }); });
                 });
                 
-                // Load individual wrestler JSONs
-                // For demo/testing, we'll load a subset
-                const loadPromises = allWrestlers.slice(0, 50).map(async (w) => {
-                    try {
-                        const response = await fetch(`wrestlers/${w.slug}.json`);
-                        if (response.ok) {
-                            return await response.json();
-                        }
-                    } catch (e) {
-                        // Wrestler file not found, skip
-                    }
+                const wrestlers = (await Promise.all(allWrestlers.slice(0, 100).map(async w => {
+                    try { const r = await fetch(`wrestlers/${w.slug}.json`); if (r.ok) return await r.json(); } catch (e) {}
                     return null;
-                });
+                }))).filter(w => w !== null);
                 
-                const wrestlers = await Promise.all(loadPromises);
-                allWrestlerData = wrestlers.filter(w => w !== null);
-                
-                // Process all wrestler data
-                allWrestlerData.forEach(processWrestlerData);
-                
-                // Render all tabs
-                renderWeeklyTab();
-                renderPPVTab();
-                renderSpecialsTab();
-                renderStipsTab();
-                
+                wrestlers.forEach(processWrestlerData);
+                renderWeeklyTab(); renderPPVTab(); renderSpecialsTab(); renderStipsTab();
             } catch (error) {
                 console.error('Error loading data:', error);
-                // For local testing without data, show demo message
-                document.querySelectorAll('.stat-card .stat-value').forEach(el => {
-                    if (el.textContent === '--') el.textContent = 'Demo';
-                });
+                loadDemoData();
             }
         }
 
-        // ===========================================
-        // DEMO DATA (for testing without full dataset)
-        // ===========================================
-        
         function loadDemoData() {
-            // Sample data structure based on Adam Page's JSON
-            const demoWrestler = {
-                name: "Adam Page",
-                slug: "adam-page",
-                allMatches: [
+            const demoWrestlers = [
+                { name: "Adam Page", slug: "adam-page", allMatches: [
                     { event: "Dynamite", rating: 7.5, matchType: "One on One", matchStipulation: "None", opponents: ["MJF"], date: "2025-01-15" },
                     { event: "Dynamite", rating: 8.2, matchType: "One on One", matchStipulation: "None", opponents: ["Kenny Omega"], date: "2025-02-12" },
+                    { event: "Dynamite", rating: 7.8, matchType: "One on One", matchStipulation: "None", opponents: ["Swerve Strickland"], date: "2025-03-05" },
                     { event: "Collision", rating: 7.1, matchType: "Tag Team", matchStipulation: "None", opponents: ["FTR"], date: "2025-01-20" },
                     { event: "Full Gear '25", rating: 9.2, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Swerve Strickland"], date: "2025-11-22" },
                     { event: "Revolution '26", rating: 8.98, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["MJF"], date: "2026-03-15" },
                     { event: "Double or Nothing '25", rating: 9.63, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-05-25" },
-                    { event: "Winter Is Coming '25 - Night 1", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Swerve Strickland"], date: "2025-12-10" },
-                    { event: "Grand Slam: Australia '26", rating: 7.59, matchType: "One on One", matchStipulation: "None", opponents: ["Andrade El Idolo"], date: "2026-02-14" },
-                ]
-            };
-            
-            // Add more demo wrestlers
-            const demoWrestlers = [
-                demoWrestler,
-                {
-                    name: "Kenny Omega",
-                    slug: "kenny-omega",
-                    allMatches: [
-                        { event: "Dynamite", rating: 8.5, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-03-01" },
-                        { event: "Full Gear '25", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-11-22" },
-                        { event: "Collision", rating: 7.8, matchType: "Tag Team", matchStipulation: "None", opponents: ["FTR"], date: "2025-02-15" },
-                    ]
-                },
-                {
-                    name: "MJF",
-                    slug: "mjf",
-                    allMatches: [
-                        { event: "Dynamite", rating: 7.9, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-04-02" },
-                        { event: "Revolution '26", rating: 8.98, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2026-03-15" },
-                        { event: "All Out '25", rating: 8.7, matchType: "One on One", matchStipulation: "None", opponents: ["Samoa Joe"], date: "2025-09-20" },
-                    ]
-                },
-                {
-                    name: "Will Ospreay",
-                    slug: "will-ospreay",
-                    allMatches: [
-                        { event: "Dynamite", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kenny Omega"], date: "2025-03-01" },
-                        { event: "Double or Nothing '25", rating: 9.63, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-05-25" },
-                        { event: "Forbidden Door '25", rating: 9.4, matchType: "One on One", matchStipulation: "None", opponents: ["Shingo Takagi"], date: "2025-08-24" },
-                        { event: "Collision", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-05-10" },
-                    ]
-                },
-                {
-                    name: "Swerve Strickland",
-                    slug: "swerve-strickland",
-                    allMatches: [
-                        { event: "Dynamite", rating: 7.6, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-06-11" },
-                        { event: "Full Gear '25", rating: 9.2, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2025-11-22" },
-                        { event: "Winter Is Coming '25 - Night 1", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Adam Page"], date: "2025-12-10" },
-                    ]
-                }
+                    { event: "Winter Is Coming '25", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Swerve Strickland"], date: "2025-12-10" },
+                ]},
+                { name: "Kenny Omega", slug: "kenny-omega", allMatches: [
+                    { event: "Dynamite", rating: 8.5, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-03-01" },
+                    { event: "Dynamite", rating: 8.1, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-02-12" },
+                    { event: "Dynamite", rating: 7.9, matchType: "Tag Team", matchStipulation: "None", opponents: ["The Young Bucks"], date: "2025-04-02" },
+                    { event: "Full Gear '25", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-11-22" },
+                    { event: "Collision", rating: 7.8, matchType: "Tag Team", matchStipulation: "None", opponents: ["FTR"], date: "2025-02-15" },
+                ]},
+                { name: "MJF", slug: "mjf", allMatches: [
+                    { event: "Dynamite", rating: 7.9, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-04-02" },
+                    { event: "Dynamite", rating: 7.5, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-01-15" },
+                    { event: "Dynamite", rating: 8.0, matchType: "One on One", matchStipulation: "None", opponents: ["Samoa Joe"], date: "2025-05-14" },
+                    { event: "Revolution '26", rating: 8.98, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2026-03-15" },
+                    { event: "All Out '25", rating: 8.7, matchType: "One on One", matchStipulation: "None", opponents: ["Samoa Joe"], date: "2025-09-20" },
+                ]},
+                { name: "Will Ospreay", slug: "will-ospreay", allMatches: [
+                    { event: "Dynamite", rating: 9.1, matchType: "One on One", matchStipulation: "None", opponents: ["Kenny Omega"], date: "2025-03-01" },
+                    { event: "Dynamite", rating: 8.7, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-06-04" },
+                    { event: "Dynamite", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Swerve Strickland"], date: "2025-07-09" },
+                    { event: "Double or Nothing '25", rating: 9.63, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-05-25" },
+                    { event: "Forbidden Door '25", rating: 9.4, matchType: "One on One", matchStipulation: "None", opponents: ["Shingo Takagi"], date: "2025-08-24" },
+                    { event: "Collision", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Kyle Fletcher"], date: "2025-05-10" },
+                ]},
+                { name: "Swerve Strickland", slug: "swerve-strickland", allMatches: [
+                    { event: "Dynamite", rating: 7.6, matchType: "One on One", matchStipulation: "None", opponents: ["Daniel Garcia"], date: "2025-06-11" },
+                    { event: "Dynamite", rating: 7.8, matchType: "One on One", matchStipulation: "None", opponents: ["Adam Page"], date: "2025-03-05" },
+                    { event: "Dynamite", rating: 8.3, matchType: "One on One", matchStipulation: "None", opponents: ["Will Ospreay"], date: "2025-07-09" },
+                    { event: "Full Gear '25", rating: 9.2, matchType: "One on One", matchStipulation: "Texas Death Match", opponents: ["Adam Page"], date: "2025-11-22" },
+                    { event: "Winter Is Coming '25", rating: 6.65, matchType: "Tag Team", matchStipulation: "Tornado Tag", opponents: ["Adam Page"], date: "2025-12-10" },
+                    { event: "Grand Slam '25", rating: 8.1, matchType: "One on One", matchStipulation: "Ladder Match", opponents: ["Hangman Page"], date: "2025-09-25" },
+                ]}
             ];
             
             demoWrestlers.forEach(processWrestlerData);
-            
-            renderWeeklyTab();
-            renderPPVTab();
-            renderSpecialsTab();
-            renderStipsTab();
+            renderWeeklyTab(); renderPPVTab(); renderSpecialsTab(); renderStipsTab();
         }
 
-        // ===========================================
-        // INITIALIZATION
-        // ===========================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            // Try to load real data first, fall back to demo
-            loadAllWrestlerData().catch(() => {
-                console.log('Loading demo data...');
-                loadDemoData();
-            });
-        });
-        
-        // For local testing, uncomment this line:
-        // loadDemoData();
+        document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
     </script>
 </body>
 </html>
