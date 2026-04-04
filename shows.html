@@ -1009,7 +1009,7 @@
             
             try {
                 // Get list of all wrestlers from statistics.json
-                const statsData = await (await fetch('data/statistics.json')).json();
+                const statsData = await (await fetch('statistics.json')).json();
                 const allWrestlers = [];
                 ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(div => {
                     if (statsData[div]) {
