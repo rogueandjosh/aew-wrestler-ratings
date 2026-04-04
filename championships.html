@@ -1162,13 +1162,13 @@
         function renderCompetitorsSection(titleName) {
             const titleData = getCompetitorsForTitle(titleName);
             if (!titleData || !titleData.competitors || titleData.competitors.length === 0) {
-                return '<div class="details-section"><h4>👤 Top Competitors</h4><p style="color: #888;">No competitor data available</p></div>';
+                return '<div class="details-section"><h4>👤 Top Competitors (All-Time)</h4><p style="color: #888;">No competitor data available</p></div>';
             }
             
             const sorted = sortCompetitors(titleData.competitors, titleName);
             
             return `
-                <div class="details-section competitors-section tt" data-tt="Top 5 competitors for this championship by selected sort. Click column headers to sort.">
+                <div class="details-section competitors-section tt" data-tt="All-time top 5 competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">
                     <h4>👤 Top Competitors</h4>
                     <table class="competitors-table">
                         <thead>
