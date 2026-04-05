@@ -678,6 +678,7 @@
 
             .details-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
 
             .dropped-out-grid {
@@ -701,6 +702,45 @@
             /* Hide extra columns toggle on mobile since they don't show anyway */
             #toggleExtraCols {
                 display: none;
+            }
+
+            /* Fix details sections on mobile */
+            .details-section {
+                padding: 12px;
+            }
+
+            .details-content {
+                padding: 10px;
+            }
+
+            /* Competitors table mobile fixes */
+            .competitors-section {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .competitors-table {
+                font-size: 0.8em;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            .competitors-table th,
+            .competitors-table td {
+                padding: 4px 5px;
+            }
+
+            .competitors-table th:first-child,
+            .competitors-table td:first-child {
+                width: 45%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .competitors-table th:not(:first-child),
+            .competitors-table td:not(:first-child) {
+                width: 18%;
             }
         }
 
@@ -1162,14 +1202,14 @@
         function renderCompetitorsSection(titleName) {
             const titleData = getCompetitorsForTitle(titleName);
             if (!titleData || !titleData.competitors || titleData.competitors.length === 0) {
-                return '<div class="details-section"><h4>👤 Top Competitors (All-Time)</h4><p style="color: #888;">No competitor data available</p></div>';
+                return '<div class="details-section"><h4>👤 Top Competitors</h4><p style="color: #888;">No competitor data available</p></div>';
             }
             
             const sorted = sortCompetitors(titleData.competitors, titleName);
             
             return `
-                <div class="details-section competitors-section">
-                    <h4 class="tt" data-tt="All-time top 5 competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">👤 Top Competitors (All-Time)</h4>
+                <div class="details-section competitors-section tt" data-tt="Top 5 competitors for this championship by selected sort. Click column headers to sort.">
+                    <h4>👤 Top Competitors</h4>
                     <table class="competitors-table">
                         <thead>
                             <tr>
@@ -1413,8 +1453,8 @@
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
-                                    <div class="details-section">
-                                        <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
+                                    <div class="details-section tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">
+                                        <h4>📊 Most Recent Reign</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -1432,8 +1472,8 @@
                                             <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section">
-                                        <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
+                                    <div class="details-section tt" data-tt="This shows the statistics for all matches for this specific championship.">
+                                        <h4>🏆 All-Time</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
@@ -1451,8 +1491,8 @@
                                             <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section">
-                                        <h4 class="tt" data-tt="Some additional information about this championship.">📈 Stats</h4>
+                                    <div class="details-section tt" data-tt="Some additional information about this championship.">
+                                        <h4>📈 Stats</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Total Title Matches</span>
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
@@ -1956,11 +1996,5 @@
             loadSelectedWeek();
         }
     </script>
-    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
-        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
-        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
-    </footer>
 </body>
 </html>
