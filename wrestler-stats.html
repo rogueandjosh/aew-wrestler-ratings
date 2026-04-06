@@ -628,6 +628,11 @@
             <!-- Rating History Chart -->
             <div class="section">
                 <div class="section-title tt" id="ratingHistoryTitle" style="cursor: help;">📈 Rating History</div>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <button id="chartScaleToggle" onclick="toggleChartScale()" class="back-link" style="font-size: 0.85em; padding: 6px 12px;">
+                        📊 Fixed Scale (40-160)
+                    </button>
+                </div>
                 <div class="chart-box">
                     <canvas id="ratingChart"></canvas>
                 </div>
@@ -974,6 +979,7 @@
         }
         let currentYear = 'ALL';
         let ratingChart = null;
+        let chartScaleFixed = false;
 
         // Load team data on page load
         (async function() {
@@ -2052,6 +2058,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             return `rating-${bucket}`;
         }
 
+        function toggleChartScale() {
+            chartScaleFixed = !chartScaleFixed;
+            const btn = document.getElementById('chartScaleToggle');
+            btn.textContent = chartScaleFixed ? '📊 Auto Scale' : '📊 Fixed Scale (40-160)';
+            updateRatingChart();
+        }
+
         function updateRatingChart() {
             const ctx = document.getElementById('ratingChart').getContext('2d');
             
@@ -2068,6 +2081,38 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             if (ratingChart) {
                 ratingChart.destroy();
             }
+
+            // Configure y-axis based on scale mode
+            const yAxisConfig = {
+                beginAtZero: false,
+                grid: {
+                    color: 'rgba(255, 215, 0, 0.1)'
+                },
+                ticks: {
+                    color: '#e0e0e0',
+                    font: { size: 10 }
+                }
+            };
+
+            // Add fixed scale settings if enabled
+            if (chartScaleFixed) {
+                yAxisConfig.min = 40;
+                yAxisConfig.max = 160;
+            }
+
+            // Annotation for 100 line (only in fixed scale mode)
+            const plugins = {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Rating: ${context.parsed.y.toFixed(2)}`;
+                        }
+                    }
+                }
+            };
 
             ratingChart = new Chart(ctx, {
                 type: 'line',
@@ -2087,29 +2132,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Rating: ${context.parsed.y.toFixed(2)}`;
-                                }
-                            }
-                        }
-                    },
+                    plugins: plugins,
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: 'rgba(255, 215, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#e0e0e0',
-                                font: { size: 10 }
-                            }
-                        },
+                        y: yAxisConfig,
                         x: {
                             grid: {
                                 color: 'rgba(255, 215, 0, 0.1)'
@@ -2124,6 +2149,29 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     }
                 }
             });
+
+            // Add 100 reference line if in fixed scale mode
+            if (chartScaleFixed && ratingChart) {
+                const originalDraw = ratingChart.draw;
+                ratingChart.draw = function() {
+                    originalDraw.apply(this, arguments);
+                    const ctx = this.ctx;
+                    const yAxis = this.scales.y;
+                    const xAxis = this.scales.x;
+                    const y100 = yAxis.getPixelForValue(100);
+                    
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(xAxis.left, y100);
+                    ctx.lineTo(xAxis.right, y100);
+                    ctx.stroke();
+                    ctx.restore();
+                };
+                ratingChart.draw();
+            }
         }
 
         function aggregateByMonth(historyData) {
