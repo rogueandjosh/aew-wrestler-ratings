@@ -586,6 +586,17 @@
             color: #ccc;
         }
 
+        .competitor-link {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .competitor-link:hover {
+            color: #ffd700;
+            text-decoration: underline;
+        }
+
         /* Loading & Error States */
         .loading {
             text-align: center;
@@ -1115,6 +1126,14 @@
             }
         }
 
+        // Create URL-friendly slug from name
+        function createSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', init);
 
@@ -1213,8 +1232,8 @@
             const sorted = sortCompetitors(titleData.competitors, titleName);
             
             return `
-                <div class="details-section competitors-section tt" data-tt="Top 5 competitors for this championship by selected sort. Click column headers to sort.">
-                    <h4>👤 Top Competitors</h4>
+                <div class="details-section competitors-section">
+                    <h4 class="tt" data-tt="All-time top 5 competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">👤 Top Competitors (All-Time)</h4>
                     <table class="competitors-table">
                         <thead>
                             <tr>
@@ -1227,7 +1246,7 @@
                         <tbody>
                             ${sorted.map(c => `
                                 <tr>
-                                    <td>${c.name}</td>
+                                    <td><a href="wrestler-stats.html?wrestler=${createSlug(c.name)}" class="competitor-link">${c.name}</a></td>
                                     <td>${c.matches}</td>
                                     <td>${c.avg.toFixed(2)}</td>
                                     <td>${c.high.toFixed(2)}</td>
@@ -2008,5 +2027,16 @@
             loadSelectedWeek();
         }
     </script>
+    <div style="text-align: center; margin: 30px 0 10px;">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
+            ▲ Back to Top
+        </button>
+    </div>
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
+        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+    </footer>
 </body>
 </html>
