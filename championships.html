@@ -1796,7 +1796,7 @@
 
         function formatRating(value) {
             if (!value && value !== 0) return '—';
-            return (value * 100).toFixed(2);
+            return parseFloat(value).toFixed(2);
         }
 
         function formatRankChange(change) {
