@@ -1434,19 +1434,31 @@
                 const activeTitleNames = new Set(championships.map(c => c.title));
                 inactiveTitles = competitorData.titles
                     .filter(t => !activeTitleNames.has(t.title))
-                    .map(t => ({
-                        title: t.title,
-                        rank: null,
-                        rating: null,
-                        isInactive: true,
-                        totalMatches: t.totalMatches,
-                        // These would need to come from historical data if available
-                        allTimePeak: null,
-                        allTimeFloor: null,
-                        allTimeHighest: null,
-                        allTimeLowest: null,
-                        rankChange: null
-                    }));
+                    .map(t => {
+                        // Calculate best/worst match from competitors
+                        let allTimeHighest = null;
+                        let allTimeLowest = null;
+                        if (t.competitors && t.competitors.length > 0) {
+                            const highs = t.competitors.map(c => c.high).filter(h => h != null);
+                            const lows = t.competitors.map(c => c.low).filter(l => l != null);
+                            if (highs.length > 0) allTimeHighest = Math.max(...highs);
+                            if (lows.length > 0) allTimeLowest = Math.min(...lows);
+                        }
+                        return {
+                            title: t.title,
+                            rank: null,
+                            rating: null,
+                            isInactive: true,
+                            totalMatches: t.totalMatches,
+                            // Peak/Floor ratings not available for inactive titles
+                            allTimePeak: null,
+                            allTimeFloor: null,
+                            // Best/Worst match calculated from competitors
+                            allTimeHighest: allTimeHighest,
+                            allTimeLowest: allTimeLowest,
+                            rankChange: null
+                        };
+                    });
                 console.log(`📊 All-Time view: Adding ${inactiveTitles.length} inactive titles`);
             }
             
@@ -1567,17 +1579,9 @@
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
-                                    ${isInactive ? `
-                                    <div class="details-section">
-                                        <h4>ℹ️ Status</h4>
-                                        <p style="color: #9ca3af; font-size: 0.9em;">This title is currently inactive. Historical rating data is not available, but competitor statistics are shown below.</p>
-                                        <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
-                                            ${getTitleIcon(champ.title, 1, 10)}
-                                        </div>
-                                    </div>
-                                    ` : `
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
+                                        ${isInactive ? `<p style="color: #9ca3af; font-size: 0.85em; margin-bottom: 8px;">Title inactive - no current reign data</p>` : ''}
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -1597,6 +1601,7 @@
                                     </div>
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
+                                        ${isInactive ? `<p style="color: #9ca3af; font-size: 0.85em; margin-bottom: 8px;">Rating history not tracked</p>` : ''}
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
@@ -1620,15 +1625,16 @@
                                             <span class="detail-label">Total Title Matches</span>
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
                                         </div>
+                                        ${!isInactive ? `
                                         <div class="detail-item">
                                             <span class="detail-label">Current Streak</span>
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
+                                        ` : ''}
                                         <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
                                             ${getTitleIcon(champ.title, 1, 10)}
                                         </div>
                                     </div>
-                                    `}
                                     ${renderCompetitorsSection(champ.title)}
                                 </div>
                             </div>
