@@ -357,6 +357,29 @@
             font-weight: 600;
         }
 
+        /* Inactive title styling */
+        .inactive-title {
+            opacity: 0.7;
+        }
+
+        .inactive-title:hover {
+            opacity: 1;
+        }
+
+        .inactive-badge {
+            font-size: 0.65em;
+            background: rgba(156, 163, 175, 0.3);
+            color: #9ca3af;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .inactive-rating {
+            color: #9ca3af;
+        }
+
         /* Rating color classes */
         .rating-high {
             color: #22c55e;
@@ -1403,7 +1426,29 @@
         }
 
         async function renderChampionships() {
-            const championships = championshipData.championships || [];
+            let championships = championshipData.championships || [];
+            
+            // In All-Time view, add inactive titles from competitor data
+            let inactiveTitles = [];
+            if (viewMode === 'alltime' && competitorData && competitorData.titles) {
+                const activeTitleNames = new Set(championships.map(c => c.title));
+                inactiveTitles = competitorData.titles
+                    .filter(t => !activeTitleNames.has(t.title))
+                    .map(t => ({
+                        title: t.title,
+                        rank: null,
+                        rating: null,
+                        isInactive: true,
+                        totalMatches: t.totalMatches,
+                        // These would need to come from historical data if available
+                        allTimePeak: null,
+                        allTimeFloor: null,
+                        allTimeHighest: null,
+                        allTimeLowest: null,
+                        rankChange: null
+                    }));
+                console.log(`📊 All-Time view: Adding ${inactiveTitles.length} inactive titles`);
+            }
             
             // Fetch previous week data to find titles that dropped out
             let prevWeekData = null;
@@ -1448,8 +1493,11 @@
                 }
             }
 
-            // Sort championships
-            const sortedChampionships = sortChampionships(championships);
+            // Sort championships (combine with inactive titles in All-Time view)
+            const allChampionships = viewMode === 'alltime' 
+                ? [...championships, ...inactiveTitles]
+                : championships;
+            const sortedChampionships = sortChampionships(allChampionships);
 
             let html = `
                 <div class="table-container">
@@ -1457,7 +1505,7 @@
                         <div class="view-toggle-container">
                             <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="Shows statistics for the most recent championship reign only.">Current Reign</span>
                             <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
-                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
+                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship, including inactive titles.">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
@@ -1491,13 +1539,15 @@
             sortedChampionships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
-                const titleIcon = getTitleIcon(champ.title, champ.rank, championships.length);
+                const titleIcon = getTitleIcon(champ.title, champ.rank || 999, allChampionships.length);
+                const isInactive = champ.isInactive;
+                const rowClass = isInactive ? 'inactive-title' : '';
 
                 html += `
-                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
-                        <td class="rank-cell">${champ.rank}</td>
-                        <td class="title-cell">${titleIcon}${champ.title}</td>
-                        <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
+                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;" class="${rowClass}">
+                        <td class="rank-cell">${champ.rank || 'N/A'}</td>
+                        <td class="title-cell">${titleIcon}${champ.title}${isInactive ? ' <span class="inactive-badge">INACTIVE</span>' : ''}</td>
+                        <td class="rating-cell ${isInactive ? 'inactive-rating' : getRatingClass(champ.rating)}">${isInactive ? 'N/A' : formatRating(champ.rating)}</td>
                         ${viewMode === 'reign' ? `
                         <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
@@ -1511,14 +1561,14 @@
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.totalMatches || '—'}</td>
                         `}
-                        <td class="${rankChange.class}">${rankChange.text}</td>
+                        <td class="${rankChange.class}">${isInactive ? '—' : rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
-                                    <div class="details-section tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">
-                                        <h4>📊 Most Recent Reign</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -1737,10 +1787,14 @@
             sorted.sort((a, b) => {
                 let valA, valB;
                 
+                // Inactive titles (null rank) always go to bottom
+                if (a.isInactive && !b.isInactive) return 1;
+                if (!a.isInactive && b.isInactive) return -1;
+                
                 switch(col) {
                     case 'rank':
-                        valA = a.rank || 0;
-                        valB = b.rank || 0;
+                        valA = a.rank || 9999;
+                        valB = b.rank || 9999;
                         break;
                     case 'title':
                         valA = a.title || '';
@@ -1796,8 +1850,8 @@
                         valB = b.totalMatches || 0;
                         break;
                     default:
-                        valA = a.rank || 0;
-                        valB = b.rank || 0;
+                        valA = a.rank || 9999;
+                        valB = b.rank || 9999;
                 }
                 
                 return dir * (valA - valB);
