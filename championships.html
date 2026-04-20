@@ -1553,7 +1553,7 @@
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
                         <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
-                        <td class="streak-cell">${champ.streak}<span class="streak-text"> ${champ.streak === 1 ? 'match' : 'matches'}</span></td>
+                        <td class="streak-cell">${champ.streak || '—'}<span class="streak-text">${champ.streak ? ` ${champ.streak === 1 ? 'match' : 'matches'}` : ''}</span></td>
                         ` : `
                         <td class="rating-cell extra-col">${formatRating(champ.allTimePeak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.allTimeFloor)}</td>
@@ -1567,6 +1567,15 @@
                         <td colspan="9">
                             <div class="details-content">
                                 <div class="details-grid">
+                                    ${isInactive ? `
+                                    <div class="details-section">
+                                        <h4>ℹ️ Status</h4>
+                                        <p style="color: #9ca3af; font-size: 0.9em;">This title is currently inactive. Historical rating data is not available, but competitor statistics are shown below.</p>
+                                        <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
+                                            ${getTitleIcon(champ.title, 1, 10)}
+                                        </div>
+                                    </div>
+                                    ` : `
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
                                         <div class="detail-item">
@@ -1586,8 +1595,8 @@
                                             <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section tt" data-tt="This shows the statistics for all matches for this specific championship.">
-                                        <h4>🏆 All-Time</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
@@ -1605,8 +1614,8 @@
                                             <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
                                         </div>
                                     </div>
-                                    <div class="details-section tt" data-tt="Some additional information about this championship.">
-                                        <h4>📈 Stats</h4>
+                                    <div class="details-section">
+                                        <h4 class="tt" data-tt="Some additional information about this championship.">📈 Stats</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Total Title Matches</span>
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
@@ -1619,6 +1628,7 @@
                                             ${getTitleIcon(champ.title, 1, 10)}
                                         </div>
                                     </div>
+                                    `}
                                     ${renderCompetitorsSection(champ.title)}
                                 </div>
                             </div>
