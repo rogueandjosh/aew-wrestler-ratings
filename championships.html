@@ -471,6 +471,74 @@
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
 
+        .inactive-titles-section {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(156, 163, 175, 0.3);
+        }
+
+        .inactive-titles-toggle {
+            background: none;
+            border: 1px solid rgba(156, 163, 175, 0.3);
+            color: #9ca3af;
+            cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.9em;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .inactive-titles-toggle:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        .inactive-titles-list {
+            display: none;
+        }
+
+        .inactive-titles-list.visible {
+            display: block;
+        }
+
+        .inactive-item {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid rgba(156, 163, 175, 0.3);
+            color: #9ca3af;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .inactive-item.clickable {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .inactive-item.clickable:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e0e0e0;
+        }
+
+        .inactive-title-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inactive-info {
+            color: #6b7280;
+            font-size: 0.85em;
+        }
+
         .dropped-out-section h3 {
             color: #ffd700;
             margin-bottom: 15px;
@@ -1023,19 +1091,6 @@
         </div>
     </div>
 
-    <div style="text-align: center; margin: 30px 0 10px;">
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
-            ▲ Back to Top
-        </button>
-    </div>
-
-    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
-        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
-        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
-    </footer>
-
     <script>
         let championshipData = null;
         let archiveIndex = null;
@@ -1506,11 +1561,8 @@
                 }
             }
 
-            // Sort championships (combine with inactive titles in All-Time view)
-            const allChampionships = viewMode === 'alltime' 
-                ? [...championships, ...inactiveTitles]
-                : championships;
-            const sortedChampionships = sortChampionships(allChampionships);
+            // Sort championships (active only in table)
+            const sortedChampionships = sortChampionships(championships);
 
             let html = `
                 <div class="table-container">
@@ -1518,7 +1570,7 @@
                         <div class="view-toggle-container">
                             <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="Shows statistics for the most recent championship reign only.">Current Reign</span>
                             <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
-                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship, including inactive titles.">All-Time</span>
+                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
@@ -1552,15 +1604,13 @@
             sortedChampionships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
-                const titleIcon = getTitleIcon(champ.title, champ.rank || 999, allChampionships.length);
-                const isInactive = champ.isInactive;
-                const rowClass = isInactive ? 'inactive-title' : '';
+                const titleIcon = getTitleIcon(champ.title, champ.rank, championships.length);
 
                 html += `
-                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;" class="${rowClass}">
-                        <td class="rank-cell">${champ.rank || 'N/A'}</td>
-                        <td class="title-cell">${titleIcon}${champ.title}${isInactive ? ' <span class="inactive-badge">INACTIVE</span>' : ''}</td>
-                        <td class="rating-cell ${isInactive ? 'inactive-rating' : getRatingClass(champ.rating)}">${isInactive ? 'N/A' : formatRating(champ.rating)}</td>
+                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
+                        <td class="rank-cell">${champ.rank}</td>
+                        <td class="title-cell">${titleIcon}${champ.title}</td>
+                        <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
                         ${viewMode === 'reign' ? `
                         <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
@@ -1574,7 +1624,7 @@
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.totalMatches || '—'}</td>
                         `}
-                        <td class="${rankChange.class}">${isInactive ? '—' : rankChange.text}</td>
+                        <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
@@ -1582,7 +1632,6 @@
                                 <div class="details-grid">
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
-                                        ${isInactive ? `<p style="color: #9ca3af; font-size: 0.85em; margin-bottom: 8px;">Title inactive - no current reign data</p>` : ''}
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.peak)}</span>
@@ -1602,7 +1651,6 @@
                                     </div>
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
-                                        ${isInactive ? `<p style="color: #9ca3af; font-size: 0.85em; margin-bottom: 8px;">Rating history not tracked</p>` : ''}
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
                                             <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
@@ -1626,12 +1674,10 @@
                                             <span class="detail-label">Total Title Matches</span>
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
                                         </div>
-                                        ${!isInactive ? `
                                         <div class="detail-item">
                                             <span class="detail-label">Current Streak</span>
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
-                                        ` : ''}
                                         <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
                                             ${getTitleIcon(champ.title, 1, 10)}
                                         </div>
@@ -1646,6 +1692,60 @@
 
             html += '</tbody></table></div>';
 
+            // Inactive Titles Section (collapsible)
+            if (inactiveTitles.length > 0) {
+                html += `
+                    <div class="inactive-titles-section">
+                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data." onclick="toggleInactiveTitles(event)">
+                            ▼ Inactive Titles (${inactiveTitles.length})
+                        </button>
+                        <div id="inactiveTitlesList" class="inactive-titles-list">
+                            ${inactiveTitles.map((title, idx) => {
+                                const inactiveIndex = championships.length + droppedOutTitles.length + idx;
+                                const isExpanded = expandedRows.has(inactiveIndex);
+                                const titleIcon = getTitleIcon(title.title, 99, 99);
+                                
+                                return `
+                                    <div class="inactive-item-wrapper">
+                                        <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
+                                            <span class="inactive-title-name">${titleIcon}${title.title}</span>
+                                            <span class="inactive-info">${title.totalMatches} matches</span>
+                                        </div>
+                                        <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
+                                            <div class="details-grid">
+                                                <div class="details-section">
+                                                    <h4>ℹ️ Status</h4>
+                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive. Rating history is not tracked but competitor statistics are available.</p>
+                                                    <div class="detail-item" style="margin-top: 10px;">
+                                                        <span class="detail-label">Best Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Worst Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Total Matches</span>
+                                                        <span class="detail-value">${title.totalMatches || '—'}</span>
+                                                    </div>
+                                                    <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
+                                                        ${getTitleIcon(title.title, 1, 10)}
+                                                    </div>
+                                                </div>
+                                                ${renderCompetitorsSection(title.title)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                // Store count for toggle button
+                window.inactiveTitlesCount = inactiveTitles.length;
+            }
+
             if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
@@ -1654,7 +1754,7 @@
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
                             ${droppedOutTitles.map((title, idx) => {
-                                const dropIndex = championships.length + idx;
+                                const dropIndex = championships.length + inactiveTitles.length + idx;
                                 const isExpanded = expandedRows.has(dropIndex);
                                 const titleIcon = getTitleIcon(title.title, title.rank || 99, championships.length);
                                 
@@ -1737,10 +1837,11 @@
 
         function toggleDetails(index) {
             const championships = championshipData.championships || [];
-            const isDroppedOutItem = index >= championships.length;
+            const inactiveCount = window.inactiveTitlesCount || 0;
+            const isDroppedOutOrInactive = index >= championships.length;
             
-            if (isDroppedOutItem) {
-                // For dropped out items, just toggle the class without re-rendering
+            if (isDroppedOutOrInactive) {
+                // For dropped out and inactive items, just toggle the class without re-rendering
                 const detailsEl = document.getElementById(`details-${index}`);
                 if (detailsEl) {
                     detailsEl.classList.toggle('expanded');
@@ -1888,6 +1989,19 @@
             btn.textContent = isVisible
                 ? `▼ Dropped Out This Week (${count})`
                 : `▲ Hide Dropped Out`;
+        }
+
+        function toggleInactiveTitles(event) {
+            event.stopPropagation();
+            const list = document.getElementById('inactiveTitlesList');
+            const btn = event.target;
+            const isVisible = list.classList.contains('visible');
+            const count = window.inactiveTitlesCount || 0;
+
+            list.classList.toggle('visible');
+            btn.textContent = isVisible
+                ? `▼ Inactive Titles (${count})`
+                : `▲ Hide Inactive Titles`;
         }
 
         function getRatingClass(rating) {
