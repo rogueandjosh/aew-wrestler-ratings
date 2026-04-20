@@ -688,14 +688,15 @@
         }
 
         .competitors-table th {
-            background: rgba(255, 215, 0, 0.1);
+            background: #1a1a2e;
             color: #ffd700;
             font-size: 0.85em;
             cursor: pointer;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .competitors-table th:hover {
-            background: rgba(255, 215, 0, 0.2);
+            background: #252540;
         }
 
         .competitors-table td {
@@ -1692,60 +1693,7 @@
 
             html += '</tbody></table></div>';
 
-            // Inactive Titles Section (collapsible)
-            if (inactiveTitles.length > 0) {
-                html += `
-                    <div class="inactive-titles-section">
-                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data." onclick="toggleInactiveTitles(event)">
-                            ▼ Inactive Titles (${inactiveTitles.length})
-                        </button>
-                        <div id="inactiveTitlesList" class="inactive-titles-list">
-                            ${inactiveTitles.map((title, idx) => {
-                                const inactiveIndex = championships.length + droppedOutTitles.length + idx;
-                                const isExpanded = expandedRows.has(inactiveIndex);
-                                const titleIcon = getTitleIcon(title.title, 99, 99);
-                                
-                                return `
-                                    <div class="inactive-item-wrapper">
-                                        <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
-                                            <span class="inactive-title-name">${titleIcon}${title.title}</span>
-                                            <span class="inactive-info">${title.totalMatches} matches</span>
-                                        </div>
-                                        <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
-                                            <div class="details-grid">
-                                                <div class="details-section">
-                                                    <h4>ℹ️ Status</h4>
-                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive. Rating history is not tracked but competitor statistics are available.</p>
-                                                    <div class="detail-item" style="margin-top: 10px;">
-                                                        <span class="detail-label">Best Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Worst Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Total Matches</span>
-                                                        <span class="detail-value">${title.totalMatches || '—'}</span>
-                                                    </div>
-                                                    <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
-                                                        ${getTitleIcon(title.title, 1, 10)}
-                                                    </div>
-                                                </div>
-                                                ${renderCompetitorsSection(title.title)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-                
-                // Store count for toggle button
-                window.inactiveTitlesCount = inactiveTitles.length;
-            }
-
+            // Dropped Out This Week Section (collapsible) - comes FIRST
             if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
@@ -1754,7 +1702,7 @@
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
                             ${droppedOutTitles.map((title, idx) => {
-                                const dropIndex = championships.length + inactiveTitles.length + idx;
+                                const dropIndex = championships.length + idx;
                                 const isExpanded = expandedRows.has(dropIndex);
                                 const titleIcon = getTitleIcon(title.title, title.rank || 99, championships.length);
                                 
@@ -1830,6 +1778,60 @@
                 
                 // Store count for toggle button
                 window.droppedOutCount = droppedOutTitles.length;
+            }
+
+            // Inactive Titles Section (collapsible) - comes SECOND
+            if (inactiveTitles.length > 0) {
+                html += `
+                    <div class="inactive-titles-section">
+                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data." onclick="toggleInactiveTitles(event)">
+                            ▼ Inactive Titles (${inactiveTitles.length})
+                        </button>
+                        <div id="inactiveTitlesList" class="inactive-titles-list">
+                            ${inactiveTitles.map((title, idx) => {
+                                const inactiveIndex = championships.length + droppedOutTitles.length + idx;
+                                const isExpanded = expandedRows.has(inactiveIndex);
+                                const titleIcon = getTitleIcon(title.title, 99, 99);
+                                
+                                return `
+                                    <div class="inactive-item-wrapper">
+                                        <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
+                                            <span class="inactive-title-name">${titleIcon}${title.title}</span>
+                                            <span class="inactive-info">${title.totalMatches} matches</span>
+                                        </div>
+                                        <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
+                                            <div class="details-grid">
+                                                <div class="details-section">
+                                                    <h4>ℹ️ Status</h4>
+                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive. Rating history is not tracked but competitor statistics are available.</p>
+                                                    <div class="detail-item" style="margin-top: 10px;">
+                                                        <span class="detail-label">Best Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Worst Match Ever</span>
+                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">Total Matches</span>
+                                                        <span class="detail-value">${title.totalMatches || '—'}</span>
+                                                    </div>
+                                                    <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
+                                                        ${getTitleIcon(title.title, 1, 10)}
+                                                    </div>
+                                                </div>
+                                                ${renderCompetitorsSection(title.title)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                // Store count for toggle button
+                window.inactiveTitlesCount = inactiveTitles.length;
             }
 
             document.getElementById('content').innerHTML = html;
