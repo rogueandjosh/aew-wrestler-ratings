@@ -2926,6 +2926,9 @@ let visibleColumns = {
                             showDivision(currentDivision);
                         }
                         
+                        // Update analysis banner for current week
+                        updateAnalysisBanner('current');
+                        
                         // Update navigation button states
                         updateNavigationButtons();
                     })
@@ -2970,6 +2973,9 @@ let visibleColumns = {
                             } else {
                                 showDivision(currentDivision);
                             }
+                            
+                            // Update analysis banner for this archived week
+                            updateAnalysisBanner(ratingsData.currentWeek);
                             
                             // Update navigation button states
                             updateNavigationButtons();
@@ -4620,6 +4626,75 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
     window.currentStatisticsData = statisticsData;
     window.currentSelectedWeek = selectedWeekLabel;
     updateSortedColumnStyle();
+}
+
+function updateAnalysisBanner(weekLabel) {
+    const banner = document.getElementById('analysisBanner');
+    const body = document.getElementById('analysisBody');
+    const chevron = document.getElementById('analysisChevron');
+    const weekEl = document.getElementById('analysisWeekLabel');
+    const header = document.querySelector('.analysis-header');
+
+    if (weekLabel === 'current') {
+        // Fetch current analysis.json
+        fetch('analysis.json')
+            .then(r => r.json())
+            .then(data => {
+                if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
+                    banner.style.display = 'none';
+                    return;
+                }
+                weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
+                document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
+                document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
+                // Restore toggle behaviour
+                header.onclick = toggleAnalysis;
+                header.style.cursor = 'pointer';
+                chevron.style.display = '';
+                banner.style.display = 'block';
+            })
+            .catch(() => { banner.style.display = 'none'; });
+    } else {
+        // Try to fetch from analysis archive
+        const slug = weekLabelToAnalysisSlug(weekLabel);
+        if (!slug) { banner.style.display = 'none'; return; }
+
+        fetch('analysis-archive/' + slug)
+            .then(r => {
+                if (!r.ok) throw new Error('Not found');
+                return r.json();
+            })
+            .then(data => {
+                if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
+                    banner.style.display = 'none';
+                    return;
+                }
+                weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
+                document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
+                document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
+                // Archive weeks: show label only, no expand toggle
+                body.classList.remove('open');
+                body.classList.add('open'); // show expanded, no toggle needed
+                chevron.style.display = 'none';
+                header.onclick = null;
+                header.style.cursor = 'default';
+                banner.style.display = 'block';
+            })
+            .catch(() => { banner.style.display = 'none'; });
+    }
+}
+
+function weekLabelToAnalysisSlug(weekLabel) {
+    // "Apr '26 Week 2" -> "analysis-2026-04-week2.json"
+    const match = weekLabel.match(/(\w+)\s+'(\d{2})\s+Week\s+(\d+)/);
+    if (!match) return null;
+    const monthMap = {
+        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
+        'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+    };
+    const month = monthMap[match[1]];
+    if (!month) return null;
+    return 'analysis-20' + match[2] + '-' + month + '-week' + match[3] + '.json';
 }
 
 function toggleAnalysis() {
