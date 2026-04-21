@@ -1266,6 +1266,85 @@
                 padding: 12px 16px;
             }
         }
+
+        /* ===== WEEKLY ANALYSIS ===== */
+        .analysis-banner {
+            background: rgba(255, 215, 0, 0.07);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .analysis-header:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .analysis-title {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        .analysis-week {
+            color: #b8b8b8;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .analysis-chevron {
+            color: #ffd700;
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+        }
+
+        .analysis-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .analysis-body {
+            display: none;
+            padding: 0 20px 18px 20px;
+            border-top: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        .analysis-body.open {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .analysis-section-label {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 14px 0 6px 0;
+        }
+
+        .analysis-text {
+            color: #d0d0d0;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        .analysis-text a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .analysis-text a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -1354,6 +1433,23 @@
                 <p class="last-updated" id="lastUpdated"></p>
             </div>
         </header>
+
+        <!-- Weekly Analysis Banner -->
+        <div id="analysisBanner" class="analysis-banner" style="display:none;">
+            <div class="analysis-header" onclick="toggleAnalysis()">
+                <span>
+                    <span class="analysis-title">📝 This Week's Analysis</span>
+                    <span class="analysis-week" id="analysisWeekLabel"></span>
+                </span>
+                <span class="analysis-chevron" id="analysisChevron">▼</span>
+            </div>
+            <div class="analysis-body" id="analysisBody">
+                <div class="analysis-section-label">Match Talking Points</div>
+                <div class="analysis-text" id="analysisTalkingPoints"></div>
+                <div class="analysis-section-label">Others to Note</div>
+                <div class="analysis-text" id="analysisOthersToNote"></div>
+            </div>
+        </div>
 
         <div class="view-toggle">
             <button id="rankingsToggle" class="toggle-btn active tt tt-below" onclick="switchToRankings()" data-tt="These are the rankings for all active wrestlers. Click on one of the division buttons below to change between men's, women's and team rankings.">
@@ -2394,6 +2490,18 @@ let visibleColumns = {
             } else {
                 showDivision('mens');
             }
+
+            // Load weekly analysis (non-blocking)
+            fetch('analysis.json')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || (!data.matchTalkingPoints && !data.othersToNote)) return;
+                    document.getElementById('analysisWeekLabel').textContent = '— ' + expandMonthName(data.week);
+                    document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
+                    document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
+                    document.getElementById('analysisBanner').style.display = 'block';
+                })
+                .catch(() => { /* no analysis this week, banner stays hidden */ });
         })
         .catch(error => {
             document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
@@ -4512,6 +4620,24 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
     window.currentStatisticsData = statisticsData;
     window.currentSelectedWeek = selectedWeekLabel;
     updateSortedColumnStyle();
+}
+
+function toggleAnalysis() {
+    const body = document.getElementById('analysisBody');
+    const chevron = document.getElementById('analysisChevron');
+    const isOpen = body.classList.toggle('open');
+    chevron.classList.toggle('open', isOpen);
+}
+
+function linkWrestlerNames(text) {
+    if (!text) return '';
+    const skip = new Set(['The', 'This', 'Week', 'Also', 'Along', 'With', 'No', 'Welcome', 'Back', 'As', 'They', 'New', 'Trio', 'Title', 'Women', 'Men', 'Tag', 'Division', 'Show', 'Following', 'Dynasty', 'Collision', 'Dynamite', 'While', 'However', 'Though', 'These', 'Their', 'There', 'Pre']);
+    return text.replace(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s*&\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?)\b/g, (match) => {
+        const firstWord = match.split(/\s+/)[0];
+        if (skip.has(firstWord)) return match;
+        const slug = createSlug(match.replace(/\s*&\s*/g, '-and-'));
+        return `<a href="wrestler-stats.html?wrestler=${slug}" class="wrestler-link">${match}</a>`;
+    });
 }
 
 function toggleColumnSelector() {
