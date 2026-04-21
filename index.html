@@ -1298,7 +1298,7 @@
         .analysis-week {
             color: #b8b8b8;
             font-size: 0.85em;
-            margin-left: 10px;
+            margin-left: 0;
         }
 
         .analysis-chevron {
@@ -4630,14 +4630,30 @@ function toggleAnalysis() {
 }
 
 function linkWrestlerNames(text) {
-    if (!text) return '';
-    const skip = new Set(['The', 'This', 'Week', 'Also', 'Along', 'With', 'No', 'Welcome', 'Back', 'As', 'They', 'New', 'Trio', 'Title', 'Women', 'Men', 'Tag', 'Division', 'Show', 'Following', 'Dynasty', 'Collision', 'Dynamite', 'While', 'However', 'Though', 'These', 'Their', 'There', 'Pre']);
-    return text.replace(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s*&\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?)\b/g, (match) => {
-        const firstWord = match.split(/\s+/)[0];
-        if (skip.has(firstWord)) return match;
-        const slug = createSlug(match.replace(/\s*&\s*/g, '-and-'));
-        return `<a href="wrestler-stats.html?wrestler=${slug}" class="wrestler-link">${match}</a>`;
+    if (!text || !ratingsData) return text || '';
+
+    // Build a flat map of all names across all divisions from current rankings
+    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+    const nameToSlug = {};
+    divisions.forEach(division => {
+        (ratingsData[division] || []).forEach(w => {
+            const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
+            if (cleanName) nameToSlug[cleanName] = createSlug(cleanName);
+        });
     });
+
+    // Sort longest-first so "Jon Moxley" matches before "Moxley" if both existed
+    const names = Object.keys(nameToSlug).sort((a, b) => b.length - a.length);
+
+    // Replace each matched name with a hyperlink - only exact matches from rankings data
+    let result = text;
+    names.forEach(name => {
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp('(?<![\\w])' + escaped + '(?![\\w])', 'g');
+        result = result.replace(regex, '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>');
+    });
+
+    return result;
 }
 
 function toggleColumnSelector() {
