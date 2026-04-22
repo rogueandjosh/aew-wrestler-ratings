@@ -4717,7 +4717,7 @@ async function buildNameToSlug() {
     // Also add previous week's names (catches recently dropped out wrestlers)
     try {
         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
-            const prevWeekUrl = archiveIndex.weeks[0].url;
+            const prevWeekUrl = archiveIndex.weeks[1] ? archiveIndex.weeks[1].url : archiveIndex.weeks[0].url;
             const prevData = await fetch(prevWeekUrl).then(r => r.json());
             divisions.forEach(division => {
                 (prevData[division] || []).forEach(w => {
@@ -4745,7 +4745,7 @@ async function linkWrestlerNames(text) {
     let result = text;
     names.forEach(name => {
         const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp('(?<![\\w])' + escaped + '(?![\\w])', 'g');
+        const regex = new RegExp('(?<![\\w])' + escaped + '(?![\\w])');
         result = result.replace(regex, '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>');
     });
 
