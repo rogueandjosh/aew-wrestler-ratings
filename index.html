@@ -1444,10 +1444,7 @@
                 <span class="analysis-chevron" id="analysisChevron">▼</span>
             </div>
             <div class="analysis-body" id="analysisBody">
-                <div class="analysis-section-label">Match Talking Points</div>
-                <div class="analysis-text" id="analysisTalkingPoints"></div>
-                <div class="analysis-section-label">Others to Note</div>
-                <div class="analysis-text" id="analysisOthersToNote"></div>
+                <div id="analysisSections"></div>
             </div>
         </div>
 
@@ -4619,6 +4616,33 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
     updateSortedColumnStyle();
 }
 
+async function renderAnalysisSections(sections) {
+    const container = document.getElementById('analysisSections');
+    if (!container) return;
+
+    const sectionLabels = {
+        overall: 'Overall',
+        mens: "Men's",
+        womens: "Women's",
+        menstag: "Men's Tag Teams",
+        womenstag: "Women's Tag Teams",
+        trios: 'Trios'
+    };
+
+    const order = ['overall', 'mens', 'womens', 'menstag', 'womenstag', 'trios'];
+    let html = '';
+
+    for (const key of order) {
+        if (sections[key] && sections[key].trim() !== '') {
+            const linked = await linkWrestlerNames(sections[key]);
+            html += '<div class="analysis-section-label">' + sectionLabels[key] + '</div>';
+            html += '<div class="analysis-text">' + linked + '</div>';
+        }
+    }
+
+    container.innerHTML = html;
+}
+
 function updateAnalysisBanner(weekLabel) {
     const banner = document.getElementById('analysisBanner');
     const body = document.getElementById('analysisBody');
@@ -4631,7 +4655,7 @@ function updateAnalysisBanner(weekLabel) {
         fetch('analysis.json')
             .then(r => r.json())
             .then(async data => {
-                if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
+                if (!data || !data.sections || Object.keys(data.sections).length === 0) {
                     banner.style.display = 'none';
                     return;
                 }
@@ -4641,8 +4665,7 @@ function updateAnalysisBanner(weekLabel) {
                     return;
                 }
                 weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
-                document.getElementById('analysisTalkingPoints').innerHTML = await linkWrestlerNames(data.matchTalkingPoints || '');
-                document.getElementById('analysisOthersToNote').innerHTML = await linkWrestlerNames(data.othersToNote || '');
+                await renderAnalysisSections(data.sections || {});
                 // Restore toggle behaviour
                 header.onclick = toggleAnalysis;
                 header.style.cursor = 'pointer';
@@ -4661,13 +4684,12 @@ function updateAnalysisBanner(weekLabel) {
                 return r.json();
             })
             .then(async data => {
-                if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
+                if (!data || !data.sections || Object.keys(data.sections).length === 0) {
                     banner.style.display = 'none';
                     return;
                 }
                 weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
-                document.getElementById('analysisTalkingPoints').innerHTML = await linkWrestlerNames(data.matchTalkingPoints || '');
-                document.getElementById('analysisOthersToNote').innerHTML = await linkWrestlerNames(data.othersToNote || '');
+                await renderAnalysisSections(data.sections || {});
                 // Archive weeks: show label only, no expand toggle
                 body.classList.remove('open');
                 body.classList.add('open'); // show expanded, no toggle needed
