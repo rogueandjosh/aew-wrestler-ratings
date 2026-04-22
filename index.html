@@ -4717,10 +4717,10 @@ async function buildNameToSlug() {
     // Also add previous week's names (catches recently dropped out wrestlers)
     try {
         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
-            const weeksArr = archiveIndex.weeks;
+            const weeksArr = archiveIndex.weeks.filter(w => w.filename !== 'archive-index.json');
             const prevWeekUrl = weeksArr.length >= 2
-                ? weeksArr[weeksArr.length - 2].url
-                : weeksArr[weeksArr.length - 1].url;
+                ? weeksArr[1].url
+                : weeksArr[0].url;
             const prevData = await fetch(prevWeekUrl).then(r => r.json());
             divisions.forEach(division => {
                 (prevData[division] || []).forEach(w => {
