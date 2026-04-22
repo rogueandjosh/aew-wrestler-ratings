@@ -2491,17 +2491,8 @@ let visibleColumns = {
                 showDivision('mens');
             }
 
-            // Load weekly analysis (non-blocking)
-            fetch('analysis.json')
-                .then(r => r.json())
-                .then(data => {
-                    if (!data || (!data.matchTalkingPoints && !data.othersToNote)) return;
-                    document.getElementById('analysisWeekLabel').textContent = '— ' + expandMonthName(data.week);
-                    document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
-                    document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
-                    document.getElementById('analysisBanner').style.display = 'block';
-                })
-                .catch(() => { /* no analysis this week, banner stays hidden */ });
+            // Load weekly analysis via updateAnalysisBanner (includes stale week check)
+            updateAnalysisBanner('current');
         })
         .catch(error => {
             document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
@@ -4639,14 +4630,19 @@ function updateAnalysisBanner(weekLabel) {
         // Fetch current analysis.json
         fetch('analysis.json')
             .then(r => r.json())
-            .then(data => {
+            .then(async data => {
                 if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
                     banner.style.display = 'none';
                     return;
                 }
+                // Hide if analysis is stale (different week to current rankings)
+                if (ratingsData && ratingsData.currentWeek && data.week !== ratingsData.currentWeek) {
+                    banner.style.display = 'none';
+                    return;
+                }
                 weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
-                document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
-                document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
+                document.getElementById('analysisTalkingPoints').innerHTML = await linkWrestlerNames(data.matchTalkingPoints || '');
+                document.getElementById('analysisOthersToNote').innerHTML = await linkWrestlerNames(data.othersToNote || '');
                 // Restore toggle behaviour
                 header.onclick = toggleAnalysis;
                 header.style.cursor = 'pointer';
@@ -4664,14 +4660,14 @@ function updateAnalysisBanner(weekLabel) {
                 if (!r.ok) throw new Error('Not found');
                 return r.json();
             })
-            .then(data => {
+            .then(async data => {
                 if (!data || (!data.matchTalkingPoints && !data.othersToNote)) {
                     banner.style.display = 'none';
                     return;
                 }
                 weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
-                document.getElementById('analysisTalkingPoints').innerHTML = linkWrestlerNames(data.matchTalkingPoints || '');
-                document.getElementById('analysisOthersToNote').innerHTML = linkWrestlerNames(data.othersToNote || '');
+                document.getElementById('analysisTalkingPoints').innerHTML = await linkWrestlerNames(data.matchTalkingPoints || '');
+                document.getElementById('analysisOthersToNote').innerHTML = await linkWrestlerNames(data.othersToNote || '');
                 // Archive weeks: show label only, no expand toggle
                 body.classList.remove('open');
                 body.classList.add('open'); // show expanded, no toggle needed
@@ -4704,20 +4700,45 @@ function toggleAnalysis() {
     chevron.classList.toggle('open', isOpen);
 }
 
-function linkWrestlerNames(text) {
-    if (!text || !ratingsData) return text || '';
-
-    // Build a flat map of all names across all divisions from current rankings
+async function buildNameToSlug() {
     const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
     const nameToSlug = {};
-    divisions.forEach(division => {
-        (ratingsData[division] || []).forEach(w => {
-            const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
-            if (cleanName) nameToSlug[cleanName] = createSlug(cleanName);
-        });
-    });
 
-    // Sort longest-first so "Jon Moxley" matches before "Moxley" if both existed
+    // Add all names from current rankings
+    if (ratingsData) {
+        divisions.forEach(division => {
+            (ratingsData[division] || []).forEach(w => {
+                const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
+                if (cleanName) nameToSlug[cleanName] = createSlug(cleanName);
+            });
+        });
+    }
+
+    // Also add previous week's names (catches recently dropped out wrestlers)
+    try {
+        if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
+            const prevWeekUrl = archiveIndex.weeks[0].url;
+            const prevData = await fetch(prevWeekUrl).then(r => r.json());
+            divisions.forEach(division => {
+                (prevData[division] || []).forEach(w => {
+                    const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
+                    if (cleanName && !nameToSlug[cleanName]) nameToSlug[cleanName] = createSlug(cleanName);
+                });
+            });
+        }
+    } catch (e) {
+        // Previous week unavailable - current week names only
+    }
+
+    return nameToSlug;
+}
+
+async function linkWrestlerNames(text) {
+    if (!text || !ratingsData) return text || '';
+
+    const nameToSlug = await buildNameToSlug();
+
+    // Sort longest-first so longer names match before shorter ones
     const names = Object.keys(nameToSlug).sort((a, b) => b.length - a.length);
 
     // Replace each matched name with a hyperlink - only exact matches from rankings data
