@@ -722,12 +722,13 @@
 
         // Helper function: Create slug from name
         function createSlug(name) {
-            return name
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '');
-        }
-        
+        return name
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')  // Remove special chars (including apostrophe)
+        .replace(/\s+/g, '-')       // Spaces to hyphens
+        .replace(/-+/g, '-')        // Remove duplicate hyphens
+        .replace(/^-|-$/g, '');     // Trim leading/trailing hyphens
+    }
         // Helper function: Generate initials from wrestler/team name
         function generateInitials(name) {
             let cleanName = name
