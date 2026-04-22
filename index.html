@@ -4777,7 +4777,7 @@ async function linkWrestlerNames(text) {
     let result = text;
     names.forEach(name => {
         const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp('(?<![\\w])' + escaped + '(?![\\w])');
+        const regex = new RegExp('(?<![a-zA-Z0-9])' + escaped + '(?![a-zA-Z0-9])');
         result = result.replace(regex, '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>');
     });
 
