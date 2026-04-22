@@ -4637,7 +4637,9 @@ async function renderAnalysisSections(sections) {
 
     for (const key of order) {
         if (sections[key] && sections[key].trim() !== '') {
-            const linked = await linkWrestlerNames(sections[key]);
+            // Pass division key so only that division's names are linked
+            // 'overall' gets all divisions
+            const linked = await linkWrestlerNames(sections[key], key === 'overall' ? null : key);
             html += '<div class="analysis-section-label">' + sectionLabels[key] + '</div>';
             html += '<div class="analysis-text">' + linked + '</div>';
         }
@@ -4730,11 +4732,11 @@ function toggleAnalysis() {
     chevron.classList.toggle('open', isOpen);
 }
 
-async function buildNameToSlug() {
-    const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+async function buildNameToSlug(divisionFilter = null) {
+    const divisions = divisionFilter ? [divisionFilter] : ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
     const nameToSlug = {};
 
-    // Add all names from current rankings
+    // Add names from specified division(s) only
     if (ratingsData) {
         divisions.forEach(division => {
             (ratingsData[division] || []).forEach(w => {
@@ -4766,20 +4768,35 @@ async function buildNameToSlug() {
     return nameToSlug;
 }
 
-async function linkWrestlerNames(text) {
+async function linkWrestlerNames(text, divisionFilter = null) {
     if (!text || !ratingsData) return text || '';
 
-    const nameToSlug = await buildNameToSlug();
+    const nameToSlug = await buildNameToSlug(divisionFilter);
 
     // Sort longest-first so longer names match before shorter ones
     const names = Object.keys(nameToSlug).sort((a, b) => b.length - a.length);
 
     // Replace each matched name with a hyperlink - only exact matches from rankings data
+    // Use a placeholder system to avoid matching inside already-replaced anchor tags
     let result = text;
+    const placeholders = {};
+    let placeholderIndex = 0;
+
     names.forEach(name => {
         const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp('(?<![a-zA-Z0-9])' + escaped + '(?![a-zA-Z0-9])');
-        result = result.replace(regex, '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>');
+        const placeholder = '%%LINK' + placeholderIndex + '%%';
+        const newResult = result.replace(regex, placeholder);
+        if (newResult !== result) {
+            placeholders[placeholder] = '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>';
+            placeholderIndex++;
+            result = newResult;
+        }
+    });
+
+    // Replace placeholders with actual links
+    Object.entries(placeholders).forEach(([placeholder, link]) => {
+        result = result.replace(placeholder, link);
     });
 
     return result;
