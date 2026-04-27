@@ -3353,7 +3353,6 @@ rows.push(`
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td>${wrestler.matches}</td>
         <td>${(wrestler.peak || 100).toFixed(2)}</td>
-        <td>${(wrestler.floor || 100).toFixed(2)}</td>
     </tr>
 `);
 }
@@ -3401,7 +3400,6 @@ if (tableEl) {
                     <th class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
                     <th class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
                     <th class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
-                    <th class="tt" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>
                 </tr>
             </thead>
             <tbody>
