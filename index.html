@@ -4017,10 +4017,12 @@ function renderStatistics(division) {
                         ? valA.localeCompare(valB)
                         : valB.localeCompare(valA);
                 } else {
-                    // Numeric sorting
+                    // Numeric sorting - handle N/A and null values
+                    const numA = (valA === null || valA === undefined || valA === 'N/A') ? -Infinity : valA;
+                    const numB = (valB === null || valB === undefined || valB === 'N/A') ? -Infinity : valB;
                     return direction === 'desc' 
-                        ? valB - valA
-                        : valA - valB;
+                        ? numB - numA
+                        : numA - numB;
                 }
             });
         }
