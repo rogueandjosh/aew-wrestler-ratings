@@ -4712,9 +4712,9 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                 // Archive weeks: show label only, no expand toggle
                 body.classList.remove('open');
                 body.classList.add('open'); // show expanded, no toggle needed
-                chevron.style.display = 'none';
-                header.onclick = null;
-                header.style.cursor = 'default';
+                chevron.style.display = '';
+                header.onclick = toggleAnalysis;
+                header.style.cursor = 'pointer';
                 banner.style.display = 'block';
             })
             .catch(() => { banner.style.display = 'none'; });
