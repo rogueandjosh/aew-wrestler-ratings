@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
     <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
 <script>
@@ -15,7 +11,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Championship Ratings | Elite Wrestler Ratings</title>
+    <title>Championship Ratings | AEW Wrestler Ratings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
@@ -1586,15 +1582,15 @@
                             <tr>
                                 <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
                                 <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
-                                <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Rating ${getSortArrow('rating')}</th>
+                                <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
                                 ${viewMode === 'reign' ? `
-                                <th class="sortable tt extra-col" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
+                                <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
                                 <th class="sortable tt" data-tt="The number of matches within the most recent reign." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
                                 ` : `
-                                <th class="sortable tt extra-col" data-tt="The highest rating this championship has ever achieved across all reigns." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
+                                <th class="sortable tt" data-tt="The highest rating this championship has ever achieved across all reigns." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had across all reigns." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
@@ -1617,13 +1613,13 @@
                         <td class="title-cell">${titleIcon}${champ.title}</td>
                         <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
                         ${viewMode === 'reign' ? `
-                        <td class="rating-cell extra-col">${formatRating(champ.peak)}</td>
+                        <td class="rating-cell">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
                         <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak || '—'}<span class="streak-text">${champ.streak ? ` ${champ.streak === 1 ? 'match' : 'matches'}` : ''}</span></td>
                         ` : `
-                        <td class="rating-cell extra-col">${formatRating(champ.allTimePeak)}</td>
+                        <td class="rating-cell">${formatRating(champ.allTimePeak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.allTimeFloor)}</td>
                         <td class="rating-cell extra-col">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
@@ -2268,7 +2264,7 @@
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
     </footer>
 </body>
 </html>
