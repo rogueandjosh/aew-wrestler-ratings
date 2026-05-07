@@ -832,7 +832,7 @@
             }
 
             #ttBox {
-                max-width: 220px;
+                max-width: calc(100vw - 20px);
                 font-size: 0.85em;
             }
 
@@ -1411,11 +1411,22 @@
             let y = e.clientY + padding;
 
             const rect = ttBox.getBoundingClientRect();
+            
+            // Prevent overflow on right
             if (x + rect.width > window.innerWidth) {
                 x = e.clientX - rect.width - padding;
             }
+            // Prevent overflow on left
+            if (x < 5) {
+                x = 5;
+            }
+            // Prevent overflow on bottom
             if (y + rect.height > window.innerHeight) {
                 y = e.clientY - rect.height - padding;
+            }
+            // Prevent overflow on top
+            if (y < 5) {
+                y = 5;
             }
 
             ttBox.style.left = x + 'px';
@@ -1573,7 +1584,7 @@
                             <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
                             <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
                         </div>
-                        <button id="toggleExtraCols" onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
+                        <button id="toggleExtraCols" class="tt" data-tt="Show or hide additional columns: Floor, Best Match, and Worst Match." onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-family: 'Overlock', 'Arial', sans-serif;">
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
                         </button>
                     </div>
@@ -2264,7 +2275,7 @@
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+        <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 </body>
 </html>
