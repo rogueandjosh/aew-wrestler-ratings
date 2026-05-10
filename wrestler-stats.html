@@ -2163,10 +2163,12 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                                 maxRotation: 45,
                                 minRotation: 45,
                                 font: { size: 10 },
-                                callback: function(value, index, values) {
-                                    // Work backwards - show label if it's an even number of steps from the end
-                                    const fromEnd = values.length - 1 - index;
-                                    return fromEnd % 2 === 0 ? this.getLabelForValue(value) : '';
+                                autoSkip: true,
+                                maxTicksLimit: 20,
+                                callback: function(value, index, ticks) {
+                                    const label = this.getLabelForValue(value);
+                                    const fromEnd = ticks.length - 1 - index;
+                                    return fromEnd % 2 === 0 ? label : '';
                                 }
                             }
                         }
