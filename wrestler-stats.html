@@ -2163,8 +2163,14 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                                 maxRotation: 45,
                                 minRotation: 45,
                                 font: { size: 10 },
-                                autoSkip: true,
-                                maxTicksLimit: 24
+                                callback: function(value, index) {
+                                    const labels = this.chart.data.labels;
+                                    const totalLabels = labels.length;
+                                    const fromEnd = totalLabels - 1 - index;
+                                    const isMobile = window.innerWidth < 768;
+                                    const step = isMobile ? 4 : 2;
+                                    return fromEnd % step === 0 ? labels[index] : '';
+                                }
                             }
                         }
                     }
