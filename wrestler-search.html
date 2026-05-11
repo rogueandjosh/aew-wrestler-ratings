@@ -11,7 +11,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Wrestlers - AEW Wrestler Ratings</title>
+    <title>Search Wrestlers - Elite Wrestler Ratings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
@@ -96,7 +96,7 @@
         .search-container {
             position: relative;
             max-width: 600px;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
 
         .search-input {
@@ -127,6 +127,13 @@
             top: 50%;
             transform: translateY(-50%);
             font-size: 1.3em;
+        }
+
+        .search-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 20px;
         }
 
         /* Autocomplete dropdown */
@@ -220,6 +227,7 @@
             font-size: 0.85em;
             color: #999;
             margin-top: 2px;
+            flex-wrap: wrap;
         }
 
         .division-badge {
@@ -342,6 +350,7 @@
             object-fit: cover;
             border: 3px solid #ffd700;
             margin: 0 auto 10px;
+            display: block;
         }
 
         /* Overlapping photos for team cards */
@@ -383,6 +392,10 @@
             font-size: 0.8em;
             color: #999;
             margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .card-stats {
@@ -413,6 +426,7 @@
             padding: 60px 20px;
             color: #888;
             font-size: 1.2em;
+            grid-column: 1 / -1;
         }
 
         /* Loading */
@@ -421,12 +435,14 @@
             padding: 60px 20px;
             color: #ffd700;
             font-size: 1.3em;
+            grid-column: 1 / -1;
         }
 
         /* Rating colors */
         .rating-high { color: #22c55e; }
         .rating-medium { color: #ffd700; }
         .rating-low { color: #ef4444; }
+        .rating-na { color: #888; }
 
         /* Mobile Responsive */
         @media (max-width: 1200px) {
@@ -520,13 +536,14 @@
         <div class="search-section">
             <div class="search-container">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search for a wrestler or team..." autocomplete="off">
+                <input type="text" id="searchInput" class="search-input tt" data-tt="Start typing a wrestler or team name. Suggestions will appear as you type." placeholder="Search for a wrestler or team..." autocomplete="off">
                 <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
             </div>
+            <p class="search-hint">Type to search, or use the filters below to browse all wrestlers</p>
 
             <div class="filters">
                 <div class="filter-group">
-                    <label for="divisionFilter">Division:</label>
+                    <label for="divisionFilter" class="tt" data-tt="Filter by division - Men's, Women's, Tag Teams, or Trios">Division:</label>
                     <select id="divisionFilter" class="filter-select">
                         <option value="all">All Divisions</option>
                         <option value="mens">Men's</option>
@@ -537,7 +554,15 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="statusFilter">Status:</label>
+                    <label for="typeFilter" class="tt" data-tt="Filter by type - show only individual wrestlers or only teams">Type:</label>
+                    <select id="typeFilter" class="filter-select">
+                        <option value="all">All</option>
+                        <option value="individuals">Individuals</option>
+                        <option value="teams">Teams</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter" class="tt" data-tt="Active wrestlers have appeared in the rankings in recent weeks. Inactive wrestlers have dropped out.">Status:</label>
                     <select id="statusFilter" class="filter-select">
                         <option value="all">All</option>
                         <option value="active">Active</option>
@@ -552,7 +577,7 @@
             <div class="results-header">
                 <span id="resultsCount" class="results-count">Loading...</span>
                 <div class="sort-group">
-                    <label for="sortSelect">Sort by:</label>
+                    <label for="sortSelect" class="tt" data-tt="Change how the results are sorted. The displayed stats will change based on your selection.">Sort by:</label>
                     <select id="sortSelect" class="filter-select">
                         <option value="name-asc">Name (A-Z)</option>
                         <option value="name-desc">Name (Z-A)</option>
@@ -577,13 +602,15 @@
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 
     <script>
         let allWrestlers = [];
         let filteredWrestlers = [];
         let teamMembersData = {};
+        let activeWrestlerNames = new Set(); // Track who is currently active
+        let currentSortField = 'name';
 
         // Division labels
         const divisionLabels = {
@@ -628,6 +655,15 @@
             return initials.toUpperCase();
         }
 
+        // Generate initials for tag team members
+        function generateTagInitials(name) {
+            const words = name.trim().split(/[\s-]+/).filter(w => w.length > 0);
+            if (words.length === 1) {
+                return words[0].substring(0, 2).toUpperCase();
+            }
+            return words[0].charAt(0).toUpperCase();
+        }
+
         // Create initials SVG circle
         function createInitialsCircle(initials, size) {
             const radius = size / 2 - 2;
@@ -659,9 +695,15 @@
 
         // Get rating color class
         function getRatingClass(rating) {
+            if (rating === null || rating === undefined) return 'rating-na';
             if (rating >= 120) return 'rating-high';
             if (rating >= 100) return 'rating-medium';
             return 'rating-low';
+        }
+
+        // Check if wrestler is a team
+        function isTeam(division) {
+            return ['menstag', 'womenstag', 'trios'].includes(division);
         }
 
         // Load team members data
@@ -676,9 +718,30 @@
             }
         }
 
+        // Load current rankings to determine active status
+        async function loadCurrentRankings() {
+            try {
+                const response = await fetch('current-rankings.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Collect all active wrestler names from all divisions
+                    for (const division of ['mens', 'womens', 'menstag', 'womenstag', 'trios']) {
+                        if (data[division] && Array.isArray(data[division])) {
+                            data[division].forEach(w => {
+                                activeWrestlerNames.add(w.name);
+                            });
+                        }
+                    }
+                    console.log('Active wrestlers loaded:', activeWrestlerNames.size);
+                }
+            } catch (e) {
+                console.log('Could not load current-rankings.json');
+            }
+        }
+
         // Get team members for a wrestler
         function getTeamMembers(name, division) {
-            if (!['menstag', 'womenstag', 'trios'].includes(division)) {
+            if (!isTeam(division)) {
                 return null;
             }
             return teamMembersData[name] || null;
@@ -697,23 +760,24 @@
                     if (!Array.isArray(wrestlers)) continue;
 
                     wrestlers.forEach(w => {
-                        // Determine if active (has current rating that's not null/undefined)
-                        const isActive = w.current !== null && w.current !== undefined && !isNaN(w.current);
+                        // Determine if active by checking if they're in current-rankings
+                        const isActive = activeWrestlerNames.has(w.name);
                         
                         allWrestlers.push({
                             name: w.name,
                             slug: createSlug(w.name),
                             division: division,
                             current: isActive ? w.current : null,
+                            currentRank: isActive ? w.currentRank : null,
                             peak: w.peak || 0,
                             floor: w.floor || 0,
                             average: w.average || 0,
                             matches: w.totalMatches || 0,
                             weeks: w.totalWeeksRanked || 0,
-                            rank: w.currentRank || null,
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
-                            isActive: isActive
+                            isActive: isActive,
+                            isTeam: isTeam(division)
                         });
                     });
                 }
@@ -729,6 +793,7 @@
         function applyFiltersAndSort() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const divisionFilter = document.getElementById('divisionFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
             const sortValue = document.getElementById('sortSelect').value;
 
@@ -736,11 +801,26 @@
             filteredWrestlers = allWrestlers.filter(w => {
                 // Search filter
                 if (searchTerm && !w.name.toLowerCase().includes(searchTerm)) {
-                    return false;
+                    // Also search team members
+                    const members = getTeamMembers(w.name, w.division);
+                    if (members) {
+                        const memberMatch = members.some(m => m.toLowerCase().includes(searchTerm));
+                        if (!memberMatch) return false;
+                    } else {
+                        return false;
+                    }
                 }
 
                 // Division filter
                 if (divisionFilter !== 'all' && w.division !== divisionFilter) {
+                    return false;
+                }
+
+                // Type filter
+                if (typeFilter === 'individuals' && w.isTeam) {
+                    return false;
+                }
+                if (typeFilter === 'teams' && !w.isTeam) {
                     return false;
                 }
 
@@ -757,6 +837,8 @@
 
             // Sort
             const [sortField, sortDir] = sortValue.split('-');
+            currentSortField = sortField;
+            
             filteredWrestlers.sort((a, b) => {
                 let valA, valB;
 
@@ -771,14 +853,14 @@
                     valA = a.current !== null ? a.current : (sortDir === 'desc' ? -Infinity : Infinity);
                     valB = b.current !== null ? b.current : (sortDir === 'desc' ? -Infinity : Infinity);
                 } else if (sortField === 'peak') {
-                    valA = a.peak;
-                    valB = b.peak;
+                    valA = a.peak || 0;
+                    valB = b.peak || 0;
                 } else if (sortField === 'matches') {
-                    valA = a.matches;
-                    valB = b.matches;
+                    valA = a.matches || 0;
+                    valB = b.matches || 0;
                 } else if (sortField === 'weeks') {
-                    valA = a.weeks;
-                    valB = b.weeks;
+                    valA = a.weeks || 0;
+                    valB = b.weeks || 0;
                 }
 
                 return sortDir === 'desc' ? valB - valA : valA - valB;
@@ -796,14 +878,14 @@
             if (members && members.length >= 2) {
                 // Team/Trio - overlapping photos
                 const isTrio = members.length >= 3;
-                const photoSize = isTrio ? size * 0.6 : size * 0.75;
+                const photoSize = isTrio ? Math.floor(size * 0.6) : Math.floor(size * 0.75);
                 
                 let photosHtml = `<div class="card-photos${isTrio ? ' trio' : ''}">`;
                 
                 const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
                 membersToShow.forEach(member => {
                     const memberSlug = createSlug(member);
-                    const memberInitials = member.charAt(0).toUpperCase();
+                    const memberInitials = generateTagInitials(member);
                     const memberFallback = createInitialsCircle(memberInitials, photoSize);
                     photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
                                        onerror="this.onerror=null; this.src='${memberFallback}';"
@@ -836,7 +918,7 @@
                 const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
                 membersToShow.forEach(member => {
                     const memberSlug = createSlug(member);
-                    const memberInitials = member.charAt(0).toUpperCase();
+                    const memberInitials = generateTagInitials(member);
                     const memberFallback = createInitialsCircle(memberInitials, photoSize);
                     photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
                                        onerror="this.onerror=null; this.src='${memberFallback}';"
@@ -853,6 +935,34 @@
             }
         }
 
+        // Get display stats based on current sort
+        function getDisplayStats(wrestler) {
+            const sortField = currentSortField;
+            
+            if (sortField === 'matches') {
+                return {
+                    stat1: { value: wrestler.matches || 0, label: 'Matches' },
+                    stat2: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) }
+                };
+            } else if (sortField === 'weeks') {
+                return {
+                    stat1: { value: wrestler.weeks || 0, label: 'Weeks' },
+                    stat2: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) }
+                };
+            } else if (sortField === 'peak') {
+                return {
+                    stat1: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) },
+                    stat2: { value: wrestler.currentRank ? `#${wrestler.currentRank}` : 'N/A', label: 'Rank' }
+                };
+            } else {
+                // Default: current rating and rank
+                return {
+                    stat1: { value: wrestler.current !== null ? wrestler.current.toFixed(2) : 'N/A', label: 'Rating', class: getRatingClass(wrestler.current) },
+                    stat2: { value: wrestler.currentRank ? `#${wrestler.currentRank}` : 'N/A', label: 'Rank' }
+                };
+            }
+        }
+
         // Render results grid
         function renderResults() {
             const grid = document.getElementById('resultsGrid');
@@ -866,9 +976,7 @@
             }
 
             grid.innerHTML = filteredWrestlers.map(w => {
-                const currentDisplay = w.current !== null ? w.current.toFixed(2) : 'N/A';
-                const ratingClass = w.current !== null ? getRatingClass(w.current) : '';
-                const rankDisplay = w.rank ? `#${w.rank}` : '-';
+                const stats = getDisplayStats(w);
 
                 return `
                     <a href="wrestler-stats.html?wrestler=${w.slug}" class="wrestler-card">
@@ -880,12 +988,12 @@
                         </div>
                         <div class="card-stats">
                             <div class="card-stat">
-                                <div class="card-stat-value ${ratingClass}">${currentDisplay}</div>
-                                <div class="card-stat-label">Rating</div>
+                                <div class="card-stat-value ${stats.stat1.class || ''}">${stats.stat1.value}</div>
+                                <div class="card-stat-label">${stats.stat1.label}</div>
                             </div>
                             <div class="card-stat">
-                                <div class="card-stat-value">${rankDisplay}</div>
-                                <div class="card-stat-label">Rank</div>
+                                <div class="card-stat-value ${stats.stat2.class || ''}">${stats.stat2.value}</div>
+                                <div class="card-stat-label">${stats.stat2.label}</div>
                             </div>
                         </div>
                     </a>
@@ -902,8 +1010,19 @@
                 return;
             }
 
+            // Search wrestlers and team members
             const matches = allWrestlers
-                .filter(w => w.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .filter(w => {
+                    if (w.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        return true;
+                    }
+                    // Also search team members
+                    const members = getTeamMembers(w.name, w.division);
+                    if (members) {
+                        return members.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
+                    }
+                    return false;
+                })
                 .slice(0, 8); // Limit to 8 suggestions
 
             if (matches.length === 0) {
@@ -913,7 +1032,7 @@
 
             dropdown.innerHTML = matches.map(w => {
                 const currentDisplay = w.current !== null ? w.current.toFixed(2) : 'N/A';
-                const ratingClass = w.current !== null ? getRatingClass(w.current) : '';
+                const ratingClass = getRatingClass(w.current);
 
                 return `
                     <div class="autocomplete-item" onclick="goToWrestler('${w.slug}')">
@@ -941,6 +1060,7 @@
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTeamMembers();
+            await loadCurrentRankings();
             await loadWrestlers();
 
             const searchInput = document.getElementById('searchInput');
@@ -969,6 +1089,7 @@
 
             // Filter and sort change handlers
             document.getElementById('divisionFilter').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('typeFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
