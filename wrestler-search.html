@@ -260,6 +260,7 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            align-items: flex-start;
         }
 
         .filter-group {
@@ -287,6 +288,55 @@
 
         .filter-select:focus {
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Division checkboxes */
+        .division-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .division-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            transition: all 0.2s;
+            font-size: 0.9em;
+        }
+
+        .division-checkbox:hover {
+            border-color: #ffd700;
+        }
+
+        .division-checkbox.selected {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .division-checkbox input {
+            display: none;
+        }
+
+        .division-checkbox .checkmark {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffd700;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #ffd700;
+        }
+
+        .division-checkbox.selected .checkmark {
+            background: #ffd700;
+            color: #1a1a2e;
         }
 
         /* Results Section */
@@ -477,7 +527,13 @@
             }
 
             .filter-group {
-                justify-content: space-between;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .division-checkboxes {
+                justify-content: flex-start;
             }
 
             .results-grid {
@@ -543,23 +599,29 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label for="divisionFilter" class="tt" data-tt="Filter by division - Men's, Women's, Tag Teams, or Trios">Division:</label>
-                    <select id="divisionFilter" class="filter-select">
-                        <option value="all">All Divisions</option>
-                        <option value="mens">Men's</option>
-                        <option value="womens">Women's</option>
-                        <option value="menstag">Men's Tag</option>
-                        <option value="womenstag">Women's Tag</option>
-                        <option value="trios">Trios</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="typeFilter" class="tt" data-tt="Filter by type - show only individual wrestlers or only teams">Type:</label>
-                    <select id="typeFilter" class="filter-select">
-                        <option value="all">All</option>
-                        <option value="individuals">Individuals</option>
-                        <option value="teams">Teams</option>
-                    </select>
+                    <label class="tt" data-tt="Select one or more divisions, or leave all selected to see everyone">Divisions:</label>
+                    <div class="division-checkboxes" id="divisionCheckboxes">
+                        <label class="division-checkbox selected" data-division="mens">
+                            <span class="checkmark">✓</span>
+                            <span>Men's</span>
+                        </label>
+                        <label class="division-checkbox selected" data-division="womens">
+                            <span class="checkmark">✓</span>
+                            <span>Women's</span>
+                        </label>
+                        <label class="division-checkbox selected" data-division="menstag">
+                            <span class="checkmark">✓</span>
+                            <span>Men's Tag</span>
+                        </label>
+                        <label class="division-checkbox selected" data-division="womenstag">
+                            <span class="checkmark">✓</span>
+                            <span>Women's Tag</span>
+                        </label>
+                        <label class="division-checkbox selected" data-division="trios">
+                            <span class="checkmark">✓</span>
+                            <span>Trios</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="filter-group">
                     <label for="statusFilter" class="tt" data-tt="Active wrestlers have appeared in the rankings in recent weeks. Inactive wrestlers have dropped out.">Status:</label>
@@ -609,8 +671,9 @@
         let allWrestlers = [];
         let filteredWrestlers = [];
         let teamMembersData = {};
-        let activeWrestlerNames = new Set(); // Track who is currently active
+        let activeWrestlerNames = new Set();
         let currentSortField = 'name';
+        let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']);
 
         // Division labels
         const divisionLabels = {
@@ -630,7 +693,7 @@
                 .replace(/^-|-$/g, '');
         }
 
-        // Generate initials from name
+        // Generate initials from name - improved for edge cases like "2.O"
         function generateInitials(name) {
             let cleanName = name
                 .replace(/\bThe\b/gi, '')
@@ -646,12 +709,25 @@
                 return initials.toUpperCase().slice(0, 3);
             }
 
-            const words = cleanName.split(/[\s-]+/).filter(w => w.length > 0);
+            // Handle names with periods and numbers (e.g., "2.O", "2.O & Garcia")
+            // Replace periods followed by letters with just the letter
+            cleanName = cleanName.replace(/(\d)\.([A-Za-z])/g, '$1$2');
+            
+            // Split by spaces, &, and other separators
+            const words = cleanName.split(/[\s&,]+/).filter(w => w.length > 0);
+            
             if (words.length === 1) {
-                return words[0].substring(0, 2).toUpperCase();
+                // Single word - take first 2-3 chars
+                const word = words[0].replace(/[^a-zA-Z0-9]/g, '');
+                return word.substring(0, 3).toUpperCase();
             }
 
-            let initials = words.slice(0, 3).map(w => w.charAt(0)).join('');
+            // Multiple words - take first char of each (up to 3)
+            let initials = words.slice(0, 3).map(w => {
+                const cleaned = w.replace(/[^a-zA-Z0-9]/g, '');
+                return cleaned.charAt(0);
+            }).join('');
+            
             return initials.toUpperCase();
         }
 
@@ -724,7 +800,6 @@
                 const response = await fetch('current-rankings.json');
                 if (response.ok) {
                     const data = await response.json();
-                    // Collect all active wrestler names from all divisions
                     for (const division of ['mens', 'womens', 'menstag', 'womenstag', 'trios']) {
                         if (data[division] && Array.isArray(data[division])) {
                             data[division].forEach(w => {
@@ -755,12 +830,10 @@
 
                 allWrestlers = [];
 
-                // Process each division
                 for (const [division, wrestlers] of Object.entries(data)) {
                     if (!Array.isArray(wrestlers)) continue;
 
                     wrestlers.forEach(w => {
-                        // Determine if active by checking if they're in current-rankings
                         const isActive = activeWrestlerNames.has(w.name);
                         
                         allWrestlers.push({
@@ -789,19 +862,30 @@
             }
         }
 
+        // Get result count text based on what's being shown
+        function getResultCountText(wrestlers) {
+            const count = wrestlers.length;
+            const hasTeams = wrestlers.some(w => w.isTeam);
+            const hasIndividuals = wrestlers.some(w => !w.isTeam);
+            
+            if (hasTeams && hasIndividuals) {
+                return `${count} wrestler${count !== 1 ? 's' : ''}/team${count !== 1 ? 's' : ''} found`;
+            } else if (hasTeams && !hasIndividuals) {
+                return `${count} team${count !== 1 ? 's' : ''} found`;
+            } else {
+                return `${count} wrestler${count !== 1 ? 's' : ''} found`;
+            }
+        }
+
         // Apply filters and sort
         function applyFiltersAndSort() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const divisionFilter = document.getElementById('divisionFilter').value;
-            const typeFilter = document.getElementById('typeFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
             const sortValue = document.getElementById('sortSelect').value;
 
-            // Filter
             filteredWrestlers = allWrestlers.filter(w => {
                 // Search filter
                 if (searchTerm && !w.name.toLowerCase().includes(searchTerm)) {
-                    // Also search team members
                     const members = getTeamMembers(w.name, w.division);
                     if (members) {
                         const memberMatch = members.some(m => m.toLowerCase().includes(searchTerm));
@@ -811,16 +895,8 @@
                     }
                 }
 
-                // Division filter
-                if (divisionFilter !== 'all' && w.division !== divisionFilter) {
-                    return false;
-                }
-
-                // Type filter
-                if (typeFilter === 'individuals' && w.isTeam) {
-                    return false;
-                }
-                if (typeFilter === 'teams' && !w.isTeam) {
+                // Division filter (multi-select)
+                if (!selectedDivisions.has(w.division)) {
                     return false;
                 }
 
@@ -849,7 +925,6 @@
                 }
 
                 if (sortField === 'current') {
-                    // Handle null/inactive ratings - put at end
                     valA = a.current !== null ? a.current : (sortDir === 'desc' ? -Infinity : Infinity);
                     valB = b.current !== null ? b.current : (sortDir === 'desc' ? -Infinity : Infinity);
                 } else if (sortField === 'peak') {
@@ -876,7 +951,6 @@
             const fallbackUrl = createInitialsCircle(initials, size);
 
             if (members && members.length >= 2) {
-                // Team/Trio - overlapping photos
                 const isTrio = members.length >= 3;
                 const photoSize = isTrio ? Math.floor(size * 0.6) : Math.floor(size * 0.75);
                 
@@ -895,7 +969,6 @@
                 photosHtml += '</div>';
                 return photosHtml;
             } else {
-                // Single wrestler
                 return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                             class="card-photo"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
@@ -957,7 +1030,7 @@
             } else {
                 // Default: current rating and rank
                 return {
-                    stat1: { value: wrestler.current !== null ? wrestler.current.toFixed(2) : 'N/A', label: 'Rating', class: getRatingClass(wrestler.current) },
+                    stat1: { value: wrestler.current !== null ? wrestler.current.toFixed(2) : 'N/A', label: 'Current', class: getRatingClass(wrestler.current) },
                     stat2: { value: wrestler.currentRank ? `#${wrestler.currentRank}` : 'N/A', label: 'Rank' }
                 };
             }
@@ -968,7 +1041,7 @@
             const grid = document.getElementById('resultsGrid');
             const countEl = document.getElementById('resultsCount');
 
-            countEl.textContent = `${filteredWrestlers.length} wrestler${filteredWrestlers.length !== 1 ? 's' : ''} found`;
+            countEl.textContent = getResultCountText(filteredWrestlers);
 
             if (filteredWrestlers.length === 0) {
                 grid.innerHTML = '<div class="no-results">No wrestlers found matching your criteria.</div>';
@@ -1010,20 +1083,18 @@
                 return;
             }
 
-            // Search wrestlers and team members
             const matches = allWrestlers
                 .filter(w => {
                     if (w.name.toLowerCase().includes(searchTerm.toLowerCase())) {
                         return true;
                     }
-                    // Also search team members
                     const members = getTeamMembers(w.name, w.division);
                     if (members) {
                         return members.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
                     }
                     return false;
                 })
-                .slice(0, 8); // Limit to 8 suggestions
+                .slice(0, 8);
 
             if (matches.length === 0) {
                 dropdown.classList.remove('show');
@@ -1057,6 +1128,24 @@
             window.location.href = `wrestler-stats.html?wrestler=${slug}`;
         }
 
+        // Toggle division checkbox
+        function toggleDivision(checkbox) {
+            const division = checkbox.dataset.division;
+            
+            if (selectedDivisions.has(division)) {
+                // Don't allow deselecting if it's the only one selected
+                if (selectedDivisions.size > 1) {
+                    selectedDivisions.delete(division);
+                    checkbox.classList.remove('selected');
+                }
+            } else {
+                selectedDivisions.add(division);
+                checkbox.classList.add('selected');
+            }
+            
+            applyFiltersAndSort();
+        }
+
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTeamMembers();
@@ -1066,7 +1155,7 @@
             const searchInput = document.getElementById('searchInput');
             const dropdown = document.getElementById('autocompleteDropdown');
 
-            // Search input - live filtering and autocomplete
+            // Search input
             searchInput.addEventListener('input', (e) => {
                 renderAutocomplete(e.target.value);
                 applyFiltersAndSort();
@@ -1087,9 +1176,12 @@
                 }
             });
 
+            // Division checkboxes
+            document.querySelectorAll('.division-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', () => toggleDivision(checkbox));
+            });
+
             // Filter and sort change handlers
-            document.getElementById('divisionFilter').addEventListener('change', applyFiltersAndSort);
-            document.getElementById('typeFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
