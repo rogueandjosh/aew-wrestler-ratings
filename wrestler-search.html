@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-6YFQ4441BC');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Wrestlers - AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tooltips.css">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1.1em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #ffd700;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 2px solid #ffd700;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .back-link:hover {
+            background-color: #ffd700;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            font-size: 1.1em;
+            border: 2px solid #ffd700;
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Overlock', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: #888;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+        }
+
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:hover {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-photo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Overlapping photos for teams */
+        .autocomplete-photos {
+            display: flex;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .autocomplete-photos img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+        }
+
+        .autocomplete-photos img:not(:first-child) {
+            margin-left: -15px;
+        }
+
+        .autocomplete-photos.trio img {
+            width: 35px;
+            height: 35px;
+        }
+
+        .autocomplete-photos.trio img:not(:first-child) {
+            margin-left: -12px;
+        }
+
+        .autocomplete-info {
+            flex-grow: 1;
+        }
+
+        .autocomplete-name {
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .autocomplete-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .division-badge {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+        }
+
+        .status-badge.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-badge.inactive {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Overlock', sans-serif;
+            font-size: 0.95em;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-select:focus {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .results-count {
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-group label {
+            color: #b8b8b8;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .wrestler-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .wrestler-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .card-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffd700;
+            margin: 0 auto 10px;
+        }
+
+        /* Overlapping photos for team cards */
+        .card-photos {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .card-photos img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+        }
+
+        .card-photos img:not(:first-child) {
+            margin-left: -20px;
+        }
+
+        .card-photos.trio img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .card-photos.trio img:not(:first-child) {
+            margin-left: -15px;
+        }
+
+        .card-name {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .card-division {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 0.85em;
+        }
+
+        .card-stat {
+            text-align: center;
+        }
+
+        .card-stat-value {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .card-stat-label {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+            font-size: 1.2em;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ffd700;
+            font-size: 1.3em;
+        }
+
+        /* Rating colors */
+        .rating-high { color: #22c55e; }
+        .rating-medium { color: #ffd700; }
+        .rating-low { color: #ef4444; }
+
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            .results-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 0.95em;
+            }
+
+            .search-input {
+                font-size: 1em;
+                padding: 12px 15px 12px 45px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .card-photo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card-photos img {
+                width: 45px;
+                height: 45px;
+            }
+
+            .card-photos.trio img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .card-name {
+                font-size: 0.9em;
+            }
+
+            .card-stats {
+                gap: 10px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script src="tooltips.js"></script>
+    <div class="container">
+        <header>
+            <h1>🔍 Wrestler Search</h1>
+            <p class="subtitle">Find any wrestler across all divisions</p>
+            <div class="nav-buttons">
+                <a href="index.html" class="back-link">🏠 Home</a>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search for a wrestler or team..." autocomplete="off">
+                <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="divisionFilter">Division:</label>
+                    <select id="divisionFilter" class="filter-select">
+                        <option value="all">All Divisions</option>
+                        <option value="mens">Men's</option>
+                        <option value="womens">Women's</option>
+                        <option value="menstag">Men's Tag</option>
+                        <option value="womenstag">Women's Tag</option>
+                        <option value="trios">Trios</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <span id="resultsCount" class="results-count">Loading...</span>
+                <div class="sort-group">
+                    <label for="sortSelect">Sort by:</label>
+                    <select id="sortSelect" class="filter-select">
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="current-desc">Current Rating (High-Low)</option>
+                        <option value="current-asc">Current Rating (Low-High)</option>
+                        <option value="peak-desc">Peak Rating (High-Low)</option>
+                        <option value="peak-asc">Peak Rating (Low-High)</option>
+                        <option value="matches-desc">Total Matches (High-Low)</option>
+                        <option value="matches-asc">Total Matches (Low-High)</option>
+                        <option value="weeks-desc">Total Weeks (High-Low)</option>
+                        <option value="weeks-asc">Total Weeks (Low-High)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="resultsGrid" class="results-grid">
+                <div class="loading">Loading wrestlers...</div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
+        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2025-2026 AEW Wrestler Ratings. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let allWrestlers = [];
+        let filteredWrestlers = [];
+        let teamMembersData = {};
+
+        // Division labels
+        const divisionLabels = {
+            'mens': "Men's",
+            'womens': "Women's",
+            'menstag': "Men's Tag",
+            'womenstag': "Women's Tag",
+            'trios': "Trios"
+        };
+
+        // Create slug from name
+        function createSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/'/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        // Generate initials from name
+        function generateInitials(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .trim();
+
+            // Check for parentheses pattern like "Team Name (Member & Member)"
+            const parenMatch = cleanName.match(/\(([^)]+)\)/);
+            if (parenMatch) {
+                const parts = parenMatch[1].split(/[&,]/);
+                let initials = parts.map(p => p.trim().charAt(0)).join('');
+                return initials.toUpperCase().slice(0, 3);
+            }
+
+            const words = cleanName.split(/[\s-]+/).filter(w => w.length > 0);
+            if (words.length === 1) {
+                return words[0].substring(0, 2).toUpperCase();
+            }
+
+            let initials = words.slice(0, 3).map(w => w.charAt(0)).join('');
+            return initials.toUpperCase();
+        }
+
+        // Create initials SVG circle
+        function createInitialsCircle(initials, size) {
+            const radius = size / 2 - 2;
+            const center = size / 2;
+            
+            let fontSize;
+            if (initials.length === 1) {
+                fontSize = size * 0.4;
+            } else if (initials.length === 2) {
+                fontSize = size * 0.3;
+            } else {
+                fontSize = size * 0.25;
+            }
+            
+            const textY = center + fontSize * 0.35;
+            
+            const svg = `
+                <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="${center}" cy="${center}" r="${radius}" 
+                            fill="#2d2d2d" stroke="#ffd700" stroke-width="2"/>
+                    <text x="${center}" y="${textY}" text-anchor="middle" 
+                          fill="white" font-size="${fontSize}" font-weight="bold" 
+                          font-family="Arial, sans-serif">${initials}</text>
+                </svg>
+            `;
+            
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        // Get rating color class
+        function getRatingClass(rating) {
+            if (rating >= 120) return 'rating-high';
+            if (rating >= 100) return 'rating-medium';
+            return 'rating-low';
+        }
+
+        // Load team members data
+        async function loadTeamMembers() {
+            try {
+                const response = await fetch('team-members.json');
+                if (response.ok) {
+                    teamMembersData = await response.json();
+                }
+            } catch (e) {
+                console.log('Team members data not available');
+            }
+        }
+
+        // Get team members for a wrestler
+        function getTeamMembers(name, division) {
+            if (!['menstag', 'womenstag', 'trios'].includes(division)) {
+                return null;
+            }
+            return teamMembersData[name] || null;
+        }
+
+        // Load all wrestlers from statistics.json
+        async function loadWrestlers() {
+            try {
+                const response = await fetch('statistics.json');
+                const data = await response.json();
+
+                allWrestlers = [];
+
+                // Process each division
+                for (const [division, wrestlers] of Object.entries(data)) {
+                    if (!Array.isArray(wrestlers)) continue;
+
+                    wrestlers.forEach(w => {
+                        // Determine if active (has current rating that's not null/undefined)
+                        const isActive = w.current !== null && w.current !== undefined && !isNaN(w.current);
+                        
+                        allWrestlers.push({
+                            name: w.name,
+                            slug: createSlug(w.name),
+                            division: division,
+                            current: isActive ? w.current : null,
+                            peak: w.peak || 0,
+                            floor: w.floor || 0,
+                            average: w.average || 0,
+                            matches: w.totalMatches || 0,
+                            weeks: w.totalWeeksRanked || 0,
+                            rank: w.currentRank || null,
+                            weeksAtNumber1: w.weeksAtNumber1 || 0,
+                            peakWeek: w.peakWeek || '',
+                            isActive: isActive
+                        });
+                    });
+                }
+
+                applyFiltersAndSort();
+            } catch (error) {
+                console.error('Error loading wrestlers:', error);
+                document.getElementById('resultsGrid').innerHTML = '<div class="no-results">Error loading data. Please try again.</div>';
+            }
+        }
+
+        // Apply filters and sort
+        function applyFiltersAndSort() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const divisionFilter = document.getElementById('divisionFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortValue = document.getElementById('sortSelect').value;
+
+            // Filter
+            filteredWrestlers = allWrestlers.filter(w => {
+                // Search filter
+                if (searchTerm && !w.name.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+
+                // Division filter
+                if (divisionFilter !== 'all' && w.division !== divisionFilter) {
+                    return false;
+                }
+
+                // Status filter
+                if (statusFilter === 'active' && !w.isActive) {
+                    return false;
+                }
+                if (statusFilter === 'inactive' && w.isActive) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Sort
+            const [sortField, sortDir] = sortValue.split('-');
+            filteredWrestlers.sort((a, b) => {
+                let valA, valB;
+
+                if (sortField === 'name') {
+                    valA = a.name.toLowerCase();
+                    valB = b.name.toLowerCase();
+                    return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+
+                if (sortField === 'current') {
+                    // Handle null/inactive ratings - put at end
+                    valA = a.current !== null ? a.current : (sortDir === 'desc' ? -Infinity : Infinity);
+                    valB = b.current !== null ? b.current : (sortDir === 'desc' ? -Infinity : Infinity);
+                } else if (sortField === 'peak') {
+                    valA = a.peak;
+                    valB = b.peak;
+                } else if (sortField === 'matches') {
+                    valA = a.matches;
+                    valB = b.matches;
+                } else if (sortField === 'weeks') {
+                    valA = a.weeks;
+                    valB = b.weeks;
+                }
+
+                return sortDir === 'desc' ? valB - valA : valA - valB;
+            });
+
+            renderResults();
+        }
+
+        // Render wrestler photo(s)
+        function renderPhoto(wrestler, size = 80) {
+            const members = getTeamMembers(wrestler.name, wrestler.division);
+            const initials = generateInitials(wrestler.name);
+            const fallbackUrl = createInitialsCircle(initials, size);
+
+            if (members && members.length >= 2) {
+                // Team/Trio - overlapping photos
+                const isTrio = members.length >= 3;
+                const photoSize = isTrio ? size * 0.6 : size * 0.75;
+                
+                let photosHtml = `<div class="card-photos${isTrio ? ' trio' : ''}">`;
+                
+                const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
+                membersToShow.forEach(member => {
+                    const memberSlug = createSlug(member);
+                    const memberInitials = member.charAt(0).toUpperCase();
+                    const memberFallback = createInitialsCircle(memberInitials, photoSize);
+                    photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                                       onerror="this.onerror=null; this.src='${memberFallback}';"
+                                       alt="${member}">`;
+                });
+                
+                photosHtml += '</div>';
+                return photosHtml;
+            } else {
+                // Single wrestler
+                return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                            class="card-photo"
+                            onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                            alt="${wrestler.name}">`;
+            }
+        }
+
+        // Render autocomplete photo(s)
+        function renderAutocompletePhoto(wrestler) {
+            const members = getTeamMembers(wrestler.name, wrestler.division);
+            const initials = generateInitials(wrestler.name);
+            const fallbackUrl = createInitialsCircle(initials, 45);
+
+            if (members && members.length >= 2) {
+                const isTrio = members.length >= 3;
+                const photoSize = isTrio ? 35 : 40;
+                
+                let photosHtml = `<div class="autocomplete-photos${isTrio ? ' trio' : ''}">`;
+                
+                const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
+                membersToShow.forEach(member => {
+                    const memberSlug = createSlug(member);
+                    const memberInitials = member.charAt(0).toUpperCase();
+                    const memberFallback = createInitialsCircle(memberInitials, photoSize);
+                    photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                                       onerror="this.onerror=null; this.src='${memberFallback}';"
+                                       alt="${member}">`;
+                });
+                
+                photosHtml += '</div>';
+                return photosHtml;
+            } else {
+                return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                            class="autocomplete-photo"
+                            onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                            alt="${wrestler.name}">`;
+            }
+        }
+
+        // Render results grid
+        function renderResults() {
+            const grid = document.getElementById('resultsGrid');
+            const countEl = document.getElementById('resultsCount');
+
+            countEl.textContent = `${filteredWrestlers.length} wrestler${filteredWrestlers.length !== 1 ? 's' : ''} found`;
+
+            if (filteredWrestlers.length === 0) {
+                grid.innerHTML = '<div class="no-results">No wrestlers found matching your criteria.</div>';
+                return;
+            }
+
+            grid.innerHTML = filteredWrestlers.map(w => {
+                const currentDisplay = w.current !== null ? w.current.toFixed(2) : 'N/A';
+                const ratingClass = w.current !== null ? getRatingClass(w.current) : '';
+                const rankDisplay = w.rank ? `#${w.rank}` : '-';
+
+                return `
+                    <a href="wrestler-stats.html?wrestler=${w.slug}" class="wrestler-card">
+                        ${renderPhoto(w)}
+                        <div class="card-name">${w.name}</div>
+                        <div class="card-division">
+                            <span class="division-badge">${divisionLabels[w.division]}</span>
+                            <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div class="card-stats">
+                            <div class="card-stat">
+                                <div class="card-stat-value ${ratingClass}">${currentDisplay}</div>
+                                <div class="card-stat-label">Rating</div>
+                            </div>
+                            <div class="card-stat">
+                                <div class="card-stat-value">${rankDisplay}</div>
+                                <div class="card-stat-label">Rank</div>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Render autocomplete dropdown
+        function renderAutocomplete(searchTerm) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+
+            if (!searchTerm || searchTerm.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            const matches = allWrestlers
+                .filter(w => w.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .slice(0, 8); // Limit to 8 suggestions
+
+            if (matches.length === 0) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            dropdown.innerHTML = matches.map(w => {
+                const currentDisplay = w.current !== null ? w.current.toFixed(2) : 'N/A';
+                const ratingClass = w.current !== null ? getRatingClass(w.current) : '';
+
+                return `
+                    <div class="autocomplete-item" onclick="goToWrestler('${w.slug}')">
+                        ${renderAutocompletePhoto(w)}
+                        <div class="autocomplete-info">
+                            <div class="autocomplete-name">${w.name}</div>
+                            <div class="autocomplete-meta">
+                                <span class="division-badge">${divisionLabels[w.division]}</span>
+                                <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
+                                <span class="${ratingClass}">${currentDisplay}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            dropdown.classList.add('show');
+        }
+
+        // Navigate to wrestler stats page
+        function goToWrestler(slug) {
+            window.location.href = `wrestler-stats.html?wrestler=${slug}`;
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadTeamMembers();
+            await loadWrestlers();
+
+            const searchInput = document.getElementById('searchInput');
+            const dropdown = document.getElementById('autocompleteDropdown');
+
+            // Search input - live filtering and autocomplete
+            searchInput.addEventListener('input', (e) => {
+                renderAutocomplete(e.target.value);
+                applyFiltersAndSort();
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Handle Enter key in search
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    dropdown.classList.remove('show');
+                    applyFiltersAndSort();
+                }
+            });
+
+            // Filter and sort change handlers
+            document.getElementById('divisionFilter').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
+        });
+    </script>
+</body>
+</html>
