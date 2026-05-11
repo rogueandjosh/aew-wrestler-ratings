@@ -183,7 +183,7 @@
             flex-shrink: 0;
         }
 
-        /* Overlapping photos for teams */
+        /* Overlapping photos for teams in autocomplete */
         .autocomplete-photos {
             display: flex;
             margin-right: 12px;
@@ -199,7 +199,7 @@
         }
 
         .autocomplete-photos img:not(:first-child) {
-            margin-left: -15px;
+            margin-left: -12px;
         }
 
         .autocomplete-photos.trio img {
@@ -208,7 +208,7 @@
         }
 
         .autocomplete-photos.trio img:not(:first-child) {
-            margin-left: -12px;
+            margin-left: -10px;
         }
 
         .autocomplete-info {
@@ -290,53 +290,20 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
-        /* Division checkboxes */
-        .division-checkboxes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .filter-select[multiple] {
+            padding: 5px;
         }
 
-        .division-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            padding: 6px 12px;
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            border-radius: 20px;
-            transition: all 0.2s;
-            font-size: 0.9em;
+        .filter-select[multiple] option {
+            padding: 6px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
         }
 
-        .division-checkbox:hover {
-            border-color: #ffd700;
-        }
-
-        .division-checkbox.selected {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
-        }
-
-        .division-checkbox input {
-            display: none;
-        }
-
-        .division-checkbox .checkmark {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #ffd700;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #ffd700;
-        }
-
-        .division-checkbox.selected .checkmark {
-            background: #ffd700;
+        .filter-select[multiple] option:checked {
+            background: linear-gradient(0deg, #ffd700 0%, #ffd700 100%);
             color: #1a1a2e;
+            font-weight: 600;
         }
 
         /* Results Section */
@@ -403,32 +370,25 @@
             display: block;
         }
 
-        /* Overlapping photos for team cards */
+        /* Side-by-side photos for team cards (like index) */
         .card-photos {
             display: flex;
             justify-content: center;
+            gap: 4px;
             margin-bottom: 10px;
         }
 
         .card-photos img {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ffd700;
         }
 
-        .card-photos img:not(:first-child) {
-            margin-left: -20px;
-        }
-
         .card-photos.trio img {
-            width: 50px;
-            height: 50px;
-        }
-
-        .card-photos.trio img:not(:first-child) {
-            margin-left: -15px;
+            width: 45px;
+            height: 45px;
         }
 
         .card-name {
@@ -532,8 +492,8 @@
                 gap: 6px;
             }
 
-            .division-checkboxes {
-                justify-content: flex-start;
+            .filter-select[multiple] {
+                width: 100%;
             }
 
             .results-grid {
@@ -552,8 +512,8 @@
             }
 
             .card-photos.trio img {
-                width: 40px;
-                height: 40px;
+                width: 38px;
+                height: 38px;
             }
 
             .card-name {
@@ -599,29 +559,14 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label class="tt" data-tt="Select one or more divisions, or leave all selected to see everyone">Divisions:</label>
-                    <div class="division-checkboxes" id="divisionCheckboxes">
-                        <label class="division-checkbox selected" data-division="mens">
-                            <span class="checkmark">✓</span>
-                            <span>Men's</span>
-                        </label>
-                        <label class="division-checkbox selected" data-division="womens">
-                            <span class="checkmark">✓</span>
-                            <span>Women's</span>
-                        </label>
-                        <label class="division-checkbox selected" data-division="menstag">
-                            <span class="checkmark">✓</span>
-                            <span>Men's Tag</span>
-                        </label>
-                        <label class="division-checkbox selected" data-division="womenstag">
-                            <span class="checkmark">✓</span>
-                            <span>Women's Tag</span>
-                        </label>
-                        <label class="division-checkbox selected" data-division="trios">
-                            <span class="checkmark">✓</span>
-                            <span>Trios</span>
-                        </label>
-                    </div>
+                    <label for="divisionFilter" class="tt" data-tt="Hold Ctrl (or Cmd on Mac) and click to select multiple divisions">Divisions:</label>
+                    <select id="divisionFilter" class="filter-select" multiple size="5">
+                        <option value="mens" selected>Men's</option>
+                        <option value="womens" selected>Women's</option>
+                        <option value="menstag" selected>Men's Tag</option>
+                        <option value="womenstag" selected>Women's Tag</option>
+                        <option value="trios" selected>Trios</option>
+                    </select>
                 </div>
                 <div class="filter-group">
                     <label for="statusFilter" class="tt" data-tt="Active wrestlers have appeared in the rankings in recent weeks. Inactive wrestlers have dropped out.">Status:</label>
@@ -647,8 +592,6 @@
                         <option value="current-asc">Current Rating (Low-High)</option>
                         <option value="peak-desc">Peak Rating (High-Low)</option>
                         <option value="peak-asc">Peak Rating (Low-High)</option>
-                        <option value="matches-desc">Total Matches (High-Low)</option>
-                        <option value="matches-asc">Total Matches (Low-High)</option>
                         <option value="weeks-desc">Total Weeks (High-Low)</option>
                         <option value="weeks-asc">Total Weeks (Low-High)</option>
                     </select>
@@ -670,7 +613,7 @@
     <script>
         let allWrestlers = [];
         let filteredWrestlers = [];
-        let teamMembersData = {};
+        let teamMembersData = null;
         let activeWrestlerNames = new Set();
         let currentSortField = 'name';
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']);
@@ -710,19 +653,16 @@
             }
 
             // Handle names with periods and numbers (e.g., "2.O", "2.O & Garcia")
-            // Replace periods followed by letters with just the letter
             cleanName = cleanName.replace(/(\d)\.([A-Za-z])/g, '$1$2');
             
             // Split by spaces, &, and other separators
             const words = cleanName.split(/[\s&,]+/).filter(w => w.length > 0);
             
             if (words.length === 1) {
-                // Single word - take first 2-3 chars
                 const word = words[0].replace(/[^a-zA-Z0-9]/g, '');
                 return word.substring(0, 3).toUpperCase();
             }
 
-            // Multiple words - take first char of each (up to 3)
             let initials = words.slice(0, 3).map(w => {
                 const cleaned = w.replace(/[^a-zA-Z0-9]/g, '');
                 return cleaned.charAt(0);
@@ -731,7 +671,7 @@
             return initials.toUpperCase();
         }
 
-        // Generate initials for tag team members
+        // Generate initials for tag team members (like index.html)
         function generateTagInitials(name) {
             const words = name.trim().split(/[\s-]+/).filter(w => w.length > 0);
             if (words.length === 1) {
@@ -740,7 +680,7 @@
             return words[0].charAt(0).toUpperCase();
         }
 
-        // Create initials SVG circle
+        // Create initials SVG circle (like index.html)
         function createInitialsCircle(initials, size) {
             const radius = size / 2 - 2;
             const center = size / 2;
@@ -782,16 +722,67 @@
             return ['menstag', 'womenstag', 'trios'].includes(division);
         }
 
-        // Load team members data
+        // Load team members data (same structure as index.html)
         async function loadTeamMembers() {
             try {
                 const response = await fetch('team-members.json');
                 if (response.ok) {
                     teamMembersData = await response.json();
+                    console.log('✅ Loaded team members:', teamMembersData.totalTeams || Object.keys(teamMembersData.teams || {}).length);
                 }
             } catch (e) {
                 console.log('Team members data not available');
+                teamMembersData = { teams: {} };
             }
+        }
+
+        // Find team members array (matching index.html logic)
+        function findTeamMembersArray(teamName) {
+            if (!teamMembersData || !teamMembersData.teams) {
+                return null;
+            }
+            
+            // Direct lookup
+            let members = teamMembersData.teams[teamName];
+            if (members && members.length >= 2) return members;
+
+            // Try without "The" prefix
+            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
+            members = teamMembersData.teams[nameWithoutThe];
+            if (members && members.length >= 2) return members;
+
+            // Try with "The" prefix
+            const nameWithThe = 'The ' + teamName;
+            members = teamMembersData.teams[nameWithThe];
+            if (members && members.length >= 2) return members;
+
+            // Parse "Name1 & Name2" format directly
+            if (teamName.includes(' & ')) {
+                const parts = [];
+                let current = '';
+                let depth = 0;
+                
+                for (let i = 0; i < teamName.length; i++) {
+                    const char = teamName[i];
+                    if (char === '(') depth++;
+                    else if (char === ')') depth--;
+                    
+                    if (depth === 0 && teamName.slice(i, i + 3) === ' & ') {
+                        if (current.trim()) parts.push(current.trim());
+                        current = '';
+                        i += 2;
+                    } else {
+                        current += char;
+                    }
+                }
+                if (current.trim()) parts.push(current.trim());
+                
+                if (parts.length >= 2) {
+                    return parts;
+                }
+            }
+
+            return null;
         }
 
         // Load current rankings to determine active status
@@ -812,14 +803,6 @@
             } catch (e) {
                 console.log('Could not load current-rankings.json');
             }
-        }
-
-        // Get team members for a wrestler
-        function getTeamMembers(name, division) {
-            if (!isTeam(division)) {
-                return null;
-            }
-            return teamMembersData[name] || null;
         }
 
         // Load all wrestlers from statistics.json
@@ -845,7 +828,6 @@
                             peak: w.peak || 0,
                             floor: w.floor || 0,
                             average: w.average || 0,
-                            matches: w.totalMatches || 0,
                             weeks: w.totalWeeksRanked || 0,
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
@@ -883,10 +865,23 @@
             const statusFilter = document.getElementById('statusFilter').value;
             const sortValue = document.getElementById('sortSelect').value;
 
+            // Get selected divisions from multi-select
+            const divisionSelect = document.getElementById('divisionFilter');
+            selectedDivisions.clear();
+            Array.from(divisionSelect.selectedOptions).forEach(opt => {
+                selectedDivisions.add(opt.value);
+            });
+            
+            // Ensure at least one division is selected
+            if (selectedDivisions.size === 0) {
+                selectedDivisions.add('mens');
+                divisionSelect.querySelector('option[value="mens"]').selected = true;
+            }
+
             filteredWrestlers = allWrestlers.filter(w => {
                 // Search filter
                 if (searchTerm && !w.name.toLowerCase().includes(searchTerm)) {
-                    const members = getTeamMembers(w.name, w.division);
+                    const members = findTeamMembersArray(w.name);
                     if (members) {
                         const memberMatch = members.some(m => m.toLowerCase().includes(searchTerm));
                         if (!memberMatch) return false;
@@ -930,9 +925,6 @@
                 } else if (sortField === 'peak') {
                     valA = a.peak || 0;
                     valB = b.peak || 0;
-                } else if (sortField === 'matches') {
-                    valA = a.matches || 0;
-                    valB = b.matches || 0;
                 } else if (sortField === 'weeks') {
                     valA = a.weeks || 0;
                     valB = b.weeks || 0;
@@ -944,31 +936,46 @@
             renderResults();
         }
 
-        // Render wrestler photo(s)
+        // Render wrestler photo(s) - matching index.html style for teams
         function renderPhoto(wrestler, size = 80) {
-            const members = getTeamMembers(wrestler.name, wrestler.division);
-            const initials = generateInitials(wrestler.name);
-            const fallbackUrl = createInitialsCircle(initials, size);
-
-            if (members && members.length >= 2) {
-                const isTrio = members.length >= 3;
-                const photoSize = isTrio ? Math.floor(size * 0.6) : Math.floor(size * 0.75);
+            const isTeamDivision = isTeam(wrestler.division);
+            
+            if (isTeamDivision) {
+                // Try to get team members
+                const members = findTeamMembersArray(wrestler.name);
+                const isTrio = wrestler.division === 'trios';
+                const photoSize = isTrio ? 45 : 55;
                 
-                let photosHtml = `<div class="card-photos${isTrio ? ' trio' : ''}">`;
-                
-                const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
-                membersToShow.forEach(member => {
-                    const memberSlug = createSlug(member);
-                    const memberInitials = generateTagInitials(member);
-                    const memberFallback = createInitialsCircle(memberInitials, photoSize);
-                    photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
-                                       onerror="this.onerror=null; this.src='${memberFallback}';"
-                                       alt="${member}">`;
-                });
-                
-                photosHtml += '</div>';
-                return photosHtml;
+                if (members && members.length >= 2) {
+                    // Show individual member photos side by side (like index.html)
+                    const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
+                    
+                    let photosHtml = `<div class="card-photos${isTrio ? ' trio' : ''}">`;
+                    
+                    membersToShow.forEach(member => {
+                        const memberSlug = createSlug(member);
+                        const memberInitials = generateTagInitials(member);
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize);
+                        photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                                           onerror="this.onerror=null; this.src='${memberFallback}';"
+                                           alt="${member}">`;
+                    });
+                    
+                    photosHtml += '</div>';
+                    return photosHtml;
+                } else {
+                    // No member data - show team initials
+                    const initials = generateInitials(wrestler.name);
+                    const fallbackUrl = createInitialsCircle(initials, size);
+                    return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                                class="card-photo"
+                                onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                                alt="${wrestler.name}">`;
+                }
             } else {
+                // Single wrestler
+                const initials = generateInitials(wrestler.name);
+                const fallbackUrl = createInitialsCircle(initials, size);
                 return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                             class="card-photo"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
@@ -978,46 +985,46 @@
 
         // Render autocomplete photo(s)
         function renderAutocompletePhoto(wrestler) {
-            const members = getTeamMembers(wrestler.name, wrestler.division);
-            const initials = generateInitials(wrestler.name);
-            const fallbackUrl = createInitialsCircle(initials, 45);
-
-            if (members && members.length >= 2) {
-                const isTrio = members.length >= 3;
+            const isTeamDivision = isTeam(wrestler.division);
+            
+            if (isTeamDivision) {
+                const members = findTeamMembersArray(wrestler.name);
+                const isTrio = wrestler.division === 'trios';
                 const photoSize = isTrio ? 35 : 40;
                 
-                let photosHtml = `<div class="autocomplete-photos${isTrio ? ' trio' : ''}">`;
-                
-                const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
-                membersToShow.forEach(member => {
-                    const memberSlug = createSlug(member);
-                    const memberInitials = generateTagInitials(member);
-                    const memberFallback = createInitialsCircle(memberInitials, photoSize);
-                    photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
-                                       onerror="this.onerror=null; this.src='${memberFallback}';"
-                                       alt="${member}">`;
-                });
-                
-                photosHtml += '</div>';
-                return photosHtml;
-            } else {
-                return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
-                            class="autocomplete-photo"
-                            onerror="this.onerror=null; this.src='${fallbackUrl}';"
-                            alt="${wrestler.name}">`;
+                if (members && members.length >= 2) {
+                    const membersToShow = isTrio ? members.slice(0, 3) : members.slice(0, 2);
+                    
+                    let photosHtml = `<div class="autocomplete-photos${isTrio ? ' trio' : ''}">`;
+                    
+                    membersToShow.forEach(member => {
+                        const memberSlug = createSlug(member);
+                        const memberInitials = generateTagInitials(member);
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize);
+                        photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                                           onerror="this.onerror=null; this.src='${memberFallback}';"
+                                           alt="${member}">`;
+                    });
+                    
+                    photosHtml += '</div>';
+                    return photosHtml;
+                }
             }
+            
+            // Single wrestler or no team data
+            const initials = generateInitials(wrestler.name);
+            const fallbackUrl = createInitialsCircle(initials, 45);
+            return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                        class="autocomplete-photo"
+                        onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                        alt="${wrestler.name}">`;
         }
 
         // Get display stats based on current sort
         function getDisplayStats(wrestler) {
             const sortField = currentSortField;
             
-            if (sortField === 'matches') {
-                return {
-                    stat1: { value: wrestler.matches || 0, label: 'Matches' },
-                    stat2: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) }
-                };
-            } else if (sortField === 'weeks') {
+            if (sortField === 'weeks') {
                 return {
                     stat1: { value: wrestler.weeks || 0, label: 'Weeks' },
                     stat2: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) }
@@ -1088,7 +1095,7 @@
                     if (w.name.toLowerCase().includes(searchTerm.toLowerCase())) {
                         return true;
                     }
-                    const members = getTeamMembers(w.name, w.division);
+                    const members = findTeamMembersArray(w.name);
                     if (members) {
                         return members.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
                     }
@@ -1128,24 +1135,6 @@
             window.location.href = `wrestler-stats.html?wrestler=${slug}`;
         }
 
-        // Toggle division checkbox
-        function toggleDivision(checkbox) {
-            const division = checkbox.dataset.division;
-            
-            if (selectedDivisions.has(division)) {
-                // Don't allow deselecting if it's the only one selected
-                if (selectedDivisions.size > 1) {
-                    selectedDivisions.delete(division);
-                    checkbox.classList.remove('selected');
-                }
-            } else {
-                selectedDivisions.add(division);
-                checkbox.classList.add('selected');
-            }
-            
-            applyFiltersAndSort();
-        }
-
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTeamMembers();
@@ -1176,12 +1165,8 @@
                 }
             });
 
-            // Division checkboxes
-            document.querySelectorAll('.division-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('click', () => toggleDivision(checkbox));
-            });
-
             // Filter and sort change handlers
+            document.getElementById('divisionFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
