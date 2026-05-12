@@ -295,20 +295,90 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
-        .filter-select[multiple] {
-            padding: 5px;
+        /* Custom dropdown with checkboxes */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
         }
 
-        .filter-select[multiple] option {
-            padding: 6px 10px;
-            margin: 2px 0;
-            border-radius: 4px;
+        .dropdown-button {
+            padding: 8px 35px 8px 15px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Overlock', sans-serif;
+            font-size: 0.95em;
+            cursor: pointer;
+            outline: none;
+            min-width: 120px;
+            text-align: left;
+            position: relative;
         }
 
-        .filter-select[multiple] option:checked {
-            background: linear-gradient(0deg, #ffd700 0%, #ffd700 100%);
-            color: #1a1a2e;
-            font-weight: 600;
+        .dropdown-button::after {
+            content: '▼';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7em;
+            color: #ffd700;
+        }
+
+        .dropdown-button:hover,
+        .dropdown-button:focus {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 1000;
+            display: none;
+            min-width: 150px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .dropdown-item input[type="checkbox"] {
+            accent-color: #ffd700;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-item label {
+            cursor: pointer;
+            flex-grow: 1;
+            color: #e0e0e0;
+            font-weight: normal;
         }
 
         /* Results Section */
@@ -497,7 +567,11 @@
                 gap: 6px;
             }
 
-            .filter-select[multiple] {
+            .dropdown-button {
+                width: 100%;
+            }
+
+            .dropdown-menu {
                 width: 100%;
             }
 
@@ -564,14 +638,32 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label for="divisionFilter" class="tt" data-tt="Hold Ctrl (or Cmd on Mac) and click to select multiple divisions">Divisions:</label>
-                    <select id="divisionFilter" class="filter-select" multiple size="5">
-                        <option value="mens" selected>Men's</option>
-                        <option value="womens" selected>Women's</option>
-                        <option value="menstag" selected>Men's Tag</option>
-                        <option value="womenstag" selected>Women's Tag</option>
-                        <option value="trios" selected>Trios</option>
-                    </select>
+                    <label class="tt" data-tt="Select one or more divisions to filter results">Divisions:</label>
+                    <div class="dropdown-container">
+                        <button type="button" class="dropdown-button" id="divisionDropdownBtn">All Divisions</button>
+                        <div class="dropdown-menu" id="divisionDropdownMenu">
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="div-mens" value="mens" checked>
+                                <label for="div-mens">Men's</label>
+                            </div>
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="div-womens" value="womens" checked>
+                                <label for="div-womens">Women's</label>
+                            </div>
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="div-menstag" value="menstag" checked>
+                                <label for="div-menstag">Men's Tag</label>
+                            </div>
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="div-womenstag" value="womenstag" checked>
+                                <label for="div-womenstag">Women's Tag</label>
+                            </div>
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="div-trios" value="trios" checked>
+                                <label for="div-trios">Trios</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="filter-group">
                     <label for="statusFilter" class="tt" data-tt="Active wrestlers have appeared in the rankings in recent weeks. Inactive wrestlers have dropped out.">Status:</label>
@@ -817,11 +909,20 @@
                 const data = await response.json();
 
                 allWrestlers = [];
+                
+                // Track all-time rank per division (statistics.json is sorted by peak)
+                const allTimeRanks = {};
 
                 for (const [division, wrestlers] of Object.entries(data)) {
                     if (!Array.isArray(wrestlers)) continue;
+                    
+                    // Statistics.json is already sorted by peak, so index+1 = all-time rank
+                    allTimeRanks[division] = {};
+                    wrestlers.forEach((w, idx) => {
+                        allTimeRanks[division][w.name] = idx + 1;
+                    });
 
-                    wrestlers.forEach(w => {
+                    wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
                         
                         allWrestlers.push({
@@ -830,6 +931,7 @@
                             division: division,
                             current: isActive ? w.current : null,
                             currentRank: isActive ? w.currentRank : null,
+                            allTimeRank: idx + 1,  // All-time rank based on peak
                             peak: w.peak || 0,
                             floor: w.floor || 0,
                             average: w.average || 0,
@@ -864,24 +966,44 @@
             }
         }
 
+        // Update dropdown button text
+        function updateDropdownButtonText() {
+            const btn = document.getElementById('divisionDropdownBtn');
+            const checkboxes = document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked);
+            
+            if (checked.length === 0 || checked.length === checkboxes.length) {
+                btn.textContent = 'All Divisions';
+            } else if (checked.length === 1) {
+                btn.textContent = divisionLabels[checked[0].value];
+            } else {
+                btn.textContent = `${checked.length} Divisions`;
+            }
+        }
+
+        // Get selected divisions from checkboxes
+        function getSelectedDivisions() {
+            const checkboxes = document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]:checked');
+            selectedDivisions.clear();
+            checkboxes.forEach(cb => selectedDivisions.add(cb.value));
+            
+            // If none selected, select all
+            if (selectedDivisions.size === 0) {
+                document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                    selectedDivisions.add(cb.value);
+                });
+            }
+        }
+
         // Apply filters and sort
         function applyFiltersAndSort() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
             const sortValue = document.getElementById('sortSelect').value;
 
-            // Get selected divisions from multi-select
-            const divisionSelect = document.getElementById('divisionFilter');
-            selectedDivisions.clear();
-            Array.from(divisionSelect.selectedOptions).forEach(opt => {
-                selectedDivisions.add(opt.value);
-            });
-            
-            // Ensure at least one division is selected
-            if (selectedDivisions.size === 0) {
-                selectedDivisions.add('mens');
-                divisionSelect.querySelector('option[value="mens"]').selected = true;
-            }
+            // Get selected divisions
+            getSelectedDivisions();
 
             filteredWrestlers = allWrestlers.filter(w => {
                 // Search filter
@@ -1035,9 +1157,10 @@
                     stat2: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) }
                 };
             } else if (sortField === 'peak') {
+                // Show all-time rank (based on peak) instead of current rank
                 return {
                     stat1: { value: wrestler.peak ? wrestler.peak.toFixed(2) : 'N/A', label: 'Peak', class: getRatingClass(wrestler.peak) },
-                    stat2: { value: wrestler.currentRank ? `#${wrestler.currentRank}` : 'N/A', label: 'Rank' }
+                    stat2: { value: `#${wrestler.allTimeRank}`, label: 'All-Time' }
                 };
             } else {
                 // Default: current rating and rank
@@ -1147,7 +1270,9 @@
             await loadWrestlers();
 
             const searchInput = document.getElementById('searchInput');
-            const dropdown = document.getElementById('autocompleteDropdown');
+            const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+            const divisionBtn = document.getElementById('divisionDropdownBtn');
+            const divisionMenu = document.getElementById('divisionDropdownMenu');
 
             // Search input
             searchInput.addEventListener('input', (e) => {
@@ -1155,23 +1280,43 @@
                 applyFiltersAndSort();
             });
 
-            // Hide dropdown when clicking outside
+            // Hide autocomplete dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.search-container')) {
-                    dropdown.classList.remove('show');
+                    autocompleteDropdown.classList.remove('show');
                 }
             });
 
             // Handle Enter key in search
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    dropdown.classList.remove('show');
+                    autocompleteDropdown.classList.remove('show');
                     applyFiltersAndSort();
                 }
             });
 
+            // Division dropdown toggle
+            divisionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                divisionMenu.classList.toggle('show');
+            });
+
+            // Close division dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown-container')) {
+                    divisionMenu.classList.remove('show');
+                }
+            });
+
+            // Division checkbox changes
+            divisionMenu.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateDropdownButtonText();
+                    applyFiltersAndSort();
+                });
+            });
+
             // Filter and sort change handlers
-            document.getElementById('divisionFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
             document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
