@@ -868,20 +868,19 @@
                 padding: 10px;
             }
 
-            /* Fix detail items on mobile - ensure values don't overflow */
+            /* Fix detail items on mobile - keep label and value close together */
             .detail-item {
-                flex-wrap: wrap;
-                gap: 4px;
+                justify-content: flex-start;
+                gap: 10px;
             }
 
             .detail-label {
-                flex: 1 1 60%;
-                min-width: 0;
+                flex: 0 0 auto;
             }
 
             .detail-value {
                 flex: 0 0 auto;
-                text-align: right;
+                margin-left: auto;
             }
 
             /* Ensure dropped-details content fits on mobile */
