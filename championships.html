@@ -899,19 +899,22 @@
             }
 
             .competitors-table {
-                font-size: 0.75em;
-                width: 100%;
-                table-layout: fixed;
+                font-size: 0.8em;
+                width: auto;
+                table-layout: auto;
+                max-width: 100%;
             }
 
             .competitors-table th,
             .competitors-table td {
-                padding: 4px 3px;
+                padding: 4px 8px;
+                white-space: nowrap;
             }
 
             .competitors-table th:first-child,
             .competitors-table td:first-child {
-                width: 40%;
+                width: auto;
+                max-width: 120px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -919,7 +922,7 @@
 
             .competitors-table th:not(:first-child),
             .competitors-table td:not(:first-child) {
-                width: 20%;
+                width: auto;
                 text-align: center;
             }
         }
