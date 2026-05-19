@@ -751,6 +751,11 @@
             color: #f87171;
         }
 
+        /* Mobile stats table - hidden on desktop */
+        .mobile-stats-table-wrapper {
+            display: none;
+        }
+
         /* ===== TOOLTIP STYLES ===== */
         .tt {
             position: relative;
@@ -836,6 +841,94 @@
                 gap: 12px;
             }
 
+            /* Hide the regular details sections on mobile, but keep competitors */
+            .details-grid > .details-section:not(.competitors-section) {
+                display: none;
+            }
+
+            .details-grid > .competitors-section {
+                display: block;
+                width: 100%;
+            }
+
+            /* Show mobile stats table */
+            .mobile-stats-table-wrapper {
+                display: block;
+                overflow-x: auto;
+                margin-bottom: 12px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .mobile-stats-table {
+                width: max-content;
+                min-width: 100%;
+                font-size: 0.8em;
+                border-collapse: collapse;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 8px;
+                border: 1px solid rgba(255, 215, 0, 0.2);
+            }
+
+            .mobile-stats-table th {
+                background: rgba(255, 215, 0, 0.1);
+                color: #ffd700;
+                padding: 8px 12px;
+                text-align: center;
+                white-space: nowrap;
+                font-size: 0.85em;
+                text-transform: uppercase;
+            }
+
+            .mobile-stats-table th:first-child {
+                text-align: left;
+            }
+
+            .mobile-stats-table td {
+                padding: 8px 12px;
+                white-space: nowrap;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .mobile-stats-table td:first-child {
+                color: #b8b8b8;
+            }
+
+            .mobile-stats-table td:not(:first-child) {
+                color: #e0e0e0;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            /* Competitors section on mobile */
+            .competitors-section {
+                margin-top: 12px;
+            }
+
+            .competitors-scroll {
+                max-height: 180px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .competitors-table {
+                font-size: 0.8em;
+                width: max-content;
+                min-width: 100%;
+            }
+
+            .competitors-table th,
+            .competitors-table td {
+                padding: 6px 10px;
+                white-space: nowrap;
+            }
+
+            .competitors-table th:first-child,
+            .competitors-table td:first-child {
+                max-width: 130px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
             .dropped-out-grid {
                 grid-template-columns: 1fr;
             }
@@ -886,38 +979,6 @@
             .dropped-details .details-section {
                 min-width: 0;
                 overflow: hidden;
-            }
-
-            /* Competitors table mobile fixes */
-            .competitors-section {
-                min-width: unset;
-                width: fit-content;
-                max-width: 100%;
-                justify-self: start;
-            }
-
-            .competitors-scroll {
-                max-height: 180px;
-                overflow-x: hidden;
-            }
-
-            .competitors-table {
-                font-size: 0.85em;
-                width: auto;
-                table-layout: auto;
-            }
-
-            .competitors-table th,
-            .competitors-table td {
-                padding: 6px 10px;
-                white-space: nowrap;
-            }
-
-            .competitors-table th:first-child,
-            .competitors-table td:first-child {
-                max-width: 130px;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
         }
 
@@ -1672,6 +1733,49 @@
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
                             <div class="details-content">
+                                <!-- Mobile-only stats table -->
+                                <div class="mobile-stats-table-wrapper">
+                                    <table class="mobile-stats-table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Current Reign</th>
+                                                <th>All-Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Peak Rating</td>
+                                                <td>${formatRating(champ.peak)}</td>
+                                                <td>${formatRating(champ.allTimePeak)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Floor Rating</td>
+                                                <td>${formatRating(champ.floor)}</td>
+                                                <td>${formatRating(champ.allTimeFloor)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Best Match</td>
+                                                <td>${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
+                                                <td>${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Worst Match</td>
+                                                <td>${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
+                                                <td>${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Matches</td>
+                                                <td colspan="2" style="text-align: center;">${champ.totalMatches || '—'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Current Streak</td>
+                                                <td colspan="2" style="text-align: center;">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Desktop details grid -->
                                 <div class="details-grid">
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
