@@ -868,6 +868,36 @@
                 padding: 10px;
             }
 
+            /* Fix detail items on mobile - ensure values don't overflow */
+            .detail-item {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .detail-label {
+                flex: 1 1 60%;
+                min-width: 0;
+            }
+
+            .detail-value {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            /* Ensure dropped-details content fits on mobile */
+            .dropped-details {
+                overflow-x: auto;
+            }
+
+            .dropped-details .details-grid {
+                min-width: 0;
+            }
+
+            .dropped-details .details-section {
+                min-width: 0;
+                overflow: hidden;
+            }
+
             /* Competitors table mobile fixes */
             .competitors-section {
                 min-width: unset;
