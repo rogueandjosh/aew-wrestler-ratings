@@ -894,20 +894,24 @@
                 width: 100%;
             }
 
+            .competitors-scroll {
+                max-height: 180px;
+            }
+
             .competitors-table {
-                font-size: 0.8em;
+                font-size: 0.75em;
                 width: 100%;
                 table-layout: fixed;
             }
 
             .competitors-table th,
             .competitors-table td {
-                padding: 4px 5px;
+                padding: 4px 3px;
             }
 
             .competitors-table th:first-child,
             .competitors-table td:first-child {
-                width: 45%;
+                width: 40%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -915,7 +919,8 @@
 
             .competitors-table th:not(:first-child),
             .competitors-table td:not(:first-child) {
-                width: 18%;
+                width: 20%;
+                text-align: center;
             }
         }
 
