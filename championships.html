@@ -1535,9 +1535,9 @@
         async function renderChampionships() {
             let championships = championshipData.championships || [];
             
-            // In All-Time view, add inactive titles from competitor data
+            // Add inactive titles from competitor data (show in both view modes)
             let inactiveTitles = [];
-            if (viewMode === 'alltime' && competitorData && competitorData.titles) {
+            if (competitorData && competitorData.titles) {
                 const activeTitleNames = new Set(championships.map(c => c.title));
                 inactiveTitles = competitorData.titles
                     .filter(t => !activeTitleNames.has(t.title))
@@ -1566,7 +1566,7 @@
                             rankChange: null
                         };
                     });
-                console.log(`📊 All-Time view: Adding ${inactiveTitles.length} inactive titles`);
+                console.log(`📊 Found ${inactiveTitles.length} inactive titles`);
             }
             
             // Fetch previous week data to find titles that dropped out
