@@ -868,19 +868,10 @@
                 padding: 10px;
             }
 
-            /* Fix detail items on mobile - keep label and value close together */
+            /* Fix detail items on mobile - keep label and value together */
             .detail-item {
-                justify-content: flex-start;
-                gap: 10px;
-            }
-
-            .detail-label {
-                flex: 0 0 auto;
-            }
-
-            .detail-value {
-                flex: 0 0 auto;
-                margin-left: auto;
+                justify-content: space-between;
+                max-width: 250px;
             }
 
             /* Ensure dropped-details content fits on mobile */
