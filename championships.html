@@ -780,6 +780,8 @@
 
         #ttBox.visible {
             opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
         }
 
         #tooltipToggle {
@@ -1494,6 +1496,19 @@
                 if (ttEl) {
                     ttBox.classList.remove('visible');
                 }
+            });
+
+            // Mobile: tap anywhere to dismiss tooltip
+            document.addEventListener('click', function(e) {
+                const ttEl = e.target.closest('.tt');
+                if (ttBox.classList.contains('visible') && !ttEl) {
+                    ttBox.classList.remove('visible');
+                }
+            });
+
+            // Mobile: tap the tooltip box itself to dismiss
+            ttBox.addEventListener('click', function(e) {
+                ttBox.classList.remove('visible');
             });
         }
 
