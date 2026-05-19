@@ -1684,7 +1684,7 @@
                         <thead>
                             <tr>
                                 <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
                                 ${viewMode === 'reign' ? `
                                 <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
@@ -1840,7 +1840,7 @@
             if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle tt" data-tt="Titles that were ranked last week but have no matches this week and are now inactive." onclick="toggleDroppedOut(event)">
+                        <button class="dropped-out-toggle tt" data-tt="Titles that were ranked last week but have no matches this week. Click to expand, then click any title for detailed stats. On mobile, scroll right to see all stats." onclick="toggleDroppedOut(event)">
                             ▼ Dropped Out This Week (${droppedOutTitles.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
@@ -1927,7 +1927,7 @@
             if (inactiveTitles.length > 0) {
                 html += `
                     <div class="inactive-titles-section">
-                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data." onclick="toggleInactiveTitles(event)">
+                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data. Click to expand, then click any title for detailed stats. On mobile, scroll right to see all stats." onclick="toggleInactiveTitles(event)">
                             ▼ Inactive Titles (${inactiveTitles.length})
                         </button>
                         <div id="inactiveTitlesList" class="inactive-titles-list">
