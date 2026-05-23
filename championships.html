@@ -1647,9 +1647,37 @@
                     let prevWeekFile = null;
                     
                     if (currentWeekValue === 'current') {
-                        // For current week, previous is the first archive entry
-                        prevWeekFile = archiveIndex.weeks[0]?.file;
-                        console.log('  - Current week mode, using archive[0]:', prevWeekFile);
+                        // For current week, we need to find the right previous week
+                        // If current data matches the most recent archive, compare to the one before that
+                        const mostRecentArchiveFile = archiveIndex.weeks[0]?.file;
+                        
+                        if (mostRecentArchiveFile && archiveIndex.weeks.length > 1) {
+                            // Fetch most recent archive to check if it matches current
+                            const checkUrl = `championship-archive/${mostRecentArchiveFile}`;
+                            const checkResponse = await fetch(checkUrl);
+                            if (checkResponse.ok) {
+                                const mostRecentData = await checkResponse.json();
+                                const mostRecentTitles = new Set((mostRecentData.championships || []).map(c => c.title));
+                                const currentTitlesCheck = new Set(championships.map(c => c.title));
+                                
+                                // Check if current and most recent archive have the same titles
+                                const sameTitles = mostRecentTitles.size === currentTitlesCheck.size && 
+                                    [...mostRecentTitles].every(t => currentTitlesCheck.has(t));
+                                
+                                if (sameTitles) {
+                                    // Current matches most recent archive, so compare to the one before
+                                    prevWeekFile = archiveIndex.weeks[1]?.file;
+                                    console.log('  - Current matches most recent archive, using archive[1]:', prevWeekFile);
+                                } else {
+                                    // Current is different from most recent archive
+                                    prevWeekFile = mostRecentArchiveFile;
+                                    console.log('  - Current differs from archive, using archive[0]:', prevWeekFile);
+                                }
+                            }
+                        } else {
+                            prevWeekFile = mostRecentArchiveFile;
+                            console.log('  - Only one archive week, using archive[0]:', prevWeekFile);
+                        }
                     } else {
                         // For archive weeks, find the next older week
                         const currentIndex = archiveIndex.weeks.findIndex(w => 
