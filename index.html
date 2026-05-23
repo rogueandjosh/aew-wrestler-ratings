@@ -4775,9 +4775,9 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                 }
                 weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
                 await renderAnalysisSections(data.sections || {});
-                // Archive weeks: show label only, no expand toggle
+                // Archive weeks: start collapsed, user can expand
                 body.classList.remove('open');
-                body.classList.add('open'); // show expanded, no toggle needed
+                chevron.classList.remove('open');
                 chevron.style.display = '';
                 header.onclick = toggleAnalysis;
                 header.style.cursor = 'pointer';
