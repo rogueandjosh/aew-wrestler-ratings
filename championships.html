@@ -1352,6 +1352,7 @@
             try {
                 await loadArchiveIndex();
                 await loadCompetitorData();
+                await checkIfCurrentMatchesMostRecent();
                 await loadChampionshipData('current');
                 setupTooltips();
             } catch (error) {
@@ -1554,12 +1555,14 @@
         }
 
         // ===== DATA LOADING =====
+        let skipFirstArchiveWeek = false; // True if current matches most recent archive
+        
         async function loadArchiveIndex() {
             try {
                 const response = await fetch('championship-archive/index.json');
                 if (response.ok) {
                     archiveIndex = await response.json();
-                    populateWeekSelector();
+                    // Don't populate yet - wait until we check if current matches most recent
                 } else {
                     archiveIndex = { weeks: [] };
                 }
@@ -1567,6 +1570,41 @@
                 console.log('No archive index found, using current only');
                 archiveIndex = { weeks: [] };
             }
+        }
+        
+        async function checkIfCurrentMatchesMostRecent() {
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
+                return;
+            }
+            
+            try {
+                // Fetch current and most recent archive
+                const [currentResponse, archiveResponse] = await Promise.all([
+                    fetch('current-championship-rankings.json'),
+                    fetch(`championship-archive/${archiveIndex.weeks[0].file}`)
+                ]);
+                
+                if (currentResponse.ok && archiveResponse.ok) {
+                    const currentData = await currentResponse.json();
+                    const archiveData = await archiveResponse.json();
+                    
+                    const currentTitles = new Set((currentData.championships || []).map(c => c.title));
+                    const archiveTitles = new Set((archiveData.championships || []).map(c => c.title));
+                    
+                    // Check if they have the same titles
+                    skipFirstArchiveWeek = currentTitles.size === archiveTitles.size && 
+                        [...currentTitles].every(t => archiveTitles.has(t));
+                    
+                    if (skipFirstArchiveWeek) {
+                        console.log('📋 Current matches most recent archive - will skip in dropdown');
+                    }
+                }
+            } catch (error) {
+                console.log('⚠️ Could not check if current matches archive:', error);
+            }
+            
+            // Now populate the selector
+            populateWeekSelector();
         }
 
         async function loadChampionshipData(weekValue) {
@@ -1647,36 +1685,11 @@
                     let prevWeekFile = null;
                     
                     if (currentWeekValue === 'current') {
-                        // For current week, we need to find the right previous week
-                        // If current data matches the most recent archive, compare to the one before that
-                        const mostRecentArchiveFile = archiveIndex.weeks[0]?.file;
-                        
-                        if (mostRecentArchiveFile && archiveIndex.weeks.length > 1) {
-                            // Fetch most recent archive to check if it matches current
-                            const checkUrl = `championship-archive/${mostRecentArchiveFile}`;
-                            const checkResponse = await fetch(checkUrl);
-                            if (checkResponse.ok) {
-                                const mostRecentData = await checkResponse.json();
-                                const mostRecentTitles = new Set((mostRecentData.championships || []).map(c => c.title));
-                                const currentTitlesCheck = new Set(championships.map(c => c.title));
-                                
-                                // Check if current and most recent archive have the same titles
-                                const sameTitles = mostRecentTitles.size === currentTitlesCheck.size && 
-                                    [...mostRecentTitles].every(t => currentTitlesCheck.has(t));
-                                
-                                if (sameTitles) {
-                                    // Current matches most recent archive, so compare to the one before
-                                    prevWeekFile = archiveIndex.weeks[1]?.file;
-                                    console.log('  - Current matches most recent archive, using archive[1]:', prevWeekFile);
-                                } else {
-                                    // Current is different from most recent archive
-                                    prevWeekFile = mostRecentArchiveFile;
-                                    console.log('  - Current differs from archive, using archive[0]:', prevWeekFile);
-                                }
-                            }
-                        } else {
-                            prevWeekFile = mostRecentArchiveFile;
-                            console.log('  - Only one archive week, using archive[0]:', prevWeekFile);
+                        // For current week, compare to the week before (accounting for skip)
+                        const compareIndex = skipFirstArchiveWeek ? 1 : 0;
+                        if (archiveIndex.weeks.length > compareIndex) {
+                            prevWeekFile = archiveIndex.weeks[compareIndex]?.file;
+                            console.log(`  - Current week mode, comparing to archive[${compareIndex}]:`, prevWeekFile);
                         }
                     } else {
                         // For archive weeks, find the next older week
@@ -2258,7 +2271,10 @@
             const years = new Set();
             const months = new Set();
 
-            archiveIndex.weeks.forEach(week => {
+            // Get weeks to show (skip first if it matches current)
+            const weeksToShow = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+
+            weeksToShow.forEach(week => {
                 const match = week.week.match(/^(\w+)\s+'(\d{2})/);
                 if (match) {
                     years.add(match[2]);
@@ -2279,7 +2295,7 @@
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
 
-            archiveIndex.weeks.forEach(week => {
+            weeksToShow.forEach(week => {
                 weekSelect.innerHTML += `<option value="championship-archive/${week.file}">${week.week}</option>`;
             });
 
@@ -2295,8 +2311,11 @@
 
             const currentWeekSelection = weekSelect.value;
 
+            // Get weeks to filter from (skip first if it matches current)
+            const weeksToFilter = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+
             // Filter weeks based on year and month
-            const filteredWeeks = archiveIndex.weeks.filter(week => {
+            const filteredWeeks = weeksToFilter.filter(week => {
                 if (yearFilter && !week.week.includes(`'${yearFilter}`)) return false;
                 if (monthFilter && !week.week.startsWith(monthFilter)) return false;
                 return true;
