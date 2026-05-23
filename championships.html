@@ -1637,18 +1637,25 @@
             let prevWeekData = null;
             let droppedOutTitles = [];
             
-            if (archiveIndex && archiveIndex.weeks) {
+            console.log('🔍 Checking for dropped out titles...');
+            console.log('  - currentWeekValue:', currentWeekValue);
+            console.log('  - archiveIndex:', archiveIndex);
+            console.log('  - archiveIndex.weeks[0]:', archiveIndex?.weeks?.[0]);
+            
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
                 try {
                     let prevWeekFile = null;
                     
                     if (currentWeekValue === 'current') {
                         // For current week, previous is the first archive entry
                         prevWeekFile = archiveIndex.weeks[0]?.file;
+                        console.log('  - Current week mode, using archive[0]:', prevWeekFile);
                     } else {
                         // For archive weeks, find the next older week
                         const currentIndex = archiveIndex.weeks.findIndex(w => 
                             `championship-archive/${w.file}` === currentWeekValue
                         );
+                        console.log('  - Archive week mode, currentIndex:', currentIndex);
                         if (currentIndex >= 0 && currentIndex < archiveIndex.weeks.length - 1) {
                             prevWeekFile = archiveIndex.weeks[currentIndex + 1]?.file;
                         }
@@ -1657,23 +1664,33 @@
                     if (prevWeekFile) {
                         const prevUrl = `championship-archive/${prevWeekFile}`;
                         console.log('📅 Loading previous championship week:', prevUrl);
-                        prevWeekData = await fetch(prevUrl + '?t=' + Date.now()).then(r => r.json());
-                        console.log('✅ Loaded previous week data');
-                        
-                        // Find titles that were in previous week but not in this week
-                        const currentTitles = new Set(championships.map(c => c.title));
-                        const prevChampionships = prevWeekData.championships || [];
-                        
-                        droppedOutTitles = prevChampionships.filter(prevChamp => 
-                            !currentTitles.has(prevChamp.title)
-                        );
-                        
-                        console.log(`📉 Found ${droppedOutTitles.length} titles that dropped out:`, 
-                            droppedOutTitles.map(t => t.title));
+                        const response = await fetch(prevUrl);
+                        if (response.ok) {
+                            prevWeekData = await response.json();
+                            console.log('✅ Loaded previous week data with', prevWeekData.championships?.length, 'titles');
+                            
+                            // Find titles that were in previous week but not in this week
+                            const currentTitles = new Set(championships.map(c => c.title));
+                            console.log('  - Current titles:', [...currentTitles]);
+                            const prevChampionships = prevWeekData.championships || [];
+                            
+                            droppedOutTitles = prevChampionships.filter(prevChamp => 
+                                !currentTitles.has(prevChamp.title)
+                            );
+                            
+                            console.log(`📉 Found ${droppedOutTitles.length} titles that dropped out:`, 
+                                droppedOutTitles.map(t => t.title));
+                        } else {
+                            console.log('⚠️ Failed to fetch previous week:', response.status);
+                        }
+                    } else {
+                        console.log('⚠️ No previous week file found');
                     }
                 } catch (error) {
                     console.log('⚠️ Could not load previous week data:', error);
                 }
+            } else {
+                console.log('⚠️ No archive index or empty weeks array');
             }
 
             // Sort championships (active only in table)
