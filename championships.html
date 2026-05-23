@@ -2009,7 +2009,7 @@
                                     <div class="inactive-item-wrapper">
                                         <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
                                             <span class="inactive-title-name">${titleIcon}${title.title}</span>
-                                            <span class="inactive-info">${title.totalMatches} matches</span>
+                                            <span class="inactive-info"></span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
                                             <div class="details-grid">
@@ -2369,8 +2369,9 @@
 
             if (!archiveIndex || !archiveIndex.weeks) return;
 
-            // Build full weeks array from ALL archive weeks
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `championship-archive/${w.file}`)];
+            // Build weeks array accounting for skipped week
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const allWeeks = ['current', ...weeksToUse.map(w => `championship-archive/${w.file}`)];
             let currentIndex = allWeeks.indexOf(currentValue);
 
             if (currentIndex === -1) return;
@@ -2426,8 +2427,9 @@
 
             const currentValue = weekSelect.value;
 
-            // Build full weeks array
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `championship-archive/${w.file}`)];
+            // Build weeks array accounting for skipped week
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const allWeeks = ['current', ...weeksToUse.map(w => `championship-archive/${w.file}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
 
             // Disable prev (older) if at oldest week
