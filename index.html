@@ -1666,6 +1666,7 @@
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
         const TOP_N_WRESTLERS = 30; // Show top N wrestlers initially
         let showAllWrestlers = {}; // Track expanded state per division
+        let skipFirstArchiveWeek = false; // True when current-rankings.json matches the newest archive week
 
         function expandMonthName(weekLabel) {
             const monthMap = {
@@ -2501,6 +2502,9 @@ let visibleColumns = {
                 statisticsData = await statsResponse.json();
             }
             
+            // Check whether current-rankings.json duplicates the newest archive week
+            await checkForDuplicateArchiveWeek();
+            
             // Populate week selector
             populateWeekSelector();
             
@@ -2536,6 +2540,28 @@ let visibleColumns = {
             console.error('Error loading data:', error);
         });
 
+        async function checkForDuplicateArchiveWeek() {
+            skipFirstArchiveWeek = false;
+            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) return;
+            if (!ratingsData) return;
+            try {
+                const firstArchive = archiveIndex.weeks[0];
+                const archiveData = await fetch(`archive/${firstArchive.filename}`).then(r => r.json());
+                // Compare wrestler slugs across all divisions
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                let allMatch = true;
+                for (const div of divisions) {
+                    const currentNames = (ratingsData[div] || []).map(w => w.name).sort().join('|');
+                    const archiveNames = (archiveData[div] || []).map(w => w.name).sort().join('|');
+                    if (currentNames !== archiveNames) { allMatch = false; break; }
+                }
+                skipFirstArchiveWeek = allMatch;
+                console.log('🔍 Duplicate archive week check:', skipFirstArchiveWeek ? 'DUPLICATE — first archive week will be hidden' : 'No duplicate');
+            } catch (e) {
+                console.log('Could not check for duplicate archive week:', e);
+            }
+        }
+
         function populateWeekSelector() {
             const select = document.getElementById('weekSelect');
             select.innerHTML = '';
@@ -2551,8 +2577,9 @@ let visibleColumns = {
                 const years = new Set();
                 const months = new Set();
                 
-                // Include all archive weeks in dropdown (user can manually select first one if needed)
-                archiveIndex.weeks.forEach(week => {
+                // Include archive weeks in dropdown, skipping the first if it duplicates current
+                const weeksToShow = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+                weeksToShow.forEach(week => {
                     const option = document.createElement('option');
                     option.value = `archive/${week.filename}`;
                     option.textContent = expandMonthName(week.label);
@@ -2639,8 +2666,9 @@ let visibleColumns = {
             // Store current week selection before rebuilding
             const currentWeekSelection = weekSelect.value;
             
-            // Filter weeks based on year and month
-            const filteredWeeks = archiveIndex.weeks.filter(week => {
+            // Filter weeks based on year and month, skipping first if it's a duplicate of current
+            const weeksSource = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const filteredWeeks = weeksSource.filter(week => {
                 if (yearFilter && !week.label.includes(`'${yearFilter}`)) return false;
                 if (monthFilter && !week.label.startsWith(monthFilter)) return false;
                 return true;
@@ -2690,9 +2718,10 @@ let visibleColumns = {
             // Store current month selection before rebuilding
             const currentMonthSelection = monthFilter.value;
     
-            // Get all unique year+month combinations for the selected year
+            // Get all unique year+month combinations for the selected year, respecting the skip
+            const weeksSource = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
             const availableMonths = new Set();
-            archiveIndex.weeks.forEach(week => {
+            weeksSource.forEach(week => {
                 const parts = week.label.match(/^(\w+) .*'(\d+)/);
                 if (parts) {
                     const month = parts[1];
@@ -2734,9 +2763,11 @@ let visibleColumns = {
         function loadRandomWeek() {
             if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) return;
             
-            // Get a random week from all archived weeks
-            const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
-            const randomWeek = archiveIndex.weeks[randomIndex];
+            // Get a random week from available archived weeks (skip first if it's a duplicate)
+            const weeksPool = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            if (weeksPool.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * weeksPool.length);
+            const randomWeek = weeksPool[randomIndex];
             
             // Extract year and month from the random week
             const year = randomWeek.label.match(/'(\d+)/)?.[1];
@@ -2772,14 +2803,17 @@ let visibleColumns = {
             
             if (!archiveIndex) return;
             
-            // Special case: if viewing the first archive week (same as current), treat as 'current'
-            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
-            if (currentValue === firstArchiveFile) {
-                currentValue = 'current';
+            // Special case: if not skipping and viewing the first archive week (same as current), treat as 'current'
+            if (!skipFirstArchiveWeek && archiveIndex.weeks.length > 0) {
+                const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+                if (currentValue === firstArchiveFile) {
+                    currentValue = 'current';
+                }
             }
             
-            // Build full weeks array - use ALL archive weeks (no skip)
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            // Build full weeks array respecting skip logic
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const allWeeks = ['current', ...weeksToUse.map(w => `archive/${w.filename}`)];
             let currentIndex = allWeeks.indexOf(currentValue);
             
             if (currentIndex === -1) return;
@@ -2788,14 +2822,6 @@ let visibleColumns = {
             
             // Check bounds
             if (newIndex < 0 || newIndex >= allWeeks.length) return;
-            
-            // CRITICAL FIX: When navigating backwards from 'current' week,
-            // skip to index 2 to avoid the duplicate first archive week (index 1)
-            // The first archive week (archiveIndex.weeks[0]) is the same as current week
-            if (currentIndex === 0 && direction === 1) {
-                newIndex = 2; // Skip index 1 (the duplicate), go directly to index 2
-                if (newIndex >= allWeeks.length) return; // Safety check
-            }
             
             // Store the target week BEFORE calling filterWeeks
             const targetWeek = allWeeks[newIndex];
@@ -2846,14 +2872,17 @@ let visibleColumns = {
             
             let currentValue = weekSelect.value;
             
-            // Special case: if viewing the first archive week (same as current), treat as 'current'
-            const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
-            if (currentValue === firstArchiveFile) {
-                currentValue = 'current';
+            // Special case: if not skipping and viewing the first archive week (same as current), treat as 'current'
+            if (!skipFirstArchiveWeek && archiveIndex.weeks.length > 0) {
+                const firstArchiveFile = `archive/${archiveIndex.weeks[0].filename}`;
+                if (currentValue === firstArchiveFile) {
+                    currentValue = 'current';
+                }
             }
             
-            // Build weeks array - use ALL archive weeks (no skip) - matches navigateWeek()
-            const allWeeks = ['current', ...archiveIndex.weeks.map(w => `archive/${w.filename}`)];
+            // Build weeks array respecting skip logic — must match navigateWeek()
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const allWeeks = ['current', ...weeksToUse.map(w => `archive/${w.filename}`)];
             const currentIndex = allWeeks.indexOf(currentValue);
             
             // At current week (index 0): can go back (left/prev) but NOT forward (right/next)
