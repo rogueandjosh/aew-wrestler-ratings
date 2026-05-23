@@ -1600,125 +1600,36 @@
             heading.textContent = championshipData.currentWeek || 'Current Week';
         }
 
-        // Cache for inactive title historical data
-        let inactiveTitleCache = {};
-        let archiveDataCache = {}; // Cache fetched archive files
-
-        // Find the last appearance of a title in the archive
-        async function findLastAppearance(titleName, beforeWeekIndex) {
-            // Check cache first
-            const cacheKey = `${titleName}_${beforeWeekIndex}`;
-            if (inactiveTitleCache[cacheKey]) {
-                return inactiveTitleCache[cacheKey];
-            }
-
-            if (!archiveIndex || !archiveIndex.weeks) return null;
-
-            // Search backwards from the given week index, limit to 50 weeks max
-            const startIndex = beforeWeekIndex >= 0 ? beforeWeekIndex : 0;
-            const maxSearchWeeks = Math.min(startIndex + 50, archiveIndex.weeks.length);
-            
-            for (let i = startIndex; i < maxSearchWeeks; i++) {
-                try {
-                    const weekFile = archiveIndex.weeks[i].file;
-                    const url = `championship-archive/${weekFile}`;
-                    
-                    // Check if we already fetched this archive file
-                    let weekData;
-                    if (archiveDataCache[weekFile]) {
-                        weekData = archiveDataCache[weekFile];
-                    } else {
-                        const response = await fetch(url);
-                        if (!response.ok) continue;
-                        weekData = await response.json();
-                        archiveDataCache[weekFile] = weekData; // Cache it
-                    }
-                    
-                    const championships = weekData.championships || [];
-                    
-                    const found = championships.find(c => c.title === titleName);
-                    if (found) {
-                        // Found it! Cache and return
-                        const result = {
-                            ...found,
-                            lastActiveWeek: archiveIndex.weeks[i].week,
-                            isInactive: true
-                        };
-                        inactiveTitleCache[cacheKey] = result;
-                        console.log(`📍 Found last appearance of "${titleName}" in ${archiveIndex.weeks[i].week}`);
-                        return result;
-                    }
-                } catch (error) {
-                    console.log(`⚠️ Error checking week ${i}:`, error);
-                    continue;
-                }
-            }
-            
-            return null;
-        }
-
         async function renderChampionships() {
             let championships = championshipData.championships || [];
             
-            // Find inactive titles from competitor data
+            // Find inactive titles from competitor data (simple - just show match counts)
             let inactiveTitles = [];
             if (competitorData && competitorData.titles) {
                 const activeTitleNames = new Set(championships.map(c => c.title));
-                const inactiveTitleNames = competitorData.titles
+                inactiveTitles = competitorData.titles
                     .filter(t => !activeTitleNames.has(t.title))
-                    .map(t => t.title);
-                
-                if (inactiveTitleNames.length > 0) {
-                    console.log(`📊 Found ${inactiveTitleNames.length} inactive titles, searching for historical data...`);
-                    
-                    // Determine which week index to start searching from
-                    let searchStartIndex = 0;
-                    if (currentWeekValue !== 'current' && archiveIndex && archiveIndex.weeks) {
-                        searchStartIndex = archiveIndex.weeks.findIndex(w => 
-                            `championship-archive/${w.file}` === currentWeekValue
-                        );
-                        if (searchStartIndex < 0) searchStartIndex = 0;
-                    }
-                    
-                    // Find historical data for each inactive title
-                    for (const titleName of inactiveTitleNames) {
-                        try {
-                            const historicalData = await findLastAppearance(titleName, searchStartIndex);
-                            if (historicalData) {
-                                inactiveTitles.push(historicalData);
-                            } else {
-                                // Fallback to competitor data if not found in archive
-                                const competitorTitle = competitorData.titles.find(t => t.title === titleName);
-                                if (competitorTitle) {
-                                    let allTimeHighest = null;
-                                    let allTimeLowest = null;
-                                    if (competitorTitle.competitors && competitorTitle.competitors.length > 0) {
-                                        const highs = competitorTitle.competitors.map(c => c.high).filter(h => h != null);
-                                        const lows = competitorTitle.competitors.map(c => c.low).filter(l => l != null);
-                                        if (highs.length > 0) allTimeHighest = Math.max(...highs);
-                                        if (lows.length > 0) allTimeLowest = Math.min(...lows);
-                                    }
-                                    inactiveTitles.push({
-                                        title: titleName,
-                                        rank: null,
-                                        rating: null,
-                                        isInactive: true,
-                                        totalMatches: competitorTitle.totalMatches,
-                                        allTimePeak: null,
-                                        allTimeFloor: null,
-                                        allTimeHighest: allTimeHighest,
-                                        allTimeLowest: allTimeLowest,
-                                        rankChange: null,
-                                        lastActiveWeek: 'Unknown'
-                                    });
-                                }
-                            }
-                        } catch (error) {
-                            console.log(`⚠️ Error finding historical data for ${titleName}:`, error);
+                    .map(t => {
+                        // Calculate best/worst match from competitors
+                        let allTimeHighest = null;
+                        let allTimeLowest = null;
+                        if (t.competitors && t.competitors.length > 0) {
+                            const highs = t.competitors.map(c => c.high).filter(h => h != null);
+                            const lows = t.competitors.map(c => c.low).filter(l => l != null);
+                            if (highs.length > 0) allTimeHighest = Math.max(...highs);
+                            if (lows.length > 0) allTimeLowest = Math.min(...lows);
                         }
-                    }
-                    
-                    console.log(`✅ Loaded historical data for ${inactiveTitles.length} inactive titles`);
+                        return {
+                            title: t.title,
+                            isInactive: true,
+                            totalMatches: t.totalMatches,
+                            allTimeHighest: allTimeHighest,
+                            allTimeLowest: allTimeLowest
+                        };
+                    });
+                
+                if (inactiveTitles.length > 0) {
+                    console.log(`📊 Found ${inactiveTitles.length} inactive titles`);
                 }
             }
             
@@ -2034,71 +1945,19 @@
                             ${inactiveTitles.map((title, idx) => {
                                 const inactiveIndex = championships.length + droppedOutTitles.length + idx;
                                 const isExpanded = expandedRows.has(inactiveIndex);
-                                const titleIcon = getTitleIcon(title.title, title.rank || 99, 99);
-                                const hasHistoricalData = title.rating != null;
+                                const titleIcon = getTitleIcon(title.title, 99, 99);
                                 
                                 return `
                                     <div class="inactive-item-wrapper">
                                         <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
                                             <span class="inactive-title-name">${titleIcon}${title.title}</span>
-                                            <span class="inactive-info">${hasHistoricalData ? `Was #${title.rank} • ${formatRating(title.rating)}` : `${title.totalMatches} matches`}</span>
+                                            <span class="inactive-info">${title.totalMatches} matches</span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
                                             <div class="details-grid">
-                                                ${hasHistoricalData ? `
-                                                <div class="details-section">
-                                                    <h4 class="tt" data-tt="Statistics from when this title was last active.">📊 Last Active: ${title.lastActiveWeek || 'Unknown'}</h4>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Rating</span>
-                                                        <span class="detail-value">${formatRating(title.rating)}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(title.peak)}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(title.floor)}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Best Match</span>
-                                                        <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Worst Match</span>
-                                                        <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="details-section">
-                                                    <h4 class="tt" data-tt="All-time statistics for this championship.">🏆 All-Time</h4>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(title.allTimePeak)}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(title.allTimeFloor)}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Best Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Worst Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Total Matches</span>
-                                                        <span class="detail-value">${title.totalMatches || '—'}</span>
-                                                    </div>
-                                                    <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
-                                                        ${getTitleIcon(title.title, 1, 10)}
-                                                    </div>
-                                                </div>
-                                                ` : `
                                                 <div class="details-section">
                                                     <h4>ℹ️ Status</h4>
-                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive. Historical rating data was not found in the archive.</p>
+                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive.</p>
                                                     <div class="detail-item" style="margin-top: 10px;">
                                                         <span class="detail-label">Best Match Ever</span>
                                                         <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
@@ -2115,7 +1974,6 @@
                                                         ${getTitleIcon(title.title, 1, 10)}
                                                     </div>
                                                 </div>
-                                                `}
                                                 ${renderCompetitorsSection(title.title)}
                                             </div>
                                         </div>
