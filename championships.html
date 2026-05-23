@@ -1602,6 +1602,7 @@
 
         // Cache for inactive title historical data
         let inactiveTitleCache = {};
+        let archiveDataCache = {}; // Cache fetched archive files
 
         // Find the last appearance of a title in the archive
         async function findLastAppearance(titleName, beforeWeekIndex) {
@@ -1613,17 +1614,26 @@
 
             if (!archiveIndex || !archiveIndex.weeks) return null;
 
-            // Search backwards from the given week index
+            // Search backwards from the given week index, limit to 50 weeks max
             const startIndex = beforeWeekIndex >= 0 ? beforeWeekIndex : 0;
+            const maxSearchWeeks = Math.min(startIndex + 50, archiveIndex.weeks.length);
             
-            for (let i = startIndex; i < archiveIndex.weeks.length; i++) {
+            for (let i = startIndex; i < maxSearchWeeks; i++) {
                 try {
                     const weekFile = archiveIndex.weeks[i].file;
                     const url = `championship-archive/${weekFile}`;
-                    const response = await fetch(url + '?t=' + Date.now());
-                    if (!response.ok) continue;
                     
-                    const weekData = await response.json();
+                    // Check if we already fetched this archive file
+                    let weekData;
+                    if (archiveDataCache[weekFile]) {
+                        weekData = archiveDataCache[weekFile];
+                    } else {
+                        const response = await fetch(url);
+                        if (!response.ok) continue;
+                        weekData = await response.json();
+                        archiveDataCache[weekFile] = weekData; // Cache it
+                    }
+                    
                     const championships = weekData.championships || [];
                     
                     const found = championships.find(c => c.title === titleName);
@@ -1640,6 +1650,7 @@
                     }
                 } catch (error) {
                     console.log(`⚠️ Error checking week ${i}:`, error);
+                    continue;
                 }
             }
             
@@ -1657,52 +1668,58 @@
                     .filter(t => !activeTitleNames.has(t.title))
                     .map(t => t.title);
                 
-                console.log(`📊 Found ${inactiveTitleNames.length} inactive titles, searching for historical data...`);
-                
-                // Determine which week index to start searching from
-                let searchStartIndex = 0;
-                if (currentWeekValue !== 'current') {
-                    searchStartIndex = archiveIndex.weeks.findIndex(w => 
-                        `championship-archive/${w.file}` === currentWeekValue
-                    );
-                    if (searchStartIndex < 0) searchStartIndex = 0;
-                }
-                
-                // Find historical data for each inactive title
-                for (const titleName of inactiveTitleNames) {
-                    const historicalData = await findLastAppearance(titleName, searchStartIndex);
-                    if (historicalData) {
-                        inactiveTitles.push(historicalData);
-                    } else {
-                        // Fallback to competitor data if not found in archive
-                        const competitorTitle = competitorData.titles.find(t => t.title === titleName);
-                        if (competitorTitle) {
-                            let allTimeHighest = null;
-                            let allTimeLowest = null;
-                            if (competitorTitle.competitors && competitorTitle.competitors.length > 0) {
-                                const highs = competitorTitle.competitors.map(c => c.high).filter(h => h != null);
-                                const lows = competitorTitle.competitors.map(c => c.low).filter(l => l != null);
-                                if (highs.length > 0) allTimeHighest = Math.max(...highs);
-                                if (lows.length > 0) allTimeLowest = Math.min(...lows);
+                if (inactiveTitleNames.length > 0) {
+                    console.log(`📊 Found ${inactiveTitleNames.length} inactive titles, searching for historical data...`);
+                    
+                    // Determine which week index to start searching from
+                    let searchStartIndex = 0;
+                    if (currentWeekValue !== 'current' && archiveIndex && archiveIndex.weeks) {
+                        searchStartIndex = archiveIndex.weeks.findIndex(w => 
+                            `championship-archive/${w.file}` === currentWeekValue
+                        );
+                        if (searchStartIndex < 0) searchStartIndex = 0;
+                    }
+                    
+                    // Find historical data for each inactive title
+                    for (const titleName of inactiveTitleNames) {
+                        try {
+                            const historicalData = await findLastAppearance(titleName, searchStartIndex);
+                            if (historicalData) {
+                                inactiveTitles.push(historicalData);
+                            } else {
+                                // Fallback to competitor data if not found in archive
+                                const competitorTitle = competitorData.titles.find(t => t.title === titleName);
+                                if (competitorTitle) {
+                                    let allTimeHighest = null;
+                                    let allTimeLowest = null;
+                                    if (competitorTitle.competitors && competitorTitle.competitors.length > 0) {
+                                        const highs = competitorTitle.competitors.map(c => c.high).filter(h => h != null);
+                                        const lows = competitorTitle.competitors.map(c => c.low).filter(l => l != null);
+                                        if (highs.length > 0) allTimeHighest = Math.max(...highs);
+                                        if (lows.length > 0) allTimeLowest = Math.min(...lows);
+                                    }
+                                    inactiveTitles.push({
+                                        title: titleName,
+                                        rank: null,
+                                        rating: null,
+                                        isInactive: true,
+                                        totalMatches: competitorTitle.totalMatches,
+                                        allTimePeak: null,
+                                        allTimeFloor: null,
+                                        allTimeHighest: allTimeHighest,
+                                        allTimeLowest: allTimeLowest,
+                                        rankChange: null,
+                                        lastActiveWeek: 'Unknown'
+                                    });
+                                }
                             }
-                            inactiveTitles.push({
-                                title: titleName,
-                                rank: null,
-                                rating: null,
-                                isInactive: true,
-                                totalMatches: competitorTitle.totalMatches,
-                                allTimePeak: null,
-                                allTimeFloor: null,
-                                allTimeHighest: allTimeHighest,
-                                allTimeLowest: allTimeLowest,
-                                rankChange: null,
-                                lastActiveWeek: 'Unknown'
-                            });
+                        } catch (error) {
+                            console.log(`⚠️ Error finding historical data for ${titleName}:`, error);
                         }
                     }
+                    
+                    console.log(`✅ Loaded historical data for ${inactiveTitles.length} inactive titles`);
                 }
-                
-                console.log(`✅ Loaded historical data for ${inactiveTitles.length} inactive titles`);
             }
             
             // Fetch previous week data to find titles that dropped out
