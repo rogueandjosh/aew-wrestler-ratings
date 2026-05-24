@@ -1032,11 +1032,23 @@
             border-radius: 8px;
             border: 2px solid #ffd700;
             background: #1a1a2e;
+            position: relative;
+        }
+
+        .title-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, transparent 70%, #1a1a2e 100%);
+            pointer-events: none;
         }
 
         .title-image img {
-            width: 160px;
-            height: 160px;
+            width: 130px;
+            height: 130px;
             object-fit: cover;
             object-position: center;
         }
@@ -1049,8 +1061,12 @@
         }
 
         .title-image.large img {
-            width: 250px;
-            height: 250px;
+            width: 200px;
+            height: 200px;
+        }
+
+        .title-image.large::after {
+            background: radial-gradient(circle, transparent 75%, #1a1a2e 100%);
         }
 
         /* Championship belt icons (fallback) */
