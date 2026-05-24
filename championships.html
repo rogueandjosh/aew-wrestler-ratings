@@ -1350,39 +1350,54 @@
             // Get config for fallback
             const config = getTitleConfig(title);
             const textStyle = config.textDark ? 'color: #1a1a1a;' : '';
-            
-            // Build fallback SVG belt icon
             const shapeClass = config.isWorld ? 'circle' : 'square';
             const strapClass = isAEW ? '' : 'silver';
-            const fallbackBelt = `
-                <span class="belt-icon">
-                    <span class="belt-strap ${strapClass}"></span>
-                    <span class="belt-plate ${plateClass}"></span>
-                    <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
-                </span>
-            `.replace(/\s+/g, ' ').trim();
-            
-            // Build fallback circle icon
-            const fallbackCircle = `<span class="title-circle ${circleClass}">${config.initials}</span>`;
             
             if (isTopRank) {
-                // Large image for top ranks
+                // Large image for top ranks with belt fallback
                 return `
-                    <span class="title-image">
+                    <span class="title-image" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
                         <img src="images/championships/${slug}.jpg" 
                              alt="${title}"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='${fallbackBelt.replace(/'/g, "\\'")}'; ">
+                             onerror="handleTitleImageError(this)">
                     </span>
                 `;
             } else {
-                // Smaller image for other ranks
+                // Smaller image for other ranks with circle fallback
                 return `
-                    <span class="title-image small">
+                    <span class="title-image small" data-fallback="circle" data-circle-class="${circleClass}" data-initials="${config.initials}">
                         <img src="images/championships/${slug}.jpg" 
                              alt="${title}"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='${fallbackCircle.replace(/'/g, "\\'")}'; ">
+                             onerror="handleTitleImageError(this)">
                     </span>
                 `;
+            }
+        }
+        
+        function handleTitleImageError(img) {
+            const parent = img.parentElement;
+            const fallbackType = parent.dataset.fallback;
+            
+            if (fallbackType === 'belt') {
+                const plateClass = parent.dataset.plate;
+                const strapClass = parent.dataset.strap;
+                const shapeClass = parent.dataset.shape;
+                const color = parent.dataset.color;
+                const initials = parent.dataset.initials;
+                const textDark = parent.dataset.textDark === 'true';
+                const textStyle = textDark ? 'color: #1a1a1a;' : '';
+                
+                parent.innerHTML = `
+                    <span class="belt-icon">
+                        <span class="belt-strap ${strapClass}"></span>
+                        <span class="belt-plate ${plateClass}"></span>
+                        <span class="belt-center ${shapeClass}" style="background: ${color}; ${textStyle}">${initials}</span>
+                    </span>
+                `;
+            } else {
+                const circleClass = parent.dataset.circleClass;
+                const initials = parent.dataset.initials;
+                parent.innerHTML = `<span class="title-circle ${circleClass}">${initials}</span>`;
             }
         }
 
