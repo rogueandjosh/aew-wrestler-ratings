@@ -1479,7 +1479,7 @@
                     let imagesHtml = '';
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
-                            <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
+                            <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                                 <img src="images/championships/${slug}.jpg" 
                                      alt="${title}"
                                      onerror="handleTitleImageError(this)">
@@ -1490,7 +1490,7 @@
                 } else {
                     // Single image
                     return `
-                        <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
+                        <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                             <img src="images/championships/${slug}.jpg" 
                                  alt="${title}"
                                  onerror="handleTitleImageError(this)">
@@ -1511,6 +1511,16 @@
         
         function handleTitleImageError(img) {
             const parent = img.parentElement;
+            const currentSrc = img.src;
+            const slug = parent.dataset.slug;
+            
+            // If we tried .jpg, try .png next
+            if (currentSrc.endsWith('.jpg') && slug) {
+                img.src = `images/championships/${slug}.png`;
+                return;
+            }
+            
+            // Both failed, show fallback belt icon
             const fallbackType = parent.dataset.fallback;
             
             if (fallbackType === 'belt') {
