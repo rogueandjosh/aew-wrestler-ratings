@@ -1032,25 +1032,19 @@
             border-radius: 8px;
             border: 2px solid #ffd700;
             background: #1a1a2e;
-            position: relative;
-        }
-
-        .title-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle, transparent 55%, rgba(26,26,46,0.95) 85%, #1a1a2e 100%);
-            pointer-events: none;
         }
 
         .title-image img {
-            width: 120px;
-            height: 120px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
             object-position: center;
+        }
+
+        /* Zoom out for specific titles */
+        .title-image.zoom-out img {
+            width: 100px;
+            height: 100px;
         }
 
         /* Large version for expanded/detail views */
@@ -1061,12 +1055,13 @@
         }
 
         .title-image.large img {
-            width: 180px;
-            height: 180px;
+            width: 220px;
+            height: 220px;
         }
 
-        .title-image.large::after {
-            background: radial-gradient(circle, transparent 60%, rgba(26,26,46,0.95) 85%, #1a1a2e 100%);
+        .title-image.large.zoom-out img {
+            width: 150px;
+            height: 150px;
         }
 
         /* Championship belt icons (fallback) */
@@ -1402,10 +1397,18 @@
             // Size class for different contexts
             const sizeClass = forceType === 'image' ? 'large' : '';
             
+            // Titles that need less zoom (zoom out)
+            const zoomOutTitles = [
+                'AEW World Heavyweight Title',
+                'AEW Continental Title',
+                'Impact World Title'
+            ];
+            const zoomClass = zoomOutTitles.includes(title) ? 'zoom-out' : '';
+            
             if (showImage) {
                 // Image with belt fallback
                 return `
-                    <span class="title-image ${sizeClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
+                    <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
                         <img src="images/championships/${slug}.jpg" 
                              alt="${title}"
                              onerror="handleTitleImageError(this)">
