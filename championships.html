@@ -851,11 +851,18 @@
             }
 
             /* Hide the regular details sections on mobile, but keep competitors */
-            .details-grid > .details-section:not(.competitors-section) {
+            /* Only applies to main table expanded rows, not dropped/inactive */
+            .details-row .details-grid > .details-section:not(.competitors-section) {
                 display: none;
             }
 
-            .details-grid > .competitors-section {
+            .details-row .details-grid > .competitors-section {
+                display: block;
+                width: 100%;
+            }
+            
+            /* Keep stats visible for dropped/inactive sections on mobile */
+            .dropped-details .details-grid > .details-section {
                 display: block;
                 width: 100%;
             }
