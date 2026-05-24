@@ -1023,33 +1023,22 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             vertical-align: middle;
             margin-right: 8px;
             flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            border: 2px solid #ffd700;
+            background: #1a1a2e;
         }
 
         .title-image img {
-            width: 45px;
-            height: 45px;
-            border-radius: 6px;
-            object-fit: contain;
-            border: 2px solid #ffd700;
-            background: #1a1a2e;
-            padding: 2px;
-        }
-
-        .title-image.small {
-            width: 28px;
-            height: 28px;
-        }
-
-        .title-image.small img {
-            width: 28px;
-            height: 28px;
-            border-width: 1px;
-            padding: 1px;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            object-position: center;
         }
 
         /* Championship belt icons (fallback) */
@@ -1341,7 +1330,7 @@
             return { initials, color, isWorld, textDark: color === '#fbbf24' };
         }
 
-        function getTitleIcon(title, rank, totalCount) {
+        function getTitleIcon(title, rank, totalCount, forceType = 'auto') {
             // Dynamic cutoff: top 3 if <10, top 5 if 10-19, top 10 if 20+
             let topCutoff;
             if (totalCount >= 20) {
@@ -1351,7 +1340,7 @@
             } else {
                 topCutoff = 3;
             }
-            const isTopRank = rank <= topCutoff;
+            
             const slug = createSlug(title);
             
             // Determine if AEW or non-AEW
@@ -1365,7 +1354,18 @@
             const shapeClass = config.isWorld ? 'circle' : 'square';
             const strapClass = isAEW ? '' : 'silver';
             
-            if (isTopRank) {
+            // Determine what to show
+            let showImage = false;
+            if (forceType === 'image') {
+                showImage = true;
+            } else if (forceType === 'fallback') {
+                showImage = false;
+            } else {
+                // Auto: only show image if within cutoff
+                showImage = rank <= topCutoff;
+            }
+            
+            if (showImage) {
                 // Large image for top ranks with belt fallback
                 return `
                     <span class="title-image" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
@@ -1375,12 +1375,12 @@
                     </span>
                 `;
             } else {
-                // Smaller image for other ranks with circle fallback
+                // Show fallback belt/circle icon
                 return `
-                    <span class="title-image small" data-fallback="circle" data-circle-class="${circleClass}" data-initials="${config.initials}">
-                        <img src="images/championships/${slug}.jpg" 
-                             alt="${title}"
-                             onerror="handleTitleImageError(this)">
+                    <span class="belt-icon">
+                        <span class="belt-strap ${strapClass}"></span>
+                        <span class="belt-plate ${plateClass}"></span>
+                        <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
                     </span>
                 `;
             }
@@ -1969,7 +1969,7 @@
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
                                         <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
-                                            ${getTitleIcon(champ.title, 1, 10)}
+                                            ${getTitleIcon(champ.title, 1, 10, 'fallback')}
                                         </div>
                                     </div>
                                     ${renderCompetitorsSection(champ.title)}
@@ -2052,7 +2052,7 @@
                                                         <span class="detail-value">${title.streak} ${title.streak === 1 ? 'match' : 'matches'}</span>
                                                     </div>
                                                     <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
-                                                        ${getTitleIcon(title.title, 1, 10)}
+                                                        ${getTitleIcon(title.title, 1, 10, 'fallback')}
                                                     </div>
                                                 </div>
                                                 ${renderCompetitorsSection(title.title)}
@@ -2080,7 +2080,7 @@
                             ${inactiveTitles.map((title, idx) => {
                                 const inactiveIndex = championships.length + droppedOutTitles.length + idx;
                                 const isExpanded = expandedRows.has(inactiveIndex);
-                                const titleIcon = getTitleIcon(title.title, 99, 99);
+                                const titleIcon = getTitleIcon(title.title, 99, 99, 'fallback');
                                 
                                 return `
                                     <div class="inactive-item-wrapper">
@@ -2106,7 +2106,7 @@
                                                         <span class="detail-value">${title.totalMatches || '—'}</span>
                                                     </div>
                                                     <div class="belt-display tt" data-tt="Visual representation of this championship belt." style="margin-top: 15px;">
-                                                        ${getTitleIcon(title.title, 1, 10)}
+                                                        ${getTitleIcon(title.title, 1, 10, 'fallback')}
                                                     </div>
                                                 </div>
                                                 ${renderCompetitorsSection(title.title)}
