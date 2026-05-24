@@ -3970,6 +3970,7 @@ function renderStatistics(division) {
                 <thead>
                     <tr>
                         <th class="no-sort">#</th>
+                        <th class="no-sort"></th>
                         <th class="sortable" onclick="sortStatistics('name')">Name</th>
                         <th class="sortable tt" onclick="sortStatistics('current')" data-tt="This is the wrestler's current rating.">Current</th>
                         <th class="sortable tt" onclick="sortStatistics('peak')" data-tt="The highest rating the wrestler has achieved up to this week in the rankings.">Peak</th>
@@ -3990,9 +3991,61 @@ function renderStatistics(division) {
         const ratingClass = getRatingClass(wrestler.current);
         const peakClass = getRatingClass(wrestler.peak);
         
+        // Build image cell using same logic as rankings
+        let statsImageCell = '';
+        const statsReturnWeek = encodeURIComponent(document.getElementById('weekSelect').value);
+        if (division === 'menstag' || division === 'womenstag') {
+            const members = findTeamMembersArray(wrestler.name) || [];
+            if (members.length >= 2) {
+                const slug1 = createSlug(members[0]);
+                const slug2 = createSlug(members[1]);
+                const initialsUrl1 = createInitialsCircle(generateTagInitials(members[0]), 50);
+                const initialsUrl2 = createInitialsCircle(generateTagInitials(members[1]), 50);
+                statsImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${statsReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${statsReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
+                </div></td>`;
+            } else {
+                const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 50);
+                statsImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
+                </div></td>`;
+            }
+        } else if (division === 'trios') {
+            const members = findTeamMembersArray(wrestler.name) || [];
+            if (members.length >= 3) {
+                const slug1 = createSlug(members[0]);
+                const slug2 = createSlug(members[1]);
+                const slug3 = createSlug(members[2]);
+                const initialsUrl1 = createInitialsCircle(generateTrioInitial(members[0]), 35);
+                const initialsUrl2 = createInitialsCircle(generateTrioInitial(members[1]), 35);
+                const initialsUrl3 = createInitialsCircle(generateTrioInitial(members[2]), 35);
+                statsImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${statsReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${statsReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${statsReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug3}.jpg" alt="${members[2]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl3}';"></a>
+                </div></td>`;
+            } else {
+                const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 35);
+                statsImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                </div></td>`;
+            }
+        } else {
+            const slug = createSlug(wrestler.name);
+            const initialsDataUrl = createInitialsCircle(generateInitials(wrestler.name), 70);
+            statsImageCell = `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${statsReturnWeek}&returnDivision=${division}&returnView=statistics" style="display:block;">
+                <img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsDataUrl}';">
+            </a></td>`;
+        }
+
         html += `
             <tr>
                 <td class="rank">${index + 1}</td>
+                ${statsImageCell}
                 <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${wrestler.name}</a></td>
                 <td class="rating ${ratingClass}">${(wrestler.current || 100).toFixed(2)}</td>
                 <td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>
@@ -4574,8 +4627,60 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         const ratingClass = getRatingClass(wrestler.current);
         const peakClass = getRatingClass(wrestler.peak);
         
+        // Build image cell using same logic as rankings
+        let dynImageCell = '';
+        const dynReturnWeek = encodeURIComponent(document.getElementById('weekSelect').value);
+        if (division === 'menstag' || division === 'womenstag') {
+            const members = findTeamMembersArray(wrestler.name) || [];
+            if (members.length >= 2) {
+                const slug1 = createSlug(members[0]);
+                const slug2 = createSlug(members[1]);
+                const initialsUrl1 = createInitialsCircle(generateTagInitials(members[0]), 50);
+                const initialsUrl2 = createInitialsCircle(generateTagInitials(members[1]), 50);
+                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
+                </div></td>`;
+            } else {
+                const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 50);
+                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
+                </div></td>`;
+            }
+        } else if (division === 'trios') {
+            const members = findTeamMembersArray(wrestler.name) || [];
+            if (members.length >= 3) {
+                const slug1 = createSlug(members[0]);
+                const slug2 = createSlug(members[1]);
+                const slug3 = createSlug(members[2]);
+                const initialsUrl1 = createInitialsCircle(generateTrioInitial(members[0]), 35);
+                const initialsUrl2 = createInitialsCircle(generateTrioInitial(members[1]), 35);
+                const initialsUrl3 = createInitialsCircle(generateTrioInitial(members[2]), 35);
+                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug3}.jpg" alt="${members[2]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl3}';"></a>
+                </div></td>`;
+            } else {
+                const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 35);
+                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                </div></td>`;
+            }
+        } else {
+            const slug = createSlug(wrestler.name);
+            const initialsDataUrl = createInitialsCircle(generateInitials(wrestler.name), 70);
+            dynImageCell = `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${dynReturnWeek}&returnDivision=${division}&returnView=statistics" style="display:block;">
+                <img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsDataUrl}';">
+            </a></td>`;
+        }
+
         rowsHtml += '<tr>';
         if (visibleColumns.rank) rowsHtml += `<td class="rank">${index + 1}</td>`;
+        rowsHtml += dynImageCell;
         rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${wrestler.name}</a></td>`;
         if (visibleColumns.current) rowsHtml += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
         if (visibleColumns.peak) rowsHtml += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
@@ -4642,6 +4747,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             <table>
                 <thead><tr>
                         ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
+                        <th class="no-sort"></th>
                         <th class="sortable" onclick="sortStatsData('name')">Name</th>
                         ${visibleColumns.current ? `<th class="sortable tt" onclick="sortStatsData('current')" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Current</th>` : ''}
                         ${visibleColumns.peak ? `<th class="sortable tt" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
