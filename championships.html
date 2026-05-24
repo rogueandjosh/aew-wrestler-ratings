@@ -1035,14 +1035,16 @@
             position: relative;
         }
 
-        .title-image::after {
+        .title-image::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle, transparent 70%, #1a1a2e 100%);
+            background: #1a1a2e;
+            z-index: 1;
+            mix-blend-mode: darken;
             pointer-events: none;
         }
 
@@ -1063,10 +1065,6 @@
         .title-image.large img {
             width: 200px;
             height: 200px;
-        }
-
-        .title-image.large::after {
-            background: radial-gradient(circle, transparent 75%, #1a1a2e 100%);
         }
 
         /* Championship belt icons (fallback) */
@@ -1370,7 +1368,11 @@
             }
             
             // For slug, remove "Interim " to use the main title's image
-            const slugTitle = title.replace(/Interim\s+/gi, '');
+            // Exception: "AEW Interim World Title" has its own image
+            let slugTitle = title;
+            if (title !== 'AEW Interim World Title') {
+                slugTitle = title.replace(/Interim\s+/gi, '');
+            }
             const slug = createSlug(slugTitle);
             
             // Determine if AEW or non-AEW
