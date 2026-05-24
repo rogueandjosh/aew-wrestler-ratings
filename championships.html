@@ -1064,6 +1064,69 @@
             height: 150px;
         }
 
+        /* Tag titles - 2 overlapping */
+        .title-image-group {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .title-image-group .title-image {
+            margin-right: 0;
+            width: 40px;
+            height: 40px;
+            border-width: 2px;
+        }
+
+        .title-image-group .title-image img {
+            width: 110px;
+            height: 110px;
+        }
+
+        .title-image-group .title-image.zoom-out img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .title-image-group .title-image:not(:first-child) {
+            margin-left: -15px;
+        }
+
+        .title-image-group .title-image:nth-child(1) {
+            z-index: 3;
+        }
+
+        .title-image-group .title-image:nth-child(2) {
+            z-index: 2;
+        }
+
+        .title-image-group .title-image:nth-child(3) {
+            z-index: 1;
+        }
+
+        /* Large group version for expanded views */
+        .title-image-group.large .title-image {
+            width: 65px;
+            height: 65px;
+            border-width: 3px;
+        }
+
+        .title-image-group.large .title-image img {
+            width: 160px;
+            height: 160px;
+        }
+
+        .title-image-group.large .title-image.zoom-out img {
+            width: 110px;
+            height: 110px;
+        }
+
+        .title-image-group.large .title-image:not(:first-child) {
+            margin-left: -20px;
+        }
+
         /* Championship belt icons (fallback) */
         .belt-icon {
             display: inline-block;
@@ -1405,15 +1468,35 @@
             ];
             const zoomClass = zoomOutTitles.includes(title) ? 'zoom-out' : '';
             
+            // Check if tag or trios title
+            const isTag = title.toLowerCase().includes('tag') && !title.toLowerCase().includes('trios');
+            const isTrios = title.toLowerCase().includes('trios') || title.toLowerCase().includes('six-man');
+            
             if (showImage) {
-                // Image with belt fallback
-                return `
-                    <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
-                        <img src="images/championships/${slug}.jpg" 
-                             alt="${title}"
-                             onerror="handleTitleImageError(this)">
-                    </span>
-                `;
+                if (isTag || isTrios) {
+                    // Multiple overlapping images for tag/trios
+                    const count = isTrios ? 3 : 2;
+                    let imagesHtml = '';
+                    for (let i = 0; i < count; i++) {
+                        imagesHtml += `
+                            <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
+                                <img src="images/championships/${slug}.jpg" 
+                                     alt="${title}"
+                                     onerror="handleTitleImageError(this)">
+                            </span>
+                        `;
+                    }
+                    return `<span class="title-image-group ${sizeClass}">${imagesHtml}</span>`;
+                } else {
+                    // Single image
+                    return `
+                        <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}">
+                            <img src="images/championships/${slug}.jpg" 
+                                 alt="${title}"
+                                 onerror="handleTitleImageError(this)">
+                        </span>
+                    `;
+                }
             } else {
                 // Show fallback belt/circle icon
                 return `
