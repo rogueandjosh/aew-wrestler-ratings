@@ -1480,7 +1480,7 @@
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
                             <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
-                                <img src="images/championships/${slug}.jpg" 
+                                <img src="images/championships/${slug}.png" 
                                      alt="${title}"
                                      onerror="handleTitleImageError(this)">
                             </span>
@@ -1491,7 +1491,7 @@
                     // Single image
                     return `
                         <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
-                            <img src="images/championships/${slug}.jpg" 
+                            <img src="images/championships/${slug}.png" 
                                  alt="${title}"
                                  onerror="handleTitleImageError(this)">
                         </span>
@@ -1514,9 +1514,9 @@
             const currentSrc = img.src;
             const slug = parent.dataset.slug;
             
-            // If we tried .jpg, try .png next
-            if (currentSrc.endsWith('.jpg') && slug) {
-                img.src = `images/championships/${slug}.png`;
+            // If we tried .png, try .jpg next
+            if (currentSrc.endsWith('.png') && slug) {
+                img.src = `images/championships/${slug}.jpg`;
                 return;
             }
             
