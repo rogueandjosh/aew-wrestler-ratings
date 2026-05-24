@@ -1042,16 +1042,10 @@
         }
 
         .title-image img {
-            width: 75px;
-            height: 75px;
+            width: 65px;
+            height: 65px;
             object-fit: cover;
             object-position: center;
-        }
-
-        /* Zoom out for specific titles */
-        .title-image.zoom-out img {
-            width: 60px;
-            height: 60px;
         }
 
         /* Large version for expanded/detail views */
@@ -1062,13 +1056,8 @@
         }
 
         .title-image.large img {
-            width: 120px;
-            height: 120px;
-        }
-
-        .title-image.large.zoom-out img {
-            width: 100px;
-            height: 100px;
+            width: 105px;
+            height: 105px;
         }
 
         /* Tag titles - 2 overlapping */
@@ -1088,13 +1077,8 @@
         }
 
         .title-image-group .title-image img {
-            width: 55px;
-            height: 55px;
-        }
-
-        .title-image-group .title-image.zoom-out img {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
         }
 
         .title-image-group .title-image:not(:first-child) {
@@ -1121,13 +1105,8 @@
         }
 
         .title-image-group.large .title-image img {
-            width: 110px;
-            height: 110px;
-        }
-
-        .title-image-group.large .title-image.zoom-out img {
-            width: 90px;
-            height: 90px;
+            width: 85px;
+            height: 85px;
         }
 
         .title-image-group.large .title-image:not(:first-child) {
@@ -1467,14 +1446,6 @@
             // Size class for different contexts
             const sizeClass = forceType === 'image' ? 'large' : '';
             
-            // Titles that need less zoom (zoom out)
-            const zoomOutTitles = [
-                'AEW World Heavyweight Title',
-                'AEW Continental Title',
-                'Impact World Title'
-            ];
-            const zoomClass = zoomOutTitles.includes(title) ? 'zoom-out' : '';
-            
             // Check if tag or trios title
             const isTag = title.toLowerCase().includes('tag') && !title.toLowerCase().includes('trios');
             const isTrios = title.toLowerCase().includes('trios') || title.toLowerCase().includes('six-man');
@@ -1486,7 +1457,7 @@
                     let imagesHtml = '';
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
-                            <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
+                            <span class="title-image" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                                 <img src="images/championships/${slug}.png" 
                                      alt="${title}"
                                      onerror="handleTitleImageError(this)">
@@ -1497,7 +1468,7 @@
                 } else {
                     // Single image
                     return `
-                        <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
+                        <span class="title-image ${sizeClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                             <img src="images/championships/${slug}.png" 
                                  alt="${title}"
                                  onerror="handleTitleImageError(this)">
