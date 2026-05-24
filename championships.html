@@ -1018,7 +1018,37 @@
             }
         }
 
-        /* Championship belt icons */
+        /* Championship title images */
+        .title-image {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            vertical-align: middle;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .title-image img {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            background: #2d2d2d;
+        }
+
+        .title-image.small {
+            width: 30px;
+            height: 30px;
+        }
+
+        .title-image.small img {
+            width: 30px;
+            height: 30px;
+            border-width: 1px;
+        }
+
+        /* Championship belt icons (fallback) */
         .belt-icon {
             display: inline-block;
             position: relative;
@@ -1310,30 +1340,49 @@
         function getTitleIcon(title, rank, totalCount) {
             const topCutoff = totalCount >= 10 ? 5 : 3;
             const isTopRank = rank <= topCutoff;
+            const slug = createSlug(title);
             
             // Determine if AEW or non-AEW
             const isAEW = title.startsWith('AEW');
             const plateClass = isAEW ? 'gold' : 'silver';
             const circleClass = isAEW ? '' : 'silver';
             
-            // Get config
+            // Get config for fallback
             const config = getTitleConfig(title);
             const textStyle = config.textDark ? 'color: #1a1a1a;' : '';
             
+            // Build fallback SVG belt icon
+            const shapeClass = config.isWorld ? 'circle' : 'square';
+            const strapClass = isAEW ? '' : 'silver';
+            const fallbackBelt = `
+                <span class="belt-icon">
+                    <span class="belt-strap ${strapClass}"></span>
+                    <span class="belt-plate ${plateClass}"></span>
+                    <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
+                </span>
+            `.replace(/\s+/g, ' ').trim();
+            
+            // Build fallback circle icon
+            const fallbackCircle = `<span class="title-circle ${circleClass}">${config.initials}</span>`;
+            
             if (isTopRank) {
-                // Belt icon
-                const shapeClass = config.isWorld ? 'circle' : 'square';
-                const strapClass = isAEW ? '' : 'silver';
+                // Large image for top ranks
                 return `
-                    <span class="belt-icon">
-                        <span class="belt-strap ${strapClass}"></span>
-                        <span class="belt-plate ${plateClass}"></span>
-                        <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
+                    <span class="title-image">
+                        <img src="images/championships/${slug}.jpg" 
+                             alt="${title}"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='${fallbackBelt.replace(/'/g, "\\'")}'; ">
                     </span>
                 `;
             } else {
-                // Circle icon
-                return `<span class="title-circle ${circleClass}">${config.initials}</span>`;
+                // Smaller image for other ranks
+                return `
+                    <span class="title-image small">
+                        <img src="images/championships/${slug}.jpg" 
+                             alt="${title}"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='${fallbackCircle.replace(/'/g, "\\'")}'; ">
+                    </span>
+                `;
             }
         }
 
@@ -1341,6 +1390,7 @@
         function createSlug(name) {
             return name
                 .toLowerCase()
+                .replace(/'/g, '')
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
         }
