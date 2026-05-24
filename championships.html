@@ -1020,7 +1020,9 @@
 
         /* Championship title images */
         .title-image {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 45px;
             height: 45px;
             vertical-align: middle;
@@ -1032,20 +1034,22 @@
             width: 45px;
             height: 45px;
             border-radius: 6px;
-            object-fit: cover;
+            object-fit: contain;
             border: 2px solid #ffd700;
-            background: #2d2d2d;
+            background: #1a1a2e;
+            padding: 2px;
         }
 
         .title-image.small {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
         }
 
         .title-image.small img {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-width: 1px;
+            padding: 1px;
         }
 
         /* Championship belt icons (fallback) */
@@ -1338,7 +1342,15 @@
         }
 
         function getTitleIcon(title, rank, totalCount) {
-            const topCutoff = totalCount >= 10 ? 5 : 3;
+            // Dynamic cutoff: top 3 if <10, top 5 if 10-19, top 10 if 20+
+            let topCutoff;
+            if (totalCount >= 20) {
+                topCutoff = 10;
+            } else if (totalCount >= 10) {
+                topCutoff = 5;
+            } else {
+                topCutoff = 3;
+            }
             const isTopRank = rank <= topCutoff;
             const slug = createSlug(title);
             
