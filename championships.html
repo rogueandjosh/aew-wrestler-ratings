@@ -1032,24 +1032,11 @@
             border-radius: 8px;
             border: 2px solid #ffd700;
             background: #1a1a2e;
-            /* Dark overlay to blend white edges */
-            position: relative;
-        }
-
-        .title-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle, transparent 35%, rgba(26,26,46,0.7) 55%, #1a1a2e 75%);
-            pointer-events: none;
         }
 
         .title-image img {
-            width: 140px;
-            height: 140px;
+            width: 160px;
+            height: 160px;
             object-fit: cover;
             object-position: center;
         }
@@ -1062,12 +1049,8 @@
         }
 
         .title-image.large img {
-            width: 220px;
-            height: 220px;
-        }
-
-        .title-image.large::after {
-            background: radial-gradient(circle, transparent 40%, rgba(26,26,46,0.7) 60%, #1a1a2e 80%);
+            width: 250px;
+            height: 250px;
         }
 
         /* Championship belt icons (fallback) */
