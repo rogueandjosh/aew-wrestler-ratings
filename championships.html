@@ -1055,6 +1055,12 @@
             object-position: center;
         }
 
+        /* Slight zoom out for specific titles */
+        .title-image.zoom-out img {
+            width: 58px;
+            height: 58px;
+        }
+
         /* Large version for expanded/detail views */
         .title-image.large {
             width: 90px;
@@ -1065,6 +1071,11 @@
         .title-image.large img {
             width: 105px;
             height: 105px;
+        }
+
+        .title-image.large.zoom-out img {
+            width: 95px;
+            height: 95px;
         }
 
         /* Tag titles - 2 overlapping */
@@ -1187,6 +1198,13 @@
 
         .belt-center.square {
             border-radius: 2px;
+        }
+
+        .belt-center.rectangle {
+            border-radius: 2px;
+            width: 24px;
+            height: 16px;
+            font-size: 7px;
         }
 
         /* Gold circle for non-top ranks (AEW) */
@@ -1453,6 +1471,22 @@
             // Size class for different contexts
             const sizeClass = forceType === 'image' ? 'large' : '';
             
+            // Titles that need slight zoom out
+            const zoomOutTitles = [
+                'AEW International Title',
+                'AEW TNT Title',
+                'AEW TBS Title',
+                'ROH World Heavyweight Title',
+                'ROH Women\'s World Title',
+                'ROH Pure Title',
+                'FTW Title',
+                'IWGP United States Title',
+                'Impact World Title',
+                'Impact World Tag Team Titles',
+                'Regina Di WAVE Title'
+            ];
+            const zoomClass = zoomOutTitles.includes(title) ? 'zoom-out' : '';
+            
             // Check if tag or trios title
             const isTag = title.toLowerCase().includes('tag') && !title.toLowerCase().includes('trios');
             const isTrios = title.toLowerCase().includes('trios') || title.toLowerCase().includes('six-man');
@@ -1464,7 +1498,7 @@
                     let imagesHtml = '';
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
-                            <span class="title-image" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
+                            <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                                 <img src="images/championships/${slug}.png" 
                                      alt="${title}"
                                      onerror="handleTitleImageError(this)">
@@ -1475,7 +1509,7 @@
                 } else {
                     // Single image
                     return `
-                        <span class="title-image ${sizeClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
+                        <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
                             <img src="images/championships/${slug}.png" 
                                  alt="${title}"
                                  onerror="handleTitleImageError(this)">
@@ -1483,12 +1517,43 @@
                     `;
                 }
             } else {
-                // Show fallback belt/circle icon
+                // Show fallback belt/circle icon with simplified logic
+                // AEW: gold plate, black circle, white text
+                // ROH/Impact: silver plate, silver rectangle
+                // FTW: gold plate, orange circle, black text
+                // Others: gold plate, black square, white text
+                
+                const isROH = title.startsWith('ROH');
+                const isImpact = title.startsWith('Impact');
+                const isFTW = title.startsWith('FTW');
+                
+                let plateClass, centerClass, centerStyle;
+                
+                if (isAEW) {
+                    plateClass = 'gold';
+                    centerClass = 'circle';
+                    centerStyle = 'background: #1a1a1a; color: #ffffff;';
+                } else if (isROH || isImpact) {
+                    plateClass = 'silver';
+                    centerClass = 'rectangle';
+                    centerStyle = 'background: #9ca3af; color: #1a1a1a;';
+                } else if (isFTW) {
+                    plateClass = 'gold';
+                    centerClass = 'circle';
+                    centerStyle = 'background: #ff6b35; color: #1a1a1a;';
+                } else {
+                    plateClass = 'gold';
+                    centerClass = 'square';
+                    centerStyle = 'background: #1a1a1a; color: #ffffff;';
+                }
+                
+                const strapFallback = (isROH || isImpact) ? 'silver' : '';
+                
                 return `
                     <span class="belt-icon">
-                        <span class="belt-strap ${strapClass}"></span>
+                        <span class="belt-strap ${strapFallback}"></span>
                         <span class="belt-plate ${plateClass}"></span>
-                        <span class="belt-center ${shapeClass}" style="background: ${config.color}; ${textStyle}">${config.initials}</span>
+                        <span class="belt-center ${centerClass}" style="${centerStyle}">${config.initials}</span>
                     </span>
                 `;
             }
