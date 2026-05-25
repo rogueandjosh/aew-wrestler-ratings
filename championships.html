@@ -2582,13 +2582,21 @@
         }
 
         function clearSearch(event) {
-            if (event) event.preventDefault();
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            // Save scroll position
+            const scrollPos = window.scrollY;
+            
             const searchBox = document.getElementById('championship-search');
             if (searchBox) {
                 searchBox.value = '';
                 filterChampionships();
-                searchBox.focus();
             }
+            
+            // Restore scroll position
+            window.scrollTo(0, scrollPos);
         }
 
         function sortBy(column, event) {
