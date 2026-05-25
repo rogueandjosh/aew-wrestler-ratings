@@ -279,12 +279,16 @@
 
         /* Search box */
         .search-container {
-            max-width: 400px;
+            max-width: 500px;
             margin: 15px auto;
+            position: relative;
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .search-box {
-            width: 100%;
+            flex: 1;
             box-sizing: border-box;
             padding: 10px 15px;
             background: rgba(255, 255, 255, 0.1);
@@ -304,6 +308,24 @@
 
         .search-box::placeholder {
             color: #888;
+        }
+
+        .search-clear-btn {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #ffd700;
+            font-size: 1em;
+            font-family: 'Overlock', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .search-clear-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
         }
 
         /* View mode toggle switch */
@@ -2427,6 +2449,7 @@
                            class="search-box" 
                            placeholder="🔍 Search championships..."
                            oninput="filterChampionships()">
+                    <button class="search-clear-btn" onclick="clearSearch()">Clear</button>
                 </div>
             `;
 
@@ -2555,6 +2578,14 @@
                 } else {
                     inactiveToggle.innerHTML = `${arrow} Inactive Titles (${totalInactive})`;
                 }
+            }
+        }
+
+        function clearSearch() {
+            const searchBox = document.getElementById('championship-search');
+            if (searchBox) {
+                searchBox.value = '';
+                filterChampionships();
             }
         }
 
