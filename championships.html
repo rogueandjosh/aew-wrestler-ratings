@@ -2466,9 +2466,19 @@
             btn.textContent = isShowing ? '▶ Hide Extra Columns' : '◀ Show More Columns';
         }
 
-        function toggleViewMode() {
+        async function toggleViewMode() {
+            // Save the current search term before re-rendering
+            const searchTerm = document.getElementById('championship-search')?.value || '';
+            
             viewMode = viewMode === 'reign' ? 'alltime' : 'reign';
-            renderChampionships();
+            await renderChampionships();
+            
+            // Restore the search term and re-apply filter
+            const searchBox = document.getElementById('championship-search');
+            if (searchBox && searchTerm) {
+                searchBox.value = searchTerm;
+                filterChampionships();
+            }
         }
 
         function filterChampionships() {
