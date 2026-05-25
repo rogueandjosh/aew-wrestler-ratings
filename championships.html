@@ -277,6 +277,35 @@
             opacity: 1;
         }
 
+        /* Search box */
+        .search-container {
+            max-width: 400px;
+            margin: 15px auto;
+        }
+
+        .search-box {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1em;
+            font-family: 'Overlock', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
         /* View mode toggle switch */
         .view-toggle-container {
             display: flex;
@@ -1495,6 +1524,13 @@
             
             // Titles that need slight zoom out
             const zoomOutTitles = [
+                'ROH Women\'s TV Title',
+                'ROH Interim Women\'s TV Title',
+                'AEW Interim TNT Title'
+            ];
+            
+            // Titles that need even more zoom out
+            const zoomOutMoreTitles = [
                 'AEW International Title',
                 'AEW TNT Title',
                 'AEW TBS Title',
@@ -1503,14 +1539,9 @@
                 'ROH Pure Title',
                 'FTW Title',
                 'IWGP United States Title',
-                'Impact World Title'
-            ];
-            
-            // Titles that need even more zoom out
-            const zoomOutMoreTitles = [
-                'Regina Di WAVE Title',
-                'ROH Women\'s TV Title',
-                'Impact World Tag Team Titles'
+                'Impact World Title',
+                'Impact World Tag Team Titles',
+                'Regina Di WAVE Title'
             ];
             
             // Titles that need slight zoom in
@@ -2091,6 +2122,13 @@
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
                         </button>
                     </div>
+                    <div class="search-container">
+                        <input type="text" 
+                               id="championship-search" 
+                               class="search-box" 
+                               placeholder="🔍 Search championships..."
+                               oninput="filterChampionships()">
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -2427,6 +2465,59 @@
         function toggleViewMode() {
             viewMode = viewMode === 'reign' ? 'alltime' : 'reign';
             renderChampionships();
+        }
+
+        function filterChampionships() {
+            const searchTerm = document.getElementById('championship-search')?.value.toLowerCase() || '';
+            const rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                // Skip details rows
+                if (row.classList.contains('details-row')) {
+                    return;
+                }
+                
+                const titleCell = row.querySelector('.title-cell');
+                if (titleCell) {
+                    const titleText = titleCell.textContent.toLowerCase();
+                    const matches = titleText.includes(searchTerm);
+                    row.style.display = matches ? '' : 'none';
+                    
+                    // Also hide/show the associated details row
+                    const nextRow = row.nextElementSibling;
+                    if (nextRow && nextRow.classList.contains('details-row')) {
+                        nextRow.style.display = matches ? '' : 'none';
+                    }
+                }
+            });
+            
+            // Also filter dropped out section
+            const droppedItems = document.querySelectorAll('.dropped-out-item');
+            droppedItems.forEach(item => {
+                const titleName = item.querySelector('.dropped-title-name');
+                if (titleName) {
+                    const titleText = titleName.textContent.toLowerCase();
+                    const matches = titleText.includes(searchTerm);
+                    const wrapper = item.closest('.dropped-item-wrapper');
+                    if (wrapper) {
+                        wrapper.style.display = matches ? '' : 'none';
+                    }
+                }
+            });
+            
+            // Also filter inactive section
+            const inactiveItems = document.querySelectorAll('.inactive-item');
+            inactiveItems.forEach(item => {
+                const titleName = item.querySelector('.inactive-title-name');
+                if (titleName) {
+                    const titleText = titleName.textContent.toLowerCase();
+                    const matches = titleText.includes(searchTerm);
+                    const wrapper = item.closest('.inactive-item-wrapper');
+                    if (wrapper) {
+                        wrapper.style.display = matches ? '' : 'none';
+                    }
+                }
+            });
         }
 
         function sortBy(column, event) {
