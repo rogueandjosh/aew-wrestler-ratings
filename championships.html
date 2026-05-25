@@ -2495,27 +2495,57 @@
                 }
             });
             
-            // Also filter dropped out section
+            // Filter dropped out section and count visible
             const droppedItems = document.querySelectorAll('.dropped-out-item-wrapper');
+            let visibleDropped = 0;
             droppedItems.forEach(wrapper => {
                 const titleSpan = wrapper.querySelector('.dropped-title');
                 if (titleSpan) {
                     const titleText = titleSpan.textContent.toLowerCase();
                     const matches = titleText.includes(searchTerm);
                     wrapper.style.display = matches ? '' : 'none';
+                    if (matches) visibleDropped++;
                 }
             });
             
-            // Also filter inactive section
+            // Update dropped out toggle button count
+            const droppedToggle = document.querySelector('.dropped-out-toggle');
+            if (droppedToggle && droppedItems.length > 0) {
+                const totalDropped = droppedItems.length;
+                const isExpanded = document.getElementById('droppedOutList')?.style.display !== 'none';
+                const arrow = isExpanded ? '▼' : '▶';
+                if (searchTerm) {
+                    droppedToggle.innerHTML = `${arrow} Dropped Out This Week (${visibleDropped} of ${totalDropped})`;
+                } else {
+                    droppedToggle.innerHTML = `${arrow} Dropped Out This Week (${totalDropped})`;
+                }
+            }
+            
+            // Filter inactive section and count visible
             const inactiveItems = document.querySelectorAll('.inactive-item-wrapper');
+            let visibleInactive = 0;
             inactiveItems.forEach(wrapper => {
                 const titleSpan = wrapper.querySelector('.inactive-title-name');
                 if (titleSpan) {
                     const titleText = titleSpan.textContent.toLowerCase();
                     const matches = titleText.includes(searchTerm);
                     wrapper.style.display = matches ? '' : 'none';
+                    if (matches) visibleInactive++;
                 }
             });
+            
+            // Update inactive toggle button count
+            const inactiveToggle = document.querySelector('.inactive-titles-toggle');
+            if (inactiveToggle && inactiveItems.length > 0) {
+                const totalInactive = inactiveItems.length;
+                const isExpanded = document.getElementById('inactiveTitlesList')?.style.display !== 'none';
+                const arrow = isExpanded ? '▼' : '▶';
+                if (searchTerm) {
+                    inactiveToggle.innerHTML = `${arrow} Inactive Titles (${visibleInactive} of ${totalInactive})`;
+                } else {
+                    inactiveToggle.innerHTML = `${arrow} Inactive Titles (${totalInactive})`;
+                }
+            }
         }
 
         function sortBy(column, event) {
