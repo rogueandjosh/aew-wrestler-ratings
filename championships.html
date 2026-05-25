@@ -2449,7 +2449,7 @@
                            class="search-box" 
                            placeholder="🔍 Search championships..."
                            oninput="filterChampionships()">
-                    <button class="search-clear-btn" onclick="clearSearch()">Clear</button>
+                    <button type="button" class="search-clear-btn" onclick="clearSearch(event)">Clear</button>
                 </div>
             `;
 
@@ -2581,11 +2581,13 @@
             }
         }
 
-        function clearSearch() {
+        function clearSearch(event) {
+            if (event) event.preventDefault();
             const searchBox = document.getElementById('championship-search');
             if (searchBox) {
                 searchBox.value = '';
                 filterChampionships();
+                searchBox.focus();
             }
         }
 
