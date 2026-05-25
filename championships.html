@@ -2122,13 +2122,6 @@
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
                         </button>
                     </div>
-                    <div class="search-container">
-                        <input type="text" 
-                               id="championship-search" 
-                               class="search-box" 
-                               placeholder="🔍 Search championships..."
-                               oninput="filterChampionships()">
-                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -2426,6 +2419,17 @@
                 window.inactiveTitlesCount = inactiveTitles.length;
             }
 
+            // Add search bar at the end
+            html += `
+                <div class="search-container" style="margin-top: 20px;">
+                    <input type="text" 
+                           id="championship-search" 
+                           class="search-box" 
+                           placeholder="🔍 Search championships..."
+                           oninput="filterChampionships()">
+                </div>
+            `;
+
             document.getElementById('content').innerHTML = html;
         }
 
@@ -2492,30 +2496,24 @@
             });
             
             // Also filter dropped out section
-            const droppedItems = document.querySelectorAll('.dropped-out-item');
-            droppedItems.forEach(item => {
-                const titleName = item.querySelector('.dropped-title-name');
-                if (titleName) {
-                    const titleText = titleName.textContent.toLowerCase();
+            const droppedItems = document.querySelectorAll('.dropped-out-item-wrapper');
+            droppedItems.forEach(wrapper => {
+                const titleSpan = wrapper.querySelector('.dropped-title');
+                if (titleSpan) {
+                    const titleText = titleSpan.textContent.toLowerCase();
                     const matches = titleText.includes(searchTerm);
-                    const wrapper = item.closest('.dropped-item-wrapper');
-                    if (wrapper) {
-                        wrapper.style.display = matches ? '' : 'none';
-                    }
+                    wrapper.style.display = matches ? '' : 'none';
                 }
             });
             
             // Also filter inactive section
-            const inactiveItems = document.querySelectorAll('.inactive-item');
-            inactiveItems.forEach(item => {
-                const titleName = item.querySelector('.inactive-title-name');
-                if (titleName) {
-                    const titleText = titleName.textContent.toLowerCase();
+            const inactiveItems = document.querySelectorAll('.inactive-item-wrapper');
+            inactiveItems.forEach(wrapper => {
+                const titleSpan = wrapper.querySelector('.inactive-title-name');
+                if (titleSpan) {
+                    const titleText = titleSpan.textContent.toLowerCase();
                     const matches = titleText.includes(searchTerm);
-                    const wrapper = item.closest('.inactive-item-wrapper');
-                    if (wrapper) {
-                        wrapper.style.display = matches ? '' : 'none';
-                    }
+                    wrapper.style.display = matches ? '' : 'none';
                 }
             });
         }
