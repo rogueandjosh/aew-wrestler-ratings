@@ -1061,6 +1061,18 @@
             height: 52px;
         }
 
+        /* Even more zoom out for specific titles */
+        .title-image.zoom-out-more img {
+            width: 46px;
+            height: 46px;
+        }
+
+        /* Zoom in slightly for specific titles */
+        .title-image.zoom-in img {
+            width: 72px;
+            height: 72px;
+        }
+
         /* Large version for expanded/detail views */
         .title-image.large {
             width: 90px;
@@ -1076,6 +1088,16 @@
         .title-image.large.zoom-out img {
             width: 85px;
             height: 85px;
+        }
+
+        .title-image.large.zoom-out-more img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .title-image.large.zoom-in img {
+            width: 115px;
+            height: 115px;
         }
 
         /* Tag titles - 2 overlapping */
@@ -1481,11 +1503,29 @@
                 'ROH Pure Title',
                 'FTW Title',
                 'IWGP United States Title',
-                'Impact World Title',
-                'Impact World Tag Team Titles',
-                'Regina Di WAVE Title'
+                'Impact World Title'
             ];
-            const zoomClass = zoomOutTitles.includes(title) ? 'zoom-out' : '';
+            
+            // Titles that need even more zoom out
+            const zoomOutMoreTitles = [
+                'Regina Di WAVE Title',
+                'ROH Women\'s TV Title',
+                'Impact World Tag Team Titles'
+            ];
+            
+            // Titles that need slight zoom in
+            const zoomInTitles = [
+                'AEW Continental Title'
+            ];
+            
+            let zoomClass = '';
+            if (zoomOutMoreTitles.includes(title)) {
+                zoomClass = 'zoom-out-more';
+            } else if (zoomOutTitles.includes(title)) {
+                zoomClass = 'zoom-out';
+            } else if (zoomInTitles.includes(title)) {
+                zoomClass = 'zoom-in';
+            }
             
             // Check if tag or trios title
             const isTag = title.toLowerCase().includes('tag') && !title.toLowerCase().includes('trios');
