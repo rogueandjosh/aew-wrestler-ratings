@@ -1517,15 +1517,29 @@
                     `;
                 }
             } else {
-                // Show fallback belt/circle icon with simplified logic
+                // Show fallback belt/circle icon with distinct colors per promotion
                 // AEW: gold plate, black circle, white text
-                // ROH/Impact: silver plate, silver rectangle
+                // ROH: silver plate, red square, white text
+                // Impact: silver plate, blue square, white text
                 // FTW: gold plate, orange circle, black text
+                // IWGP/NJPW: gold plate, red circle, white text
+                // CMLL: gold plate, green square, white text
+                // AAA: gold plate, amber square, black text
+                // NWA: gold plate, blue circle, white text
+                // RevPro: gold plate, brown square, white text
+                // Regina/WAVE: gold plate, teal square, white text
                 // Others: gold plate, black square, white text
                 
                 const isROH = title.startsWith('ROH');
                 const isImpact = title.startsWith('Impact');
                 const isFTW = title.startsWith('FTW');
+                const isIWGP = title.startsWith('IWGP');
+                const isNJPW = title.startsWith('NJPW');
+                const isCMLL = title.startsWith('CMLL');
+                const isAAA = title.startsWith('AAA');
+                const isNWA = title.startsWith('NWA');
+                const isRevPro = title.startsWith('RevPro');
+                const isWAVE = title.includes('WAVE') || title.includes('Regina');
                 
                 let plateClass, centerClass, centerStyle;
                 
@@ -1533,14 +1547,42 @@
                     plateClass = 'gold';
                     centerClass = 'circle';
                     centerStyle = 'background: #1a1a1a; color: #ffffff;';
-                } else if (isROH || isImpact) {
+                } else if (isROH) {
                     plateClass = 'silver';
-                    centerClass = 'rectangle';
-                    centerStyle = 'background: #9ca3af; color: #1a1a1a;';
+                    centerClass = 'square';
+                    centerStyle = 'background: #991b1b; color: #ffffff;';
+                } else if (isImpact) {
+                    plateClass = 'silver';
+                    centerClass = 'square';
+                    centerStyle = 'background: #0284c7; color: #ffffff;';
                 } else if (isFTW) {
                     plateClass = 'gold';
                     centerClass = 'circle';
                     centerStyle = 'background: #ff6b35; color: #1a1a1a;';
+                } else if (isIWGP || isNJPW) {
+                    plateClass = 'gold';
+                    centerClass = 'circle';
+                    centerStyle = 'background: #dc2626; color: #ffffff;';
+                } else if (isCMLL) {
+                    plateClass = 'gold';
+                    centerClass = 'square';
+                    centerStyle = 'background: #15803d; color: #ffffff;';
+                } else if (isAAA) {
+                    plateClass = 'gold';
+                    centerClass = 'square';
+                    centerStyle = 'background: #f59e0b; color: #1a1a1a;';
+                } else if (isNWA) {
+                    plateClass = 'gold';
+                    centerClass = 'circle';
+                    centerStyle = 'background: #1d4ed8; color: #ffffff;';
+                } else if (isRevPro) {
+                    plateClass = 'gold';
+                    centerClass = 'square';
+                    centerStyle = 'background: #7c2d12; color: #ffffff;';
+                } else if (isWAVE) {
+                    plateClass = 'gold';
+                    centerClass = 'square';
+                    centerStyle = 'background: #0891b2; color: #ffffff;';
                 } else {
                     plateClass = 'gold';
                     centerClass = 'square';
