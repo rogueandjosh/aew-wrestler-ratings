@@ -647,8 +647,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
-        }
+                    }
 
         th {
             background: rgba(255, 215, 0, 0.2);
@@ -704,6 +703,7 @@
         }
 
         .rank {
+            width: 44px;
             font-weight: bold;
             color: #ffd700;
             font-size: 1.1em;
@@ -712,6 +712,7 @@
         }
         
         .wrestler-image {
+            width: 120px;
             padding: 8px;
             text-align: center;
         }
@@ -728,6 +729,7 @@
         .name {
             font-weight: bold;
             color: #fff;
+            max-width: 220px;
         }
 
         .team-members {
@@ -740,15 +742,25 @@
         }
 
         .rating {
-            width: 80px;
+            width: 82px;
             font-weight: bold;
             font-size: 1.05em;
             white-space: nowrap;
         }
 
         .change {
-            width: 72px;
+            width: 76px;
             font-weight: bold;
+            white-space: nowrap;
+        }
+
+        td.matches-col, th.matches-col {
+            width: 76px;
+            white-space: nowrap;
+        }
+
+        td.peak-col, th.peak-col {
+            width: 82px;
             white-space: nowrap;
         }
 
@@ -3455,8 +3467,8 @@ rows.push(`
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
-        <td>${wrestler.matches}</td>
-        <td>${(wrestler.peak || 100).toFixed(2)}</td>
+        <td class="matches-col">${wrestler.matches}</td>
+        <td class="peak-col">${(wrestler.peak || 100).toFixed(2)}</td>
     </tr>
 `);
 }
@@ -3497,13 +3509,13 @@ if (tableEl) {
         <table>
             <thead>
                 <tr>
-                    <th style="width:44px">Rank</th>
-                    <th style="width:120px"></th>
+                    <th>Rank</th>
+                    <th></th>
                     <th>Name</th>
-                    <th style="width:82px" class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
-                    <th style="width:76px" class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
-                    <th style="width:76px" class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
-                    <th style="width:82px" class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
+                    <th class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
+                    <th class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
+                    <th class="matches-col tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
+                    <th class="peak-col tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
                 </tr>
             </thead>
             <tbody>
