@@ -647,6 +647,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         th {
@@ -703,7 +704,7 @@
         }
 
         .rank {
-            width: 50px;
+            width: 44px;
             font-weight: bold;
             color: #ffd700;
             font-size: 1.1em;
@@ -711,7 +712,7 @@
         }
         
         .wrestler-image {
-            width: 150px;
+            width: 140px;
             padding: 8px;
             text-align: center;
         }
@@ -728,6 +729,7 @@
         .name {
             font-weight: bold;
             color: #fff;
+            overflow: hidden;
         }
 
         .team-members {
@@ -739,15 +741,35 @@
             display: block;
         }
 
+        .rating {
+            width: 80px;
+            font-weight: bold;
+            font-size: 1.05em;
+            white-space: nowrap;
+        }
+
+        .change {
+            width: 72px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .rating-excellent { color: #4ade80; }
+        .rating-great { color: #86efac; }
+        .rating-good { color: #a3e635; }
+        .rating-average { color: #fbbf24; }
+        .rating-below { color: #fb923c; }
+        .rating-poor { color: #f87171; }
+
         /* Tighter layout for tag/trios divisions to keep all columns on screen */
         .tag-trios-row td {
-            padding: 12px 6px;
+            padding: 10px 6px;
         }
         .tag-trios-row .rank {
             width: 36px;
         }
         .tag-trios-row .wrestler-image {
-            width: auto;
+            width: 120px;
             padding: 6px 4px;
         }
         .tag-trios-row .name {
@@ -760,22 +782,6 @@
         .tag-trios-row .change {
             font-size: 0.95em;
             white-space: nowrap;
-        }
-
-        .rating {
-            font-weight: bold;
-            font-size: 1.05em;
-        }
-
-        .rating-excellent { color: #4ade80; }
-        .rating-great { color: #86efac; }
-        .rating-good { color: #a3e635; }
-        .rating-average { color: #fbbf24; }
-        .rating-below { color: #fb923c; }
-        .rating-poor { color: #f87171; }
-
-        .change {
-            font-weight: bold;
         }
 
         .change-up { color: #4ade80; }
@@ -3488,8 +3494,18 @@ rows.push(`
             // Update table
 const tableEl = document.getElementById('table-' + division);
 if (tableEl) {
+    const isTeamDiv = division === 'menstag' || division === 'womenstag' || division === 'trios';
     tableEl.innerHTML = `
         <table>
+            <colgroup>
+                <col style="width: 44px">
+                <col style="width: ${isTeamDiv ? '120px' : '110px'}">
+                <col>
+                <col style="width: 80px">
+                <col style="width: 72px">
+                <col style="width: 70px">
+                <col style="width: 80px">
+            </colgroup>
             <thead>
                 <tr>
                     <th>Rank</th>
