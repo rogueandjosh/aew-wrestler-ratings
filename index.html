@@ -704,7 +704,6 @@
         }
 
         .rank {
-            width: 44px;
             font-weight: bold;
             color: #ffd700;
             font-size: 1.1em;
@@ -713,7 +712,6 @@
         }
         
         .wrestler-image {
-            width: 120px;
             padding: 8px;
             text-align: center;
         }
@@ -742,27 +740,18 @@
         }
 
         .rating {
-            width: 82px;
             font-weight: bold;
             font-size: 1.05em;
             white-space: nowrap;
         }
 
         .change {
-            width: 76px;
             font-weight: bold;
             white-space: nowrap;
         }
 
-        td.matches-col, th.matches-col {
-            width: 76px;
-            white-space: nowrap;
-        }
-
-        td.peak-col, th.peak-col {
-            width: 82px;
-            white-space: nowrap;
-        }
+        td.matches-col, th.matches-col { white-space: nowrap; }
+        td.peak-col, th.peak-col { white-space: nowrap; }
 
         .rating-excellent { color: #4ade80; }
         .rating-great { color: #86efac; }
@@ -771,50 +760,36 @@
         .rating-below { color: #fb923c; }
         .rating-poor { color: #f87171; }
 
+        /* Desktop column widths */
+        th.col-rank, td.rank       { width: 44px; }
+        th.col-photo, td.wrestler-image { width: 120px; }
+        th.col-name, td.name       { width: 280px; }
+        th.col-rating, td.rating   { width: 82px; white-space: nowrap; }
+        th.col-change, td.change   { width: 76px; white-space: nowrap; }
+        th.col-matches, td.matches-col { width: 76px; white-space: nowrap; }
+        th.col-peak, td.peak-col   { width: 82px; white-space: nowrap; }
+
         /* Mobile: fixed layout with explicit widths for true consistency across all divisions */
         @media (max-width: 600px) {
-            table {
-                table-layout: fixed !important;
-            }
+            table { table-layout: fixed !important; }
             th.matches-col, td.matches-col,
-            th.peak-col, td.peak-col {
-                display: none;
-            }
-            /* Pin every column to exact widths: 32+68+auto+58+52 = 210px fixed, name gets rest */
-            th:nth-child(1), td.rank  { width: 32px !important; padding-left: 2px !important; padding-right: 4px !important; }
-            th:nth-child(2), td.wrestler-image { width: 68px !important; padding: 4px 2px !important; }
-            th:nth-child(3), td.name  { width: auto !important; }
-            th:nth-child(4), td.rating { width: 58px !important; }
-            th:nth-child(5), td.change { width: 52px !important; }
+            th.peak-col, td.peak-col { display: none; }
+
+            th.col-rank, td.rank         { width: 32px !important; padding-left: 0 !important; padding-right: 4px !important; }
+            th.col-photo, td.wrestler-image { width: 68px !important; padding: 4px 2px !important; }
+            th.col-name, td.name         { width: auto !important; }
+            th.col-rating, td.rating     { width: 58px !important; font-size: 0.88em; }
+            th.col-change, td.change     { width: 52px !important; font-size: 0.88em; }
 
             td { padding: 8px 4px; }
 
-            /* Singles image */
-            .wrestler-image > a > img,
-            .wrestler-image > a img:only-child {
-                width: 55px !important;
-                height: 55px !important;
-            }
-            /* Tag/trios: constrain the flex container and images */
-            .tag-trios-row .wrestler-image div {
-                gap: 1px !important;
-                flex-wrap: nowrap !important;
-            }
-            /* Tag (2 images): 32px each = 65px */
-            .tag-trios-row .wrestler-image a img {
-                width: 32px !important;
-                height: 32px !important;
-                border-width: 1px !important;
-            }
-            /* Trios (3 images): 21px each = 65px */
-            .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img {
-                width: 21px !important;
-                height: 21px !important;
-                border-width: 1px !important;
-            }
+            .wrestler-image > a > img { width: 55px !important; height: 55px !important; }
+            .tag-trios-row .wrestler-image div { gap: 1px !important; flex-wrap: nowrap !important; }
+            .tag-trios-row .wrestler-image a img { width: 32px !important; height: 32px !important; border-width: 1px !important; }
+            .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img { width: 21px !important; height: 21px !important; }
+
             .name { font-size: 0.85em; }
             .team-members { font-size: 0.64em; }
-            .rating, .change { font-size: 0.88em; width: auto !important; white-space: nowrap; }
         }
 
         .change-up { color: #4ade80; }
@@ -3531,13 +3506,13 @@ if (tableEl) {
         <table>
             <thead>
                 <tr>
-                    <th style="width:44px">Rank</th>
-                    <th style="width:120px"></th>
-                    <th style="width:280px">Name</th>
-                    <th style="width:82px" class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
-                    <th style="width:76px" class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
-                    <th style="width:76px" class="matches-col tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
-                    <th style="width:82px" class="peak-col tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
+                    <th class="col-rank">Rank</th>
+                    <th class="col-photo"></th>
+                    <th class="col-name">Name</th>
+                    <th class="col-rating tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
+                    <th class="col-change tt" data-tt="This is the ranking change from the previous week.">Change</th>
+                    <th class="matches-col col-matches tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
+                    <th class="peak-col col-peak tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
                 </tr>
             </thead>
             <tbody>
