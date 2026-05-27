@@ -771,56 +771,50 @@
         .rating-below { color: #fb923c; }
         .rating-poor { color: #f87171; }
 
-        /* Mobile: hide Matches & Peak, let remaining columns size naturally */
+        /* Mobile: fixed layout with explicit widths for true consistency across all divisions */
         @media (max-width: 600px) {
             table {
-                table-layout: auto;
+                table-layout: fixed !important;
             }
             th.matches-col, td.matches-col,
             th.peak-col, td.peak-col {
                 display: none;
             }
-            td, th {
-                padding: 8px 4px;
-            }
-            /* All photo cells same width on mobile */
-            .wrestler-image {
-                width: 68px !important;
-                padding: 4px 2px !important;
-            }
+            /* Pin every column to exact widths: 32+68+auto+58+52 = 210px fixed, name gets rest */
+            th:nth-child(1), td.rank  { width: 32px !important; padding-left: 2px !important; padding-right: 4px !important; }
+            th:nth-child(2), td.wrestler-image { width: 68px !important; padding: 4px 2px !important; }
+            th:nth-child(3), td.name  { width: auto !important; }
+            th:nth-child(4), td.rating { width: 58px !important; }
+            th:nth-child(5), td.change { width: 52px !important; }
+
+            td { padding: 8px 4px; }
+
             /* Singles image */
-            .wrestler-image > a img,
-            .wrestler-image > img {
+            .wrestler-image > a > img,
+            .wrestler-image > a img:only-child {
                 width: 55px !important;
                 height: 55px !important;
             }
-            /* Tag/trios: size images to fit within same 68px cell */
+            /* Tag/trios: constrain the flex container and images */
             .tag-trios-row .wrestler-image div {
                 gap: 1px !important;
+                flex-wrap: nowrap !important;
             }
-            /* Tag (2 images): 32px each = 65px total */
-            .tag-trios-row .wrestler-image a img,
-            .tag-trios-row .wrestler-image img {
+            /* Tag (2 images): 32px each = 65px */
+            .tag-trios-row .wrestler-image a img {
                 width: 32px !important;
                 height: 32px !important;
                 border-width: 1px !important;
             }
-            /* Trios (3 images): 21px each = 65px total */
+            /* Trios (3 images): 21px each = 65px */
             .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img {
                 width: 21px !important;
                 height: 21px !important;
                 border-width: 1px !important;
             }
-            .name {
-                font-size: 0.88em;
-            }
-            .team-members {
-                font-size: 0.66em;
-            }
-            .rating, .change {
-                font-size: 0.9em;
-                width: auto;
-            }
+            .name { font-size: 0.85em; }
+            .team-members { font-size: 0.64em; }
+            .rating, .change { font-size: 0.88em; width: auto !important; white-space: nowrap; }
         }
 
         .change-up { color: #4ade80; }
