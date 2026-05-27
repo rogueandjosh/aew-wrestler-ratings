@@ -647,6 +647,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         th {
@@ -703,7 +704,6 @@
         }
 
         .rank {
-            width: 44px;
             font-weight: bold;
             color: #ffd700;
             font-size: 1.1em;
@@ -712,7 +712,6 @@
         }
         
         .wrestler-image {
-            width: 110px;
             padding: 8px;
             text-align: center;
         }
@@ -3498,13 +3497,13 @@ if (tableEl) {
         <table>
             <thead>
                 <tr>
-                    <th>Rank</th>
-                    <th></th>
+                    <th style="width:44px">Rank</th>
+                    <th style="width:120px"></th>
                     <th>Name</th>
-                    <th class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
-                    <th class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
-                    <th class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
-                    <th class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
+                    <th style="width:82px" class="tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
+                    <th style="width:76px" class="tt" data-tt="This is the ranking change from the previous week.">Change</th>
+                    <th style="width:76px" class="tt" data-tt="The number of counting matches from Cagematch.net.">Matches</th>
+                    <th style="width:82px" class="tt" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>
                 </tr>
             </thead>
             <tbody>
