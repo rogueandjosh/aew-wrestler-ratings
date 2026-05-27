@@ -783,20 +783,33 @@
             td, th {
                 padding: 8px 4px;
             }
+            /* All photo cells same width on mobile */
             .wrestler-image {
-                width: 80px;
-                padding: 4px 2px;
+                width: 68px !important;
+                padding: 4px 2px !important;
             }
-            /* Singles */
-            .wrestler-image img {
+            /* Singles image */
+            .wrestler-image > a img,
+            .wrestler-image > img {
                 width: 55px !important;
                 height: 55px !important;
             }
-            /* Tag (2 images inline-styled at 58px) and trios (3 at 40px) */
-            .wrestler-image a img,
-            .wrestler-image div img {
-                width: 42px !important;
-                height: 42px !important;
+            /* Tag/trios: size images to fit within same 68px cell */
+            .tag-trios-row .wrestler-image div {
+                gap: 1px !important;
+            }
+            /* Tag (2 images): 32px each = 65px total */
+            .tag-trios-row .wrestler-image a img,
+            .tag-trios-row .wrestler-image img {
+                width: 32px !important;
+                height: 32px !important;
+                border-width: 1px !important;
+            }
+            /* Trios (3 images): 21px each = 65px total */
+            .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img {
+                width: 21px !important;
+                height: 21px !important;
+                border-width: 1px !important;
             }
             .name {
                 font-size: 0.88em;
