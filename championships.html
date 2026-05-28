@@ -387,6 +387,24 @@
             align-items: center;
         }
 
+        /* Fixed width for image containers on desktop for alignment */
+        .title-cell .title-image,
+        .title-cell .belt-icon {
+            flex-shrink: 0;
+            width: 55px;
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .title-cell .title-image-group {
+            flex-shrink: 0;
+            width: 70px;
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
         .title-cell:hover {
             color: #ffd700;
         }
@@ -397,6 +415,15 @@
         }
 
         .change-full {
+            display: inline;
+        }
+
+        /* Header text - show full on desktop, short on mobile */
+        .header-short {
+            display: none;
+        }
+
+        .header-full {
             display: inline;
         }
 
@@ -925,6 +952,15 @@
             }
 
             .change-full {
+                display: none;
+            }
+
+            /* Show short header, hide full header on mobile */
+            .header-short {
+                display: inline;
+            }
+
+            .header-full {
                 display: none;
             }
 
@@ -2182,7 +2218,7 @@
                                 <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
                                 <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
-                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
+                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
                                 <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
