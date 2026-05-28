@@ -2215,12 +2215,14 @@
                                 ${viewMode === 'reign' ? `
                                 <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
+                                <th class="sortable tt extra-col" data-tt="Average rating per match during the most recent reign (rating ÷ matches)." onclick="sortBy('avgRating', event)">Avg ${getSortArrow('avgRating')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
                                 <th class="sortable tt" data-tt="The number of matches within the most recent reign." onclick="sortBy('streak', event)">Streak ${getSortArrow('streak')}</th>
                                 ` : `
                                 <th class="sortable tt" data-tt="The highest rating this championship has ever achieved across all reigns." onclick="sortBy('allTimePeak', event)">Peak ${getSortArrow('allTimePeak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating this championship has ever had across all reigns." onclick="sortBy('allTimeFloor', event)">Floor ${getSortArrow('allTimeFloor')}</th>
+                                <th class="sortable tt extra-col" data-tt="Average rating per match all-time (rating ÷ total matches)." onclick="sortBy('avgRatingAllTime', event)">Avg ${getSortArrow('avgRatingAllTime')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeHighest', event)">Best Match ${getSortArrow('allTimeHighest')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
                                 <th class="sortable tt" data-tt="Total number of title matches for this championship across all reigns." onclick="sortBy('totalMatches', event)">Matches ${getSortArrow('totalMatches')}</th>
@@ -2244,19 +2246,21 @@
                         ${viewMode === 'reign' ? `
                         <td class="rating-cell">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
+                        <td class="rating-cell extra-col">${champ.streak ? formatRating(champ.rating / champ.streak) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak || '—'}<span class="streak-text">${champ.streak ? ` ${champ.streak === 1 ? 'match' : 'matches'}` : ''}</span></td>
                         ` : `
                         <td class="rating-cell">${formatRating(champ.allTimePeak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.allTimeFloor)}</td>
+                        <td class="rating-cell extra-col">${champ.totalMatches ? formatRating(champ.rating / champ.totalMatches) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.totalMatches || '—'}</td>
                         `}
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
-                        <td colspan="9">
+                        <td colspan="10">
                             <div class="details-content">
                                 <!-- Mobile-only stats table -->
                                 <div class="mobile-stats-table-wrapper">
@@ -2717,6 +2721,10 @@
                         valA = a.floor || 0;
                         valB = b.floor || 0;
                         break;
+                    case 'avgRating':
+                        valA = a.streak ? (a.rating / a.streak) : 0;
+                        valB = b.streak ? (b.rating / b.streak) : 0;
+                        break;
                     case 'highestMatch':
                         valA = a.highestMatch || 0;
                         valB = b.highestMatch || 0;
@@ -2741,6 +2749,10 @@
                     case 'allTimeFloor':
                         valA = a.allTimeFloor || 0;
                         valB = b.allTimeFloor || 0;
+                        break;
+                    case 'avgRatingAllTime':
+                        valA = a.totalMatches ? (a.rating / a.totalMatches) : 0;
+                        valB = b.totalMatches ? (b.rating / b.totalMatches) : 0;
                         break;
                     case 'allTimeHighest':
                         valA = a.allTimeHighest || 0;
@@ -2794,11 +2806,11 @@
         function getRatingClass(rating) {
             // Rating is stored as multiplier (e.g., 1.10 = 110)
             const ratingValue = rating * 100;
-            if (ratingValue >= 110) return 'rating-excellent';
-            if (ratingValue >= 105) return 'rating-great';
-            if (ratingValue >= 100) return 'rating-good';
-            if (ratingValue >= 95) return 'rating-average';
-            if (ratingValue >= 90) return 'rating-below';
+            if (ratingValue >= 120) return 'rating-excellent';
+            if (ratingValue >= 112) return 'rating-great';
+            if (ratingValue >= 105) return 'rating-good';
+            if (ratingValue >= 98) return 'rating-average';
+            if (ratingValue >= 93) return 'rating-below';
             return 'rating-poor';
         }
 
