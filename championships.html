@@ -894,6 +894,20 @@
             .title-cell {
                 white-space: normal;
                 min-width: 150px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* Fixed width for image containers on mobile */
+            .title-cell .title-image,
+            .title-cell .title-image-group,
+            .title-cell .belt-icon {
+                flex-shrink: 0;
+            }
+
+            .title-cell .title-image-group {
+                width: 70px;
             }
 
             .details-grid {
@@ -2150,6 +2164,7 @@
                                 <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
                                 <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
+                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
                                 <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
@@ -2163,7 +2178,6 @@
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match ever for this championship from Cagematch.net." onclick="sortBy('allTimeLowest', event)">Worst Match ${getSortArrow('allTimeLowest')}</th>
                                 <th class="sortable tt" data-tt="Total number of title matches for this championship across all reigns." onclick="sortBy('totalMatches', event)">Matches ${getSortArrow('totalMatches')}</th>
                                 `}
-                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)">Δ Change ${getSortArrow('rankChange')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2179,6 +2193,7 @@
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}</td>
                         <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
+                        <td class="${rankChange.class}">${rankChange.text}</td>
                         ${viewMode === 'reign' ? `
                         <td class="rating-cell">${formatRating(champ.peak)}</td>
                         <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
@@ -2192,7 +2207,6 @@
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.totalMatches || '—'}</td>
                         `}
-                        <td class="${rankChange.class}">${rankChange.text}</td>
                     </tr>
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
