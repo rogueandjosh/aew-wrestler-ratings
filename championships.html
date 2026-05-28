@@ -383,10 +383,21 @@
             font-weight: 600;
             cursor: pointer;
             transition: color 0.2s;
+            display: flex;
+            align-items: center;
         }
 
         .title-cell:hover {
             color: #ffd700;
+        }
+
+        /* Change column - show full text on desktop, icon on mobile */
+        .change-icon {
+            display: none;
+        }
+
+        .change-full {
+            display: inline;
         }
 
         .rating-cell {
@@ -906,6 +917,15 @@
                 width: 70px;
                 display: inline-flex;
                 justify-content: center;
+            }
+
+            /* Show icon, hide full text on mobile */
+            .change-icon {
+                display: inline;
+            }
+
+            .change-full {
+                display: none;
             }
 
             .details-grid {
@@ -2760,19 +2780,19 @@
 
         function formatRankChange(change) {
             if (change === 'NEW') {
-                return { text: 'NEW', class: 'no-change' };
+                return { text: '<span class="change-full">NEW</span><span class="change-icon">✦</span>', class: 'no-change' };
             }
             if (change === 'RE-ENTRY') {
-                return { text: 'RE-ENTRY', class: 'rank-reentry' };
+                return { text: '<span class="change-full">RE-ENTRY</span><span class="change-icon">↺</span>', class: 'rank-reentry' };
             }
-            if (!change && change !== 0) return { text: '—', class: 'no-change' };
+            if (!change && change !== 0) return { text: '<span class="change-full">—</span><span class="change-icon">—</span>', class: 'no-change' };
 
             if (change > 0) {
-                return { text: `↑${change}`, class: 'rank-up' };
+                return { text: `<span class="change-full">↑${change}</span><span class="change-icon">▲${change}</span>`, class: 'rank-up' };
             } else if (change < 0) {
-                return { text: `↓${Math.abs(change)}`, class: 'rank-down' };
+                return { text: `<span class="change-full">↓${Math.abs(change)}</span><span class="change-icon">▼${Math.abs(change)}</span>`, class: 'rank-down' };
             }
-            return { text: '—', class: 'no-change' };
+            return { text: '<span class="change-full">—</span><span class="change-icon">—</span>', class: 'no-change' };
         }
 
         // ===== WEEK SELECTOR FUNCTIONS =====
