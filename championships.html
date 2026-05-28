@@ -434,6 +434,7 @@
 
         .streak-cell {
             color: #b8b8b8;
+            min-width: 80px;
         }
 
         .rank-up {
@@ -941,7 +942,9 @@
 
             /* Show icon, hide full text on mobile */
             .change-icon {
-                display: inline;
+                display: inline-block;
+                text-align: center;
+                min-width: 2em;
             }
 
             .change-full {
@@ -2812,7 +2815,7 @@
                 return { text: '<span class="change-full">NEW</span><span class="change-icon">✦</span>', class: 'no-change' };
             }
             if (change === 'RE-ENTRY') {
-                return { text: '<span class="change-full">RE-ENTRY</span><span class="change-icon">↺</span>', class: 'rank-reentry' };
+                return { text: '<span class="change-full">RE-ENTRY</span><span class="change-icon">⟳</span>', class: 'rank-reentry' };
             }
             if (!change && change !== 0) return { text: '<span class="change-full">—</span><span class="change-icon">—</span>', class: 'no-change' };
 
