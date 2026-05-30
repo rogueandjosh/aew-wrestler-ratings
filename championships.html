@@ -2847,7 +2847,7 @@
         }
 
         // Staggered boost multipliers for tag/trios titles based on rating level
-        // Trios gets 1% more than tag at each tier
+        // More gradual curve: starts low, increases more at higher ratings
         function getBoostMultiplier(title, rating) {
             const lowerTitle = title.toLowerCase();
             const isTrios = lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man');
@@ -2858,23 +2858,30 @@
             // Convert rating to display scale (e.g., 1.10 -> 110)
             const ratingValue = rating * 100;
             
-            // Determine base boost based on rating tier
+            // Determine base boost based on rating tier (Tag titles)
+            // Gradual curve from 1% at low end to 8% at 120+
             let baseBoost;
-            if (ratingValue >= 121) {
-                baseBoost = 1.08;      // 8% for 121+
-            } else if (ratingValue >= 116) {
-                baseBoost = 1.07;      // 7% for 116-120
-            } else if (ratingValue >= 110) {
-                baseBoost = 1.06;      // 6% for 110-115
+            if (ratingValue >= 120) {
+                baseBoost = 1.08;      // 8% for 120+
+            } else if (ratingValue >= 117) {
+                baseBoost = 1.07;      // 7% for 117-119
+            } else if (ratingValue >= 114) {
+                baseBoost = 1.06;      // 6% for 114-116
+            } else if (ratingValue >= 111) {
+                baseBoost = 1.05;      // 5% for 111-113
+            } else if (ratingValue >= 108) {
+                baseBoost = 1.04;      // 4% for 108-110
             } else if (ratingValue >= 105) {
-                baseBoost = 1.05;      // 5% for 105-109
+                baseBoost = 1.03;      // 3% for 105-107
+            } else if (ratingValue >= 100) {
+                baseBoost = 1.02;      // 2% for 100-104
             } else if (ratingValue >= 95) {
-                baseBoost = 1.03;      // 3% for 95-104
+                baseBoost = 1.01;      // 1% for 95-99
             } else {
-                baseBoost = 1.02;      // 2% for below 95
+                baseBoost = 1.01;      // 1% for below 95
             }
             
-            // Trios gets 1% more
+            // Trios gets 1% more (so 1.5% at low end, 9% at 120+)
             if (isTrios) {
                 baseBoost += 0.01;
             }
