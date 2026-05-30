@@ -940,6 +940,21 @@
                 justify-content: center;
             }
 
+            /* Smaller trios images on mobile */
+            .title-cell .title-image-group.trios .title-image {
+                width: 26px;
+                height: 26px;
+            }
+
+            .title-cell .title-image-group.trios .title-image img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .title-cell .title-image-group.trios .title-image:not(:first-child) {
+                margin-left: -10px;
+            }
+
             /* Show icon, hide full text on mobile */
             .change-icon {
                 display: inline-block;
@@ -1240,6 +1255,22 @@
             margin-left: -15px;
         }
 
+        /* Trios (3 belts) - smaller to fit */
+        .title-image-group.trios .title-image {
+            width: 32px;
+            height: 32px;
+            border-width: 2px;
+        }
+
+        .title-image-group.trios .title-image img {
+            width: 34px;
+            height: 34px;
+        }
+
+        .title-image-group.trios .title-image:not(:first-child) {
+            margin-left: -12px;
+        }
+
         .title-image-group .title-image:nth-child(1) {
             z-index: 3;
         }
@@ -1266,6 +1297,21 @@
 
         .title-image-group.large .title-image:not(:first-child) {
             margin-left: -20px;
+        }
+
+        /* Large trios */
+        .title-image-group.large.trios .title-image {
+            width: 50px;
+            height: 50px;
+        }
+
+        .title-image-group.large.trios .title-image img {
+            width: 55px;
+            height: 55px;
+        }
+
+        .title-image-group.large.trios .title-image:not(:first-child) {
+            margin-left: -15px;
         }
 
         /* Championship belt icons (fallback) */
@@ -1652,6 +1698,7 @@
                 if (isTag || isTrios) {
                     // Multiple overlapping images for tag/trios
                     const count = isTrios ? 3 : 2;
+                    const triosClass = isTrios ? 'trios' : '';
                     let imagesHtml = '';
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
@@ -1662,7 +1709,7 @@
                             </span>
                         `;
                     }
-                    return `<span class="title-image-group ${sizeClass}">${imagesHtml}</span>`;
+                    return `<span class="title-image-group ${sizeClass} ${triosClass}">${imagesHtml}</span>`;
                 } else {
                     // Single image
                     return `
