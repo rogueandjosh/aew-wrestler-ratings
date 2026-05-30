@@ -957,34 +957,34 @@
                 margin-left: -10px;
             }
 
-            /* Smaller trios belt icons on mobile */
-            .title-cell .belt-icon-group .belt-icon {
-                width: 32px;
-                height: 26px;
+            /* Belt icon groups on mobile */
+            .title-cell .belt-icon-group:not(.trios) .belt-icon {
+                width: 30px;
+                height: 24px;
             }
 
-            .title-cell .belt-icon-group .belt-strap {
-                width: 32px;
-                height: 18px;
+            .title-cell .belt-icon-group:not(.trios) .belt-strap {
+                width: 30px;
+                height: 16px;
                 top: 4px;
             }
 
-            .title-cell .belt-icon-group .belt-plate {
-                width: 22px;
-                height: 26px;
+            .title-cell .belt-icon-group:not(.trios) .belt-plate {
+                width: 20px;
+                height: 24px;
                 left: 5px;
             }
 
-            .title-cell .belt-icon-group .belt-center {
-                width: 18px;
-                height: 18px;
+            .title-cell .belt-icon-group:not(.trios) .belt-center {
+                width: 16px;
+                height: 16px;
                 left: 7px;
                 top: 4px;
-                font-size: 6px;
+                font-size: 5px;
             }
 
-            .title-cell .belt-icon-group .belt-icon:not(:first-child) {
-                margin-left: -18px;
+            .title-cell .belt-icon-group:not(.trios) .belt-icon:nth-child(2) {
+                margin-left: -14px;
             }
 
             .title-cell .belt-icon-group.trios .belt-icon {
@@ -999,21 +999,22 @@
             }
 
             .title-cell .belt-icon-group.trios .belt-plate {
-                width: 16px;
+                width: 14px;
                 height: 18px;
-                left: 3px;
+                left: 4px;
             }
 
             .title-cell .belt-icon-group.trios .belt-center {
-                width: 12px;
-                height: 12px;
-                left: 5px;
-                top: 3px;
+                width: 10px;
+                height: 10px;
+                left: 6px;
+                top: 4px;
                 font-size: 4px;
             }
 
-            .title-cell .belt-icon-group.trios .belt-icon:not(:first-child) {
-                margin-left: -12px;
+            .title-cell .belt-icon-group.trios .belt-icon:nth-child(2),
+            .title-cell .belt-icon-group.trios .belt-icon:nth-child(3) {
+                margin-left: -10px;
             }
 
             /* Show icon, hide full text on mobile */
@@ -1459,60 +1460,90 @@
             align-items: center;
             justify-content: center;
             vertical-align: middle;
-            margin-right: 8px;
             flex-shrink: 0;
             min-height: 55px;
+            position: relative;
         }
 
         .belt-icon-group .belt-icon {
             margin-right: 0;
             min-height: auto;
+            position: relative;
         }
 
-        .belt-icon-group .belt-icon:not(:first-child) {
-            margin-left: -22px;
+        /* Tag titles - 2 icons */
+        .belt-icon-group:not(.trios) .belt-icon {
+            width: 36px;
+            height: 28px;
         }
 
-        .belt-icon-group .belt-icon:nth-child(1) {
-            z-index: 3;
+        .belt-icon-group:not(.trios) .belt-strap {
+            width: 36px;
+            height: 20px;
+            top: 4px;
         }
 
-        .belt-icon-group .belt-icon:nth-child(2) {
+        .belt-icon-group:not(.trios) .belt-plate {
+            width: 24px;
+            height: 28px;
+            left: 6px;
+        }
+
+        .belt-icon-group:not(.trios) .belt-center {
+            width: 20px;
+            height: 20px;
+            left: 8px;
+            top: 4px;
+            font-size: 6px;
+        }
+
+        .belt-icon-group:not(.trios) .belt-icon:nth-child(1) {
             z-index: 2;
         }
 
-        .belt-icon-group .belt-icon:nth-child(3) {
+        .belt-icon-group:not(.trios) .belt-icon:nth-child(2) {
             z-index: 1;
+            margin-left: -16px;
         }
 
-        /* Trios belt icons - smaller to fit 3 */
+        /* Trios titles - 3 icons */
         .belt-icon-group.trios .belt-icon {
-            width: 28px;
-            height: 22px;
+            width: 26px;
+            height: 20px;
         }
 
         .belt-icon-group.trios .belt-strap {
-            width: 28px;
-            height: 16px;
+            width: 26px;
+            height: 14px;
             top: 3px;
         }
 
         .belt-icon-group.trios .belt-plate {
-            width: 20px;
-            height: 22px;
+            width: 18px;
+            height: 20px;
             left: 4px;
         }
 
         .belt-icon-group.trios .belt-center {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             left: 6px;
             top: 3px;
             font-size: 5px;
         }
 
-        .belt-icon-group.trios .belt-icon:not(:first-child) {
-            margin-left: -16px;
+        .belt-icon-group.trios .belt-icon:nth-child(1) {
+            z-index: 3;
+        }
+
+        .belt-icon-group.trios .belt-icon:nth-child(2) {
+            z-index: 2;
+            margin-left: -12px;
+        }
+
+        .belt-icon-group.trios .belt-icon:nth-child(3) {
+            z-index: 1;
+            margin-left: -12px;
         }
 
         /* Gold circle for non-top ranks (AEW) */
