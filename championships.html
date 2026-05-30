@@ -1491,8 +1491,17 @@
 
         .belt-icon-group .belt-icon {
             margin-right: 0;
+            height: auto;
             min-height: auto;
             position: relative;
+        }
+        
+        /* Reset transforms for grouped belt icons */
+        .belt-icon-group .belt-strap,
+        .belt-icon-group .belt-plate,
+        .belt-icon-group .belt-center {
+            transform: none;
+            top: auto;
         }
 
         /* Tag titles - 2 icons */
@@ -1511,6 +1520,7 @@
             width: 24px;
             height: 28px;
             left: 6px;
+            top: 0;
         }
 
         .belt-icon-group:not(.trios) .belt-center {
@@ -1546,6 +1556,7 @@
             width: 18px;
             height: 20px;
             left: 4px;
+            top: 0;
         }
 
         .belt-icon-group.trios .belt-center {
