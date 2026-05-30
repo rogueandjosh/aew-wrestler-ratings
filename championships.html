@@ -389,18 +389,23 @@
 
         /* Fixed width for ALL image containers on desktop for alignment */
         .title-cell .title-image,
+        .title-cell .title-image,
+        .title-cell .title-image-group {
+            flex-shrink: 0;
+            width: 75px;
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 8px;
+        }
+        
         .title-cell .belt-icon,
-        .title-cell .title-image-group,
         .title-cell .belt-icon-group {
             flex-shrink: 0;
             width: 75px;
             display: inline-flex;
             justify-content: flex-start;
+            align-items: center;
             margin-right: 8px;
-        }
-        
-        .title-cell .title-image {
-            flex-shrink: 0;
         }
 
         .title-cell:hover {
@@ -937,13 +942,20 @@
 
             /* Fixed width for ALL image containers on mobile - same width for alignment */
             .title-cell .title-image,
+            .title-cell .title-image-group {
+                flex-shrink: 0;
+                width: 70px;
+                display: inline-flex;
+                justify-content: center;
+            }
+            
             .title-cell .belt-icon,
-            .title-cell .title-image-group,
             .title-cell .belt-icon-group {
                 flex-shrink: 0;
                 width: 70px;
                 display: inline-flex;
                 justify-content: flex-start;
+                align-items: center;
             }
 
             /* Smaller trios images on mobile */
@@ -1383,7 +1395,9 @@
 
         /* Championship belt icons (fallback) */
         .belt-icon {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
             width: 40px;
             height: 32px;
