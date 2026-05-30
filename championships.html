@@ -2242,17 +2242,17 @@
                     <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.rank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}</td>
-                        <td class="rating-cell ${getRatingClass(champ.rating)}">${formatRating(champ.rating)}</td>
+                        <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                         ${viewMode === 'reign' ? `
-                        <td class="rating-cell">${formatRating(champ.peak)}</td>
-                        <td class="rating-cell extra-col">${formatRating(champ.floor)}</td>
+                        <td class="rating-cell">${formatRating(applyBoost(champ.peak, champ.title))}</td>
+                        <td class="rating-cell extra-col">${formatRating(applyBoost(champ.floor, champ.title))}</td>
                         <td class="rating-cell extra-col">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.streak || '—'}<span class="streak-text">${champ.streak ? ` ${champ.streak === 1 ? 'match' : 'matches'}` : ''}</span></td>
                         ` : `
-                        <td class="rating-cell">${formatRating(champ.allTimePeak)}</td>
-                        <td class="rating-cell extra-col">${formatRating(champ.allTimeFloor)}</td>
+                        <td class="rating-cell">${formatRating(applyBoost(champ.allTimePeak, champ.title))}</td>
+                        <td class="rating-cell extra-col">${formatRating(applyBoost(champ.allTimeFloor, champ.title))}</td>
                         <td class="rating-cell extra-col">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</td>
                         <td class="rating-cell extra-col">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</td>
                         <td class="streak-cell">${champ.totalMatches || '—'}</td>
@@ -2274,13 +2274,13 @@
                                         <tbody>
                                             <tr>
                                                 <td>Peak Rating</td>
-                                                <td>${formatRating(champ.peak)}</td>
-                                                <td>${formatRating(champ.allTimePeak)}</td>
+                                                <td>${formatRating(applyBoost(champ.peak, champ.title))}</td>
+                                                <td>${formatRating(applyBoost(champ.allTimePeak, champ.title))}</td>
                                             </tr>
                                             <tr>
                                                 <td>Floor Rating</td>
-                                                <td>${formatRating(champ.floor)}</td>
-                                                <td>${formatRating(champ.allTimeFloor)}</td>
+                                                <td>${formatRating(applyBoost(champ.floor, champ.title))}</td>
+                                                <td>${formatRating(applyBoost(champ.allTimeFloor, champ.title))}</td>
                                             </tr>
                                             <tr>
                                                 <td>Best Match</td>
@@ -2306,11 +2306,11 @@
                                         <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
-                                            <span class="detail-value">${formatRating(champ.peak)}</span>
+                                            <span class="detail-value">${formatRating(applyBoost(champ.peak, champ.title))}</span>
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Floor Rating</span>
-                                            <span class="detail-value">${formatRating(champ.floor)}</span>
+                                            <span class="detail-value">${formatRating(applyBoost(champ.floor, champ.title))}</span>
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Best Match</span>
@@ -2325,11 +2325,11 @@
                                         <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
                                         <div class="detail-item">
                                             <span class="detail-label">Peak Rating</span>
-                                            <span class="detail-value">${formatRating(champ.allTimePeak)}</span>
+                                            <span class="detail-value">${formatRating(applyBoost(champ.allTimePeak, champ.title))}</span>
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Floor Rating</span>
-                                            <span class="detail-value">${formatRating(champ.allTimeFloor)}</span>
+                                            <span class="detail-value">${formatRating(applyBoost(champ.allTimeFloor, champ.title))}</span>
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Best Match Ever</span>
@@ -2389,11 +2389,11 @@
                                                     <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(title.peak)}</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.peak, title.title))}</span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(title.floor)}</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.floor, title.title))}</span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Best Match</span>
@@ -2408,11 +2408,11 @@
                                                     <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(title.allTimePeak)}</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.allTimePeak, title.title))}</span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(title.allTimeFloor)}</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.allTimeFloor, title.title))}</span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <span class="detail-label">Best Match Ever</span>
@@ -2709,16 +2709,16 @@
                         valB = b.title || '';
                         return dir * valA.localeCompare(valB);
                     case 'rating':
-                        valA = a.rating || 0;
-                        valB = b.rating || 0;
+                        valA = applyBoost(a.rating, a.title) || 0;
+                        valB = applyBoost(b.rating, b.title) || 0;
                         break;
                     case 'peak':
-                        valA = a.peak || 0;
-                        valB = b.peak || 0;
+                        valA = applyBoost(a.peak, a.title) || 0;
+                        valB = applyBoost(b.peak, b.title) || 0;
                         break;
                     case 'floor':
-                        valA = a.floor || 0;
-                        valB = b.floor || 0;
+                        valA = applyBoost(a.floor, a.title) || 0;
+                        valB = applyBoost(b.floor, b.title) || 0;
                         break;
                     case 'highestMatch':
                         valA = a.highestMatch || 0;
@@ -2738,12 +2738,12 @@
                         valB = b.rankChange === 'NEW' ? 999 : (b.rankChange === 'RE-ENTRY' ? 998 : (b.rankChange || 0));
                         break;
                     case 'allTimePeak':
-                        valA = a.allTimePeak || 0;
-                        valB = b.allTimePeak || 0;
+                        valA = applyBoost(a.allTimePeak, a.title) || 0;
+                        valB = applyBoost(b.allTimePeak, b.title) || 0;
                         break;
                     case 'allTimeFloor':
-                        valA = a.allTimeFloor || 0;
-                        valB = b.allTimeFloor || 0;
+                        valA = applyBoost(a.allTimeFloor, a.title) || 0;
+                        valB = applyBoost(b.allTimeFloor, b.title) || 0;
                         break;
                     case 'allTimeHighest':
                         valA = a.allTimeHighest || 0;
@@ -2803,6 +2803,26 @@
             if (ratingValue >= 98) return 'rating-average';
             if (ratingValue >= 93) return 'rating-below';
             return 'rating-poor';
+        }
+
+        // Multipliers for tag/trios titles (adjust these to test)
+        const TAG_BOOST = 1.08;    // 8% boost for tag titles
+        const TRIOS_BOOST = 1.12;  // 12% boost for trios/six-man titles
+
+        function getBoostMultiplier(title) {
+            const lowerTitle = title.toLowerCase();
+            if (lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man')) {
+                return TRIOS_BOOST;
+            }
+            if (lowerTitle.includes('tag')) {
+                return TAG_BOOST;
+            }
+            return 1.0;
+        }
+
+        function applyBoost(value, title) {
+            if (!value && value !== 0) return value;
+            return value * getBoostMultiplier(title);
         }
 
         function formatRating(value) {
