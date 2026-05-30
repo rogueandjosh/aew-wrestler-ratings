@@ -2818,24 +2818,45 @@
             return 'rating-poor';
         }
 
-        // Multipliers for tag/trios titles (adjust these to test)
-        const TAG_BOOST = 1.07;    // 7% boost for tag titles
-        const TRIOS_BOOST = 1.1;  // 10% boost for trios/six-man titles
-
-        function getBoostMultiplier(title) {
+        // Staggered boost multipliers for tag/trios titles based on rating level
+        // Trios gets 1% more than tag at each tier
+        function getBoostMultiplier(title, rating) {
             const lowerTitle = title.toLowerCase();
-            if (lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man')) {
-                return TRIOS_BOOST;
+            const isTrios = lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man');
+            const isTag = lowerTitle.includes('tag');
+            
+            if (!isTrios && !isTag) return 1.0;
+            
+            // Convert rating to display scale (e.g., 1.10 -> 110)
+            const ratingValue = rating * 100;
+            
+            // Determine base boost based on rating tier
+            let baseBoost;
+            if (ratingValue >= 121) {
+                baseBoost = 1.08;      // 8% for 121+
+            } else if (ratingValue >= 116) {
+                baseBoost = 1.07;      // 7% for 116-120
+            } else if (ratingValue >= 110) {
+                baseBoost = 1.06;      // 6% for 110-115
+            } else if (ratingValue >= 105) {
+                baseBoost = 1.05;      // 5% for 105-109
+            } else if (ratingValue >= 95) {
+                baseBoost = 1.03;      // 3% for 95-104
+            } else {
+                baseBoost = 1.02;      // 2% for below 95
             }
-            if (lowerTitle.includes('tag')) {
-                return TAG_BOOST;
+            
+            // Trios gets 1% more
+            if (isTrios) {
+                baseBoost += 0.01;
             }
-            return 1.0;
+            
+            return baseBoost;
         }
 
         function applyBoost(value, title) {
             if (!value && value !== 0) return value;
-            return value * getBoostMultiplier(title);
+            return value * getBoostMultiplier(title, value);
         }
 
         function formatRating(value) {
