@@ -2194,7 +2194,20 @@
             }
 
             // Sort championships (active only in table)
-            const sortedChampionships = sortChampionships(championships);
+            // First, sort by boosted rating to get correct ranking order
+            const rankedChampionships = [...championships].sort((a, b) => {
+                const ratingA = applyBoost(a.rating, a.title) || 0;
+                const ratingB = applyBoost(b.rating, b.title) || 0;
+                return ratingB - ratingA; // Descending by boosted rating
+            });
+            
+            // Assign new display ranks based on boosted rating order
+            rankedChampionships.forEach((champ, index) => {
+                champ.displayRank = index + 1;
+            });
+            
+            // Now apply user's sort preference
+            const sortedChampionships = sortChampionships(rankedChampionships);
 
             let html = `
                 <div class="table-container">
@@ -2236,11 +2249,11 @@
             sortedChampionships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.rankChange);
                 const isExpanded = expandedRows.has(index);
-                const titleIcon = getTitleIcon(champ.title, champ.rank, championships.length);
+                const titleIcon = getTitleIcon(champ.title, champ.displayRank, championships.length);
 
                 html += `
                     <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
-                        <td class="rank-cell">${champ.rank}</td>
+                        <td class="rank-cell">${champ.displayRank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}</td>
                         <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
@@ -2701,8 +2714,8 @@
                 
                 switch(col) {
                     case 'rank':
-                        valA = a.rank || 9999;
-                        valB = b.rank || 9999;
+                        valA = a.displayRank || a.rank || 9999;
+                        valB = b.displayRank || b.rank || 9999;
                         break;
                     case 'title':
                         valA = a.title || '';
