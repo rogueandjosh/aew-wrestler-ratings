@@ -2180,6 +2180,21 @@
                             
                             console.log(`📉 Found ${droppedOutTitles.length} titles that dropped out:`, 
                                 droppedOutTitles.map(t => t.title));
+                            
+                            // Calculate boosted rankings for previous week
+                            const prevRankedChampionships = [...prevChampionships].sort((a, b) => {
+                                const ratingA = applyBoost(a.rating, a.title) || 0;
+                                const ratingB = applyBoost(b.rating, b.title) || 0;
+                                return ratingB - ratingA;
+                            });
+                            
+                            // Create lookup map: title -> previous boosted rank
+                            window.prevBoostedRanks = {};
+                            prevRankedChampionships.forEach((champ, index) => {
+                                window.prevBoostedRanks[champ.title] = index + 1;
+                            });
+                            console.log('📊 Previous boosted ranks calculated:', window.prevBoostedRanks);
+                            
                         } else {
                             console.log('⚠️ Failed to fetch previous week:', response.status);
                         }
@@ -2201,9 +2216,22 @@
                 return ratingB - ratingA; // Descending by boosted rating
             });
             
-            // Assign new display ranks based on boosted rating order
+            // Assign new display ranks and calculate boosted rank changes
             rankedChampionships.forEach((champ, index) => {
                 champ.displayRank = index + 1;
+                
+                // Calculate boosted rank change
+                // Keep NEW and RE-ENTRY from original data
+                if (champ.rankChange === 'NEW' || champ.rankChange === 'RE-ENTRY') {
+                    champ.boostedRankChange = champ.rankChange;
+                } else if (window.prevBoostedRanks && window.prevBoostedRanks[champ.title]) {
+                    // Calculate change based on boosted rankings
+                    const prevBoostedRank = window.prevBoostedRanks[champ.title];
+                    champ.boostedRankChange = prevBoostedRank - champ.displayRank;
+                } else {
+                    // No previous data, use original or 0
+                    champ.boostedRankChange = champ.rankChange || 0;
+                }
             });
             
             // Now apply user's sort preference
@@ -2247,7 +2275,7 @@
             `;
 
             sortedChampionships.forEach((champ, index) => {
-                const rankChange = formatRankChange(champ.rankChange);
+                const rankChange = formatRankChange(champ.boostedRankChange);
                 const isExpanded = expandedRows.has(index);
                 const titleIcon = getTitleIcon(champ.title, champ.displayRank, championships.length);
 
@@ -2747,8 +2775,8 @@
                         break;
                     case 'rankChange':
                         // Handle NEW and RE-ENTRY as special sort values
-                        valA = a.rankChange === 'NEW' ? 999 : (a.rankChange === 'RE-ENTRY' ? 998 : (a.rankChange || 0));
-                        valB = b.rankChange === 'NEW' ? 999 : (b.rankChange === 'RE-ENTRY' ? 998 : (b.rankChange || 0));
+                        valA = a.boostedRankChange === 'NEW' ? 999 : (a.boostedRankChange === 'RE-ENTRY' ? 998 : (a.boostedRankChange || 0));
+                        valB = b.boostedRankChange === 'NEW' ? 999 : (b.boostedRankChange === 'RE-ENTRY' ? 998 : (b.boostedRankChange || 0));
                         break;
                     case 'allTimePeak':
                         valA = applyBoost(a.allTimePeak, a.title) || 0;
