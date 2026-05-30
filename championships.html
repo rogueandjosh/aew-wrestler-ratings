@@ -390,7 +390,8 @@
         /* Fixed width for ALL image containers on desktop for alignment */
         .title-cell .title-image,
         .title-cell .belt-icon,
-        .title-cell .title-image-group {
+        .title-cell .title-image-group,
+        .title-cell .belt-icon-group {
             flex-shrink: 0;
             width: 75px;
             display: inline-flex;
@@ -933,7 +934,8 @@
             /* Fixed width for ALL image containers on mobile - same width for alignment */
             .title-cell .title-image,
             .title-cell .belt-icon,
-            .title-cell .title-image-group {
+            .title-cell .title-image-group,
+            .title-cell .belt-icon-group {
                 flex-shrink: 0;
                 width: 70px;
                 display: inline-flex;
@@ -952,6 +954,36 @@
             }
 
             .title-cell .title-image-group.trios .title-image:not(:first-child) {
+                margin-left: -10px;
+            }
+
+            /* Smaller trios belt icons on mobile */
+            .title-cell .belt-icon-group.trios .belt-icon {
+                width: 24px;
+                height: 20px;
+            }
+
+            .title-cell .belt-icon-group.trios .belt-strap {
+                width: 24px;
+                height: 14px;
+                top: 3px;
+            }
+
+            .title-cell .belt-icon-group.trios .belt-plate {
+                width: 18px;
+                height: 20px;
+                left: 3px;
+            }
+
+            .title-cell .belt-icon-group.trios .belt-center {
+                width: 14px;
+                height: 14px;
+                left: 5px;
+                top: 3px;
+                font-size: 5px;
+            }
+
+            .title-cell .belt-icon-group.trios .belt-icon:not(:first-child) {
                 margin-left: -10px;
             }
 
@@ -1237,6 +1269,7 @@
             vertical-align: middle;
             margin-right: 10px;
             flex-shrink: 0;
+            min-height: 55px;
         }
 
         .title-image-group .title-image {
@@ -1323,6 +1356,7 @@
             vertical-align: middle;
             margin-right: 8px;
             flex-shrink: 0;
+            min-height: 55px;
         }
 
         .belt-strap {
@@ -1388,6 +1422,66 @@
             width: 24px;
             height: 16px;
             font-size: 7px;
+        }
+
+        /* Belt icon group for tag/trios (multiple overlapping icons) */
+        .belt-icon-group {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            margin-right: 8px;
+            flex-shrink: 0;
+            min-height: 55px;
+        }
+
+        .belt-icon-group .belt-icon {
+            margin-right: 0;
+        }
+
+        .belt-icon-group .belt-icon:not(:first-child) {
+            margin-left: -18px;
+        }
+
+        .belt-icon-group .belt-icon:nth-child(1) {
+            z-index: 3;
+        }
+
+        .belt-icon-group .belt-icon:nth-child(2) {
+            z-index: 2;
+        }
+
+        .belt-icon-group .belt-icon:nth-child(3) {
+            z-index: 1;
+        }
+
+        /* Trios belt icons - smaller */
+        .belt-icon-group.trios .belt-icon {
+            width: 32px;
+            height: 26px;
+        }
+
+        .belt-icon-group.trios .belt-strap {
+            width: 32px;
+            height: 18px;
+            top: 4px;
+        }
+
+        .belt-icon-group.trios .belt-plate {
+            width: 22px;
+            height: 26px;
+            left: 5px;
+        }
+
+        .belt-icon-group.trios .belt-center {
+            width: 18px;
+            height: 18px;
+            left: 7px;
+            top: 4px;
+            font-size: 6px;
+        }
+
+        .belt-icon-group.trios .belt-icon:not(:first-child) {
+            margin-left: -14px;
         }
 
         /* Gold circle for non-top ranks (AEW) */
@@ -1794,6 +1888,23 @@
                 }
                 
                 const strapFallback = (isROH || isImpact) ? 'silver' : '';
+                
+                // For tag/trios, show multiple overlapping belt icons
+                if (isTag || isTrios) {
+                    const count = isTrios ? 3 : 2;
+                    const triosClass = isTrios ? 'trios' : '';
+                    let iconsHtml = '';
+                    for (let i = 0; i < count; i++) {
+                        iconsHtml += `
+                            <span class="belt-icon">
+                                <span class="belt-strap ${strapFallback}"></span>
+                                <span class="belt-plate ${plateClass}"></span>
+                                <span class="belt-center ${centerClass}" style="${centerStyle}">${config.initials}</span>
+                            </span>
+                        `;
+                    }
+                    return `<span class="belt-icon-group ${triosClass}">${iconsHtml}</span>`;
+                }
                 
                 return `
                     <span class="belt-icon">
