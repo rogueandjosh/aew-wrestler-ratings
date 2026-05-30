@@ -1400,16 +1400,22 @@
             justify-content: center;
             position: relative;
             width: 40px;
-            height: 32px;
+            height: 55px;
             vertical-align: middle;
             margin-right: 8px;
             flex-shrink: 0;
-            min-height: 55px;
+        }
+        
+        /* Inner wrapper to hold the belt parts */
+        .belt-icon .belt-strap,
+        .belt-icon .belt-plate,
+        .belt-icon .belt-center {
+            position: absolute;
         }
 
         .belt-strap {
-            position: absolute;
-            top: 5px;
+            top: 50%;
+            transform: translateY(-50%);
             left: 0;
             width: 40px;
             height: 22px;
@@ -1423,8 +1429,8 @@
         }
 
         .belt-plate {
-            position: absolute;
-            top: 0;
+            top: 50%;
+            transform: translateY(-50%);
             left: 6px;
             width: 28px;
             height: 32px;
@@ -1444,8 +1450,8 @@
         }
 
         .belt-center {
-            position: absolute;
-            top: 5px;
+            top: 50%;
+            transform: translateY(-50%);
             left: 9px;
             width: 22px;
             height: 22px;
