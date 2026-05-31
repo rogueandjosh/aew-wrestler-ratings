@@ -76,7 +76,23 @@
             color: #b8b8b8;
             font-size: 1em;
             margin-top: 6px;
+            margin-bottom: 16px;
         }
+
+        .back-link {
+            text-decoration: none;
+            border: 2px solid #ffd700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 500;
+            background: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255,215,0,0.15); }
 
         /* ── Hamburger menu ── */
         #otherMenuBtn {
@@ -120,21 +136,6 @@
         }
         #otherMenuDropdown a:hover { background: rgba(255,215,0,0.1); }
         #otherMenuDropdown a.active { background: rgba(255,215,0,0.15); font-weight: 700; }
-
-        /* ── Back button ── */
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 24px;
-            padding: 10px 20px;
-            background: rgba(255,215,0,0.1);
-            border: 1px solid #ffd700;
-            border-radius: 8px;
-            color: #ffd700;
-            text-decoration: none;
-            font-size: 0.95em;
-            transition: background 0.2s;
-        }
-        .back-btn:hover { background: rgba(255,215,0,0.2); }
 
         /* ── Updates list ── */
         .updates-list {
@@ -247,15 +248,6 @@
         footer a { color: #ffd700; text-decoration: none; }
         footer p { margin-bottom: 4px; }
 
-        /* ── Logo wordmark ── */
-        .site-logo {
-            margin-top: 14px;
-            font-size: 1.1em;
-            letter-spacing: 2px;
-            color: #999;
-        }
-        .site-logo span { color: #ffd700; font-weight: 700; }
-
         @media (max-width: 600px) {
             header { padding: 20px 20px; }
             h1 { font-size: 1.8em; }
@@ -283,12 +275,11 @@
         <h1>📋 Site Updates</h1>
         <p class="subtitle">New features, improvements and data additions — newest first.</p>
 
-        <div class="site-logo">
-            <span>Elite</span> Wrestler <span>Ratings</span>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
+            <button onclick="goBack()" class="back-link">← Back</button>
+            <a href="index.html" class="back-link">🏠 Home</a>
         </div>
     </header>
-
-    <a href="index.html" class="back-btn">← Back to Rankings</a>
 
     <div class="updates-list">
 
@@ -332,6 +323,14 @@
 </footer>
 
 <script>
+    function goBack() {
+        if (document.referrer && document.referrer.includes(window.location.origin)) {
+            window.history.back();
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
     function toggleMenu() {
         const dropdown = document.getElementById('otherMenuDropdown');
         dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
