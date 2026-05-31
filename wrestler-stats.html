@@ -2320,9 +2320,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
     
     // Exclude current incomplete month to prevent phantom data points
     const now = new Date();
-    return monthlyData.filter(m => {
+
+    // Only exclude current month if there are other months of data available
+    const filtered = monthlyData.filter(m => {
         return !(m.year === now.getFullYear() && m.month === now.getMonth());
     });
+    return filtered.length > 0 ? filtered : monthlyData;
+            
 } // ← This closes the function
 
         function getFilteredMatches() {
