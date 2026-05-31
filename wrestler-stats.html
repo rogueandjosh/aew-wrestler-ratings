@@ -649,7 +649,7 @@
                 <div class="section-title tt" id="ratingHistoryTitle" style="cursor: help;">📈 Rating History</div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <button id="chartScaleToggle" onclick="toggleChartScale()" class="back-link tt" data-tt="Toggle between Auto Scale (adjusts to wrestler's data range) and Fixed Scale (40-160 with 100 baseline) to compare wrestlers on a consistent scale." style="font-size: 0.85em; padding: 6px 12px; background: none;">
-                        📊 Fixed Scale (40-160)
+                        📊 Auto Scale
                     </button>
                 </div>
                 <div class="chart-box">
@@ -1294,7 +1294,10 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
         }
 
         function displayWrestlerData() {
-            document.getElementById('wrestlerName').textContent = wrestlerData.name;
+            const isTagOrTrios = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
+            const weekLabel = currentRankingsData?.currentWeek || 'current';
+            const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, weekLabel) : null;
+            document.getElementById('wrestlerName').textContent = factionHeader || wrestlerData.name;
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             document.getElementById('pageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
