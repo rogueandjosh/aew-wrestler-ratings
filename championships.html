@@ -3496,13 +3496,49 @@
                 btn.textContent = 'Show less ▲';
             }
         }
-    </script>
+
+        </script>
+    <section class="about-champs" id="about-champs">
+        <h2>How do the Championship Ratings work?</h2>
+        
+        <div class="find-out-more-champs">
+            <button class="expand-btn-champs" onclick="toggleChampDetails()">Find out more ▼</button>
             
+            <div id="champDetails" class="champs-details-content">
+                <h3>The Basics</h3>
+                <ul>
+                    <li>Like Wrestler Ratings, each Championship starts at 100.00</li>
+                    <li>Above-average matches gain points and below-average ones lose them</li>
+                    <li>The current rating is a big factor: the higher the Championship Rating, the harder it is to gain points</li>
+                    <li>Matches under five minutes, dark matches or pre-show/buy-in matches do not count</li>
+                    <li>If the title is not defended in an eligible match for 6 weeks, the title becomes inactive — but when it re-enters, it remembers its rating</li>
+                </ul>
+
+                <h3>How Championship & Wrestler Ratings Work Together</h3>
+                <p>Championship Ratings and Wrestler Ratings work in tandem. The CR acts as an amplifier to the overall points gain or loss for wrestlers:</p>
+                <ul>
+                    <li>A Championship Rating over 100 in a points gain for wrestlers adds to this gain — showing the prestige of the title</li>
+                    <li>But losses are also exaggerated — reflecting the importance of a championship match</li>
+                </ul>
+
+                <h3>Exploring the Data</h3>
+                <p>For each championship, click on the row to expand and see more detailed stats including:</p>
+                <ul>
+                    <li>Highest and lowest Championship Rating (for current reign and all-time)</li>
+                    <li>Highest and lowest rated matches from Cagematch</li>
+                    <li>Which wrestlers have competed the most for that title overall</li>
+                    <li>Average rating, highest rating and number of matches for each competitor</li>
+                </ul>
+            </div>
+        </div>
+    </section>
     <div style="text-align: center; margin: 30px 0 10px;">
         <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
             ▲ Back to Top
         </button>
     </div>
+
+        
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
