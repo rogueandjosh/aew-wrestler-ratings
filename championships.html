@@ -3483,7 +3483,21 @@
 
             loadSelectedWeek();
         }
+
+        function toggleChampDetails() {
+            const details = document.getElementById('champDetails');
+            const btn = document.querySelector('.expand-btn-champs');
+            
+            if (details.classList.contains('expanded')) {
+                details.classList.remove('expanded');
+                btn.textContent = 'Find out more ▼';
+            } else {
+                details.classList.add('expanded');
+                btn.textContent = 'Show less ▲';
+            }
+        }
     </script>
+            
     <div style="text-align: center; margin: 30px 0 10px;">
         <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
             ▲ Back to Top
