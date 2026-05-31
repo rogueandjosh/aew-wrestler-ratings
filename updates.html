@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="https://www.elitewrestlerratings.com/updates.html" />
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6YFQ4441BC');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Updates — Elite Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/mokoto" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Mokoto';
+            src: url('fonts/Mokoto Demo.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Amaranth';
+            src: url('fonts/Amaranth-Regular.ttf') format('truetype');
+        }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        button, input, select, textarea {
+            font-family: 'Overlock', 'Arial', sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            position: relative;
+        }
+
+        h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: #b8b8b8;
+            font-size: 1em;
+            margin-top: 6px;
+        }
+
+        /* ── Hamburger menu ── */
+        #otherMenuBtn {
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            color: #ffd700;
+            cursor: pointer;
+            font-size: 1.5em;
+            line-height: 1;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #otherMenuBtn:hover { background: rgba(255,215,0,0.2); }
+
+        #otherMenuDropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            min-width: 180px;
+            z-index: 1001;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        #otherMenuDropdown a {
+            display: block;
+            padding: 12px 16px;
+            color: #ffd700;
+            text-decoration: none;
+            transition: background 0.2s;
+            font-size: 0.95em;
+        }
+        #otherMenuDropdown a:hover { background: rgba(255,215,0,0.1); }
+        #otherMenuDropdown a.active { background: rgba(255,215,0,0.15); font-weight: 700; }
+
+        /* ── Back button ── */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 10px 20px;
+            background: rgba(255,215,0,0.1);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,215,0,0.2); }
+
+        /* ── Updates list ── */
+        .updates-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .update-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .update-card:hover { border-color: rgba(255,215,0,0.5); }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 22px;
+            background: rgba(255,215,0,0.07);
+            border-bottom: 1px solid rgba(255,215,0,0.15);
+        }
+
+        .update-date {
+            background: #ffd700;
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 0.78em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .update-tag {
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+        .tag-new      { background: #ff4444; color: #fff; }
+        .tag-feature  { background: #3b82f6; color: #fff; }
+        .tag-fix      { background: #10b981; color: #fff; }
+        .tag-data     { background: #8b5cf6; color: #fff; }
+
+        .update-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .update-body {
+            padding: 18px 22px;
+            line-height: 1.7;
+            color: #d0d0d0;
+            font-size: 0.97em;
+        }
+
+        .update-body p { margin-bottom: 10px; }
+        .update-body p:last-child { margin-bottom: 0; }
+
+        .update-body ul {
+            margin: 8px 0 10px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .update-body li { color: #c8c8c8; }
+
+        .update-body a {
+            color: #ffd700;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+            transition: border-color 0.2s;
+        }
+        .update-body a:hover { border-color: #ffd700; }
+
+        .update-link-btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 18px;
+            background: rgba(255,215,0,0.12);
+            border: 1px solid #ffd700;
+            border-radius: 7px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+        .update-link-btn:hover {
+            background: rgba(255,215,0,0.22);
+            border-bottom: 1px solid #ffd700;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,215,0,0.3);
+            color: #999;
+            font-size: 0.85em;
+        }
+        footer a { color: #ffd700; text-decoration: none; }
+        footer p { margin-bottom: 4px; }
+
+        /* ── Logo wordmark ── */
+        .site-logo {
+            margin-top: 14px;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            color: #999;
+        }
+        .site-logo span { color: #ffd700; font-weight: 700; }
+
+        @media (max-width: 600px) {
+            header { padding: 20px 20px; }
+            h1 { font-size: 1.8em; }
+            .update-header { flex-wrap: wrap; gap: 8px; }
+            .update-title { font-size: 1em; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <!-- Hamburger menu -->
+        <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
+            <button id="otherMenuBtn" onclick="toggleMenu()">☰</button>
+            <div id="otherMenuDropdown">
+                <a href="index.html">🏠 Rankings</a>
+                <a href="index.html#about">ℹ️ About</a>
+                <a href="championships.html">🏆 Championships</a>
+                <a href="wrestler-compare.html">🥊 Compare Wrestlers</a>
+                <a href="updates.html" class="active">📋 Updates</a>
+            </div>
+        </div>
+
+        <h1>📋 Site Updates</h1>
+        <p class="subtitle">New features, improvements and data additions — newest first.</p>
+
+        <div class="site-logo">
+            <span>Elite</span> Wrestler <span>Ratings</span>
+        </div>
+    </header>
+
+    <a href="index.html" class="back-btn">← Back to Rankings</a>
+
+    <div class="updates-list">
+
+        <!-- ── May 30, 2026 — Championships page ── -->
+        <div class="update-card">
+            <div class="update-header">
+                <span class="update-date">30 May 2026</span>
+                <span class="update-tag tag-new">NEW</span>
+                <span class="update-title">🏆 Championships Page Launched</span>
+            </div>
+            <div class="update-body">
+                <p>A brand-new <a href="championships.html">Championships page</a> is now live, tracking the prestige of every AEW title through the same match-quality rating system used for the wrestler rankings.</p>
+                <p>Rather than tracking wins and losses, title prestige is measured by the quality of championship defenses — a title defended in a string of highly-rated matches climbs the rankings; one with forgettable defenses drifts back toward the baseline.</p>
+                <p><strong>What's on the page:</strong></p>
+                <ul>
+                    <li>All active AEW championships ranked by current rating</li>
+                    <li>Belt icons colour-coded by title (gold for AEW titles, silver for non-AEW)</li>
+                    <li>Sortable columns — rank, rating, streak, change, and more</li>
+                    <li>Toggle between <em>Current Reign</em> and <em>All-Time</em> stats for each title</li>
+                    <li>Peak and floor ratings for both the current reign and historical all-time records</li>
+                    <li>Best and worst individual match ratings per reign</li>
+                    <li>Week archive navigation — browse any week back to June 2019</li>
+                    <li>"Recently Dropped Out" section for titles that have gone inactive</li>
+                    <li>Mobile-friendly horizontal scroll</li>
+                </ul>
+                <a href="championships.html" class="update-link-btn">🏆 View Championships →</a>
+            </div>
+        </div>
+
+        <!-- Add future updates above this line, newest first -->
+
+    </div>
+
+</div>
+
+<footer>
+    <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank">Wikimedia Commons</a> under Creative Commons licenses.</p>
+    <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+    <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a>.</p>
+    <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('otherMenuDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const btn = document.getElementById('otherMenuBtn');
+        const dropdown = document.getElementById('otherMenuDropdown');
+        if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
