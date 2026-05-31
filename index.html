@@ -1703,6 +1703,7 @@
         let currentSortColumn = 'peak';
         let nameChangesData = null;
         let teamMembersData = null;
+        let factionsData = null;
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
         const TOP_N_WRESTLERS = 30; // Show top N wrestlers initially
         let showAllWrestlers = {}; // Track expanded state per division
@@ -2062,6 +2063,21 @@
                 return teamMembersData;
             }
         }
+        // Load factions data
+        async function loadFactions() {
+            if (factionsData) return factionsData;
+            try {
+                const response = await fetch('factions.json');
+                factionsData = await response.json();
+                console.log('✅ Loaded factions:', factionsData.factions?.length);
+                return factionsData;
+            } catch (error) {
+                console.warn('⚠️ Factions file not found');
+                factionsData = { factions: [] };
+                return factionsData;
+            }
+        }
+
         // Create URL slug from wrestler name
         function createSlug(name) {
             return name
@@ -2493,6 +2509,7 @@ let visibleColumns = {
         .then(async ([archiveResponse, currentResponse, statsResponse]) => {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
+            await loadFactions();
             
             // Load name changes (don't block on failure)
             try {
@@ -3464,7 +3481,7 @@ rows.push(`
      <tr class="${separatorClass}${tagTriosClass}">
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
-        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${wrestler.name}</a>${teamMembers}</td>
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? getFactionDisplayName(wrestler.name, ratingsData?.currentWeek) : wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td class="matches-col">${wrestler.matches}</td>
@@ -3864,6 +3881,58 @@ if (tableEl) {
             }
 
             return null;
+        }
+
+        function getFactionDisplayName(teamName, weekLabel) {
+            if (!factionsData || !factionsData.factions) return teamName;
+            if (!weekLabel) return teamName;
+
+            for (const faction of factionsData.factions) {
+                // Check date range
+                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+
+                // Check if team name is an override — keep original name
+                if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+
+                // Get all members active at this week (current + former who hadn't left yet)
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (compareWeeks(weekLabel, former.leftDate) < 0) {
+                        activeMembers.push(former.name);
+                    }
+                }
+
+                // Get team member list from team-members.json
+                const teamMembersList = findTeamMembersArray(teamName) || [];
+                if (teamMembersList.length === 0) continue;
+
+                const factionMembersInTeam = teamMembersList.filter(member =>
+                    activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+
+                if (factionMembersInTeam.length < 2) continue;
+
+                // All members are faction members → use faction name only
+                if (factionMembersInTeam.length === teamMembersList.length) {
+                    return faction.name;
+                }
+
+                // Partial match → faction name & non-member surname(s)
+                const nonFactionMembers = teamMembersList.filter(member =>
+                    !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+                if (nonFactionMembers.length > 0) {
+                    const surnames = nonFactionMembers.map(m => {
+                        const parts = m.trim().split(/\s+/);
+                        return parts[parts.length - 1];
+                    });
+                    return `${faction.name} & ${surnames.join(' & ')}`;
+                }
+            }
+
+            return teamName;
         }
 
         function getTeamMembers(teamName, division) {
