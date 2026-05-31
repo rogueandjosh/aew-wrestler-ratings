@@ -1609,6 +1609,87 @@
             display: flex;
             align-items: center;
         }
+
+        /* About Championship Ratings Section */
+        .about-champs {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .about-champs h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .about-champs h3 {
+            color: #ffd700;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .about-champs ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .about-champs li {
+            margin-bottom: 10px;
+            color: #b8b8b8;
+        }
+
+        .about-champs p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: #b8b8b8;
+        }
+
+        .find-out-more-champs {
+            margin-top: 30px;
+        }
+
+        .expand-btn-champs {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            font-family: 'Overlock', sans-serif;
+        }
+
+        .expand-btn-champs:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .champs-details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            margin-top: 20px;
+        }
+
+        .champs-details-content.expanded {
+            max-height: 2000px;
+        }
+
+        .champs-details-content h3 {
+            color: #ffd700;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
         
     </style>
 </head>
