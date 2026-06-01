@@ -1711,9 +1711,15 @@
 
         // Returns archive weeks filtered of any sentinel entries (e.g. archive-index.json itself)
         function getValidArchiveWeeks() {
-            if (!archiveIndex || !archiveIndex.weeks) return [];
-            return archiveIndex.weeks.filter(w => w.filename !== 'archive-index.json');
-        }
+    if (!archiveIndex || !archiveIndex.weeks) return [];
+    const seen = new Set();
+    return archiveIndex.weeks.filter(w => {
+        if (w.filename === 'archive-index.json') return false;
+        if (seen.has(w.filename)) return false;
+        seen.add(w.filename);
+        return true;
+    });
+}
 
         function expandMonthName(weekLabel) {
             const monthMap = {
