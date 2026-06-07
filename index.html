@@ -2035,7 +2035,7 @@
             const currentWeek = weekSelect ? weekSelect.value : 'current';
             const isTagTriosDiv = division === 'menstag' || division === 'womenstag' || division === 'trios';
             const baseDisplayName = wrestler.name.replace(/\s*\(Inactive.*$/gi, '');
-            const factionRecentName = isTagTriosDiv && !wrestler.isNameChange ? getFactionDisplayName(baseDisplayName, ratingsData?.currentWeek) : displayName;
+            const factionRecentName = isTagTriosDiv && !wrestler.isNameChange ? getFactionDisplayName(baseDisplayName, ratingsData?.currentWeek, true) : displayName;
             const finalRecentName = wrestler.isNameChange ? displayName : factionRecentName;
             const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${finalRecentName}</a>`;
 
@@ -3775,7 +3775,7 @@ if (tableEl) {
                             const weekSelect = document.getElementById('weekSelect');
                             const currentWeek = weekSelect ? weekSelect.value : 'current';
                             const isTagTriosDivision = division === 'menstag' || division === 'womenstag' || division === 'trios';
-                            const factionDroppedName = isTagTriosDivision && !isNameChange ? getFactionDisplayName(actualName, ratingsData?.currentWeek) : cleanDisplayName;
+                            const factionDroppedName = isTagTriosDivision && !isNameChange ? getFactionDisplayName(actualName, ratingsData?.currentWeek, true) : cleanDisplayName;
                             const inactiveSuffix = cleanDisplayName.replace(actualName, '').trim();
                             const finalDroppedName = inactiveSuffix ? `${factionDroppedName} ${inactiveSuffix}` : factionDroppedName;
                             const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(actualName)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${finalDroppedName}</a>`;
@@ -3897,7 +3897,7 @@ if (tableEl) {
             return null;
         }
 
-        function getFactionDisplayName(teamName, weekLabel) {
+        function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
     if (!factionsData || !factionsData.factions) return teamName;
     if (!weekLabel) return teamName;
 
@@ -3912,7 +3912,7 @@ if (tableEl) {
 
         const activeMembers = [...faction.members];
         for (const former of (faction.formerMembers || [])) {
-            if (compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
+            if (ignoreDate || compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
         }
 
         const teamMembersList = findTeamMembersArray(teamName) || [];
