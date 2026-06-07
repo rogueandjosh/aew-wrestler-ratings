@@ -749,7 +749,7 @@
             return w1.weekNum - w2.weekNum;
         }
 
-        function getFactionDisplayName(teamName, weekLabel) {
+        function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
             if (!factionsData || !factionsData.factions) return null;
             if (!weekLabel) return null;
             for (const faction of factionsData.factions) {
@@ -758,9 +758,9 @@
                 if (!afterStart || !beforeEnd) continue;
                 if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
                 const activeMembers = [...faction.members];
-                for (const former of (faction.formerMembers || [])) {
-                    if (compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
-                }
+        for (const former of (faction.formerMembers || [])) {
+            if (ignoreDate || compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
+        }
                 const teamMembersList = allTeamMembers?.teams?.[teamName] || [];
                 if (teamMembersList.length === 0) continue;
                 const factionMembersInTeam = teamMembersList.filter(member =>
@@ -1331,7 +1331,7 @@ if (isTagOrTrios) {
     }
 }
 
-const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, headerWeekLabel) : null;
+const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, headerWeekLabel, true) : null;
 document.getElementById('wrestlerName').textContent = factionHeader || wrestlerData.name;
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             document.getElementById('pageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
@@ -1673,7 +1673,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                             }
                         }
                     }
-                    const factionName = getFactionDisplayName(team.name, teamWeekLabel);
+                    const factionName = getFactionDisplayName(team.name, teamWeekLabel, true);
                     const displayName = factionName || team.name;
                     
                     // All teams get hyperlinks
@@ -1720,7 +1720,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                             }
                         }
                     }
-                    const factionName = getFactionDisplayName(team.name, teamWeekLabel);
+                    const factionName = getFactionDisplayName(team.name, teamWeekLabel, true);
                     const displayName = factionName || team.name;
                     
                     // All teams get hyperlinks
