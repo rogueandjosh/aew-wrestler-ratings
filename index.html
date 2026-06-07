@@ -3908,14 +3908,14 @@ if (tableEl) {
     const candidates = [];
 
     for (const faction of factionsData.factions) {
-        const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
-        const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
-        if (!afterStart || !beforeEnd) continue;
-
-        if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
-        if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) {
-    return faction.name;
-}
+                // Check forced teams first - bypass all date/member logic
+                if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) {
+                    return faction.name;
+                }
+                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
 
         const activeMembers = [...faction.members];
         for (const former of (faction.formerMembers || [])) {
