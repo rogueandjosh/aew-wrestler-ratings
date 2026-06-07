@@ -3942,15 +3942,16 @@ if (tableEl) {
     if (candidates.length === 0) return teamName;
 
     candidates.sort((a, b) => {
-        const aAllMatch = a.matchCount === a.total;
-        const bAllMatch = b.matchCount === b.total;
-        if (aAllMatch && !bAllMatch) return -1;
-        if (!aAllMatch && bAllMatch) return 1;
-        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-        const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
-        const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
-        return aEnded - bEnded;
-    });
+    const aAllMatch = a.matchCount === a.total;
+    const bAllMatch = b.matchCount === b.total;
+    if (aAllMatch && !bAllMatch) return -1;
+    if (!aAllMatch && bAllMatch) return 1;
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    // Prefer current faction over ended (regardless of ignoreDate)
+    const aEnded = a.faction.dateTo !== 'Current' ? 1 : 0;
+    const bEnded = b.faction.dateTo !== 'Current' ? 1 : 0;
+    return aEnded - bEnded;
+});
 
     const best = candidates[0];
     const faction = best.faction;
