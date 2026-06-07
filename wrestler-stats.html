@@ -1298,7 +1298,7 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
 let headerWeekLabel = currentRankingsData?.currentWeek || 'current';
 
 // For inactive teams, find the best historical week using ended factions
-if (isTagOrTrios && !wrestlerData.isActive) {
+if (isTagOrTrios) {
     const teamMembers = allTeamMembers?.teams?.[wrestlerData.name] || [];
     if (teamMembers.length >= 2 && factionsData?.factions) {
         for (const faction of factionsData.factions) {
