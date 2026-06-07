@@ -1686,6 +1686,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         }
                     }
                     const factionName = getFactionDisplayName(team.name, teamWeekLabel);
+                    console.log(`🏷️ Trios: ${team.name} | weekLabel: ${teamWeekLabel} | members: ${teamMembers.join(',')} | faction: ${factionName}`);
                     const displayName = factionName || team.name;
                     
                     // All teams get hyperlinks
