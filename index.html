@@ -2036,7 +2036,7 @@
             const isTagTriosDiv = division === 'menstag' || division === 'womenstag' || division === 'trios';
             const baseDisplayName = wrestler.name.replace(/\s*\(Inactive.*$/gi, '');
             const factionRecentName = isTagTriosDiv && !wrestler.isNameChange ? getFactionDisplayName(baseDisplayName, ratingsData?.currentWeek, true) : displayName;
-            const finalRecentName = wrestler.isNameChange ? displayName : factionRecentName;
+            const finalRecentName = wrestler.isNameChange ? displayName : stripTrioSuffix(factionRecentName);
             const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${finalRecentName}</a>`;
 
             html += `
@@ -2089,6 +2089,10 @@
         }
 
         // Create URL slug from wrestler name
+        function stripTrioSuffix(name) {
+            return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
+        }
+
         function createSlug(name) {
             return name
                 .toLowerCase()
@@ -3491,7 +3495,7 @@ rows.push(`
      <tr class="${separatorClass}${tagTriosClass}">
         <td class="rank">${wrestler.rank}</td>
         ${imageCell}
-        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? getFactionDisplayName(wrestler.name, ratingsData?.currentWeek) : wrestler.name}</a>${teamMembers}</td>
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek)) : wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td class="matches-col">${wrestler.matches}</td>
@@ -3777,7 +3781,7 @@ if (tableEl) {
                             const isTagTriosDivision = division === 'menstag' || division === 'womenstag' || division === 'trios';
                             const factionDroppedName = isTagTriosDivision && !isNameChange ? getFactionDisplayName(actualName, ratingsData?.currentWeek, true) : cleanDisplayName;
                             const inactiveSuffix = cleanDisplayName.replace(actualName, '').trim();
-                            const finalDroppedName = inactiveSuffix ? `${factionDroppedName} ${inactiveSuffix}` : factionDroppedName;
+                            const finalDroppedName = stripTrioSuffix(inactiveSuffix ? `${factionDroppedName} ${inactiveSuffix}` : factionDroppedName);
                             const wrestlerLink = `<a href="wrestler-stats.html?wrestler=${createSlug(actualName)}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${division}" class="wrestler-link">${finalDroppedName}</a>`;
                             
                             droppedRows.push(`
@@ -3942,16 +3946,15 @@ if (tableEl) {
     if (candidates.length === 0) return teamName;
 
     candidates.sort((a, b) => {
-    const aAllMatch = a.matchCount === a.total;
-    const bAllMatch = b.matchCount === b.total;
-    if (aAllMatch && !bAllMatch) return -1;
-    if (!aAllMatch && bAllMatch) return 1;
-    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-    // Prefer current faction over ended (regardless of ignoreDate)
-    const aEnded = a.faction.dateTo !== 'Current' ? 1 : 0;
-    const bEnded = b.faction.dateTo !== 'Current' ? 1 : 0;
-    return aEnded - bEnded;
-});
+        const aAllMatch = a.matchCount === a.total;
+        const bAllMatch = b.matchCount === b.total;
+        if (aAllMatch && !bAllMatch) return -1;
+        if (!aAllMatch && bAllMatch) return 1;
+        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+        const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+        const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+        return aEnded - bEnded;
+    });
 
     const best = candidates[0];
     const faction = best.faction;
@@ -4831,7 +4834,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         rowsHtml += '<tr>';
         if (visibleColumns.rank) rowsHtml += `<td class="rank">${index + 1}</td>`;
         rowsHtml += dynImageCell;
-        rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? getFactionDisplayName(wrestler.name, selectedWeekLabel, true) : wrestler.name}</a>${getTeamMembers(wrestler.name, division)}</td>`;
+        rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, selectedWeekLabel, true)) : wrestler.name}</a>${getTeamMembers(wrestler.name, division)}</td>`;
         if (visibleColumns.current) rowsHtml += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
         if (visibleColumns.peak) rowsHtml += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
         if (visibleColumns.floor) rowsHtml += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
