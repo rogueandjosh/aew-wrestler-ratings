@@ -1306,9 +1306,26 @@ if (isTagOrTrios) {
             const matchingMembers = teamMembers.filter(m =>
                 allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
             );
-            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+            if (matchingMembers.length < 2) continue;
+            
+            // Ended faction — use its end date
+            if (faction.dateTo !== 'Current') {
                 headerWeekLabel = faction.dateTo;
                 break;
+            }
+            
+            // Current faction — check if any team member has left (use their left date)
+            const formerInTeam = (faction.formerMembers || []).filter(f =>
+                teamMembers.some(m => m.toLowerCase() === f.name.toLowerCase())
+            );
+            if (formerInTeam.length > 0) {
+                // Use the earliest left date among former members in this team
+                const leftDates = formerInTeam.map(f => f.leftDate).filter(Boolean);
+                if (leftDates.length > 0) {
+                    leftDates.sort((a, b) => compareWeeks(a, b));
+                    headerWeekLabel = leftDates[0];
+                    break;
+                }
             }
         }
     }
