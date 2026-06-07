@@ -3913,6 +3913,9 @@ if (tableEl) {
         if (!afterStart || !beforeEnd) continue;
 
         if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+        if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) {
+    return faction.name;
+}
 
         const activeMembers = [...faction.members];
         for (const former of (faction.formerMembers || [])) {
