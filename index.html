@@ -3898,56 +3898,81 @@ if (tableEl) {
         }
 
         function getFactionDisplayName(teamName, weekLabel) {
-            if (!factionsData || !factionsData.factions) return teamName;
-            if (!weekLabel) return teamName;
+    if (!factionsData || !factionsData.factions) return teamName;
+    if (!weekLabel) return teamName;
 
-            for (const faction of factionsData.factions) {
-                // Check date range
-                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
-                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
-                if (!afterStart || !beforeEnd) continue;
+    const candidates = [];
 
-                // Check if team name is an override — keep original name
-                if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+    for (const faction of factionsData.factions) {
+        const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+        const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+        if (!afterStart || !beforeEnd) continue;
 
-                // Get all members active at this week (current + former who hadn't left yet)
-                const activeMembers = [...faction.members];
-                for (const former of (faction.formerMembers || [])) {
-                    if (compareWeeks(weekLabel, former.leftDate) < 0) {
-                        activeMembers.push(former.name);
-                    }
-                }
+        if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
 
-                // Get team member list from team-members.json
-                const teamMembersList = findTeamMembersArray(teamName) || [];
-                if (teamMembersList.length === 0) continue;
-
-                const factionMembersInTeam = teamMembersList.filter(member =>
-                    activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
-                );
-
-                if (factionMembersInTeam.length < 2) continue;
-
-                // All members are faction members → use faction name only
-                if (factionMembersInTeam.length === teamMembersList.length) {
-                    return faction.name;
-                }
-
-                // Partial match → faction name & non-member surname(s)
-                const nonFactionMembers = teamMembersList.filter(member =>
-                    !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
-                );
-                if (nonFactionMembers.length > 0) {
-                    const surnames = nonFactionMembers.map(m => {
-                        const parts = m.trim().split(/\s+/);
-                        return parts[parts.length - 1];
-                    });
-                    return `${faction.name} & ${surnames.join(' & ')}`;
-                }
-            }
-
-            return teamName;
+        const activeMembers = [...faction.members];
+        for (const former of (faction.formerMembers || [])) {
+            if (compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
         }
+
+        const teamMembersList = findTeamMembersArray(teamName) || [];
+
+        if (faction.replacePartialCombos && teamMembersList.length === 0) {
+            const matched = activeMembers.filter(member => {
+                const surname = member.trim().split(/\s+/).pop().toLowerCase();
+                return teamName.toLowerCase().includes(surname);
+            });
+            if (matched.length >= 2) {
+                candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+            }
+            continue;
+        }
+
+        if (teamMembersList.length === 0) continue;
+
+        const factionMembersInTeam = teamMembersList.filter(member =>
+            activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+        );
+
+        if (factionMembersInTeam.length < 2) continue;
+
+        candidates.push({ faction, matchCount: factionMembersInTeam.length, total: teamMembersList.length, activeMembers });
+    }
+
+    if (candidates.length === 0) return teamName;
+
+    candidates.sort((a, b) => {
+        const aAllMatch = a.matchCount === a.total;
+        const bAllMatch = b.matchCount === b.total;
+        if (aAllMatch && !bAllMatch) return -1;
+        if (!aAllMatch && bAllMatch) return 1;
+        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+        const aEnded = a.faction.dateTo !== 'Current' ? 0 : 1;
+        const bEnded = b.faction.dateTo !== 'Current' ? 0 : 1;
+        return aEnded - bEnded;
+    });
+
+    const best = candidates[0];
+    const faction = best.faction;
+    const activeMembers = best.activeMembers;
+    const teamMembersList = findTeamMembersArray(teamName) || [];
+
+    if (faction.replacePartialCombos) return faction.name;
+    if (best.matchCount === best.total) return faction.name;
+
+    const nonFactionMembers = teamMembersList.filter(member =>
+        !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+    );
+    if (nonFactionMembers.length > 0) {
+        const surnames = nonFactionMembers.map(m => {
+            const parts = m.trim().split(/\s+/);
+            return parts[parts.length - 1];
+        });
+        return `${faction.name} & ${surnames.join(' & ')}`;
+    }
+
+    return teamName;
+}
 
         function getTeamMembers(teamName, division) {
             // Only show members for tag teams and trios
