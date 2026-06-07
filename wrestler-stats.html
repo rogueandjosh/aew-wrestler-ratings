@@ -1295,9 +1295,27 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
 
         function displayWrestlerData() {
             const isTagOrTrios = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
-            const weekLabel = currentRankingsData?.currentWeek || 'current';
-            const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, weekLabel) : null;
-            document.getElementById('wrestlerName').textContent = factionHeader || wrestlerData.name;
+let headerWeekLabel = currentRankingsData?.currentWeek || 'current';
+
+// For inactive teams, find the best historical week using ended factions
+if (isTagOrTrios && !wrestlerData.isActive) {
+    const teamMembers = allTeamMembers?.teams?.[wrestlerData.name] || [];
+    if (teamMembers.length >= 2 && factionsData?.factions) {
+        for (const faction of factionsData.factions) {
+            const allFactionMembers = [...faction.members, ...(faction.formerMembers || []).map(f => f.name)];
+            const matchingMembers = teamMembers.filter(m =>
+                allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
+            );
+            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+                headerWeekLabel = faction.dateTo;
+                break;
+            }
+        }
+    }
+}
+
+const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, headerWeekLabel) : null;
+document.getElementById('wrestlerName').textContent = factionHeader || wrestlerData.name;
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             document.getElementById('pageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
