@@ -764,8 +764,16 @@
 
                 const activeMembers = [...faction.members];
                 for (const former of (faction.formerMembers || [])) {
-                    if (ignoreDate || compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
-                }
+    if (ignoreDate) {
+        // Include former member only if they were actually part of this faction
+        // (left date must be after faction start date)
+        if (!former.leftDate || compareWeeks(former.leftDate, faction.dateFrom) > 0) {
+            activeMembers.push(former.name);
+        }
+    } else if (compareWeeks(weekLabel, former.leftDate) < 0) {
+        activeMembers.push(former.name);
+    }
+}
 
                 const teamMembersList = allTeamMembers?.teams?.[teamName] || [];
 
