@@ -3947,8 +3947,8 @@ if (tableEl) {
         if (aAllMatch && !bAllMatch) return -1;
         if (!aAllMatch && bAllMatch) return 1;
         if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-        const aEnded = a.faction.dateTo !== 'Current' ? 0 : 1;
-        const bEnded = b.faction.dateTo !== 'Current' ? 0 : 1;
+        const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+        const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
         return aEnded - bEnded;
     });
 
