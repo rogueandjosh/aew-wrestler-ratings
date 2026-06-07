@@ -1348,6 +1348,7 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
         function displayWrestlerData() {
             const isTagOrTrios = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             const weekLabel = currentRankingsData?.currentWeek || 'current';
+            let headerWeekLabel = weekLabel;
             const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, headerWeekLabel, true) : null;
             document.getElementById('wrestlerName').textContent = stripTrioSuffix(factionHeader || wrestlerData.name);
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
