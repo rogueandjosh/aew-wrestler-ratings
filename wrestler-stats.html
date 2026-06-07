@@ -794,23 +794,15 @@
             if (candidates.length === 0) return null;
 
             candidates.sort((a, b) => {
-    // When ignoreDate, prefer current factions first (most recent)
-    if (ignoreDate) {
-        const aEnded = a.faction.dateTo !== 'Current' ? 1 : 0;
-        const bEnded = b.faction.dateTo !== 'Current' ? 1 : 0;
-        if (aEnded !== bEnded) return aEnded - bEnded;
-    }
     const aAllMatch = a.matchCount === a.total;
     const bAllMatch = b.matchCount === b.total;
     if (aAllMatch && !bAllMatch) return -1;
     if (!aAllMatch && bAllMatch) return 1;
     if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-    if (!ignoreDate) {
-        const aEnded = a.faction.dateTo !== 'Current' ? 0 : 1;
-        const bEnded = b.faction.dateTo !== 'Current' ? 0 : 1;
-        return aEnded - bEnded;
-    }
-    return 0;
+    // Prefer current faction over ended (regardless of ignoreDate)
+    const aEnded = a.faction.dateTo !== 'Current' ? 1 : 0;
+    const bEnded = b.faction.dateTo !== 'Current' ? 1 : 0;
+    return aEnded - bEnded;
 });
 
             const best = candidates[0];
