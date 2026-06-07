@@ -750,81 +750,34 @@
         }
 
         function getFactionDisplayName(teamName, weekLabel) {
-    if (!factionsData || !factionsData.factions) return null;
-    if (!weekLabel) return null;
-
-    const candidates = [];
-
-    for (const faction of factionsData.factions) {
-        const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
-        const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
-        if (!afterStart || !beforeEnd) continue;
-
-        if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
-
-        const activeMembers = [...faction.members];
-        for (const former of (faction.formerMembers || [])) {
-            if (compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
-        }
-
-        const teamMembersList = allTeamMembers?.teams?.[teamName] || [];
-
-        if (faction.replacePartialCombos && teamMembersList.length === 0) {
-            const matched = activeMembers.filter(member => {
-                const surname = member.trim().split(/\s+/).pop().toLowerCase();
-                return teamName.toLowerCase().includes(surname);
-            });
-            if (matched.length >= 2) {
-                candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+            if (!factionsData || !factionsData.factions) return null;
+            if (!weekLabel) return null;
+            for (const faction of factionsData.factions) {
+                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (compareWeeks(weekLabel, former.leftDate) < 0) activeMembers.push(former.name);
+                }
+                const teamMembersList = allTeamMembers?.teams?.[teamName] || [];
+                if (teamMembersList.length === 0) continue;
+                const factionMembersInTeam = teamMembersList.filter(member =>
+                    activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+                if (factionMembersInTeam.length < 2) continue;
+                if (factionMembersInTeam.length === teamMembersList.length) return faction.name;
+                const nonFactionMembers = teamMembersList.filter(member =>
+                    !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+                if (nonFactionMembers.length > 0) {
+                    const surnames = nonFactionMembers.map(m => { const p = m.trim().split(/\s+/); return p[p.length - 1]; });
+                    return `${faction.name} & ${surnames.join(' & ')}`;
+                }
             }
-            continue;
+            return null;
         }
-
-        if (teamMembersList.length === 0) continue;
-
-        const factionMembersInTeam = teamMembersList.filter(member =>
-            activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
-        );
-
-        if (factionMembersInTeam.length < 2) continue;
-
-        candidates.push({ faction, matchCount: factionMembersInTeam.length, total: teamMembersList.length, activeMembers });
-    }
-
-    if (candidates.length === 0) return null;
-
-    candidates.sort((a, b) => {
-        const aAllMatch = a.matchCount === a.total;
-        const bAllMatch = b.matchCount === b.total;
-        if (aAllMatch && !bAllMatch) return -1;
-        if (!aAllMatch && bAllMatch) return 1;
-        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-        const aEnded = a.faction.dateTo !== 'Current' ? 0 : 1;
-        const bEnded = b.faction.dateTo !== 'Current' ? 0 : 1;
-        return aEnded - bEnded;
-    });
-
-    const best = candidates[0];
-    const faction = best.faction;
-    const activeMembers = best.activeMembers;
-    const teamMembersList = allTeamMembers?.teams?.[teamName] || [];
-
-    if (faction.replacePartialCombos) return faction.name;
-    if (best.matchCount === best.total) return faction.name;
-
-    const nonFactionMembers = teamMembersList.filter(member =>
-        !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
-    );
-    if (nonFactionMembers.length > 0) {
-        const surnames = nonFactionMembers.map(m => {
-            const parts = m.trim().split(/\s+/);
-            return parts[parts.length - 1];
-        });
-        return `${faction.name} & ${surnames.join(' & ')}`;
-    }
-
-    return faction.name;
-}
 
         // Helper function: Create slug from name
         function createSlug(name) {
@@ -1670,8 +1623,22 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         divisionSlug = 'womenstag';
                     }
                     
-                    const weekLabel = currentRankingsData?.currentWeek || 'current';
-                    const factionName = getFactionDisplayName(team.name, weekLabel);
+                    const currentWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    let teamWeekLabel = currentWeekLabel;
+                    const teamMembers = allTeamMembers?.teams?.[team.name] || [];
+                    if (teamMembers.length >= 2 && factionsData?.factions) {
+                        for (const faction of factionsData.factions) {
+                            const allFactionMembers = [...faction.members, ...(faction.formerMembers || []).map(f => f.name)];
+                            const matchingMembers = teamMembers.filter(m =>
+                                allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
+                            );
+                            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+                                teamWeekLabel = faction.dateTo;
+                                break;
+                            }
+                        }
+                    }
+                    const factionName = getFactionDisplayName(team.name, teamWeekLabel);
                     const displayName = factionName || team.name;
                     
                     // All teams get hyperlinks
@@ -1703,8 +1670,22 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamSlug = createSlug(team.name);
                     const divisionSlug = 'trios';
                     
-                    const weekLabel = currentRankingsData?.currentWeek || 'current';
-                    const factionName = getFactionDisplayName(team.name, weekLabel);
+                    const currentWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    let teamWeekLabel = currentWeekLabel;
+                    const teamMembers = allTeamMembers?.teams?.[team.name] || [];
+                    if (teamMembers.length >= 2 && factionsData?.factions) {
+                        for (const faction of factionsData.factions) {
+                            const allFactionMembers = [...faction.members, ...(faction.formerMembers || []).map(f => f.name)];
+                            const matchingMembers = teamMembers.filter(m =>
+                                allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
+                            );
+                            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+                                teamWeekLabel = faction.dateTo;
+                                break;
+                            }
+                        }
+                    }
+                    const factionName = getFactionDisplayName(team.name, teamWeekLabel);
                     const displayName = factionName || team.name;
                     
                     // All teams get hyperlinks
