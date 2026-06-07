@@ -4787,6 +4787,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
 
     // Build table rows
     let rowsHtml = '';
+    const seenStatsEntries = new Set();
     displayData.forEach((wrestler, index) => {
         const ratingClass = getRatingClass(wrestler.current);
         const peakClass = getRatingClass(wrestler.peak);
@@ -4848,22 +4849,19 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         const statsDedupKey = `${statsDisplayName}||${statsMembers}`;
         if (!seenStatsEntries.has(statsDedupKey)) {
             seenStatsEntries.add(statsDedupKey);
-        } else {
-            continue;
+            rowsHtml += '<tr>';
+            if (visibleColumns.rank) rowsHtml += `<td class="rank">${index + 1}</td>`;
+            rowsHtml += dynImageCell;
+            rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${statsDisplayName}</a>${getTeamMembers(wrestler.name, division)}</td>`;
+            if (visibleColumns.current) rowsHtml += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
+            if (visibleColumns.peak) rowsHtml += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
+            if (visibleColumns.floor) rowsHtml += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
+            if (visibleColumns.average) rowsHtml += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
+            if (visibleColumns.peakWeek) rowsHtml += `<td>${wrestler.peakWeek}</td>`;
+            if (visibleColumns.floorWeek) rowsHtml += `<td>${wrestler.floorWeek}</td>`;
+            if (visibleColumns.weeksAtNumber1) rowsHtml += `<td>${wrestler.weeksAtNumber1}</td>`;
+            rowsHtml += '</tr>';
         }
-        rowsHtml += '<tr>';
-        if (visibleColumns.rank) rowsHtml += `<td class="rank">${index + 1}</td>`;
-        rowsHtml += dynImageCell;
-        rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${statsDisplayName}</a>${getTeamMembers(wrestler.name, division)}</td>`;
-        
-        if (visibleColumns.current) rowsHtml += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
-        if (visibleColumns.peak) rowsHtml += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
-        if (visibleColumns.floor) rowsHtml += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
-        if (visibleColumns.average) rowsHtml += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
-        if (visibleColumns.peakWeek) rowsHtml += `<td>${wrestler.peakWeek}</td>`;
-        if (visibleColumns.floorWeek) rowsHtml += `<td>${wrestler.floorWeek}</td>`;
-        if (visibleColumns.weeksAtNumber1) rowsHtml += `<td>${wrestler.weeksAtNumber1}</td>`;
-        rowsHtml += '</tr>';
     });
 
     // Show All button
