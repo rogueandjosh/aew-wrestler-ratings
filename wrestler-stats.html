@@ -792,18 +792,17 @@
             }
 
             if (candidates.length === 0) return null;
-            console.log('Candidates for', teamName, ':', candidates.map(c => `${c.faction.name} match:${c.matchCount}/${c.total} ended:${c.faction.dateTo}`));            
+
             candidates.sort((a, b) => {
-    const aAllMatch = a.matchCount === a.total;
-    const bAllMatch = b.matchCount === b.total;
-    if (aAllMatch && !bAllMatch) return -1;
-    if (!aAllMatch && bAllMatch) return 1;
-    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-    // Prefer current faction over ended (regardless of ignoreDate)
-    const aEnded = a.faction.dateTo !== 'Current' ? 1 : 0;
-    const bEnded = b.faction.dateTo !== 'Current' ? 1 : 0;
-    return aEnded - bEnded;
-});
+                const aAllMatch = a.matchCount === a.total;
+                const bAllMatch = b.matchCount === b.total;
+                if (aAllMatch && !bAllMatch) return -1;
+                if (!aAllMatch && bAllMatch) return 1;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                return aEnded - bEnded;
+            });
 
             const best = candidates[0];
             const faction = best.faction;
@@ -825,6 +824,11 @@
             }
 
             return null;
+        }
+
+        function stripTrioSuffix(name) {
+            if (!name) return name;
+            return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
         }
 
         // Helper function: Create slug from name
@@ -1344,9 +1348,8 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
         function displayWrestlerData() {
             const isTagOrTrios = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             const weekLabel = currentRankingsData?.currentWeek || 'current';
-            let headerWeekLabel = currentRankingsData?.currentWeek || 'current';
             const factionHeader = isTagOrTrios ? getFactionDisplayName(wrestlerData.name, headerWeekLabel, true) : null;
-            document.getElementById('wrestlerName').textContent = factionHeader || wrestlerData.name;
+            document.getElementById('wrestlerName').textContent = stripTrioSuffix(factionHeader || wrestlerData.name);
             const isTeamDiv = wrestlerData.division && (wrestlerData.division.includes('Tag') || wrestlerData.division === 'Trios' || wrestlerData.division === 'trios');
             document.getElementById('pageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
@@ -1672,9 +1675,23 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                         divisionSlug = 'womenstag';
                     }
                     
-                    const teamWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    const currentWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    let teamWeekLabel = currentWeekLabel;
+                    const teamMembers = allTeamMembers?.teams?.[team.name] || [];
+                    if (teamMembers.length >= 2 && factionsData?.factions) {
+                        for (const faction of factionsData.factions) {
+                            const allFactionMembers = [...faction.members, ...(faction.formerMembers || []).map(f => f.name)];
+                            const matchingMembers = teamMembers.filter(m =>
+                                allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
+                            );
+                            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+                                teamWeekLabel = faction.dateTo;
+                                break;
+                            }
+                        }
+                    }
                     const factionName = getFactionDisplayName(team.name, teamWeekLabel, true);
-                    const displayName = factionName || team.name;
+                    const displayName = stripTrioSuffix(factionName || team.name);
                     
                     // All teams get hyperlinks
                     const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
@@ -1705,10 +1722,24 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamSlug = createSlug(team.name);
                     const divisionSlug = 'trios';
                     
-                    const teamWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    const currentWeekLabel = currentRankingsData?.currentWeek || 'current';
+                    let teamWeekLabel = currentWeekLabel;
+                    const teamMembers = allTeamMembers?.teams?.[team.name] || [];
+                    if (teamMembers.length >= 2 && factionsData?.factions) {
+                        for (const faction of factionsData.factions) {
+                            const allFactionMembers = [...faction.members, ...(faction.formerMembers || []).map(f => f.name)];
+                            const matchingMembers = teamMembers.filter(m =>
+                                allFactionMembers.some(fm => fm.toLowerCase() === m.toLowerCase())
+                            );
+                            if (matchingMembers.length >= 2 && faction.dateTo !== 'Current') {
+                                teamWeekLabel = faction.dateTo;
+                                break;
+                            }
+                        }
+                    }
                     const factionName = getFactionDisplayName(team.name, teamWeekLabel, true);
                     console.log(`🏷️ Trios: ${team.name} | weekLabel: ${teamWeekLabel} | members: ${teamMembers.join(',')} | faction: ${factionName}`);
-                    const displayName = factionName || team.name;
+                    const displayName = stripTrioSuffix(factionName || team.name);
                     
                     // All teams get hyperlinks
                     const teamLink = `<a href="wrestler-stats.html?wrestler=${teamSlug}&returnWeek=${encodeURIComponent(currentWeek)}&returnDivision=${divisionSlug}" 
