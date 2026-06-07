@@ -4787,7 +4787,8 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
 
     // Build table rows
     let rowsHtml = '';
-    const seenStatsEntries = new Set();
+    cconst seenStatsEntries = new Set();
+    let statsRank = 0;
     displayData.forEach((wrestler, index) => {
         const ratingClass = getRatingClass(wrestler.current);
         const peakClass = getRatingClass(wrestler.peak);
