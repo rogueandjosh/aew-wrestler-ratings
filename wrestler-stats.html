@@ -792,7 +792,7 @@
             }
 
             if (candidates.length === 0) return null;
-
+            console.log('Candidates for', teamName, ':', candidates.map(c => `${c.faction.name} match:${c.matchCount}/${c.total} ended:${c.faction.dateTo}`));            
             candidates.sort((a, b) => {
     const aAllMatch = a.matchCount === a.total;
     const bAllMatch = b.matchCount === b.total;
