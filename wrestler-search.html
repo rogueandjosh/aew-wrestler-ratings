@@ -1169,8 +1169,11 @@
                 let valA, valB;
 
                 if (sortField === 'name') {
-                    valA = a.name.toLowerCase();
-                    valB = b.name.toLowerCase();
+                    // Sort by faction/display name so "Death Riders" sorts as D, not by raw team name
+                    const dispA = (isTeam(a.division) ? getFactionDisplayName(a.name, null, true) : null) || a.name;
+                    const dispB = (isTeam(b.division) ? getFactionDisplayName(b.name, null, true) : null) || b.name;
+                    valA = dispA.toLowerCase();
+                    valB = dispB.toLowerCase();
                     return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
                 }
 
@@ -1320,11 +1323,9 @@
                 const factionName = isTeamDiv ? getFactionDisplayName(w.name, null, true) : null;
                 const displayName = factionName || w.name;
 
-                // Member names line (shown below display name for teams)
+                // Member names line (shown below display name for all teams that have member data)
                 const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
-                // If faction name is shown, always show original member list; if no faction, only
-                // show member line when it differs from the display name (i.e. it's not redundant)
-                const showMemberLine = isTeamDiv && memberLine && (factionName || w.name.includes(' & '));
+                const showMemberLine = isTeamDiv && memberLine;
 
                 return `
                     <a href="wrestler-stats.html?wrestler=${w.slug}" class="wrestler-card">
@@ -1384,7 +1385,7 @@
                 const factionName = isTeamDiv ? getFactionDisplayName(w.name, null, true) : null;
                 const displayName = factionName || w.name;
                 const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
-                const showMemberLine = isTeamDiv && memberLine && (factionName || w.name.includes(' & '));
+                const showMemberLine = isTeamDiv && memberLine;
 
                 return `
                     <div class="autocomplete-item" onclick="goToWrestler('${w.slug}')">
