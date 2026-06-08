@@ -634,9 +634,10 @@
     <script src="tooltips.js"></script>
     <div class="container">
         <header>
-            <h1>🔍 Wrestler Search</h1>
+            <h1 onclick="window.location.reload()" style="cursor:pointer;" title="Click to refresh">🔍 Wrestler Search</h1>
             <p class="subtitle">Find any wrestler across all divisions</p>
             <div class="nav-buttons">
+                <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
                 <a href="index.html" class="back-link">🏠 Home</a>
             </div>
         </header>
@@ -687,6 +688,15 @@
                         <option value="inactive">Inactive</option>
                     </select>
                 </div>
+                <div class="filter-group">
+                    <label class="tt" data-tt="Filter to wrestlers/teams whose peak rating occurred in a selected year. All years shown by default.">Year:</label>
+                    <div class="dropdown-container">
+                        <button type="button" class="dropdown-button" id="yearDropdownBtn">All Years</button>
+                        <div class="dropdown-menu" id="yearDropdownMenu" style="min-width: 120px;">
+                            <!-- Populated dynamically from data -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -729,6 +739,7 @@
         let activeWrestlerNames = new Set();
         let currentSortField = 'name';
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']);
+        let selectedYears = new Set(); // empty = all years
 
         // Division labels
         const divisionLabels = {
@@ -1052,7 +1063,10 @@
 
                     wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
-                        
+                        // Extract year from peakWeek e.g. "Jun '19 Week 1" → 2019
+                        const peakYearMatch = (w.peakWeek || '').match(/'(\d{2})\s+Week/);
+                        const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
+
                         allWrestlers.push({
                             name: w.name,
                             slug: createSlug(w.name),
@@ -1066,12 +1080,14 @@
                             weeks: w.totalWeeksRanked || 0,
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
+                            peakYear: peakYear,
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
                     });
                 }
 
+                buildYearDropdown();
                 applyFiltersAndSort();
             } catch (error) {
                 console.error('Error loading wrestlers:', error);
@@ -1079,8 +1095,56 @@
             }
         }
 
-        // Get result count text based on what's being shown
-        function getResultCountText(wrestlers) {
+        // Build year filter dropdown from actual data
+        function buildYearDropdown() {
+            const menu = document.getElementById('yearDropdownMenu');
+            const years = [...new Set(allWrestlers.map(w => w.peakYear).filter(Boolean))].sort();
+            
+            menu.innerHTML = years.map(year => `
+                <div class="dropdown-item">
+                    <input type="checkbox" id="year-${year}" value="${year}" checked>
+                    <label for="year-${year}">${year}</label>
+                </div>
+            `).join('');
+
+            // Wire up change handlers
+            menu.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    updateYearDropdownText();
+                    applyFiltersAndSort();
+                });
+            });
+        }
+
+        // Update year dropdown button text
+        function updateYearDropdownText() {
+            const btn = document.getElementById('yearDropdownBtn');
+            const checkboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked);
+            if (checked.length === 0 || checked.length === checkboxes.length) {
+                btn.textContent = 'All Years';
+            } else if (checked.length === 1) {
+                btn.textContent = checked[0].value;
+            } else {
+                btn.textContent = `${checked.length} Years`;
+            }
+        }
+
+        // Get selected years from checkboxes
+        function getSelectedYears() {
+            const checkboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]:checked');
+            selectedYears.clear();
+            checkboxes.forEach(cb => selectedYears.add(parseInt(cb.value)));
+            // If none selected, reset to all
+            if (selectedYears.size === 0) {
+                document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                    selectedYears.add(parseInt(cb.value));
+                });
+            }
+        }
+
+
             const count = wrestlers.length;
             const hasTeams = wrestlers.some(w => w.isTeam);
             const hasIndividuals = wrestlers.some(w => !w.isTeam);
@@ -1132,6 +1196,8 @@
 
             // Get selected divisions
             getSelectedDivisions();
+            // Get selected years
+            getSelectedYears();
 
             filteredWrestlers = allWrestlers.filter(w => {
                 // Search filter
@@ -1156,6 +1222,13 @@
                 }
                 if (statusFilter === 'inactive' && w.isActive) {
                     return false;
+                }
+
+                // Year filter — all years checked means no filter applied
+                const allYearCheckboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
+                const allChecked = selectedYears.size === allYearCheckboxes.length;
+                if (!allChecked && selectedYears.size > 0) {
+                    if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
                 }
 
                 return true;
@@ -1453,6 +1526,7 @@
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.dropdown-container')) {
                     divisionMenu.classList.remove('show');
+                    document.getElementById('yearDropdownMenu').classList.remove('show');
                 }
             });
 
@@ -1462,6 +1536,16 @@
                     updateDropdownButtonText();
                     applyFiltersAndSort();
                 });
+            });
+
+            // Year dropdown toggle
+            const yearBtn = document.getElementById('yearDropdownBtn');
+            const yearMenu = document.getElementById('yearDropdownMenu');
+            yearBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close division menu if open
+                divisionMenu.classList.remove('show');
+                yearMenu.classList.toggle('show');
             });
 
             // Filter and sort change handlers
