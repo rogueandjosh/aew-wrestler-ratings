@@ -1153,7 +1153,9 @@
             const btn = document.getElementById('yearDropdownBtn');
             const checkboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
             const checked = Array.from(checkboxes).filter(cb => cb.checked);
-            if (checked.length === 0 || checked.length === checkboxes.length) {
+            if (checked.length === 0) {
+                btn.textContent = 'None';
+            } else if (checked.length === checkboxes.length) {
                 btn.textContent = 'All Years';
             } else if (checked.length === 1) {
                 btn.textContent = checked[0].value;
@@ -1167,13 +1169,6 @@
             const checkboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]:checked');
             selectedYears.clear();
             checkboxes.forEach(cb => selectedYears.add(parseInt(cb.value)));
-            // If none selected, reset to all
-            if (selectedYears.size === 0) {
-                document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = true;
-                    selectedYears.add(parseInt(cb.value));
-                });
-            }
         }
 
 
@@ -1211,8 +1206,9 @@
             const btn = document.getElementById('divisionDropdownBtn');
             const checkboxes = document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]');
             const checked = Array.from(checkboxes).filter(cb => cb.checked);
-            
-            if (checked.length === 0 || checked.length === checkboxes.length) {
+            if (checked.length === 0) {
+                btn.textContent = 'None';
+            } else if (checked.length === checkboxes.length) {
                 btn.textContent = 'All Divisions';
             } else if (checked.length === 1) {
                 btn.textContent = divisionLabels[checked[0].value];
@@ -1226,14 +1222,6 @@
             const checkboxes = document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]:checked');
             selectedDivisions.clear();
             checkboxes.forEach(cb => selectedDivisions.add(cb.value));
-            
-            // If none selected, select all
-            if (selectedDivisions.size === 0) {
-                document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = true;
-                    selectedDivisions.add(cb.value);
-                });
-            }
         }
 
         // Apply filters and sort
@@ -1274,8 +1262,8 @@
 
                 // Year filter — all years checked means no filter applied
                 const allYearCheckboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
-                const allChecked = selectedYears.size === allYearCheckboxes.length;
-                if (!allChecked && selectedYears.size > 0) {
+                const allYearsChecked = selectedYears.size === allYearCheckboxes.length;
+                if (!allYearsChecked) {
                     if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
                 }
 
@@ -1506,7 +1494,7 @@
                     if (statusFilter === 'inactive' && w.isActive) return false;
 
                     // Year filter
-                    if (!allYearsChecked && selectedYears.size > 0) {
+                    if (!allYearsChecked) {
                         if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
                     }
 
