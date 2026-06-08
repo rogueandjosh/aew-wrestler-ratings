@@ -226,6 +226,13 @@
             font-size: 1em;
         }
 
+        .autocomplete-members {
+            color: #aaa;
+            font-size: 0.78em;
+            font-style: italic;
+            margin-bottom: 2px;
+        }
+
         .autocomplete-meta {
             display: flex;
             gap: 10px;
@@ -470,7 +477,14 @@
             color: #ffd700;
             font-weight: 700;
             font-size: 1em;
+            margin-bottom: 3px;
+        }
+
+        .card-members {
+            color: #aaa;
+            font-size: 0.75em;
             margin-bottom: 5px;
+            font-style: italic;
         }
 
         .card-division {
@@ -711,6 +725,7 @@
         let allWrestlers = [];
         let filteredWrestlers = [];
         let teamMembersData = null;
+        let factionsData = null;
         let activeWrestlerNames = new Set();
         let currentSortField = 'name';
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']);
@@ -831,6 +846,119 @@
                 console.log('Team members data not available');
                 teamMembersData = { teams: {} };
             }
+
+            try {
+                const fResp = await fetch('factions.json');
+                if (fResp.ok) {
+                    factionsData = await fResp.json();
+                    console.log('✅ Loaded factions:', factionsData.factions ? factionsData.factions.length : 0);
+                }
+            } catch (e) {
+                console.log('Factions data not available');
+            }
+        }
+
+        // Compare week labels e.g. "Jun '19 Week 1" — returns negative if a < b
+        function compareWeeks(a, b) {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const parse = s => {
+                const m = s.match(/^(\w+)\s+'(\d+)\s+Week\s+(\d+)$/);
+                if (!m) return null;
+                return { year: parseInt(m[2]), month: months.indexOf(m[1]), week: parseInt(m[3]) };
+            };
+            const pa = parse(a), pb = parse(b);
+            if (!pa || !pb) return 0;
+            if (pa.year !== pb.year) return pa.year - pb.year;
+            if (pa.month !== pb.month) return pa.month - pb.month;
+            return pa.week - pb.week;
+        }
+
+        // Get faction display name for a team (mirrors index.html logic)
+        // weekLabel: pass current week label for date-gated logic; pass null to use ignoreDate
+        function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
+            if (!factionsData || !factionsData.factions) return null;
+            if (!weekLabel && !ignoreDate) return null;
+
+            const candidates = [];
+
+            for (const faction of factionsData.factions) {
+                // forcedTeams bypass date/member logic entirely
+                if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) {
+                    return faction.name;
+                }
+
+                // Date range check (skip if ignoreDate)
+                if (!ignoreDate && weekLabel) {
+                    const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                    const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                    if (!afterStart || !beforeEnd) continue;
+                }
+
+                // Overrides: keep original team name
+                if (faction.overrides && faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+
+                // Build active members list (current + former who hadn't left yet)
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (!weekLabel || ignoreDate || compareWeeks(weekLabel, former.leftDate) < 0) {
+                        activeMembers.push(former.name);
+                    }
+                }
+
+                const teamMembersList = findTeamMembersArray(teamName) || [];
+
+                // replacePartialCombos: try surname matching if no team-members entry
+                if (faction.replacePartialCombos && teamMembersList.length === 0) {
+                    const matched = activeMembers.filter(member => {
+                        const surname = member.trim().split(/\s+/).pop().toLowerCase();
+                        return teamName.toLowerCase().includes(surname);
+                    });
+                    if (matched.length >= 2) {
+                        candidates.push({ name: faction.name, isCurrent: faction.dateTo === 'Current', isPartial: false });
+                        continue;
+                    }
+                }
+
+                if (teamMembersList.length === 0) continue;
+
+                const factionMembersInTeam = teamMembersList.filter(member =>
+                    activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+
+                if (factionMembersInTeam.length < 2) continue;
+
+                if (factionMembersInTeam.length === teamMembersList.length) {
+                    // All team members are faction members
+                    candidates.push({ name: faction.name, isCurrent: faction.dateTo === 'Current', isPartial: false });
+                } else {
+                    // Partial match — faction name + non-member surnames
+                    const nonFactionMembers = teamMembersList.filter(member =>
+                        !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                    );
+                    const surnames = nonFactionMembers.map(m => {
+                        const parts = m.trim().split(/\s+/);
+                        return parts[parts.length - 1];
+                    });
+                    candidates.push({ name: `${faction.name} & ${surnames.join(' & ')}`, isCurrent: faction.dateTo === 'Current', isPartial: true });
+                }
+            }
+
+            if (candidates.length === 0) return null;
+            // Prefer current factions over ended ones, non-partial over partial
+            candidates.sort((a, b) => {
+                if (a.isCurrent !== b.isCurrent) return a.isCurrent ? -1 : 1;
+                if (a.isPartial !== b.isPartial) return a.isPartial ? 1 : -1;
+                return 0;
+            });
+            return candidates[0].name;
+        }
+
+        // Get member names to display below a team name (raw member list)
+        function getTeamMemberLine(teamName) {
+            const members = findTeamMembersArray(teamName);
+            if (!members || members.length === 0) return null;
+            // Show first names only if they're long, else full names
+            return members.join(' & ');
         }
 
         // Find team members array (matching index.html logic)
@@ -1185,11 +1313,24 @@
 
             grid.innerHTML = filteredWrestlers.map(w => {
                 const stats = getDisplayStats(w);
+                const isTeamDiv = isTeam(w.division);
+
+                // Use faction display name if available (use ignoreDate=true since we're showing
+                // current stats, not a specific archive week)
+                const factionName = isTeamDiv ? getFactionDisplayName(w.name, null, true) : null;
+                const displayName = factionName || w.name;
+
+                // Member names line (shown below display name for teams)
+                const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
+                // If faction name is shown, always show original member list; if no faction, only
+                // show member line when it differs from the display name (i.e. it's not redundant)
+                const showMemberLine = isTeamDiv && memberLine && (factionName || w.name.includes(' & '));
 
                 return `
                     <a href="wrestler-stats.html?wrestler=${w.slug}" class="wrestler-card">
                         ${renderPhoto(w)}
-                        <div class="card-name">${w.name}</div>
+                        <div class="card-name">${displayName}</div>
+                        ${showMemberLine ? `<div class="card-members">${memberLine}</div>` : ''}
                         <div class="card-division">
                             <span class="division-badge">${divisionLabels[w.division]}</span>
                             <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
@@ -1239,12 +1380,18 @@
             dropdown.innerHTML = matches.map(w => {
                 const currentDisplay = w.current !== null ? w.current.toFixed(2) : 'N/A';
                 const ratingClass = getRatingClass(w.current);
+                const isTeamDiv = isTeam(w.division);
+                const factionName = isTeamDiv ? getFactionDisplayName(w.name, null, true) : null;
+                const displayName = factionName || w.name;
+                const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
+                const showMemberLine = isTeamDiv && memberLine && (factionName || w.name.includes(' & '));
 
                 return `
                     <div class="autocomplete-item" onclick="goToWrestler('${w.slug}')">
                         ${renderAutocompletePhoto(w)}
                         <div class="autocomplete-info">
-                            <div class="autocomplete-name">${w.name}</div>
+                            <div class="autocomplete-name">${displayName}</div>
+                            ${showMemberLine ? `<div class="autocomplete-members">${memberLine}</div>` : ''}
                             <div class="autocomplete-meta">
                                 <span class="division-badge">${divisionLabels[w.division]}</span>
                                 <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
