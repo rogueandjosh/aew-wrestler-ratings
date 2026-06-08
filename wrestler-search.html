@@ -1071,30 +1071,16 @@
         // Load all wrestlers from statistics.json
         async function loadWrestlers() {
             try {
-                // Also fetch archive index to build a full ordered week list (needed for activeYears)
-                let orderedWeeks = []; // oldest first
-                try {
-                    const archResp = await fetch('archive/index.json');
-                    if (archResp.ok) {
-                        const archData = await archResp.json();
-                        // index.json is newest-first; reverse for oldest-first
-                        const weeks = (archData.weeks || archData).filter(w => w.label && w.label !== 'archive-index.json');
-                        orderedWeeks = weeks.map(w => w.label).reverse();
-                    }
-                } catch(e) { /* archive index unavailable, fall back to peakYear only */ }
-
                 const response = await fetch('statistics.json');
                 const data = await response.json();
 
                 allWrestlers = [];
                 
-                // Track all-time rank per division (statistics.json is sorted by peak)
                 const allTimeRanks = {};
 
                 for (const [division, wrestlers] of Object.entries(data)) {
                     if (!Array.isArray(wrestlers)) continue;
                     
-                    // Statistics.json is already sorted by peak, so index+1 = all-time rank
                     allTimeRanks[division] = {};
                     wrestlers.forEach((w, idx) => {
                         allTimeRanks[division][w.name] = idx + 1;
@@ -1102,32 +1088,8 @@
 
                     wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
-                        // Extract year from peakWeek
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
-
-                        // Derive activeYears: use archive index to find approximate span
-                        let activeYears = [];
-                        if (w.activeYears && w.activeYears.length) {
-                            // Use exported data if available
-                            activeYears = w.activeYears;
-                        } else if (orderedWeeks.length && w.peakWeek && w.totalWeeksRanked) {
-                            const peakIdx = orderedWeeks.indexOf(w.peakWeek);
-                            if (peakIdx >= 0) {
-                                // Wrestler's weeks span from approximately (peakIdx - totalWeeksRanked + 1) to peakIdx
-                                // but they may have continued after peak too — use isActive to extend to end
-                                const totalWeeks = w.totalWeeksRanked || 1;
-                                const endIdx = isActive ? orderedWeeks.length - 1 : peakIdx;
-                                const startIdx = Math.max(0, endIdx - totalWeeks + 1);
-                                const yearSet = new Set();
-                                for (let i = startIdx; i <= endIdx; i++) {
-                                    const m = orderedWeeks[i].match(/['\u2019](\d{2})\s+Week/);
-                                    if (m) yearSet.add(2000 + parseInt(m[1]));
-                                }
-                                activeYears = [...yearSet].sort();
-                            }
-                        }
-                        if (activeYears.length === 0 && peakYear) activeYears = [peakYear];
 
                         allWrestlers.push({
                             name: w.name,
@@ -1135,7 +1097,7 @@
                             division: division,
                             current: isActive ? w.current : null,
                             currentRank: isActive ? w.currentRank : null,
-                            allTimeRank: idx + 1,  // All-time rank based on peak
+                            allTimeRank: idx + 1,
                             peak: w.peak || 0,
                             floor: w.floor || 0,
                             average: w.average || 0,
@@ -1143,7 +1105,7 @@
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
                             peakYear: peakYear,
-                            activeYears: activeYears,
+                            activeYears: peakYear ? [peakYear] : [], // placeholder until wrestler JSONs load
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
@@ -1152,11 +1114,43 @@
 
                 buildYearDropdown();
                 applyFiltersAndSort();
+
+                // Now fetch all wrestler JSONs in parallel to get accurate activeYears
+                // This updates the grid silently once the data arrives
+                loadActiveYearsFromWrestlerFiles();
+
             } catch (error) {
                 console.error('Error loading wrestlers:', error);
                 document.getElementById('resultsGrid').innerHTML = '<div class="no-results">Error loading data. Please try again.</div>';
             }
         }
+
+        // Fetch all wrestler JSONs in parallel and extract activeYears from weeklyData
+        async function loadActiveYearsFromWrestlerFiles() {
+            const fetches = allWrestlers.map(w =>
+                fetch(`wrestlers/${w.slug}.json`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (!data || !data.weeklyData) return;
+                        const years = new Set();
+                        data.weeklyData.forEach(entry => {
+                            const m = (entry.week || '').match(/['\u2019](\d{2})\s+Week/);
+                            if (m) years.add(2000 + parseInt(m[1]));
+                        });
+                        if (years.size > 0) {
+                            w.activeYears = [...years].sort();
+                        }
+                    })
+                    .catch(() => null)
+            );
+
+            await Promise.all(fetches);
+
+            // Rebuild year dropdown now that we have accurate data, then re-render
+            buildYearDropdown();
+            applyFiltersAndSort();
+        }
+
 
         // Build year filter dropdown from actual data
         function buildYearDropdown() {
