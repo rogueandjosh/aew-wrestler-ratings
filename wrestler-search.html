@@ -1094,6 +1094,10 @@
                         // Handle both straight (') and curly (') apostrophes
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
+                        // activeYears from export (falls back to peakYear if not yet in statistics.json)
+                        const activeYears = w.activeYears && w.activeYears.length
+                            ? w.activeYears
+                            : (peakYear ? [peakYear] : []);
 
                         allWrestlers.push({
                             name: w.name,
@@ -1109,6 +1113,7 @@
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
                             peakYear: peakYear,
+                            activeYears: activeYears,
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
@@ -1126,7 +1131,8 @@
         // Build year filter dropdown from actual data
         function buildYearDropdown() {
             const menu = document.getElementById('yearDropdownMenu');
-            const years = [...new Set(allWrestlers.map(w => w.peakYear).filter(Boolean))].sort();
+            // Union all activeYears across all wrestlers
+            const years = [...new Set(allWrestlers.flatMap(w => w.activeYears || []))].sort();
             
             menu.innerHTML = `
                 <div class="dropdown-item dropdown-controls">
@@ -1265,7 +1271,8 @@
                 const allYearCheckboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
                 const allYearsChecked = selectedYears.size === allYearCheckboxes.length;
                 if (!allYearsChecked) {
-                    if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
+                    const wrestlerYears = w.activeYears || [];
+                    if (!wrestlerYears.some(y => selectedYears.has(y))) return false;
                 }
 
                 return true;
@@ -1496,7 +1503,8 @@
 
                     // Year filter
                     if (!allYearsChecked) {
-                        if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
+                        const wrestlerYears = w.activeYears || [];
+                        if (!wrestlerYears.some(y => selectedYears.has(y))) return false;
                     }
 
                     return true;
