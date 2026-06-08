@@ -1071,6 +1071,18 @@
         // Load all wrestlers from statistics.json
         async function loadWrestlers() {
             try {
+                // Also fetch archive index to build a full ordered week list (needed for activeYears)
+                let orderedWeeks = []; // oldest first
+                try {
+                    const archResp = await fetch('archive/index.json');
+                    if (archResp.ok) {
+                        const archData = await archResp.json();
+                        // index.json is newest-first; reverse for oldest-first
+                        const weeks = (archData.weeks || archData).filter(w => w.label && w.label !== 'archive-index.json');
+                        orderedWeeks = weeks.map(w => w.label).reverse();
+                    }
+                } catch(e) { /* archive index unavailable, fall back to peakYear only */ }
+
                 const response = await fetch('statistics.json');
                 const data = await response.json();
 
@@ -1090,14 +1102,32 @@
 
                     wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
-                        // Extract year from peakWeek e.g. "Jun '19 Week 1" → 2019
-                        // Handle both straight (') and curly (') apostrophes
+                        // Extract year from peakWeek
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
-                        // activeYears from export (falls back to peakYear if not yet in statistics.json)
-                        const activeYears = w.activeYears && w.activeYears.length
-                            ? w.activeYears
-                            : (peakYear ? [peakYear] : []);
+
+                        // Derive activeYears: use archive index to find approximate span
+                        let activeYears = [];
+                        if (w.activeYears && w.activeYears.length) {
+                            // Use exported data if available
+                            activeYears = w.activeYears;
+                        } else if (orderedWeeks.length && w.peakWeek && w.totalWeeksRanked) {
+                            const peakIdx = orderedWeeks.indexOf(w.peakWeek);
+                            if (peakIdx >= 0) {
+                                // Wrestler's weeks span from approximately (peakIdx - totalWeeksRanked + 1) to peakIdx
+                                // but they may have continued after peak too — use isActive to extend to end
+                                const totalWeeks = w.totalWeeksRanked || 1;
+                                const endIdx = isActive ? orderedWeeks.length - 1 : peakIdx;
+                                const startIdx = Math.max(0, endIdx - totalWeeks + 1);
+                                const yearSet = new Set();
+                                for (let i = startIdx; i <= endIdx; i++) {
+                                    const m = orderedWeeks[i].match(/['\u2019](\d{2})\s+Week/);
+                                    if (m) yearSet.add(2000 + parseInt(m[1]));
+                                }
+                                activeYears = [...yearSet].sort();
+                            }
+                        }
+                        if (activeYears.length === 0 && peakYear) activeYears = [peakYear];
 
                         allWrestlers.push({
                             name: w.name,
