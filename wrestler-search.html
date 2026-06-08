@@ -1090,6 +1090,10 @@
                         const isActive = activeWrestlerNames.has(w.name);
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
+                        // activeYears comes from statistics.json; fall back to peakYear only for old exports
+                        const activeYears = (w.activeYears && w.activeYears.length)
+                            ? w.activeYears
+                            : (peakYear ? [peakYear] : []);
 
                         allWrestlers.push({
                             name: w.name,
@@ -1105,7 +1109,7 @@
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
                             peakYear: peakYear,
-                            activeYears: peakYear ? [peakYear] : [], // placeholder until wrestler JSONs load
+                            activeYears: activeYears,
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
@@ -1115,40 +1119,10 @@
                 buildYearDropdown();
                 applyFiltersAndSort();
 
-                // Now fetch all wrestler JSONs in parallel to get accurate activeYears
-                // This updates the grid silently once the data arrives
-                loadActiveYearsFromWrestlerFiles();
-
             } catch (error) {
                 console.error('Error loading wrestlers:', error);
                 document.getElementById('resultsGrid').innerHTML = '<div class="no-results">Error loading data. Please try again.</div>';
             }
-        }
-
-        // Fetch all wrestler JSONs in parallel and extract activeYears from weeklyData
-        async function loadActiveYearsFromWrestlerFiles() {
-            const fetches = allWrestlers.map(w =>
-                fetch(`wrestlers/${w.slug}.json`)
-                    .then(r => r.ok ? r.json() : null)
-                    .then(data => {
-                        if (!data || !data.weeklyData) return;
-                        const years = new Set();
-                        data.weeklyData.forEach(entry => {
-                            const m = (entry.week || '').match(/['\u2019](\d{2})\s+Week/);
-                            if (m) years.add(2000 + parseInt(m[1]));
-                        });
-                        if (years.size > 0) {
-                            w.activeYears = [...years].sort();
-                        }
-                    })
-                    .catch(() => null)
-            );
-
-            await Promise.all(fetches);
-
-            // Rebuild year dropdown now that we have accurate data, then re-render
-            buildYearDropdown();
-            applyFiltersAndSort();
         }
 
 
