@@ -657,7 +657,7 @@
     <script src="tooltips.js"></script>
     <div class="container">
         <header>
-            <h1 onclick="window.location.reload()" style="cursor:pointer;" title="Click to refresh">🔍 Wrestler Search</h1>
+            <h1 onclick="history.replaceState(null,'',location.pathname);window.location.href=location.pathname" style="cursor:pointer;" title="Click to reset">🔍 Wrestler Search</h1>
             <p class="subtitle">Find any wrestler across all divisions</p>
             <div class="nav-buttons">
                 <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
@@ -1579,8 +1579,12 @@
             history.replaceState(null, '', url);
         }
 
-        // Restore filter state from URL params
+        // Restore filter state from URL params — only when navigating back, not on fresh load
         function restoreStateFromURL() {
+            // Only restore if the user navigated back/forward, not on a fresh load or reload
+            const navType = performance.getEntriesByType('navigation')[0]?.type;
+            if (navType !== 'back_forward') return;
+
             const params = new URLSearchParams(location.search);
 
             if (params.has('q')) {
@@ -1604,6 +1608,9 @@
 
         // Restore year checkboxes from URL — called after buildYearDropdown
         function restoreYearsFromURL() {
+            const navType = performance.getEntriesByType('navigation')[0]?.type;
+            if (navType !== 'back_forward') return;
+
             const params = new URLSearchParams(location.search);
             if (params.has('years')) {
                 const activeYrs = new Set(params.get('years').split(','));
