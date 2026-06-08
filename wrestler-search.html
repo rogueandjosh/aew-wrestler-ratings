@@ -1149,8 +1149,12 @@
                 cb.addEventListener('change', () => {
                     updateYearDropdownText();
                     applyFiltersAndSort();
+                    pushStateToURL();
                 });
             });
+
+            // Restore year selections from URL now that checkboxes exist
+            restoreYearsFromURL();
         }
 
         // Update year dropdown button text
@@ -1182,6 +1186,7 @@
             document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
             updateDropdownButtonText();
             applyFiltersAndSort();
+            pushStateToURL();
         }
 
         // Set all/none for year checkboxes
@@ -1189,6 +1194,7 @@
             document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
             updateYearDropdownText();
             applyFiltersAndSort();
+            pushStateToURL();
         }
 
         // Get result count text based on what's being shown
@@ -1547,6 +1553,67 @@
             window.location.href = `wrestler-stats.html?wrestler=${slug}`;
         }
 
+        // Push current filter state into the URL (replaceState so back button works correctly)
+        function pushStateToURL() {
+            const params = new URLSearchParams();
+
+            const search = document.getElementById('searchInput').value;
+            if (search) params.set('q', search);
+
+            const status = document.getElementById('statusFilter').value;
+            if (status !== 'all') params.set('status', status);
+
+            const sort = document.getElementById('sortSelect').value;
+            if (sort !== 'name-asc') params.set('sort', sort);
+
+            const divChecked = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
+            const divAll = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
+            // Only store if not all checked (all = default, no param needed)
+            if (divChecked.length !== divAll.length) params.set('divs', divChecked.join(','));
+
+            const yrChecked = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
+            const yrAll = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
+            if (yrChecked.length !== yrAll.length) params.set('years', yrChecked.join(','));
+
+            const url = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
+            history.replaceState(null, '', url);
+        }
+
+        // Restore filter state from URL params
+        function restoreStateFromURL() {
+            const params = new URLSearchParams(location.search);
+
+            if (params.has('q')) {
+                document.getElementById('searchInput').value = params.get('q');
+            }
+            if (params.has('status')) {
+                document.getElementById('statusFilter').value = params.get('status');
+            }
+            if (params.has('sort')) {
+                document.getElementById('sortSelect').value = params.get('sort');
+            }
+            if (params.has('divs')) {
+                const activeDivs = new Set(params.get('divs').split(','));
+                document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => {
+                    cb.checked = activeDivs.has(cb.value);
+                });
+                updateDropdownButtonText();
+            }
+            // Years restored separately after year dropdown is built
+        }
+
+        // Restore year checkboxes from URL — called after buildYearDropdown
+        function restoreYearsFromURL() {
+            const params = new URLSearchParams(location.search);
+            if (params.has('years')) {
+                const activeYrs = new Set(params.get('years').split(','));
+                document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => {
+                    cb.checked = activeYrs.has(cb.value);
+                });
+                updateYearDropdownText();
+            }
+        }
+
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTeamMembers();
@@ -1558,10 +1625,14 @@
             const divisionBtn = document.getElementById('divisionDropdownBtn');
             const divisionMenu = document.getElementById('divisionDropdownMenu');
 
+            // Restore non-year state immediately after data loads
+            restoreStateFromURL();
+
             // Search input
             searchInput.addEventListener('input', (e) => {
                 renderAutocomplete(e.target.value);
                 applyFiltersAndSort();
+                pushStateToURL();
             });
 
             // Hide autocomplete dropdown when clicking outside
@@ -1599,6 +1670,7 @@
                     updateDropdownButtonText();
                     renderAutocomplete(searchInput.value);
                     applyFiltersAndSort();
+                    pushStateToURL();
                 });
             });
 
@@ -1607,7 +1679,6 @@
             const yearMenu = document.getElementById('yearDropdownMenu');
             yearBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Close division menu if open
                 divisionMenu.classList.remove('show');
                 yearMenu.classList.toggle('show');
             });
@@ -1616,8 +1687,12 @@
             document.getElementById('statusFilter').addEventListener('change', () => {
                 renderAutocomplete(searchInput.value);
                 applyFiltersAndSort();
+                pushStateToURL();
             });
-            document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('sortSelect').addEventListener('change', () => {
+                applyFiltersAndSort();
+                pushStateToURL();
+            });
         });
     </script>
 </body>
