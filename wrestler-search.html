@@ -356,6 +356,29 @@
             display: block;
         }
 
+        .dropdown-controls {
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3) !important;
+        }
+
+        .ctrl-btn {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            color: #ffd700;
+            font-family: 'Overlock', sans-serif;
+            font-size: 0.8em;
+            padding: 3px 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255, 215, 0, 0.35);
+        }
+
         .dropdown-item {
             display: flex;
             align-items: center;
@@ -657,6 +680,10 @@
                     <div class="dropdown-container">
                         <button type="button" class="dropdown-button" id="divisionDropdownBtn">All Divisions</button>
                         <div class="dropdown-menu" id="divisionDropdownMenu">
+                            <div class="dropdown-item dropdown-controls">
+                                <button type="button" class="ctrl-btn" onclick="setAllDivisions(true)">All</button>
+                                <button type="button" class="ctrl-btn" onclick="setAllDivisions(false)">None</button>
+                            </div>
                             <div class="dropdown-item">
                                 <input type="checkbox" id="div-mens" value="mens" checked>
                                 <label for="div-mens">Men's</label>
@@ -1100,7 +1127,12 @@
             const menu = document.getElementById('yearDropdownMenu');
             const years = [...new Set(allWrestlers.map(w => w.peakYear).filter(Boolean))].sort();
             
-            menu.innerHTML = years.map(year => `
+            menu.innerHTML = `
+                <div class="dropdown-item dropdown-controls">
+                    <button type="button" class="ctrl-btn" onclick="setAllYears(true)">All</button>
+                    <button type="button" class="ctrl-btn" onclick="setAllYears(false)">None</button>
+                </div>
+            ` + years.map(year => `
                 <div class="dropdown-item">
                     <input type="checkbox" id="year-${year}" value="${year}" checked>
                     <label for="year-${year}">${year}</label>
@@ -1144,6 +1176,20 @@
             }
         }
 
+
+        // Set all/none for division checkboxes
+        function setAllDivisions(checked) {
+            document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
+            updateDropdownButtonText();
+            applyFiltersAndSort();
+        }
+
+        // Set all/none for year checkboxes
+        function setAllYears(checked) {
+            document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
+            updateYearDropdownText();
+            applyFiltersAndSort();
+        }
 
         // Get result count text based on what's being shown
         function getResultCountText(wrestlers) {
@@ -1435,16 +1481,36 @@
                 return;
             }
 
+            const statusFilter = document.getElementById('statusFilter').value;
+            // Sync current filter state before filtering autocomplete
+            getSelectedDivisions();
+            getSelectedYears();
+            const allYearCheckboxes = document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]');
+            const allYearsChecked = selectedYears.size === allYearCheckboxes.length;
+
             const matches = allWrestlers
                 .filter(w => {
-                    if (w.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                        return true;
+                    // Name / member match
+                    const nameMatch = w.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    const memberMatch = (() => {
+                        const members = findTeamMembersArray(w.name);
+                        return members ? members.some(m => m.toLowerCase().includes(searchTerm.toLowerCase())) : false;
+                    })();
+                    if (!nameMatch && !memberMatch) return false;
+
+                    // Division filter
+                    if (!selectedDivisions.has(w.division)) return false;
+
+                    // Status filter
+                    if (statusFilter === 'active' && !w.isActive) return false;
+                    if (statusFilter === 'inactive' && w.isActive) return false;
+
+                    // Year filter
+                    if (!allYearsChecked && selectedYears.size > 0) {
+                        if (!w.peakYear || !selectedYears.has(w.peakYear)) return false;
                     }
-                    const members = findTeamMembersArray(w.name);
-                    if (members) {
-                        return members.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
-                    }
-                    return false;
+
+                    return true;
                 })
                 .slice(0, 8);
 
@@ -1536,6 +1602,7 @@
             divisionMenu.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.addEventListener('change', () => {
                     updateDropdownButtonText();
+                    renderAutocomplete(searchInput.value);
                     applyFiltersAndSort();
                 });
             });
@@ -1551,7 +1618,10 @@
             });
 
             // Filter and sort change handlers
-            document.getElementById('statusFilter').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('statusFilter').addEventListener('change', () => {
+                renderAutocomplete(searchInput.value);
+                applyFiltersAndSort();
+            });
             document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
     </script>
