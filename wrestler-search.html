@@ -900,7 +900,7 @@
         function compareWeeks(a, b) {
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             const parse = s => {
-                const m = s.match(/^(\w+)\s+'(\d+)\s+Week\s+(\d+)$/);
+                const m = s.match(/^(\w+)\s+['\u2019](\d+)\s+Week\s+(\d+)$/);
                 if (!m) return null;
                 return { year: parseInt(m[2]), month: months.indexOf(m[1]), week: parseInt(m[3]) };
             };
@@ -1091,7 +1091,8 @@
                     wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
                         // Extract year from peakWeek e.g. "Jun '19 Week 1" → 2019
-                        const peakYearMatch = (w.peakWeek || '').match(/'(\d{2})\s+Week/);
+                        // Handle both straight (') and curly (') apostrophes
+                        const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
 
                         allWrestlers.push({
