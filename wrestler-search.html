@@ -657,7 +657,7 @@
     <script src="tooltips.js"></script>
     <div class="container">
         <header>
-            <h1 onclick="history.replaceState(null,'',location.pathname);window.location.href=location.pathname" style="cursor:pointer;" title="Click to reset">🔍 Wrestler Search</h1>
+            <h1 onclick="history.replaceState(null,'',location.pathname);window.location.href=location.pathname" style="cursor:pointer;" title="Click to reset all filters">🔍 Wrestler Search</h1>
             <p class="subtitle">Find any wrestler across all divisions</p>
             <div class="nav-buttons">
                 <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
@@ -676,7 +676,7 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label class="tt" data-tt="Select one or more divisions to filter results">Divisions:</label>
+                    <label class="tt" data-tt="Filter by division. Men's and Women's are singles divisions; Men's Tag, Women's Tag and Trios are team divisions.">Divisions:</label>
                     <div class="dropdown-container">
                         <button type="button" class="dropdown-button" id="divisionDropdownBtn">All Divisions</button>
                         <div class="dropdown-menu" id="divisionDropdownMenu">
@@ -716,7 +716,7 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label class="tt" data-tt="Filter to wrestlers/teams whose peak rating occurred in a selected year. All years shown by default.">Year:</label>
+                    <label class="tt" data-tt="Filter to wrestlers and teams who were active in the rankings during a selected year. Wrestlers active across multiple years will appear in each of those years.">Year:</label>
                     <div class="dropdown-container">
                         <button type="button" class="dropdown-button" id="yearDropdownBtn">All Years</button>
                         <div class="dropdown-menu" id="yearDropdownMenu" style="min-width: 120px;">
@@ -732,7 +732,7 @@
             <div class="results-header">
                 <span id="resultsCount" class="results-count">Loading...</span>
                 <div class="sort-group">
-                    <label for="sortSelect" class="tt" data-tt="Change how the results are sorted. The displayed stats will change based on your selection.">Sort by:</label>
+                    <label for="sortSelect" class="tt" data-tt="Sort by Name, Current Rating, Peak Rating, or Total Weeks ranked. The stats shown on each card update to match your sort choice.">Sort by:</label>
                     <select id="sortSelect" class="filter-select">
                         <option value="name-asc">Name (A-Z)</option>
                         <option value="name-desc">Name (Z-A)</option>
@@ -1090,10 +1090,6 @@
                         const isActive = activeWrestlerNames.has(w.name);
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
-                        // activeYears comes from statistics.json; fall back to peakYear only for old exports
-                        const activeYears = (w.activeYears && w.activeYears.length)
-                            ? w.activeYears
-                            : (peakYear ? [peakYear] : []);
 
                         allWrestlers.push({
                             name: w.name,
@@ -1109,7 +1105,7 @@
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
                             peakYear: peakYear,
-                            activeYears: activeYears,
+                            activeYears: peakYear ? [peakYear] : [], // placeholder until wrestler JSONs load
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
@@ -1119,10 +1115,40 @@
                 buildYearDropdown();
                 applyFiltersAndSort();
 
+                // Now fetch all wrestler JSONs in parallel to get accurate activeYears
+                // This updates the grid silently once the data arrives
+                loadActiveYearsFromWrestlerFiles();
+
             } catch (error) {
                 console.error('Error loading wrestlers:', error);
                 document.getElementById('resultsGrid').innerHTML = '<div class="no-results">Error loading data. Please try again.</div>';
             }
+        }
+
+        // Fetch all wrestler JSONs in parallel and extract activeYears from weeklyData
+        async function loadActiveYearsFromWrestlerFiles() {
+            const fetches = allWrestlers.map(w =>
+                fetch(`wrestlers/${w.slug}.json`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (!data || !data.weeklyData) return;
+                        const years = new Set();
+                        data.weeklyData.forEach(entry => {
+                            const m = (entry.week || '').match(/['\u2019](\d{2})\s+Week/);
+                            if (m) years.add(2000 + parseInt(m[1]));
+                        });
+                        if (years.size > 0) {
+                            w.activeYears = [...years].sort();
+                        }
+                    })
+                    .catch(() => null)
+            );
+
+            await Promise.all(fetches);
+
+            // Rebuild year dropdown now that we have accurate data, then re-render
+            buildYearDropdown();
+            applyFiltersAndSort();
         }
 
 
@@ -1149,12 +1175,8 @@
                 cb.addEventListener('change', () => {
                     updateYearDropdownText();
                     applyFiltersAndSort();
-                    pushStateToURL();
                 });
             });
-
-            // Restore year selections from URL now that checkboxes exist
-            restoreYearsFromURL();
         }
 
         // Update year dropdown button text
@@ -1186,7 +1208,6 @@
             document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
             updateDropdownButtonText();
             applyFiltersAndSort();
-            pushStateToURL();
         }
 
         // Set all/none for year checkboxes
@@ -1194,7 +1215,6 @@
             document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = checked);
             updateYearDropdownText();
             applyFiltersAndSort();
-            pushStateToURL();
         }
 
         // Get result count text based on what's being shown
@@ -1455,7 +1475,7 @@
                         ${showMemberLine ? `<div class="card-members">${memberLine}</div>` : ''}
                         <div class="card-division">
                             <span class="division-badge">${divisionLabels[w.division]}</span>
-                            <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
+                            <span class="status-badge ${w.isActive ? 'active' : 'inactive'} tt" data-tt="${w.isActive ? 'This wrestler is currently ranked in the active ratings.' : 'This wrestler has dropped out after 6+ weeks without a rated match. Their last known rating is shown.'}">${w.isActive ? 'Active' : 'Inactive'}</span>
                         </div>
                         <div class="card-stats">
                             <div class="card-stat">
@@ -1553,74 +1573,6 @@
             window.location.href = `wrestler-stats.html?wrestler=${slug}`;
         }
 
-        // Push current filter state into the URL (replaceState so back button works correctly)
-        function pushStateToURL() {
-            const params = new URLSearchParams();
-
-            const search = document.getElementById('searchInput').value;
-            if (search) params.set('q', search);
-
-            const status = document.getElementById('statusFilter').value;
-            if (status !== 'all') params.set('status', status);
-
-            const sort = document.getElementById('sortSelect').value;
-            if (sort !== 'name-asc') params.set('sort', sort);
-
-            const divChecked = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
-            const divAll = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
-            // Only store if not all checked (all = default, no param needed)
-            if (divChecked.length !== divAll.length) params.set('divs', divChecked.join(','));
-
-            const yrChecked = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
-            const yrAll = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
-            if (yrChecked.length !== yrAll.length) params.set('years', yrChecked.join(','));
-
-            const url = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
-            history.replaceState(null, '', url);
-        }
-
-        // Restore filter state from URL params — only when navigating back, not on fresh load
-        function restoreStateFromURL() {
-            // Only restore if the user navigated back/forward, not on a fresh load or reload
-            const navType = performance.getEntriesByType('navigation')[0]?.type;
-            if (navType !== 'back_forward') return;
-
-            const params = new URLSearchParams(location.search);
-
-            if (params.has('q')) {
-                document.getElementById('searchInput').value = params.get('q');
-            }
-            if (params.has('status')) {
-                document.getElementById('statusFilter').value = params.get('status');
-            }
-            if (params.has('sort')) {
-                document.getElementById('sortSelect').value = params.get('sort');
-            }
-            if (params.has('divs')) {
-                const activeDivs = new Set(params.get('divs').split(','));
-                document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = activeDivs.has(cb.value);
-                });
-                updateDropdownButtonText();
-            }
-            // Years restored separately after year dropdown is built
-        }
-
-        // Restore year checkboxes from URL — called after buildYearDropdown
-        function restoreYearsFromURL() {
-            const navType = performance.getEntriesByType('navigation')[0]?.type;
-            if (navType !== 'back_forward') return;
-
-            const params = new URLSearchParams(location.search);
-            if (params.has('years')) {
-                const activeYrs = new Set(params.get('years').split(','));
-                document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = activeYrs.has(cb.value);
-                });
-                updateYearDropdownText();
-            }
-        }
-
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTeamMembers();
@@ -1632,14 +1584,10 @@
             const divisionBtn = document.getElementById('divisionDropdownBtn');
             const divisionMenu = document.getElementById('divisionDropdownMenu');
 
-            // Restore non-year state immediately after data loads
-            restoreStateFromURL();
-
             // Search input
             searchInput.addEventListener('input', (e) => {
                 renderAutocomplete(e.target.value);
                 applyFiltersAndSort();
-                pushStateToURL();
             });
 
             // Hide autocomplete dropdown when clicking outside
@@ -1677,7 +1625,6 @@
                     updateDropdownButtonText();
                     renderAutocomplete(searchInput.value);
                     applyFiltersAndSort();
-                    pushStateToURL();
                 });
             });
 
@@ -1686,6 +1633,7 @@
             const yearMenu = document.getElementById('yearDropdownMenu');
             yearBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                // Close division menu if open
                 divisionMenu.classList.remove('show');
                 yearMenu.classList.toggle('show');
             });
@@ -1694,12 +1642,8 @@
             document.getElementById('statusFilter').addEventListener('change', () => {
                 renderAutocomplete(searchInput.value);
                 applyFiltersAndSort();
-                pushStateToURL();
             });
-            document.getElementById('sortSelect').addEventListener('change', () => {
-                applyFiltersAndSort();
-                pushStateToURL();
-            });
+            document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
         });
     </script>
 </body>
