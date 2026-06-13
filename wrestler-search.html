@@ -1090,6 +1090,10 @@
                         const isActive = activeWrestlerNames.has(w.name);
                         const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
+                        // Use activeYears from statistics.json; fall back to peakYear only for old exports
+                        const activeYears = (w.activeYears && w.activeYears.length)
+                            ? w.activeYears
+                            : (peakYear ? [peakYear] : []);
 
                         allWrestlers.push({
                             name: w.name,
@@ -1105,7 +1109,7 @@
                             weeksAtNumber1: w.weeksAtNumber1 || 0,
                             peakWeek: w.peakWeek || '',
                             peakYear: peakYear,
-                            activeYears: peakYear ? [peakYear] : [], // placeholder until wrestler JSONs load
+                            activeYears: activeYears,
                             isActive: isActive,
                             isTeam: isTeam(division)
                         });
