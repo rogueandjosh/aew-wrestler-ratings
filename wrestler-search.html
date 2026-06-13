@@ -356,38 +356,6 @@
             display: block;
         }
 
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: #ccc;
-            font-size: 0.9em;
-        }
-
-        .toggle-label input[type="checkbox"] {
-            accent-color: #ffd700;
-            width: 15px;
-            height: 15px;
-            cursor: pointer;
-        }
-
-        .toggle-text {
-            color: #ccc;
-        }
-
-        .prev-name-badge {
-            background: rgba(255, 165, 0, 0.2);
-            border: 1px solid rgba(255, 165, 0, 0.5);
-            color: #ffa500;
-            font-size: 0.65em;
-            font-weight: 400;
-            padding: 1px 5px;
-            border-radius: 4px;
-            vertical-align: middle;
-            font-style: normal;
-        }
-
         .dropdown-controls {
             justify-content: center;
             gap: 8px;
@@ -689,7 +657,7 @@
     <script src="tooltips.js"></script>
     <div class="container">
         <header>
-            <h1 onclick="history.replaceState(null,'',location.pathname);window.location.href=location.pathname" style="cursor:pointer;" title="Click to reset all filters">🔍 Wrestler Search</h1>
+            <h1 onclick="window.location.reload()" style="cursor:pointer;" title="Click to refresh">🔍 Wrestler Search</h1>
             <p class="subtitle">Find any wrestler across all divisions</p>
             <div class="nav-buttons">
                 <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
@@ -708,7 +676,7 @@
 
             <div class="filters">
                 <div class="filter-group">
-                    <label class="tt" data-tt="Filter by division. Men's and Women's are singles divisions; Men's Tag, Women's Tag and Trios are team divisions.">Divisions:</label>
+                    <label class="tt" data-tt="Select one or more divisions to filter results">Divisions:</label>
                     <div class="dropdown-container">
                         <button type="button" class="dropdown-button" id="divisionDropdownBtn">All Divisions</button>
                         <div class="dropdown-menu" id="divisionDropdownMenu">
@@ -748,20 +716,13 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label class="tt" data-tt="Filter to wrestlers and teams who were active in the rankings during a selected year. Wrestlers active across multiple years will appear in each of those years.">Year:</label>
+                    <label class="tt" data-tt="Filter to wrestlers/teams whose peak rating occurred in a selected year. All years shown by default.">Year:</label>
                     <div class="dropdown-container">
                         <button type="button" class="dropdown-button" id="yearDropdownBtn">All Years</button>
                         <div class="dropdown-menu" id="yearDropdownMenu" style="min-width: 120px;">
                             <!-- Populated dynamically from data -->
                         </div>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <label class="tt" data-tt="Some wrestlers and teams appeared under a different name earlier in their career. These are hidden by default to avoid duplicate entries.">Prev. Names:</label>
-                    <label class="toggle-label">
-                        <input type="checkbox" id="showPrevNamesToggle">
-                        <span class="toggle-text">Show</span>
-                    </label>
                 </div>
             </div>
         </div>
@@ -771,7 +732,7 @@
             <div class="results-header">
                 <span id="resultsCount" class="results-count">Loading...</span>
                 <div class="sort-group">
-                    <label for="sortSelect" class="tt" data-tt="Sort by Name, Current Rating, Peak Rating, or Total Weeks ranked. The stats shown on each card update to match your sort choice.">Sort by:</label>
+                    <label for="sortSelect" class="tt" data-tt="Change how the results are sorted. The displayed stats will change based on your selection.">Sort by:</label>
                     <select id="sortSelect" class="filter-select">
                         <option value="name-asc">Name (A-Z)</option>
                         <option value="name-desc">Name (Z-A)</option>
@@ -802,8 +763,6 @@
         let filteredWrestlers = [];
         let teamMembersData = null;
         let factionsData = null;
-        let previousNames = new Set(); // oldNames from name-changes.json
-        let showPreviousNames = false;
         let activeWrestlerNames = new Set();
         let currentSortField = 'name';
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']);
@@ -934,19 +893,6 @@
                 }
             } catch (e) {
                 console.log('Factions data not available');
-            }
-
-            try {
-                const ncResp = await fetch('name-changes.json');
-                if (ncResp.ok) {
-                    const ncData = await ncResp.json();
-                    (ncData.changes || []).forEach(c => {
-                        if (c.oldName) previousNames.add(c.oldName);
-                    });
-                    console.log('✅ Loaded name changes:', previousNames.size);
-                }
-            } catch (e) {
-                console.log('Name changes data not available');
             }
         }
 
@@ -1169,40 +1115,10 @@
                 buildYearDropdown();
                 applyFiltersAndSort();
 
-                // Now fetch all wrestler JSONs in parallel to get accurate activeYears
-                // This updates the grid silently once the data arrives
-                loadActiveYearsFromWrestlerFiles();
-
             } catch (error) {
                 console.error('Error loading wrestlers:', error);
                 document.getElementById('resultsGrid').innerHTML = '<div class="no-results">Error loading data. Please try again.</div>';
             }
-        }
-
-        // Fetch all wrestler JSONs in parallel and extract activeYears from weeklyData
-        async function loadActiveYearsFromWrestlerFiles() {
-            const fetches = allWrestlers.map(w =>
-                fetch(`wrestlers/${w.slug}.json`)
-                    .then(r => r.ok ? r.json() : null)
-                    .then(data => {
-                        if (!data || !data.weeklyData) return;
-                        const years = new Set();
-                        data.weeklyData.forEach(entry => {
-                            const m = (entry.week || '').match(/['\u2019](\d{2})\s+Week/);
-                            if (m) years.add(2000 + parseInt(m[1]));
-                        });
-                        if (years.size > 0) {
-                            w.activeYears = [...years].sort();
-                        }
-                    })
-                    .catch(() => null)
-            );
-
-            await Promise.all(fetches);
-
-            // Rebuild year dropdown now that we have accurate data, then re-render
-            buildYearDropdown();
-            applyFiltersAndSort();
         }
 
 
@@ -1352,9 +1268,6 @@
                     const wrestlerYears = w.activeYears || [];
                     if (!wrestlerYears.some(y => selectedYears.has(y))) return false;
                 }
-
-                // Previous names filter — hide old name entries unless toggle is on
-                if (!showPreviousNames && previousNames.has(w.name)) return false;
 
                 return true;
             });
@@ -1525,16 +1438,14 @@
                 const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
                 const showMemberLine = isTeamDiv && memberLine;
 
-                const isPrevName = previousNames.has(w.name);
-
                 return `
                     <a href="wrestler-stats.html?wrestler=${w.slug}" class="wrestler-card">
                         ${renderPhoto(w)}
-                        <div class="card-name">${displayName}${isPrevName ? ' <span class="prev-name-badge">prev. name</span>' : ''}</div>
+                        <div class="card-name">${displayName}</div>
                         ${showMemberLine ? `<div class="card-members">${memberLine}</div>` : ''}
                         <div class="card-division">
                             <span class="division-badge">${divisionLabels[w.division]}</span>
-                            <span class="status-badge ${w.isActive ? 'active' : 'inactive'} tt" data-tt="${w.isActive ? 'This wrestler is currently ranked in the active ratings.' : 'This wrestler has dropped out after 6+ weeks without a rated match. Their last known rating is shown.'}">${w.isActive ? 'Active' : 'Inactive'}</span>
+                            <span class="status-badge ${w.isActive ? 'active' : 'inactive'}">${w.isActive ? 'Active' : 'Inactive'}</span>
                         </div>
                         <div class="card-stats">
                             <div class="card-stat">
@@ -1590,9 +1501,6 @@
                         if (!wrestlerYears.some(y => selectedYears.has(y))) return false;
                     }
 
-                    // Previous names filter
-                    if (!showPreviousNames && previousNames.has(w.name)) return false;
-
                     return true;
                 })
                 .slice(0, 8);
@@ -1611,13 +1519,11 @@
                 const memberLine = isTeamDiv ? getTeamMemberLine(w.name) : null;
                 const showMemberLine = isTeamDiv && memberLine;
 
-                const isPrevName = previousNames.has(w.name);
-
                 return `
                     <div class="autocomplete-item" onclick="goToWrestler('${w.slug}')">
                         ${renderAutocompletePhoto(w)}
                         <div class="autocomplete-info">
-                            <div class="autocomplete-name">${displayName}${isPrevName ? ' <span class="prev-name-badge">prev. name</span>' : ''}</div>
+                            <div class="autocomplete-name">${displayName}</div>
                             ${showMemberLine ? `<div class="autocomplete-members">${memberLine}</div>` : ''}
                             <div class="autocomplete-meta">
                                 <span class="division-badge">${divisionLabels[w.division]}</span>
@@ -1635,61 +1541,6 @@
         // Navigate to wrestler stats page
         function goToWrestler(slug) {
             window.location.href = `wrestler-stats.html?wrestler=${slug}`;
-        }
-
-        // Push current filter state into the URL
-        function pushStateToURL() {
-            const params = new URLSearchParams();
-            const search = document.getElementById('searchInput').value;
-            if (search) params.set('q', search);
-            const status = document.getElementById('statusFilter').value;
-            if (status !== 'all') params.set('status', status);
-            const sort = document.getElementById('sortSelect').value;
-            if (sort !== 'name-asc') params.set('sort', sort);
-            const divChecked = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
-            const divAll = [...document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
-            if (divChecked.length !== divAll.length) params.set('divs', divChecked.join(','));
-            const yrChecked = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]:checked')].map(cb => cb.value);
-            const yrAll = [...document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]')].map(cb => cb.value);
-            if (yrChecked.length !== yrAll.length) params.set('years', yrChecked.join(','));
-            if (showPreviousNames) params.set('prevnames', '1');
-            const url = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
-            history.replaceState(null, '', url);
-        }
-
-        // Restore filter state from URL — only on back/forward navigation
-        function restoreStateFromURL() {
-            const navType = performance.getEntriesByType('navigation')[0]?.type;
-            if (navType !== 'back_forward') return;
-            const params = new URLSearchParams(location.search);
-            if (params.has('q')) document.getElementById('searchInput').value = params.get('q');
-            if (params.has('status')) document.getElementById('statusFilter').value = params.get('status');
-            if (params.has('sort')) document.getElementById('sortSelect').value = params.get('sort');
-            if (params.has('divs')) {
-                const activeDivs = new Set(params.get('divs').split(','));
-                document.querySelectorAll('#divisionDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = activeDivs.has(cb.value);
-                });
-                updateDropdownButtonText();
-            }
-            if (params.has('prevnames')) {
-                showPreviousNames = true;
-                document.getElementById('showPrevNamesToggle').checked = true;
-            }
-        }
-
-        // Restore year checkboxes from URL — called after buildYearDropdown
-        function restoreYearsFromURL() {
-            const navType = performance.getEntriesByType('navigation')[0]?.type;
-            if (navType !== 'back_forward') return;
-            const params = new URLSearchParams(location.search);
-            if (params.has('years')) {
-                const activeYrs = new Set(params.get('years').split(','));
-                document.querySelectorAll('#yearDropdownMenu input[type="checkbox"]').forEach(cb => {
-                    cb.checked = activeYrs.has(cb.value);
-                });
-                updateYearDropdownText();
-            }
         }
 
         // Event Listeners
@@ -1755,14 +1606,6 @@
                 // Close division menu if open
                 divisionMenu.classList.remove('show');
                 yearMenu.classList.toggle('show');
-            });
-
-            // Previous names toggle
-            document.getElementById('showPrevNamesToggle').addEventListener('change', (e) => {
-                showPreviousNames = e.target.checked;
-                renderAutocomplete(searchInput.value);
-                applyFiltersAndSort();
-                pushStateToURL();
             });
 
             // Filter and sort change handlers
