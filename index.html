@@ -4826,13 +4826,13 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 const slug2 = createSlug(members[1]);
                 const initialsUrl1 = createInitialsCircle(generateTagInitials(members[0]), 50);
                 const initialsUrl2 = createInitialsCircle(generateTagInitials(members[1]), 50);
-                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
                     <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
                     <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
                 </div></td>`;
             } else {
                 const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 50);
-                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
                     <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
                     <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
                 </div></td>`;
@@ -4846,14 +4846,14 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 const initialsUrl1 = createInitialsCircle(generateTrioInitial(members[0]), 35);
                 const initialsUrl2 = createInitialsCircle(generateTrioInitial(members[1]), 35);
                 const initialsUrl3 = createInitialsCircle(generateTrioInitial(members[2]), 35);
-                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
                     <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
                     <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
                     <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug3}.jpg" alt="${members[2]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl3}';"></a>
                 </div></td>`;
             } else {
                 const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 35);
-                dynImageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
                     <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
                     <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
                     <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
@@ -4862,7 +4862,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         } else {
             const slug = createSlug(wrestler.name);
             const initialsDataUrl = createInitialsCircle(generateInitials(wrestler.name), 70);
-            dynImageCell = `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${dynReturnWeek}&returnDivision=${division}&returnView=statistics" style="display:block;">
+            dynImageCell = `<td class="wrestler-image s-photo"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${dynReturnWeek}&returnDivision=${division}&returnView=statistics" style="display:block;">
                 <img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsDataUrl}';">
             </a></td>`;
         }
@@ -4874,17 +4874,17 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
         if (!seenStatsEntries.has(statsDedupKey)) {
             seenStatsEntries.add(statsDedupKey);
             statsRank++;
-            rowsHtml += '<tr>';
-            if (visibleColumns.rank) rowsHtml += `<td class="rank">${statsRank}</td>`;
+            rowsHtml += `<tr class="${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? 'tag-trios-row' : ''}">`;
+            if (visibleColumns.rank) rowsHtml += `<td class="rank s-rank">${statsRank}</td>`;
             rowsHtml += dynImageCell;
-            rowsHtml += `<td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${statsDisplayName}</a>${getTeamMembers(wrestler.name, division)}</td>`;
-            if (visibleColumns.current) rowsHtml += `<td class="rating ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
-            if (visibleColumns.peak) rowsHtml += `<td class="rating ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
-            if (visibleColumns.floor) rowsHtml += `<td class="rating">${(wrestler.floor || 100).toFixed(2)}</td>`;
-            if (visibleColumns.average) rowsHtml += `<td class="rating">${(wrestler.average || 100).toFixed(2)}</td>`;
-            if (visibleColumns.peakWeek) rowsHtml += `<td>${wrestler.peakWeek}</td>`;
-            if (visibleColumns.floorWeek) rowsHtml += `<td>${wrestler.floorWeek}</td>`;
-            if (visibleColumns.weeksAtNumber1) rowsHtml += `<td>${wrestler.weeksAtNumber1}</td>`;
+            rowsHtml += `<td class="name s-name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${statsDisplayName}</a>${getTeamMembers(wrestler.name, division)}</td>`;
+            if (visibleColumns.current) rowsHtml += `<td class="rating s-stat ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
+            if (visibleColumns.peak) rowsHtml += `<td class="rating s-stat s-hide-mobile ${peakClass}">${(wrestler.peak || 100).toFixed(2)}</td>`;
+            if (visibleColumns.floor) rowsHtml += `<td class="rating s-stat s-hide-mobile">${(wrestler.floor || 100).toFixed(2)}</td>`;
+            if (visibleColumns.average) rowsHtml += `<td class="rating s-stat s-hide-mobile">${(wrestler.average || 100).toFixed(2)}</td>`;
+            if (visibleColumns.peakWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.peakWeek}</td>`;
+            if (visibleColumns.floorWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.floorWeek}</td>`;
+            if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${wrestler.weeksAtNumber1}</td>`;
             rowsHtml += '</tr>';
         }
     });
@@ -4941,18 +4941,18 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             </div>
             
             <p style="color: #b8b8b8; margin-bottom: 15px;">Through <strong style="color: #ffd700;">${selectedWeekLabel}</strong></p>
-            <table>
+            <table class="stats-table">
                 <thead><tr>
-                        ${visibleColumns.rank ? '<th class="no-sort">#</th>' : ''}
-                        <th class="no-sort"></th>
-                        <th class="sortable" onclick="sortStatsData('name')">Name</th>
-                        ${visibleColumns.current ? `<th class="sortable tt" onclick="sortStatsData('current')" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Current</th>` : ''}
-                        ${visibleColumns.peak ? `<th class="sortable tt" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
-                        ${visibleColumns.floor ? `<th class="sortable tt" onclick="sortStatsData('floor')" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>` : ''}
-                        ${visibleColumns.average ? `<th class="sortable tt" onclick="sortStatsData('average')" data-tt="The average rating — all weeks the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has been in the rankings count towards this.">Average</th>` : ''}
-                        ${visibleColumns.peakWeek ? `<th class="sortable tt" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
-                        ${visibleColumns.floorWeek ? `<th class="sortable tt" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
-                        ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
+                        ${visibleColumns.rank ? '<th class="no-sort s-rank">#</th>' : ''}
+                        <th class="no-sort s-photo"></th>
+                        <th class="sortable s-name" onclick="sortStatsData('name')">Name</th>
+                        ${visibleColumns.current ? `<th class="sortable tt s-stat" onclick="sortStatsData('current')" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Current</th>` : ''}
+                        ${visibleColumns.peak ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
+                        ${visibleColumns.floor ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('floor')" data-tt="The lowest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has reached in the rankings.">Floor</th>` : ''}
+                        ${visibleColumns.average ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('average')" data-tt="The average rating — all weeks the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has been in the rankings count towards this.">Average</th>` : ''}
+                        ${visibleColumns.peakWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
+                        ${visibleColumns.floorWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
+                        ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
                     </tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
