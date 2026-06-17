@@ -803,13 +803,13 @@
         .stats-table th.s-week, .stats-table td.s-week   { width: 110px; white-space: nowrap; }
 
         @media (max-width: 600px) {
-            .stats-table { table-layout: fixed !important; }
+            .scroll-hint { display: block !important; }
+            .stats-table { table-layout: fixed !important; min-width: 620px; }
             .stats-table th.s-rank, .stats-table td.s-rank   { width: 28px !important; padding-left: 0 !important; padding-right: 2px !important; }
             .stats-table th.s-photo, .stats-table td.s-photo { width: 64px !important; padding: 4px 2px !important; }
-            .stats-table th.s-name, .stats-table td.s-name   { width: auto !important; font-size: 0.85em; }
-            .stats-table th.s-stat, .stats-table td.s-stat   { width: 60px !important; font-size: 0.85em; }
-            /* Hide secondary stats on mobile — Current rating only, rest available via Customize Columns */
-            .stats-table th.s-hide-mobile, .stats-table td.s-hide-mobile { display: none; }
+            .stats-table th.s-name, .stats-table td.s-name   { width: 140px !important; font-size: 0.85em; }
+            .stats-table th.s-stat, .stats-table td.s-stat   { width: 64px !important; font-size: 0.85em; }
+            .stats-table th.s-week, .stats-table td.s-week   { width: 90px !important; font-size: 0.85em; }
         }
 
         .change-up { color: #4ade80; }
@@ -4941,6 +4941,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             </div>
             
             <p style="color: #b8b8b8; margin-bottom: 15px;">Through <strong style="color: #ffd700;">${selectedWeekLabel}</strong></p>
+            <p class="scroll-hint" style="display:none; color: #b8b8b8; font-size: 0.8em; margin-bottom: 10px;">↔️ Swipe to see more columns</p>
             <table class="stats-table">
                 <thead><tr>
                         ${visibleColumns.rank ? '<th class="no-sort s-rank">#</th>' : ''}
