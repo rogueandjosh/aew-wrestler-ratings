@@ -2149,10 +2149,27 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             // state (year filter = ALL). A past year's end-of-year rating
             // is a historical fact and shouldn't show as inactive just
             // because the wrestler happens to be inactive today.
+            // NOTE: isCurrentlyActive above is declared inside the
+            // `if (currentYear === 'ALL')` block, so it doesn't exist at
+            // all when a specific year is selected — re-deriving it here
+            // independently avoids a ReferenceError in that code path.
+            let statsGridIsCurrentlyActive = false;
+            if (currentRankingsData) {
+                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+                for (const div of divisions) {
+                    if (currentRankingsData[div]) {
+                        const found = currentRankingsData[div].find(w => w.name === wrestlerData.name);
+                        if (found) {
+                            statsGridIsCurrentlyActive = true;
+                            break;
+                        }
+                    }
+                }
+            }
             const currentRatingNumeric = (currentYear === 'ALL')
                 ? (typeof wrestlerData.currentRating === 'number' ? wrestlerData.currentRating : null)
                 : (getYearEndRating(currentYear).rating ?? null);
-            const currentRatingIsActive = (currentYear === 'ALL') ? isCurrentlyActive : true;
+            const currentRatingIsActive = (currentYear === 'ALL') ? statsGridIsCurrentlyActive : true;
             const currentRatingTier = getTierColour(currentRatingNumeric, currentRatingIsActive);
             const currentRatingTierColour = currentRatingTier.tier === 'platinum' ? '#c9a0ff' : currentRatingTier.solid;
 
