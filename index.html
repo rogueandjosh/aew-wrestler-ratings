@@ -3346,19 +3346,22 @@ for (let i = 0; i < filteredData.length; i++) {
             const initialsUrl1 = createInitialsCircle(initials1, 65);
             const initialsUrl2 = createInitialsCircle(initials2, 65);
             
+            const tagImg1 = `<img src="images/wrestlers/${slug1}.jpg" 
+                             alt="${members[0]}" 
+                             style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; cursor:pointer;"
+                             onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+            const tagImg2 = `<img src="images/wrestlers/${slug2}.jpg" 
+                             alt="${members[1]}" 
+                             style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; cursor:pointer;"
+                             onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+
             imageCell = `<td class="wrestler-image">
                 <div style="display: flex; gap: 2px; justify-content: center;">
                     <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                        <img src="images/wrestlers/${slug1}.jpg" 
-                             alt="${members[0]}" 
-                             style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
-                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                        ${wrapPhotoWithTier(tagImg1, wrestler.rating, 58)}
                     </a>
                     <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                        <img src="images/wrestlers/${slug2}.jpg" 
-                             alt="${members[1]}" 
-                             style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
-                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                        ${wrapPhotoWithTier(tagImg2, wrestler.rating, 58)}
                     </a>
                 </div>
             </td>`;
@@ -3366,14 +3369,16 @@ for (let i = 0; i < filteredData.length; i++) {
             // Within threshold but no member data - show team initials
             const teamInitials = generateInitials(wrestler.name);
             const teamInitialsUrl = createInitialsCircle(teamInitials, 65);
+            const teamImgA = `<img src="${teamInitialsUrl}" 
+                         alt="Team" 
+                         style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
+            const teamImgB = `<img src="${teamInitialsUrl}" 
+                         alt="Team" 
+                         style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
             imageCell = `<td class="wrestler-image">
                 <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
-                    <img src="${teamInitialsUrl}" 
-                         alt="Team" 
-                         style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
-                    <img src="${teamInitialsUrl}" 
-                         alt="Team" 
-                         style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                    ${wrapPhotoWithTier(teamImgA, wrestler.rating, 58)}
+                    ${wrapPhotoWithTier(teamImgB, wrestler.rating, 58)}
                 </a>
             </td>`;
         } else {
@@ -3385,17 +3390,19 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initials2 = generateTagInitials(members[1]);
                 const initialsUrl1 = createInitialsCircle(initials1, 50);
                 const initialsUrl2 = createInitialsCircle(initials2, 50);
+                const tagSmallImg1 = `<img src="${initialsUrl1}" 
+                                 alt="${members[0]}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
+                const tagSmallImg2 = `<img src="${initialsUrl2}" 
+                                 alt="${members[1]}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
                         <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="${initialsUrl1}" 
-                                 alt="${members[0]}" 
-                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                            ${wrapPhotoWithTier(tagSmallImg1, wrestler.rating, 50)}
                         </a>
                         <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="${initialsUrl2}" 
-                                 alt="${members[1]}" 
-                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                            ${wrapPhotoWithTier(tagSmallImg2, wrestler.rating, 50)}
                         </a>
                     </div>
                 </td>`;
@@ -3403,14 +3410,16 @@ for (let i = 0; i < filteredData.length; i++) {
                 // No member data - use team initials (SMALLER SIZE)
                 const teamInitials = generateInitials(wrestler.name);
                 const teamInitialsUrl = createInitialsCircle(teamInitials, 50);
+                const teamSmallImgA = `<img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
+                const teamSmallImgB = `<img src="${teamInitialsUrl}" 
+                             alt="Team" 
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor:pointer;">`;
                 imageCell = `<td class="wrestler-image">
                     <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
-                        <img src="${teamInitialsUrl}" 
-                             alt="Team" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
-                        <img src="${teamInitialsUrl}" 
-                             alt="Team" 
-                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;">
+                        ${wrapPhotoWithTier(teamSmallImgA, wrestler.rating, 50)}
+                        ${wrapPhotoWithTier(teamSmallImgB, wrestler.rating, 50)}
                     </a>
                 </td>`;
             }
@@ -3432,25 +3441,28 @@ for (let i = 0; i < filteredData.length; i++) {
             
             if (withinThreshold) {
                 // Within threshold - try photos, fallback to initials
+                const trioImg1 = `<img src="images/wrestlers/${slug1}.jpg" 
+                                 alt="${members[0]}" 
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+                const trioImg2 = `<img src="images/wrestlers/${slug2}.jpg" 
+                                 alt="${members[1]}" 
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+                const trioImg3 = `<img src="images/wrestlers/${slug3}.jpg" 
+                                 alt="${members[2]}" 
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor:pointer;"
+                                 onerror="this.onerror=null; this.src='${initialsUrl3}';">`;
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
                         <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="images/wrestlers/${slug1}.jpg" 
-                                 alt="${members[0]}" 
-                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
-                                 onerror="this.onerror=null; this.src='${initialsUrl1}';">
+                            ${wrapPhotoWithTier(trioImg1, wrestler.rating, 40)}
                         </a>
                         <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="images/wrestlers/${slug2}.jpg" 
-                                 alt="${members[1]}" 
-                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
-                                 onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                            ${wrapPhotoWithTier(trioImg2, wrestler.rating, 40)}
                         </a>
                         <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="images/wrestlers/${slug3}.jpg" 
-                                 alt="${members[2]}" 
-                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; cursor:pointer;"
-                                 onerror="this.onerror=null; this.src='${initialsUrl3}';">
+                            ${wrapPhotoWithTier(trioImg3, wrestler.rating, 40)}
                         </a>
                     </div>
                 </td>`;
@@ -3459,28 +3471,32 @@ for (let i = 0; i < filteredData.length; i++) {
                 const initialsUrl1Small = createInitialsCircle(initials1, 35);
                 const initialsUrl2Small = createInitialsCircle(initials2, 35);
                 const initialsUrl3Small = createInitialsCircle(initials3, 35);
+                const trioSmallImg1 = `<img src="${initialsUrl1Small}" 
+                                 alt="${members[0]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; cursor:pointer;">`;
+                const trioSmallImg2 = `<img src="${initialsUrl2Small}" 
+                                 alt="${members[1]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; cursor:pointer;">`;
+                const trioSmallImg3 = `<img src="${initialsUrl3Small}" 
+                                 alt="${members[2]}" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; cursor:pointer;">`;
                 imageCell = `<td class="wrestler-image">
                     <div style="display: flex; gap: 2px; justify-content: center;">
                         <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="${initialsUrl1Small}" 
-                                 alt="${members[0]}" 
-                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                            ${wrapPhotoWithTier(trioSmallImg1, wrestler.rating, 35)}
                         </a>
                         <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="${initialsUrl2Small}" 
-                                 alt="${members[1]}" 
-                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                            ${wrapPhotoWithTier(trioSmallImg2, wrestler.rating, 35)}
                         </a>
                         <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}">
-                            <img src="${initialsUrl3Small}" 
-                                 alt="${members[2]}" 
-                                 style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ffd700; cursor:pointer;">
+                            ${wrapPhotoWithTier(trioSmallImg3, wrestler.rating, 35)}
                         </a>
                     </div>
                 </td>`;
             }
         } else {
-            // No member data - show 3 placeholders
+            // No member data - show 3 placeholders (no real wrestler/rating
+            // behind these, so intentionally left without a tier ring)
             imageCell = `<td class="wrestler-image">
                 <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display: flex; gap: 2px; justify-content: center;">
                     <img src="images/placeholder.png" 
@@ -3503,22 +3519,27 @@ for (let i = 0; i < filteredData.length; i++) {
         
         if (withinThreshold) {
             // Try to load wrestler's photo, fallback to initials, then placeholder
+            // Photo size is 90px (set by the .wrestler-image img CSS class, since
+            // this branch has no inline width/height) — pass that to the tier
+            // wrapper so a platinum frame sizes correctly around it.
+            const singlesImg = `<img src="images/wrestlers/${slug}.jpg" 
+                         alt="${wrestler.name}" 
+                         style="width: 90px; height: 90px; cursor:pointer;"
+                         onerror="this.onerror=null; this.src='${initialsDataUrl}';">`;
             imageCell = `<td class="wrestler-image">
                 <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display:block;">
-                    <img src="images/wrestlers/${slug}.jpg" 
-                         alt="${wrestler.name}" 
-                         style="cursor:pointer;"
-                         onerror="this.onerror=null; this.src='${initialsDataUrl}';">
+                    ${wrapPhotoWithTier(singlesImg, wrestler.rating, 90)}
                 </a>
             </td>`;
         } else {
             // Beyond threshold - show initials directly (SMALLER SIZE)
             const initialsDataUrlSmall = createInitialsCircle(initials, 70);
+            const singlesImgSmall = `<img src="${initialsDataUrlSmall}" 
+                         alt="${wrestler.name}" 
+                         style="width: 70px; height: 70px; cursor:pointer;">`;
             imageCell = `<td class="wrestler-image">
                 <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" style="display:block;">
-                    <img src="${initialsDataUrlSmall}" 
-                         alt="${wrestler.name}" 
-                         style="width: 70px; height: 70px; cursor:pointer;">
+                    ${wrapPhotoWithTier(singlesImgSmall, wrestler.rating, 70)}
                 </a>
             </td>`;
         }
@@ -3530,7 +3551,7 @@ for (let i = 0; i < filteredData.length; i++) {
 
 rows.push(`
      <tr class="${separatorClass}${tagTriosClass}">
-        <td class="rank">${wrestler.rank}</td>
+        <td class="rank" style="color: ${getTierTextColour(wrestler.rating)};">${wrestler.rank}</td>
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek)) : wrestler.name}</a>${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
@@ -4390,6 +4411,120 @@ function renderStatistics(division) {
             return 'rating-poor';
         }
 
+        // ============================================
+        // TIER RING SYSTEM — shared helpers
+        // Recalculated at render time from whatever rating is passed in.
+        // Nothing is stored — same wrestler can show different rings on
+        // different pages depending on whether current or peak is passed.
+        // ============================================
+
+        // Returns the tier info for a given rating.
+        // Solid tiers return a flat colour. Platinum returns a gradient flag
+        // instead, since gradients can't be applied as a plain CSS border.
+        function getTierColour(rating) {
+            if (rating == null || isNaN(rating)) {
+                return { tier: 'navy', solid: '#2a3060' };
+            }
+            if (rating >= 150) {
+                return { tier: 'platinum', gradient: 'linear-gradient(135deg, #c9a0ff, #9be8ff, #c9a0ff)' };
+            }
+            if (rating >= 140) {
+                return { tier: 'gold', solid: '#ffd700' };
+            }
+            if (rating >= 130) {
+                return { tier: 'silver', solid: '#c0c0c0' };
+            }
+            if (rating >= 120) {
+                return { tier: 'bronze', solid: '#cd7f32' };
+            }
+            return { tier: 'navy', solid: '#2a3060' };
+        }
+
+        // Wraps a single <img ...> HTML string with the correct tier ring.
+        //
+        // - imgHTML: the full <img ...> tag as a string, exactly as it would
+        //   have been built before (src, alt, onerror, sizing etc. already in
+        //   place). Do NOT include a border in imgHTML's own style — this
+        //   function adds it.
+        // - rating: the rating to base the ring colour on (current or peak,
+        //   depending on which page/table is calling this).
+        // - sizePx: the photo's diameter in px (must match the width/height
+        //   already set on the img itself), used to size the platinum frame
+        //   ring consistently with the photo.
+        // - borderWidth: ring thickness in px (defaults to 2, matches existing
+        //   site convention; pass 1 or 3 to match a specific call site's
+        //   current width).
+        //
+        // Returns an HTML string: either the original <img> with a border
+        // style injected (solid tiers), or the <img> wrapped in a small
+        // gradient frame span (platinum only).
+        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2) {
+            const tierInfo = getTierColour(rating);
+
+            if (tierInfo.tier !== 'platinum') {
+                // Solid tier — inject/replace border colour in the img's
+                // existing inline style, rather than adding a second style=""
+                // attribute (which would be invalid HTML and get silently
+                // ignored by the browser).
+                return mergeImgStyle(imgHTML, `border: ${borderWidth}px solid ${tierInfo.solid};`);
+            }
+
+            // Platinum — wrap in a small frame: the gradient shows as a
+            // background in the padding gap around the photo. border-radius:
+            // 50% on the wrapper keeps the frame circular (a gradient can't
+            // be circular if applied as a CSS border, only as a background can).
+            const framePadding = Math.max(2, Math.round(borderWidth));
+            const frameSize = sizePx + (framePadding * 2);
+
+            // Force the inner img to fill the frame's inner circle and drop
+            // any border it had (the frame itself is the ring now), merging
+            // into whatever style attribute already exists rather than
+            // adding a second one.
+            const innerStyleOverride = `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`;
+            const innerImg = mergeImgStyle(imgHTML, innerStyleOverride);
+
+            return `<span style="display: inline-block; width: ${frameSize}px; height: ${frameSize}px; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: border-box;">${innerImg}</span>`;
+        }
+
+        // Merges a set of style rules into an <img> tag's existing style
+        // attribute (if any), rather than adding a second style="" attribute,
+        // which browsers only partially honour and which silently breaks
+        // ring rendering. newRules wins on any property it sets (border,
+        // width, height etc.); anything else already in the original style
+        // is preserved.
+        function mergeImgStyle(imgHTML, newRules) {
+            const newProps = {};
+            newRules.split(';').forEach(rule => {
+                const [prop, ...rest] = rule.split(':');
+                if (prop && rest.length) newProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+            });
+
+            if (/style="[^"]*"/i.test(imgHTML)) {
+                return imgHTML.replace(/style="([^"]*)"/i, (match, existingStyle) => {
+                    const existingProps = {};
+                    existingStyle.split(';').forEach(rule => {
+                        const [prop, ...rest] = rule.split(':');
+                        if (prop && rest.length) existingProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+                    });
+                    const combined = { ...existingProps, ...newProps };
+                    const merged = Object.entries(combined).map(([k, v]) => `${k}: ${v}`).join('; ') + ';';
+                    return `style="${merged}"`;
+                });
+            }
+
+            return imgHTML.replace('<img ', `<img style="${newRules}" `);
+        }
+
+        // Returns the tier colour as a CSS color value suitable for text
+        // (rank numbers etc). Platinum returns its first gradient stop as a
+        // reasonable solid fallback, since text colour can't be a gradient
+        // without extra background-clip trickery.
+        function getTierTextColour(rating) {
+            const tierInfo = getTierColour(rating);
+            if (tierInfo.tier === 'platinum') return '#c9a0ff';
+            return tierInfo.solid;
+        }
+
         function getChangeClass(change) {
             if (!change && change !== 0) {
                 return 'no-change';
@@ -4840,15 +4975,19 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 const slug2 = createSlug(members[1]);
                 const initialsUrl1 = createInitialsCircle(generateTagInitials(members[0]), 50);
                 const initialsUrl2 = createInitialsCircle(generateTagInitials(members[1]), 50);
+                const dynTagImg1 = `<img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';">`;
+                const dynTagImg2 = `<img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';">`;
                 dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
-                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
-                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}">${wrapPhotoWithTier(dynTagImg1, wrestler.peak, 50)}</a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}">${wrapPhotoWithTier(dynTagImg2, wrestler.peak, 50)}</a>
                 </div></td>`;
             } else {
                 const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 50);
+                const dynTeamImgA = `<img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">`;
+                const dynTeamImgB = `<img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">`;
                 dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
-                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
-                    <img src="${teamInitialsUrl}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;">
+                    ${wrapPhotoWithTier(dynTeamImgA, wrestler.peak, 50)}
+                    ${wrapPhotoWithTier(dynTeamImgB, wrestler.peak, 50)}
                 </div></td>`;
             }
         } else if (division === 'trios') {
@@ -4860,24 +4999,31 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 const initialsUrl1 = createInitialsCircle(generateTrioInitial(members[0]), 35);
                 const initialsUrl2 = createInitialsCircle(generateTrioInitial(members[1]), 35);
                 const initialsUrl3 = createInitialsCircle(generateTrioInitial(members[2]), 35);
+                const dynTrioImg1 = `<img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';">`;
+                const dynTrioImg2 = `<img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';">`;
+                const dynTrioImg3 = `<img src="images/wrestlers/${slug3}.jpg" alt="${members[2]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl3}';">`;
                 dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
-                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl1}';"></a>
-                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl2}';"></a>
-                    <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${dynReturnWeek}&returnDivision=${division}"><img src="images/wrestlers/${slug3}.jpg" alt="${members[2]}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsUrl3}';"></a>
+                    <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${dynReturnWeek}&returnDivision=${division}">${wrapPhotoWithTier(dynTrioImg1, wrestler.peak, 35)}</a>
+                    <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${dynReturnWeek}&returnDivision=${division}">${wrapPhotoWithTier(dynTrioImg2, wrestler.peak, 35)}</a>
+                    <a href="wrestler-stats.html?wrestler=${slug3}&returnWeek=${dynReturnWeek}&returnDivision=${division}">${wrapPhotoWithTier(dynTrioImg3, wrestler.peak, 35)}</a>
                 </div></td>`;
             } else {
                 const teamInitialsUrl = createInitialsCircle(generateInitials(wrestler.name), 35);
+                const dynTeamSmallA = `<img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;">`;
+                const dynTeamSmallB = `<img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;">`;
+                const dynTeamSmallC = `<img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;">`;
                 dynImageCell = `<td class="wrestler-image s-photo"><div style="display:flex;gap:2px;justify-content:center;">
-                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
-                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
-                    <img src="${teamInitialsUrl}" style="width:35px;height:35px;border-radius:50%;border:2px solid #ffd700;">
+                    ${wrapPhotoWithTier(dynTeamSmallA, wrestler.peak, 35)}
+                    ${wrapPhotoWithTier(dynTeamSmallB, wrestler.peak, 35)}
+                    ${wrapPhotoWithTier(dynTeamSmallC, wrestler.peak, 35)}
                 </div></td>`;
             }
         } else {
             const slug = createSlug(wrestler.name);
             const initialsDataUrl = createInitialsCircle(generateInitials(wrestler.name), 70);
+            const dynSinglesImg = `<img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsDataUrl}';">`;
             dynImageCell = `<td class="wrestler-image s-photo"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${dynReturnWeek}&returnDivision=${division}&returnView=statistics" style="display:block;">
-                <img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;" onerror="this.onerror=null;this.src='${initialsDataUrl}';">
+                ${wrapPhotoWithTier(dynSinglesImg, wrestler.peak, 70)}
             </a></td>`;
         }
 
@@ -4889,7 +5035,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             seenStatsEntries.add(statsDedupKey);
             statsRank++;
             rowsHtml += `<tr class="${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? 'tag-trios-row' : ''}">`;
-            if (visibleColumns.rank) rowsHtml += `<td class="rank s-rank">${statsRank}</td>`;
+            if (visibleColumns.rank) rowsHtml += `<td class="rank s-rank" style="color: ${getTierTextColour(wrestler.peak)};">${statsRank}</td>`;
             rowsHtml += dynImageCell;
             rowsHtml += `<td class="name s-name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}&returnView=statistics" class="wrestler-link">${statsDisplayName}</a>${getTeamMembers(wrestler.name, division)}</td>`;
             if (visibleColumns.current) rowsHtml += `<td class="rating s-stat ${ratingClass}">${typeof wrestler.current === 'number' ? (wrestler.current || 100).toFixed(2) : wrestler.current}</td>`;
