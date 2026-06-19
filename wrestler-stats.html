@@ -2123,7 +2123,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const yearEnd = getYearEndRating(currentYear);
                 displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
                 displayRank = yearEnd.rank ? `#${yearEnd.rank}` : 'Inactive';
-                displaySubtext = `End ${currentYear}`;
+                // "Last Rating" rather than "End {year}" — this is whatever
+                // their final appearance of the year happened to be, which
+                // isn't necessarily December if they dropped out earlier
+                // (e.g. an October appearance for a wrestler inactive the
+                // rest of the year). Showing the actual month makes that
+                // honest rather than implying a fixed Dec 31 snapshot.
+                displaySubtext = yearEnd.date ? `Last Rating (${formatDateShort(yearEnd.date)})` : `${currentYear}`;
             }
             
             // Format peak rating
@@ -2631,10 +2637,10 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 return appYear === parseInt(year);
             });
             
-            if (yearApps.length === 0) return { rating: null, rank: null };
+            if (yearApps.length === 0) return { rating: null, rank: null, date: null };
             
             const lastApp = yearApps[yearApps.length - 1];
-            return { rating: lastApp.rating, rank: lastApp.rank };
+            return { rating: lastApp.rating, rank: lastApp.rank, date: lastApp.date };
         }
 
         function getWeeksForYear(year) {
