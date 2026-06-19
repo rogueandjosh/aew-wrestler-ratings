@@ -958,7 +958,16 @@
         // = current rating, separated by a dark gap ring.
         // ============================================
 
-        function getTierColour(rating) {
+        function getTierColour(rating, isActive = true) {
+            // Inactive overrides whatever the rating would otherwise be —
+            // it's a separate signal (dropped out of rankings), not just
+            // "low rating". Only meaningful for the INNER ring (current
+            // rating) — the outer ring (career peak) is a permanent fact
+            // and isn't affected by current activity, so callers should
+            // never pass isActive=false when computing the outer ring.
+            if (isActive === false) {
+                return { tier: 'inactive', solid: '#37456b' };
+            }
             if (rating == null || isNaN(rating)) {
                 return { tier: 'navy', solid: '#5b7fc7' };
             }
@@ -982,8 +991,8 @@
         // other pages' helper set, currently unused on this page since
         // initials fallbacks here go through the same dual-ring wrapper as
         // real photos.
-        function getTierSolidColour(rating) {
-            const tierInfo = getTierColour(rating);
+        function getTierSolidColour(rating, isActive = true) {
+            const tierInfo = getTierColour(rating, isActive);
             if (tierInfo.tier === 'platinum') return '#c9a0ff';
             return tierInfo.solid;
         }
@@ -1019,8 +1028,8 @@
         // platinum returns the gradient — background-based rings work for
         // both cases identically, unlike CSS borders which can't render a
         // gradient and respect border-radius reliably together.
-        function tierRingBackground(rating) {
-            const tierInfo = getTierColour(rating);
+        function tierRingBackground(rating, isActive = true) {
+            const tierInfo = getTierColour(rating, isActive);
             return tierInfo.tier === 'platinum' ? tierInfo.gradient : tierInfo.solid;
         }
 
@@ -1042,9 +1051,12 @@
         //   for this page's larger photos).
         // - gapWidth: thickness of the dark gap ring between outer and
         //   inner (default 3).
-        function wrapPhotoWithDualTier(imgHTML, peakRating, currentRating, sizePx, ringWidth = 4, gapWidth = 3) {
+        // - isActive: applies ONLY to the inner ring (current rating) —
+        //   the outer ring (career peak) always reflects the rating
+        //   regardless of activity, since peak is a permanent fact.
+        function wrapPhotoWithDualTier(imgHTML, peakRating, currentRating, sizePx, ringWidth = 4, gapWidth = 3, isActive = true) {
             const outerBg = tierRingBackground(peakRating);
-            const innerBg = tierRingBackground(currentRating);
+            const innerBg = tierRingBackground(currentRating, isActive);
             const gapColour = '#0a0d1a';
 
             const innerImg = mergeImgStyle(imgHTML, `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`);
@@ -1485,10 +1497,11 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
             document.getElementById('pageTitle').textContent = isTeamDiv ? 'Individual Team Statistics' : 'Individual Wrestler Statistics';
             document.getElementById('divisionBadge').textContent = wrestlerData.division;
             
-            // Display wrestler/team image
-            displayWrestlerImage();
-            
-            // Check if wrestler is in current rankings (truly active)
+            // Check if wrestler is in current rankings (truly active) —
+            // computed here, BEFORE displayWrestlerImage(), so it can be
+            // passed in and used for the inner (current) ring's inactive
+            // colouring. Previously this check ran after the image was
+            // already rendered, which is too late for the ring to use it.
             let isCurrentlyActive = false;
             if (currentRankingsData) {
                 const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
@@ -1502,6 +1515,9 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
                     }
                 }
             }
+
+            // Display wrestler/team image
+            displayWrestlerImage(isCurrentlyActive);
 
 const statusBadge = document.getElementById('statusBadge');
 statusBadge.textContent = isCurrentlyActive ? 'ACTIVE' : 'INACTIVE';
@@ -1535,7 +1551,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             displayTeamMembers(); // Show team members for tag/trio teams
         }
 
-        function displayWrestlerImage() {
+        function displayWrestlerImage(isActive = true) {
             const container = document.getElementById('wrestlerImageContainer');
             const division = wrestlerData.division;
             console.log('🔍 Division:', division);
@@ -1627,8 +1643,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
 
                     imageHTML = `
-                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 90)}
-                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 90)}
+                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
                     `;
                 } else {
                     // No member data - use team initials
@@ -1637,8 +1653,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamImgA = `<img src="${teamInitialsUrl}">`;
                     const teamImgB = `<img src="${teamInitialsUrl}">`;
                     imageHTML = `
-                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 90)}
-                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 90)}
+                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
                     `;
                 }
             } else if (isTrios) {
@@ -1660,9 +1676,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const memberImg3 = `<img src="images/wrestlers/${slug3}.jpg" onerror="this.onerror=null; this.src='${initialsUrl3}';">`;
 
                     imageHTML = `
-                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 70)}
-                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 70)}
-                        ${wrapPhotoWithDualTier(memberImg3, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(memberImg3, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
                     `;
                 } else {
                     // No member data - use placeholders
@@ -1672,9 +1688,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const teamImgB = `<img src="${teamInitialsUrl}">`;
                     const teamImgC = `<img src="${teamInitialsUrl}">`;
                     imageHTML = `
-                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 70)}
-                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 70)}
-                        ${wrapPhotoWithDualTier(teamImgC, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
+                        ${wrapPhotoWithDualTier(teamImgC, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
                     `;
                 }
             } else {
@@ -1684,7 +1700,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const initialsUrl = createInitialsCircle(initials, 120);
                 
                 const singleImg = `<img src="images/wrestlers/${slug}.jpg" onerror="this.onerror=null; this.src='${initialsUrl}';">`;
-                imageHTML = wrapPhotoWithDualTier(singleImg, careerPeakRating, wrestlerData.currentRating, 120);
+                imageHTML = wrapPhotoWithDualTier(singleImg, careerPeakRating, wrestlerData.currentRating, 120, 4, 3, isActive);
             }
             
             container.innerHTML = imageHTML;
@@ -2128,9 +2144,27 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 highestRankSubtext = 'Never ranked';
             }
             
+            // Tier colour for the Current Rating box — only treat as
+            // "inactive" when we're actually looking at the live current
+            // state (year filter = ALL). A past year's end-of-year rating
+            // is a historical fact and shouldn't show as inactive just
+            // because the wrestler happens to be inactive today.
+            const currentRatingNumeric = (currentYear === 'ALL')
+                ? (typeof wrestlerData.currentRating === 'number' ? wrestlerData.currentRating : null)
+                : (getYearEndRating(currentYear).rating ?? null);
+            const currentRatingIsActive = (currentYear === 'ALL') ? isCurrentlyActive : true;
+            const currentRatingTier = getTierColour(currentRatingNumeric, currentRatingIsActive);
+            const currentRatingTierColour = currentRatingTier.tier === 'platinum' ? '#c9a0ff' : currentRatingTier.solid;
+
+            // Peak box always reflects whatever peak value is actually
+            // shown (year-filtered or career, matching peakRatingValue
+            // above) — peak is never "inactive", it's a rating fact.
+            const peakTier = getTierColour(peakRatingForYear > 0 ? peakRatingForYear : null);
+            const peakTierColour = peakTier.tier === 'platinum' ? '#c9a0ff' : peakTier.solid;
+
             const cards = [
-                { label: 'Current Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}` },
-                { label: 'Peak', value: peakRatingValue, subtext: peakSubtext },
+                { label: 'Current Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}`, tierColour: currentRatingTierColour },
+                { label: 'Peak', value: peakRatingValue, subtext: peakSubtext, tierColour: peakTierColour },
                 { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
                 { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
                 { label: 'First Week', value: getFirstWeek(), subtext: 'Debut' },
@@ -2140,9 +2174,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             ];
 
             grid.innerHTML = cards.map(card => `
-                <div class="stat-card">
+                <div class="stat-card"${card.tierColour ? ` style="border-color: ${card.tierColour};"` : ''}>
                     <div class="stat-label">${card.label}</div>
-                    <div class="stat-value">${card.value}</div>
+                    <div class="stat-value"${card.tierColour ? ` style="color: ${card.tierColour};"` : ''}>${card.value}</div>
                     ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
                 </div>
             `).join('');
