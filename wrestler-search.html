@@ -831,8 +831,12 @@
         }
 
         // Create initials SVG circle (like index.html)
-        function createInitialsCircle(initials, size) {
-            const radius = size / 2 - 2;
+        function createInitialsCircle(initials, size, ringColour = '#ffd700') {
+            // radius fills the full canvas — no stroke is drawn here, so no
+            // inset is needed. The tier ring is drawn entirely by
+            // wrapPhotoWithTier() as a CSS border/frame around this image;
+            // drawing a second ring inside the SVG itself would double up.
+            const radius = size / 2;
             const center = size / 2;
             
             let fontSize;
@@ -849,7 +853,7 @@
             const svg = `
                 <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="${center}" cy="${center}" r="${radius}" 
-                            fill="#2d2d2d" stroke="#ffd700" stroke-width="2"/>
+                            fill="#2d2d2d"/>
                     <text x="${center}" y="${textY}" text-anchor="middle" 
                           fill="white" font-size="${fontSize}" font-weight="bold" 
                           font-family="Arial, sans-serif">${initials}</text>
@@ -865,6 +869,92 @@
             if (rating >= 120) return 'rating-high';
             if (rating >= 100) return 'rating-medium';
             return 'rating-low';
+        }
+
+        // ============================================
+        // TIER RING SYSTEM — shared helpers
+        // Recalculated at render time from whatever rating is passed in.
+        // This page rings on peak rating (same logic as all-time stats),
+        // since search is about career achievement, not the current week.
+        // ============================================
+
+        function getTierColour(rating) {
+            if (rating == null || isNaN(rating)) {
+                return { tier: 'navy', solid: '#5b7fc7' };
+            }
+            if (rating >= 150) {
+                return { tier: 'platinum', gradient: 'linear-gradient(135deg, #c9a0ff, #9be8ff, #c9a0ff)' };
+            }
+            if (rating >= 140) {
+                return { tier: 'gold', solid: '#ffd700' };
+            }
+            if (rating >= 130) {
+                return { tier: 'silver', solid: '#c0c0c0' };
+            }
+            if (rating >= 120) {
+                return { tier: 'bronze', solid: '#cd7f32' };
+            }
+            return { tier: 'navy', solid: '#5b7fc7' };
+        }
+
+        function getTierTextColour(rating) {
+            const tierInfo = getTierColour(rating);
+            if (tierInfo.tier === 'platinum') return '#c9a0ff';
+            return tierInfo.solid;
+        }
+
+        // Used for the initials-fallback SVG ring, which is drawn as a plain
+        // <circle stroke> and can't render a true gradient — platinum gets a
+        // flat lilac as the best available match.
+        function getTierSolidColour(rating) {
+            const tierInfo = getTierColour(rating);
+            if (tierInfo.tier === 'platinum') return '#c9a0ff';
+            return tierInfo.solid;
+        }
+
+        // Wraps a single <img ...> HTML string with the correct tier ring.
+        // Solid tiers get a CSS border; platinum gets wrapped in a small
+        // gradient frame (a CSS border can't render a gradient and respect
+        // border-radius reliably across browsers).
+        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2) {
+            const tierInfo = getTierColour(rating);
+
+            if (tierInfo.tier !== 'platinum') {
+                return mergeImgStyle(imgHTML, `border: ${borderWidth}px solid ${tierInfo.solid};`);
+            }
+
+            const framePadding = Math.max(2, Math.round(borderWidth));
+            const frameSize = sizePx + (framePadding * 2);
+            const innerStyleOverride = `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`;
+            const innerImg = mergeImgStyle(imgHTML, innerStyleOverride);
+
+            return `<span style="display: inline-block; width: ${frameSize}px; height: ${frameSize}px; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: border-box;">${innerImg}</span>`;
+        }
+
+        // Merges style rules into an <img>'s existing style attribute (if
+        // any) rather than adding a second style="" attribute, which
+        // browsers only partially honour and silently breaks ring rendering.
+        function mergeImgStyle(imgHTML, newRules) {
+            const newProps = {};
+            newRules.split(';').forEach(rule => {
+                const [prop, ...rest] = rule.split(':');
+                if (prop && rest.length) newProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+            });
+
+            if (/style="[^"]*"/i.test(imgHTML)) {
+                return imgHTML.replace(/style="([^"]*)"/i, (match, existingStyle) => {
+                    const existingProps = {};
+                    existingStyle.split(';').forEach(rule => {
+                        const [prop, ...rest] = rule.split(':');
+                        if (prop && rest.length) existingProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+                    });
+                    const combined = { ...existingProps, ...newProps };
+                    const merged = Object.entries(combined).map(([k, v]) => `${k}: ${v}`).join('; ') + ';';
+                    return `style="${merged}"`;
+                });
+            }
+
+            return imgHTML.replace('<img ', `<img style="${newRules}" `);
         }
 
         // Check if wrestler is a team
@@ -1328,10 +1418,11 @@
                     membersToShow.forEach(member => {
                         const memberSlug = createSlug(member);
                         const memberInitials = generateTagInitials(member);
-                        const memberFallback = createInitialsCircle(memberInitials, photoSize);
-                        photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(wrestler.peak));
+                        const memberImg = `<img src="images/wrestlers/${memberSlug}.jpg" 
                                            onerror="this.onerror=null; this.src='${memberFallback}';"
                                            alt="${member}">`;
+                        photosHtml += wrapPhotoWithTier(memberImg, wrestler.peak, photoSize);
                     });
                     
                     photosHtml += '</div>';
@@ -1339,20 +1430,22 @@
                 } else {
                     // No member data - show team initials
                     const initials = generateInitials(wrestler.name);
-                    const fallbackUrl = createInitialsCircle(initials, size);
-                    return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                    const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak));
+                    const teamImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                                 class="card-photo"
                                 onerror="this.onerror=null; this.src='${fallbackUrl}';"
                                 alt="${wrestler.name}">`;
+                    return wrapPhotoWithTier(teamImg, wrestler.peak, size, 3);
                 }
             } else {
                 // Single wrestler
                 const initials = generateInitials(wrestler.name);
-                const fallbackUrl = createInitialsCircle(initials, size);
-                return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+                const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak));
+                const singleImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                             class="card-photo"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
                             alt="${wrestler.name}">`;
+                return wrapPhotoWithTier(singleImg, wrestler.peak, size, 3);
             }
         }
 
