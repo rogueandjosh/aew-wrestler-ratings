@@ -2256,7 +2256,12 @@
         
         // Create initials SVG circle - Style 1 (Gold Ring)
         function createInitialsCircle(initials, size, ringColour = '#ffd700') {
-            const radius = size / 2 - 2;
+            // radius fills the full canvas now — previously it was inset by 2px
+            // to leave room for the SVG's own stroke, but that stroke has been
+            // removed (see comment below), so insetting would now leave a
+            // visible transparent gap between this circle and the CSS ring
+            // wrapPhotoWithTier() draws around the outside.
+            const radius = size / 2;
             const center = size / 2;
             
             // Adjust font size based on number of letters
@@ -2271,10 +2276,17 @@
             
             const textY = center + fontSize * 0.35; // Vertically center text
             
+            // No stroke/ring drawn here deliberately — every call site wraps
+            // this image with wrapPhotoWithTier(), which already adds the
+            // correct tier-coloured ring as a CSS border (and handles the
+            // platinum gradient case, which this flat SVG circle can't).
+            // Drawing a ring here too caused a double-ring effect on
+            // initials fallbacks. ringColour is kept as a parameter for
+            // backwards compatibility but is currently unused.
             const svg = `
                 <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="${center}" cy="${center}" r="${radius}" 
-                            fill="#2d2d2d" stroke="${ringColour}" stroke-width="2"/>
+                            fill="#2d2d2d"/>
                     <text x="${center}" y="${textY}" text-anchor="middle" 
                           fill="white" font-size="${fontSize}" font-weight="bold" 
                           font-family="Arial, sans-serif">${initials}</text>
