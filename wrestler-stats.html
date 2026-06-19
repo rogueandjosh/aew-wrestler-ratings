@@ -920,7 +920,11 @@
         
         // Helper function: Create SVG initials circle
         function createInitialsCircle(initials, size) {
-            const radius = size / 2 - 2;
+            // radius fills the full canvas — no stroke is drawn here, so no
+            // inset is needed. Any ring is drawn entirely by the tier-ring
+            // wrapper functions below as a CSS border/frame around this
+            // image; drawing a ring inside the SVG itself would double up.
+            const radius = size / 2;
             const center = size / 2;
             
             let fontSize;
@@ -936,13 +940,127 @@
             
             const svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="${center}" cy="${center}" r="${radius}" 
-                        fill="#2d2d2d" stroke="#ffd700" stroke-width="2"/>
+                        fill="#2d2d2d"/>
                 <text x="${center}" y="${textY}" text-anchor="middle" 
                       fill="white" font-size="${fontSize}" font-weight="bold" 
                       font-family="Arial, sans-serif">${initials}</text>
             </svg>`;
             
             return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        // ============================================
+        // TIER RING SYSTEM — shared helpers
+        // This page is the one DUAL-RING page on the site: outer ring =
+        // career peak rating (fixed, does NOT respond to the year filter —
+        // confirmed deliberately, since the photo is a fixed header element
+        // separate from the year-filtered stats grid below it), inner ring
+        // = current rating, separated by a dark gap ring.
+        // ============================================
+
+        function getTierColour(rating) {
+            if (rating == null || isNaN(rating)) {
+                return { tier: 'navy', solid: '#5b7fc7' };
+            }
+            if (rating >= 150) {
+                return { tier: 'platinum', gradient: 'linear-gradient(135deg, #c9a0ff, #9be8ff, #c9a0ff)' };
+            }
+            if (rating >= 140) {
+                return { tier: 'gold', solid: '#ffd700' };
+            }
+            if (rating >= 130) {
+                return { tier: 'silver', solid: '#c0c0c0' };
+            }
+            if (rating >= 120) {
+                return { tier: 'bronze', solid: '#cd7f32' };
+            }
+            return { tier: 'navy', solid: '#5b7fc7' };
+        }
+
+        // Used for the initials-fallback SVG, which has no ring of its own
+        // (see createInitialsCircle above) — kept for consistency with the
+        // other pages' helper set, currently unused on this page since
+        // initials fallbacks here go through the same dual-ring wrapper as
+        // real photos.
+        function getTierSolidColour(rating) {
+            const tierInfo = getTierColour(rating);
+            if (tierInfo.tier === 'platinum') return '#c9a0ff';
+            return tierInfo.solid;
+        }
+
+        // Merges style rules into an <img>'s existing style attribute (if
+        // any) rather than adding a second style="" attribute, which
+        // browsers only partially honour and silently breaks ring rendering.
+        function mergeImgStyle(imgHTML, newRules) {
+            const newProps = {};
+            newRules.split(';').forEach(rule => {
+                const [prop, ...rest] = rule.split(':');
+                if (prop && rest.length) newProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+            });
+
+            if (/style="[^"]*"/i.test(imgHTML)) {
+                return imgHTML.replace(/style="([^"]*)"/i, (match, existingStyle) => {
+                    const existingProps = {};
+                    existingStyle.split(';').forEach(rule => {
+                        const [prop, ...rest] = rule.split(':');
+                        if (prop && rest.length) existingProps[prop.trim().toLowerCase()] = rest.join(':').trim();
+                    });
+                    const combined = { ...existingProps, ...newProps };
+                    const merged = Object.entries(combined).map(([k, v]) => `${k}: ${v}`).join('; ') + ';';
+                    return `style="${merged}"`;
+                });
+            }
+
+            return imgHTML.replace('<img ', `<img style="${newRules}" `);
+        }
+
+        // Builds the CSS background for a single ring layer (outer or
+        // inner). Solid tiers return a flat colour usable as a background;
+        // platinum returns the gradient — background-based rings work for
+        // both cases identically, unlike CSS borders which can't render a
+        // gradient and respect border-radius reliably together.
+        function tierRingBackground(rating) {
+            const tierInfo = getTierColour(rating);
+            return tierInfo.tier === 'platinum' ? tierInfo.gradient : tierInfo.solid;
+        }
+
+        // Wraps a single <img ...> HTML string in a DUAL ring: outer ring
+        // = peakRating, inner ring = currentRating, separated by a dark gap
+        // ring. Built as three nested circular layers (outer background ->
+        // gap background -> inner background -> photo), since this reliably
+        // handles both solid colours and the platinum gradient using the
+        // same background-based approach (a CSS border can't render a
+        // gradient and respect border-radius together across browsers).
+        //
+        // - imgHTML: the full <img ...> tag as a string (src, alt, onerror,
+        //   sizing etc. already in place). Any border/style it has will be
+        //   stripped and replaced — the rings are drawn by the wrapper, not
+        //   the image itself.
+        // - peakRating / currentRating: ratings driving the outer/inner ring.
+        // - sizePx: the photo's diameter in px.
+        // - ringWidth: thickness of each ring layer in px (default 4, sized
+        //   for this page's larger photos).
+        // - gapWidth: thickness of the dark gap ring between outer and
+        //   inner (default 3).
+        function wrapPhotoWithDualTier(imgHTML, peakRating, currentRating, sizePx, ringWidth = 4, gapWidth = 3) {
+            const outerBg = tierRingBackground(peakRating);
+            const innerBg = tierRingBackground(currentRating);
+            const gapColour = '#0a0d1a';
+
+            const innerImg = mergeImgStyle(imgHTML, `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`);
+
+            // Innermost layer is the photo itself. Each layer outside it
+            // adds its own padding ring via background + padding, building
+            // outward: photo -> inner ring -> gap -> outer ring.
+            const innerRingSize = sizePx + (ringWidth * 2);
+            const gapSize = innerRingSize + (gapWidth * 2);
+            const outerRingSize = gapSize + (ringWidth * 2);
+
+            const innerRingLayer = `<span style="display:inline-block; width:${innerRingSize}px; height:${innerRingSize}px; border-radius:50%; background:${innerBg}; padding:${ringWidth}px; box-sizing:border-box;">${innerImg}</span>`;
+            const gapLayer = `<span style="display:inline-block; width:${gapSize}px; height:${gapSize}px; border-radius:50%; background:${gapColour}; padding:${gapWidth}px; box-sizing:border-box;">${innerRingLayer}</span>`;
+            const outerRingLayer = `<span style="display:inline-block; width:${outerRingSize}px; height:${outerRingSize}px; border-radius:50%; background:${outerBg}; padding:${ringWidth}px; box-sizing:border-box;">${gapLayer}</span>`;
+
+            return outerRingLayer;
         }
 
         // Helper function: Convert opponent names array to hyperlinked string
@@ -1423,6 +1541,37 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             console.log('🔍 Division:', division);
             console.log('🔍 Team members data:', allTeamMembers?.teams?.[wrestlerData.name]);
             let imageHTML = '';
+
+            // Career peak rating for the dual-ring system's OUTER ring.
+            // Deliberately computed from the FULL (unfiltered) ratingHistory,
+            // not scoped to the currently-selected year filter — the photo
+            // is a fixed header element, separate from the year-filtered
+            // stats grid below it, so its ring shouldn't change colour when
+            // someone clicks a year filter button. This matches the same
+            // career-peak logic used elsewhere on the site (all-time stats,
+            // wrestler-search), just computed locally here since this page
+            // doesn't otherwise load a pre-calculated peak field.
+            let careerPeakRating = 0;
+            if (wrestlerData.ratingHistory && wrestlerData.ratingHistory.length > 0) {
+                wrestlerData.ratingHistory.forEach(snap => {
+                    if (snap.rating && snap.rating > careerPeakRating) {
+                        careerPeakRating = snap.rating;
+                    }
+                });
+            }
+            // Fallback: if no history exists yet (e.g. brand new entrant)
+            // but a current rating is known, treat that as the peak so far.
+            if (careerPeakRating === 0 && typeof wrestlerData.currentRating === 'number') {
+                careerPeakRating = wrestlerData.currentRating;
+            }
+
+            // This page is loaded per-slug for teams just as it is for
+            // singles, so wrestlerData here already represents the team's
+            // own rating/history (not an individual member's) when on a
+            // team page — same peak/current values apply to both ring
+            // calls for every member photo in that team's header.
+            const teamPeakRating = careerPeakRating;
+            const teamCurrentRating = wrestlerData.currentRating;
             
             // Check division type - be more flexible with matching
             const isTagTeam = division && (
@@ -1461,7 +1610,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
 
             if (isTagTeam) {
-                // TAG TEAMS - 2 images at 90x90
+                // TAG TEAMS - 2 images at 90x90, each with its own dual ring
                 const members = findTeamMembers(wrestlerData.name);
                 
                 console.log('🔍 Found members:', members);
@@ -1474,25 +1623,26 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const initialsUrl1 = createInitialsCircle(initials1, 90);
                     const initialsUrl2 = createInitialsCircle(initials2, 90);
                     
+                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+
                     imageHTML = `
-                        <img src="images/wrestlers/${slug1}.jpg" 
-                             style="width: 90px; height: 90px;"
-                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
-                        <img src="images/wrestlers/${slug2}.jpg" 
-                             style="width: 90px; height: 90px;"
-                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
+                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 90)}
+                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 90)}
                     `;
                 } else {
                     // No member data - use team initials
                     const teamInitials = generateInitials(wrestlerData.name);
                     const teamInitialsUrl = createInitialsCircle(teamInitials, 90);
+                    const teamImgA = `<img src="${teamInitialsUrl}">`;
+                    const teamImgB = `<img src="${teamInitialsUrl}">`;
                     imageHTML = `
-                        <img src="${teamInitialsUrl}" style="width: 90px; height: 90px;">
-                        <img src="${teamInitialsUrl}" style="width: 90px; height: 90px;">
+                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 90)}
+                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 90)}
                     `;
                 }
             } else if (isTrios) {
-                // TRIOS - 3 images at 70x70
+                // TRIOS - 3 images at 70x70, each with its own dual ring
                 const members = findTeamMembers(wrestlerData.name);
                 if (members && members.length >= 3) {
                     const slug1 = createSlug(members[0]);
@@ -1505,38 +1655,36 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const initialsUrl2 = createInitialsCircle(initials2, 70);
                     const initialsUrl3 = createInitialsCircle(initials3, 70);
                     
+                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+                    const memberImg3 = `<img src="images/wrestlers/${slug3}.jpg" onerror="this.onerror=null; this.src='${initialsUrl3}';">`;
+
                     imageHTML = `
-                        <img src="images/wrestlers/${slug1}.jpg" 
-                             style="width: 70px; height: 70px;"
-                             onerror="this.onerror=null; this.src='${initialsUrl1}';">
-                        <img src="images/wrestlers/${slug2}.jpg" 
-                             style="width: 70px; height: 70px;"
-                             onerror="this.onerror=null; this.src='${initialsUrl2}';">
-                        <img src="images/wrestlers/${slug3}.jpg" 
-                             style="width: 70px; height: 70px;"
-                             onerror="this.onerror=null; this.src='${initialsUrl3}';">
+                        ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(memberImg2, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(memberImg3, teamPeakRating, teamCurrentRating, 70)}
                     `;
                 } else {
                     // No member data - use placeholders
                     const teamInitials = generateInitials(wrestlerData.name);
                     const teamInitialsUrl = createInitialsCircle(teamInitials, 70);
+                    const teamImgA = `<img src="${teamInitialsUrl}">`;
+                    const teamImgB = `<img src="${teamInitialsUrl}">`;
+                    const teamImgC = `<img src="${teamInitialsUrl}">`;
                     imageHTML = `
-                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
-                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
-                        <img src="${teamInitialsUrl}" style="width: 70px; height: 70px;">
+                        ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 70)}
+                        ${wrapPhotoWithDualTier(teamImgC, teamPeakRating, teamCurrentRating, 70)}
                     `;
                 }
             } else {
-                // SINGLES - 1 image at 120x120
+                // SINGLES - 1 image at 120x120 with dual ring
                 const slug = createSlug(wrestlerData.name);
                 const initials = generateInitials(wrestlerData.name);
                 const initialsUrl = createInitialsCircle(initials, 120);
                 
-                imageHTML = `
-                    <img src="images/wrestlers/${slug}.jpg" 
-                         style="width: 120px; height: 120px;"
-                         onerror="this.onerror=null; this.src='${initialsUrl}';">
-                `;
+                const singleImg = `<img src="images/wrestlers/${slug}.jpg" onerror="this.onerror=null; this.src='${initialsUrl}';">`;
+                imageHTML = wrapPhotoWithDualTier(singleImg, careerPeakRating, wrestlerData.currentRating, 120);
             }
             
             container.innerHTML = imageHTML;
