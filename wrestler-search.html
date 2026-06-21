@@ -1427,8 +1427,24 @@
         }
 
         // Render wrestler photo(s) - matching index.html style for teams
+        // Picks which rating the photo ring should reflect, matching
+        // whatever number getDisplayStats() actually shows on the card
+        // under the current sort — so the ring colour always agrees with
+        // the number sitting next to it, rather than always being peak
+        // regardless of what's displayed. Mirrors getDisplayStats' own
+        // branching exactly: 'current'/'name' sort shows Current on the
+        // card, so ring on current; 'peak'/'weeks' sort shows Peak, so
+        // ring on peak.
+        function getRingRating(wrestler) {
+            if (currentSortField === 'current' || currentSortField === 'name') {
+                return wrestler.current;
+            }
+            return wrestler.peak;
+        }
+
         function renderPhoto(wrestler, size = 80) {
             const isTeamDivision = isTeam(wrestler.division);
+            const ringRating = getRingRating(wrestler);
             
             if (isTeamDivision) {
                 // Try to get team members
@@ -1445,11 +1461,11 @@
                     membersToShow.forEach(member => {
                         const memberSlug = createSlug(member);
                         const memberInitials = generateTagInitials(member);
-                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(wrestler.peak, wrestler.isActive));
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(ringRating, wrestler.isActive));
                         const memberImg = `<img src="images/wrestlers/${memberSlug}.jpg" 
                                            onerror="this.onerror=null; this.src='${memberFallback}';"
                                            alt="${member}">`;
-                        photosHtml += wrapPhotoWithTier(memberImg, wrestler.peak, photoSize, 2, wrestler.isActive);
+                        photosHtml += wrapPhotoWithTier(memberImg, ringRating, photoSize, 2, wrestler.isActive);
                     });
                     
                     photosHtml += '</div>';
@@ -1457,22 +1473,22 @@
                 } else {
                     // No member data - show team initials
                     const initials = generateInitials(wrestler.name);
-                    const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak, wrestler.isActive));
+                    const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(ringRating, wrestler.isActive));
                     const teamImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                                 class="card-photo"
                                 onerror="this.onerror=null; this.src='${fallbackUrl}';"
                                 alt="${wrestler.name}">`;
-                    return wrapPhotoWithTier(teamImg, wrestler.peak, size, 3, wrestler.isActive);
+                    return wrapPhotoWithTier(teamImg, ringRating, size, 3, wrestler.isActive);
                 }
             } else {
                 // Single wrestler
                 const initials = generateInitials(wrestler.name);
-                const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak, wrestler.isActive));
+                const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(ringRating, wrestler.isActive));
                 const singleImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                             class="card-photo"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
                             alt="${wrestler.name}">`;
-                return wrapPhotoWithTier(singleImg, wrestler.peak, size, 3, wrestler.isActive);
+                return wrapPhotoWithTier(singleImg, ringRating, size, 3, wrestler.isActive);
             }
         }
 
