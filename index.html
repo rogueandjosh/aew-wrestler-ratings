@@ -783,7 +783,7 @@
 
             td, th { padding: 8px 4px !important; }
 
-            .wrestler-image > a > img { width: 55px !important; height: 55px !important; }
+            .wrestler-image > a > img, .wrestler-image > a > span > img { width: 55px !important; height: 55px !important; }
             .tag-trios-row .wrestler-image div { gap: 1px !important; flex-wrap: nowrap !important; }
             .tag-trios-row .wrestler-image a img { width: 32px !important; height: 32px !important; border-width: 1px !important; }
             .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img { width: 21px !important; height: 21px !important; }
@@ -4481,7 +4481,17 @@ function renderStatistics(division) {
         // Returns an HTML string: either the original <img> with a border
         // style injected (solid tiers), or the <img> wrapped in a small
         // gradient frame span (platinum only).
-        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2) {
+        // forceInlineSize: true if the caller's imgHTML has no CSS class
+        // handling its own responsive width/height (so this function must
+        // set it inline to have any size at all — e.g. index.html's photo
+        // markup). false if imgHTML already has a CSS class that sizes it
+        // responsively across breakpoints (e.g. wrestler-search.html's
+        // .card-photo) — in that case, forcing inline width/height here
+        // would override the CSS class's mobile breakpoint rules (inline
+        // styles beat plain class rules without needing !important), which
+        // would silently break that page's mobile responsiveness. Default
+        // true to match this file's own markup pattern.
+        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2, forceInlineSize = true) {
             const tierInfo = getTierColour(rating);
 
             if (tierInfo.tier !== 'platinum') {
@@ -4496,17 +4506,22 @@ function renderStatistics(division) {
             // background in the padding gap around the photo. border-radius:
             // 50% on the wrapper keeps the frame circular (a gradient can't
             // be circular if applied as a CSS border, only as a background can).
+            //
+            // IMPORTANT: the wrapper deliberately has NO explicit width/height
+            // — it uses display:inline-flex so it auto-sizes around whatever
+            // the inner <img> actually renders at, at any breakpoint. Several
+            // mobile breakpoints on this site shrink wrestler photos via
+            // `!important` CSS rules targeting <img> directly, which a
+            // FIXED px wrapper size computed once from desktop sizePx would
+            // ignore entirely — this was a real bug seen on mobile, where
+            // the ring stayed oversized after the photo itself shrank.
             const framePadding = Math.max(2, Math.round(borderWidth));
-            const frameSize = sizePx + (framePadding * 2);
 
-            // Force the inner img to fill the frame's inner circle and drop
-            // any border it had (the frame itself is the ring now), merging
-            // into whatever style attribute already exists rather than
-            // adding a second one.
-            const innerStyleOverride = `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`;
+            const sizeRule = forceInlineSize ? `width: ${sizePx}px; height: ${sizePx}px; ` : '';
+            const innerStyleOverride = `${sizeRule}border-radius: 50%; object-fit: cover; display: block; border: none;`;
             const innerImg = mergeImgStyle(imgHTML, innerStyleOverride);
 
-            return `<span style="display: inline-block; width: ${frameSize}px; height: ${frameSize}px; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: border-box;">${innerImg}</span>`;
+            return `<span style="display: inline-flex; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: content-box; line-height: 0;">${innerImg}</span>`;
         }
 
         // Merges a set of style rules into an <img> tag's existing style
