@@ -1426,25 +1426,12 @@
             renderResults();
         }
 
-        // Render wrestler photo(s) - matching index.html style for teams
-        // Picks which rating the photo ring should reflect, matching
-        // whatever number getDisplayStats() actually shows on the card
-        // under the current sort — so the ring colour always agrees with
-        // the number sitting next to it, rather than always being peak
-        // regardless of what's displayed. Mirrors getDisplayStats' own
-        // branching exactly: 'current'/'name' sort shows Current on the
-        // card, so ring on current; 'peak'/'weeks' sort shows Peak, so
-        // ring on peak.
-        function getRingRating(wrestler) {
-            if (currentSortField === 'current' || currentSortField === 'name') {
-                return wrestler.current;
-            }
-            return wrestler.peak;
-        }
-
         function renderPhoto(wrestler, size = 80) {
             const isTeamDivision = isTeam(wrestler.division);
-            const ringRating = getRingRating(wrestler);
+            // Ring always reflects peak rating, regardless of current sort
+            // — career achievement is a fixed fact, not something that
+            // should change depending on how the page happens to be sorted.
+            const ringRating = wrestler.peak;
             
             if (isTeamDivision) {
                 // Try to get team members
