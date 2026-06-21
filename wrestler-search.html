@@ -878,7 +878,15 @@
         // since search is about career achievement, not the current week.
         // ============================================
 
-        function getTierColour(rating) {
+        function getTierColour(rating, isActive = true) {
+            // Inactive overrides whatever the rating would otherwise be —
+            // it's a separate signal (dropped out of rankings), not just
+            // "low rating". isActive defaults to true so every other call
+            // site (and every other page) is unaffected unless it
+            // explicitly knows and passes a wrestler's active status.
+            if (isActive === false) {
+                return { tier: 'inactive', solid: '#37456b' };
+            }
             if (rating == null || isNaN(rating)) {
                 return { tier: 'navy', solid: '#5b7fc7' };
             }
@@ -906,8 +914,8 @@
         // Used for the initials-fallback SVG ring, which is drawn as a plain
         // <circle stroke> and can't render a true gradient — platinum gets a
         // flat lilac as the best available match.
-        function getTierSolidColour(rating) {
-            const tierInfo = getTierColour(rating);
+        function getTierSolidColour(rating, isActive = true) {
+            const tierInfo = getTierColour(rating, isActive);
             if (tierInfo.tier === 'platinum') return '#c9a0ff';
             return tierInfo.solid;
         }
@@ -915,20 +923,39 @@
         // Wraps a single <img ...> HTML string with the correct tier ring.
         // Solid tiers get a CSS border; platinum gets wrapped in a small
         // gradient frame (a CSS border can't render a gradient and respect
-        // border-radius reliably across browsers).
-        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2) {
-            const tierInfo = getTierColour(rating);
+        // border-radius reliably across browsers). isActive overrides the
+        // ring to the muted inactive colour regardless of rating — only
+        // meaningful on this page, since this is the one photo grid that
+        // shows both active and inactive wrestlers together.
+        //
+        // forceInlineSize defaults to FALSE on this page — every photo here
+        // relies on a CSS class (.card-photo / .card-photos img) for its
+        // width/height, including the mobile breakpoint at 600px that
+        // shrinks them. If this function forced an inline width/height for
+        // the platinum frame, that inline style would override the CSS
+        // class's mobile rule (inline beats class without needing
+        // !important), silently breaking responsiveness for platinum
+        // wrestlers only. Leaving sizing to the class keeps platinum
+        // behaving identically to every other tier on this page.
+        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2, isActive = true, forceInlineSize = false) {
+            const tierInfo = getTierColour(rating, isActive);
 
             if (tierInfo.tier !== 'platinum') {
                 return mergeImgStyle(imgHTML, `border: ${borderWidth}px solid ${tierInfo.solid};`);
             }
 
+            // Platinum — wrapper has NO explicit width/height; it auto-sizes
+            // around the inner <img> via display:inline-flex, so it always
+            // matches the photo's true rendered size at any breakpoint
+            // (rather than a fixed px frame computed once from desktop
+            // sizePx, which would leave an oversized ring on mobile once
+            // the CSS class shrinks the photo underneath it).
             const framePadding = Math.max(2, Math.round(borderWidth));
-            const frameSize = sizePx + (framePadding * 2);
-            const innerStyleOverride = `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`;
+            const sizeRule = forceInlineSize ? `width: ${sizePx}px; height: ${sizePx}px; ` : '';
+            const innerStyleOverride = `${sizeRule}border-radius: 50%; object-fit: cover; display: block; border: none;`;
             const innerImg = mergeImgStyle(imgHTML, innerStyleOverride);
 
-            return `<span style="display: inline-block; width: ${frameSize}px; height: ${frameSize}px; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: border-box;">${innerImg}</span>`;
+            return `<span style="display: inline-flex; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: content-box; line-height: 0;">${innerImg}</span>`;
         }
 
         // Merges style rules into an <img>'s existing style attribute (if
@@ -1418,11 +1445,11 @@
                     membersToShow.forEach(member => {
                         const memberSlug = createSlug(member);
                         const memberInitials = generateTagInitials(member);
-                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(wrestler.peak));
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(wrestler.peak, wrestler.isActive));
                         const memberImg = `<img src="images/wrestlers/${memberSlug}.jpg" 
                                            onerror="this.onerror=null; this.src='${memberFallback}';"
                                            alt="${member}">`;
-                        photosHtml += wrapPhotoWithTier(memberImg, wrestler.peak, photoSize);
+                        photosHtml += wrapPhotoWithTier(memberImg, wrestler.peak, photoSize, 2, wrestler.isActive);
                     });
                     
                     photosHtml += '</div>';
@@ -1430,22 +1457,22 @@
                 } else {
                     // No member data - show team initials
                     const initials = generateInitials(wrestler.name);
-                    const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak));
+                    const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak, wrestler.isActive));
                     const teamImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                                 class="card-photo"
                                 onerror="this.onerror=null; this.src='${fallbackUrl}';"
                                 alt="${wrestler.name}">`;
-                    return wrapPhotoWithTier(teamImg, wrestler.peak, size, 3);
+                    return wrapPhotoWithTier(teamImg, wrestler.peak, size, 3, wrestler.isActive);
                 }
             } else {
                 // Single wrestler
                 const initials = generateInitials(wrestler.name);
-                const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak));
+                const fallbackUrl = createInitialsCircle(initials, size, getTierSolidColour(wrestler.peak, wrestler.isActive));
                 const singleImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                             class="card-photo"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
                             alt="${wrestler.name}">`;
-                return wrapPhotoWithTier(singleImg, wrestler.peak, size, 3);
+                return wrapPhotoWithTier(singleImg, wrestler.peak, size, 3, wrestler.isActive);
             }
         }
 
