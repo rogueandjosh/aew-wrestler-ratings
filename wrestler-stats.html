@@ -1054,6 +1054,20 @@
         // - isActive: applies ONLY to the inner ring (current rating) —
         //   the outer ring (career peak) always reflects the rating
         //   regardless of activity, since peak is a permanent fact.
+        //
+        // IMPORTANT: none of the three wrapper layers (inner ring, gap,
+        // outer ring) have explicit width/height — they use
+        // display:inline-flex so each layer auto-sizes around its content,
+        // all the way out from the photo. This page has a mobile breakpoint
+        // (`.wrestler-image-container img { width: 80px !important; }`)
+        // that shrinks the photo itself; since that's a descendant selector
+        // it still reaches the <img> regardless of nesting depth, but
+        // fixed-px wrapper layers computed once from desktop sizePx would
+        // NOT have shrunk to match, leaving oversized rings around a now-
+        // smaller photo for every wrestler on mobile, not just platinum
+        // ones (this structure is used for every tier, not only platinum).
+        // Auto-sizing means every layer always hugs whatever the photo
+        // actually renders at, with no JS-computed pixel math to go stale.
         function wrapPhotoWithDualTier(imgHTML, peakRating, currentRating, sizePx, ringWidth = 4, gapWidth = 3, isActive = true) {
             const outerBg = tierRingBackground(peakRating);
             const innerBg = tierRingBackground(currentRating, isActive);
@@ -1063,14 +1077,12 @@
 
             // Innermost layer is the photo itself. Each layer outside it
             // adds its own padding ring via background + padding, building
-            // outward: photo -> inner ring -> gap -> outer ring.
-            const innerRingSize = sizePx + (ringWidth * 2);
-            const gapSize = innerRingSize + (gapWidth * 2);
-            const outerRingSize = gapSize + (ringWidth * 2);
-
-            const innerRingLayer = `<span style="display:inline-block; width:${innerRingSize}px; height:${innerRingSize}px; border-radius:50%; background:${innerBg}; padding:${ringWidth}px; box-sizing:border-box;">${innerImg}</span>`;
-            const gapLayer = `<span style="display:inline-block; width:${gapSize}px; height:${gapSize}px; border-radius:50%; background:${gapColour}; padding:${gapWidth}px; box-sizing:border-box;">${innerRingLayer}</span>`;
-            const outerRingLayer = `<span style="display:inline-block; width:${outerRingSize}px; height:${outerRingSize}px; border-radius:50%; background:${outerBg}; padding:${ringWidth}px; box-sizing:border-box;">${gapLayer}</span>`;
+            // outward: photo -> inner ring -> gap -> outer ring. Each span
+            // auto-sizes to its content via inline-flex, so no fixed
+            // px width/height is computed here at all.
+            const innerRingLayer = `<span style="display:inline-flex; border-radius:50%; background:${innerBg}; padding:${ringWidth}px; box-sizing:content-box; line-height:0;">${innerImg}</span>`;
+            const gapLayer = `<span style="display:inline-flex; border-radius:50%; background:${gapColour}; padding:${gapWidth}px; box-sizing:content-box; line-height:0;">${innerRingLayer}</span>`;
+            const outerRingLayer = `<span style="display:inline-flex; border-radius:50%; background:${outerBg}; padding:${ringWidth}px; box-sizing:content-box; line-height:0;">${gapLayer}</span>`;
 
             return outerRingLayer;
         }
