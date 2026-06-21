@@ -183,10 +183,11 @@
             height: 45px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #ffd700;
             margin-right: 12px;
             flex-shrink: 0;
         }
+        /* Border colour applied dynamically per-wrestler by
+           wrapPhotoWithTier() in JS, matching the main result cards. */
 
         /* Overlapping photos for teams in autocomplete */
         .autocomplete-photos {
@@ -200,10 +201,14 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #ffd700;
         }
 
-        .autocomplete-photos img:not(:first-child) {
+        /* Border colour is no longer hardcoded gold here — it's applied
+           dynamically per-wrestler by wrapPhotoWithTier() in JS, matching
+           the tier ring used on the main result cards. */
+
+        .autocomplete-photos img:not(:first-child),
+        .autocomplete-photos > span:not(:first-child) {
             margin-left: -12px;
         }
 
@@ -212,7 +217,8 @@
             height: 35px;
         }
 
-        .autocomplete-photos.trio img:not(:first-child) {
+        .autocomplete-photos.trio img:not(:first-child),
+        .autocomplete-photos.trio > span:not(:first-child) {
             margin-left: -10px;
         }
 
@@ -885,7 +891,7 @@
             // site (and every other page) is unaffected unless it
             // explicitly knows and passes a wrestler's active status.
             if (isActive === false) {
-                return { tier: 'inactive', solid: '#37456b' };
+                return { tier: 'inactive', solid: '#6b6860' };
             }
             if (rating == null || isNaN(rating)) {
                 return { tier: 'navy', solid: '#5b7fc7' };
@@ -1482,6 +1488,8 @@
         // Render autocomplete photo(s)
         function renderAutocompletePhoto(wrestler) {
             const isTeamDivision = isTeam(wrestler.division);
+            // Same logic as renderPhoto: ring always reflects peak rating.
+            const ringRating = wrestler.peak;
             
             if (isTeamDivision) {
                 const members = findTeamMembersArray(wrestler.name);
@@ -1496,10 +1504,11 @@
                     membersToShow.forEach(member => {
                         const memberSlug = createSlug(member);
                         const memberInitials = generateTagInitials(member);
-                        const memberFallback = createInitialsCircle(memberInitials, photoSize);
-                        photosHtml += `<img src="images/wrestlers/${memberSlug}.jpg" 
+                        const memberFallback = createInitialsCircle(memberInitials, photoSize, getTierSolidColour(ringRating, wrestler.isActive));
+                        const memberImg = `<img src="images/wrestlers/${memberSlug}.jpg" 
                                            onerror="this.onerror=null; this.src='${memberFallback}';"
                                            alt="${member}">`;
+                        photosHtml += wrapPhotoWithTier(memberImg, ringRating, photoSize, 2, wrestler.isActive);
                     });
                     
                     photosHtml += '</div>';
@@ -1509,11 +1518,12 @@
             
             // Single wrestler or no team data
             const initials = generateInitials(wrestler.name);
-            const fallbackUrl = createInitialsCircle(initials, 45);
-            return `<img src="images/wrestlers/${wrestler.slug}.jpg" 
+            const fallbackUrl = createInitialsCircle(initials, 45, getTierSolidColour(ringRating, wrestler.isActive));
+            const soloImg = `<img src="images/wrestlers/${wrestler.slug}.jpg" 
                         class="autocomplete-photo"
                         onerror="this.onerror=null; this.src='${fallbackUrl}';"
                         alt="${wrestler.name}">`;
+            return wrapPhotoWithTier(soloImg, ringRating, 45, 2, wrestler.isActive);
         }
 
         // Get display stats based on current sort
