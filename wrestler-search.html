@@ -1437,7 +1437,7 @@
             // Ring always reflects peak rating, regardless of current sort
             // — career achievement is a fixed fact, not something that
             // should change depending on how the page happens to be sorted.
-            const ringRating = wrestler.peak;
+            const ringRating = wrestler.current;
             
             if (isTeamDivision) {
                 // Try to get team members
@@ -1489,7 +1489,7 @@
         function renderAutocompletePhoto(wrestler) {
             const isTeamDivision = isTeam(wrestler.division);
             // Same logic as renderPhoto: ring always reflects peak rating.
-            const ringRating = wrestler.peak;
+            const ringRating = wrestler.current;
             
             if (isTeamDivision) {
                 const members = findTeamMembersArray(wrestler.name);
