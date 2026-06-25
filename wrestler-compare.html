@@ -1390,8 +1390,8 @@ function getActualCurrentData(wrestlerName, division) {
         }
 
         // Generate photo HTML - single photo for singles, multiple for teams
-        function getPhotoHTML(data, currentRating) {
-            const tierBorder = getTierBorderStyle(currentRating, 2);
+        function getPhotoHTML(data, currentRating, isActive = true) {
+            const tierBorder = getTierBorderStyle(currentRating, isActive, 2);
             const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' ||
                           data.division === "Men's Tag" || data.division === "Women's Tag";
             const isTrios = data.division === 'Trios';
@@ -1451,7 +1451,7 @@ function getActualCurrentData(wrestlerName, division) {
                 ? (isCurrentlyRanked ? actualCurrentData.rating : 'N/A')
                 : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
 
-            const photoHTML = getPhotoHTML(data, currentRating);
+            const photoHTML = getPhotoHTML(data, currentRating, selectedYear === 'ALL' ? isCurrentlyRanked : true);
 
 const currentRank = selectedYear === 'ALL'
     ? (isCurrentlyRanked ? actualCurrentData.rank : 'N/A')
@@ -1605,7 +1605,10 @@ if (selectedYear === 'ALL') {
         // kept as-is for the initials fallback; only the border changes.
         // ============================================
 
-        function getTierColour(rating) {
+        function getTierColour(rating, isActive = true) {
+            if (isActive === false) {
+                return { tier: 'inactive', solid: '#6b6860' };
+            }
             if (rating == null || isNaN(rating) || rating === 'N/A') {
                 return { tier: 'navy', solid: '#5b7fc7' };
             }
@@ -1619,13 +1622,10 @@ if (selectedYear === 'ALL') {
         }
 
         // Returns the CSS border style string for a given current rating.
-        // Platinum uses a gradient via outline trick since CSS border can't
-        // render a gradient with border-radius — but at the small sizes on
-        // this page (50px/26px/22px), platinum is handled as a solid lilac
-        // border for simplicity; the gradient frame approach used on other
-        // pages would be too visually heavy at these tiny sizes.
-        function getTierBorderStyle(rating, borderWidth = 2) {
-            const tier = getTierColour(rating);
+        // Platinum uses a flat lilac border — the gradient-frame wrapper
+        // used on other pages would be too heavy at 50px/26px/22px sizes.
+        function getTierBorderStyle(rating, isActive = true, borderWidth = 2) {
+            const tier = getTierColour(rating, isActive);
             if (tier.tier === 'platinum') {
                 return `border: ${borderWidth}px solid #c9a0ff;`;
             }
