@@ -1390,7 +1390,8 @@ function getActualCurrentData(wrestlerName, division) {
         }
 
         // Generate photo HTML - single photo for singles, multiple for teams
-        function getPhotoHTML(data) {
+        function getPhotoHTML(data, currentRating) {
+            const tierBorder = getTierBorderStyle(currentRating, 2);
             const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' ||
                           data.division === "Men's Tag" || data.division === "Women's Tag";
             const isTrios = data.division === 'Trios';
@@ -1399,7 +1400,7 @@ function getActualCurrentData(wrestlerName, division) {
             if (!data.isTeam && !isTag && !isTrios) {
                 const initials = getInitials(data.name);
                 const slug = createSlug(data.name);
-                return `<div class="wrestler-photo">
+                return `<div class="wrestler-photo" style="${tierBorder}">
                     <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
                 </div>`;
             }
@@ -1411,7 +1412,7 @@ function getActualCurrentData(wrestlerName, division) {
             if (!members || members.length < 2) {
                 const initials = getInitials(data.name);
                 const slug = createSlug(data.name);
-                return `<div class="wrestler-photo">
+                return `<div class="wrestler-photo" style="${tierBorder}">
                     <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
                 </div>`;
             }
@@ -1420,7 +1421,7 @@ function getActualCurrentData(wrestlerName, division) {
             const photos = members.map(member => {
                 const slug = createSlug(member);
                 const initials = getInitials(member);
-                return `<div class="wrestler-photo">
+                return `<div class="wrestler-photo" style="${tierBorder}">
                     <img src="images/wrestlers/${slug}.jpg" alt="${member}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
                 </div>`;
             }).join('');
@@ -1430,27 +1431,27 @@ function getActualCurrentData(wrestlerName, division) {
 
         // Create individual wrestler card
         function createWrestlerCard(data) {
-            const photoHTML = getPhotoHTML(data);
-
             // Calculate stats safely with fallbacks
-const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
-const actualCurrentData = getActualCurrentData(data.name, data.division);
-const isCurrentlyRanked = actualCurrentData.isRanked;
+            const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
+            const actualCurrentData = getActualCurrentData(data.name, data.division);
+            const isCurrentlyRanked = actualCurrentData.isRanked;
 
-// Filter data by selected year
-let filteredHistory = data.ratingHistory || [];
-if (selectedYear !== 'ALL') {
-    const targetYear = parseInt(selectedYear);
-    filteredHistory = filteredHistory.filter(h => {
-        const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
-        return weekYear === targetYear;
-    });
-}
+            // Filter data by selected year
+            let filteredHistory = data.ratingHistory || [];
+            if (selectedYear !== 'ALL') {
+                const targetYear = parseInt(selectedYear);
+                filteredHistory = filteredHistory.filter(h => {
+                    const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
+                    return weekYear === targetYear;
+                });
+            }
 
-// Calculate stats based on filtered history
-const currentRating = selectedYear === 'ALL' 
-    ? (isCurrentlyRanked ? actualCurrentData.rating : 'N/A')
-    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
+            // Calculate current rating first — needed for the tier ring before photo HTML is built
+            const currentRating = selectedYear === 'ALL'
+                ? (isCurrentlyRanked ? actualCurrentData.rating : 'N/A')
+                : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
+
+            const photoHTML = getPhotoHTML(data, currentRating);
 
 const currentRank = selectedYear === 'ALL'
     ? (isCurrentlyRanked ? actualCurrentData.rank : 'N/A')
@@ -1597,7 +1598,39 @@ if (selectedYear === 'ALL') {
             return 'poor';
         }
 
-        // Helper: Format number with commas
+        // ============================================
+        // TIER RING SYSTEM — shared helpers
+        // Rings on current rating (same as wrestler-search).
+        // Border only — the .wrestler-photo div's gold background is
+        // kept as-is for the initials fallback; only the border changes.
+        // ============================================
+
+        function getTierColour(rating) {
+            if (rating == null || isNaN(rating) || rating === 'N/A') {
+                return { tier: 'navy', solid: '#5b7fc7' };
+            }
+            if (rating >= 150) {
+                return { tier: 'platinum', gradient: 'linear-gradient(135deg, #c9a0ff, #9be8ff, #c9a0ff)' };
+            }
+            if (rating >= 140) return { tier: 'gold', solid: '#ffd700' };
+            if (rating >= 130) return { tier: 'silver', solid: '#c0c0c0' };
+            if (rating >= 120) return { tier: 'bronze', solid: '#cd7f32' };
+            return { tier: 'navy', solid: '#5b7fc7' };
+        }
+
+        // Returns the CSS border style string for a given current rating.
+        // Platinum uses a gradient via outline trick since CSS border can't
+        // render a gradient with border-radius — but at the small sizes on
+        // this page (50px/26px/22px), platinum is handled as a solid lilac
+        // border for simplicity; the gradient frame approach used on other
+        // pages would be too visually heavy at these tiny sizes.
+        function getTierBorderStyle(rating, borderWidth = 2) {
+            const tier = getTierColour(rating);
+            if (tier.tier === 'platinum') {
+                return `border: ${borderWidth}px solid #c9a0ff;`;
+            }
+            return `border: ${borderWidth}px solid ${tier.solid};`;
+        }
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
