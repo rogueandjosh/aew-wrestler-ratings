@@ -966,7 +966,7 @@
             // and isn't affected by current activity, so callers should
             // never pass isActive=false when computing the outer ring.
             if (isActive === false) {
-                return { tier: 'inactive', solid: '#37456b' };
+                return { tier: 'inactive', solid: '#6b6860' };
             }
             if (rating == null || isNaN(rating)) {
                 return { tier: 'navy', solid: '#5b7fc7' };
@@ -1266,6 +1266,12 @@
         // Load team data on page load
         (async function() {
             await loadTeamData();
+            await loadCurrentRankings();  // Must complete before loadWrestlerData so
+                                          // currentRankingsData is populated when
+                                          // displayWrestlerImage() checks active status
+                                          // for the tier ring. Without this await,
+                                          // every wrestler showed as inactive (stone grey)
+                                          // if current-rankings.json hadn't loaded yet.
             
             const urlParams = new URLSearchParams(window.location.search);
             const wrestlerSlug = urlParams.get('wrestler');
@@ -1289,9 +1295,6 @@
                 console.warn('Could not load current rankings:', error);
             }
         }
-
-        // Call it on page load
-        loadCurrentRankings();
 
                 async function loadWrestlerData(slug) {
             try {
