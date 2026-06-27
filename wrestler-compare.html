@@ -921,6 +921,18 @@
             await loadTeamData();
             setupEventListeners();
             checkURLParams();
+            // Populate Last Updated from current-rankings.json on page load —
+            // loadCurrentRankings() is only called when Compare is pressed,
+            // so we fetch the date independently here so it shows immediately.
+            fetch('current-rankings.json')
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.lastUpdated) {
+                        const el = document.getElementById('lastUpdated');
+                        if (el) el.textContent = `Last Updated: ${data.lastUpdated}`;
+                    }
+                })
+                .catch(() => {});
         });
 
         // Load team-members.json and name-changes.json for team photo lookups
