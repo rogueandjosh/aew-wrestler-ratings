@@ -63,7 +63,7 @@
         }
 
         .last-updated {
-            margin: 4px 0 0;
+            margin: 2px 0 6px;
             font-size: 0.85em;
             color: #888;
         }
@@ -670,11 +670,14 @@
     <div class="container">
         <header>
             <h1 onclick="window.location.reload()" style="cursor:pointer;" title="Click to refresh">🔍 Wrestler Search</h1>
-            <p class="last-updated" id="lastUpdated"></p>
             <p class="subtitle">Find any wrestler across all divisions</p>
+            <p class="last-updated" id="lastUpdated"></p>
             <div class="nav-buttons">
                 <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
                 <a href="index.html" class="back-link">🏠 Home</a>
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
+                    💡 Tooltips ON
+                </button>
             </div>
         </header>
 
