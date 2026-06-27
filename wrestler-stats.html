@@ -76,9 +76,15 @@
         }
 
         .last-updated {
-            margin: 4px 0 0;
+            margin: 0;
             font-size: 0.85em;
             color: #888;
+            line-height: 0;
+        }
+
+        .last-updated:not(:empty) {
+            margin: 4px 0 8px;
+            line-height: 1.4;
         }
 
         .back-link {
