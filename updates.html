@@ -79,6 +79,18 @@
             margin-bottom: 16px;
         }
 
+        .last-updated {
+            margin: 0;
+            font-size: 0.85em;
+            color: #888;
+            line-height: 0;
+        }
+
+        .last-updated:not(:empty) {
+            margin: 4px 0 8px;
+            line-height: 1.4;
+        }
+
         .back-link {
             text-decoration: none;
             border: 2px solid #ffd700;
@@ -275,6 +287,7 @@
 
         <h1>📋 Site Updates</h1>
         <p class="subtitle">New features, improvements and data additions — newest first.</p>
+        <p class="last-updated" id="lastUpdated"></p>
 
         <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
             <button onclick="goBack()" class="back-link">← Back</button>
@@ -283,6 +296,18 @@
     </header>
 
     <div class="updates-list">
+
+        <!-- ── Jun 27, 2026 — Last Updated display ── -->
+        <div class="update-card">
+            <div class="update-header">
+                <span class="update-date">27 Jun 2026</span>
+                <span class="update-tag tag-feature">FEATURE</span>
+                <span class="update-title">🕐 Last Updated Date</span>
+            </div>
+            <div class="update-body">
+                <p>All pages now show the date the ratings data was last updated, displayed prominently below the page title. Updates automatically every Wednesday when the weekly ratings are published — no manual changes needed.</p>
+            </div>
+        </div>
 
         <!-- ── Jun 19, 2026 — Tier Ring System ── -->
         <div class="update-card">
@@ -427,6 +452,16 @@
         const dropdown = document.getElementById('otherMenuDropdown');
         if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = 'none';
+        }
+    });
+    // Populate Last Updated from the first (newest) card's date automatically —
+    // adding a new card at the top of the list updates this header date too,
+    // with no separate date field to maintain.
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstDate = document.querySelector('.update-date');
+        const el = document.getElementById('lastUpdated');
+        if (firstDate && el) {
+            el.textContent = `Last Updated: ${firstDate.textContent}`;
         }
     });
 </script>
