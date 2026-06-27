@@ -2161,6 +2161,18 @@
                 await checkIfCurrentMatchesMostRecent();
                 await loadChampionshipData('current');
                 setupTooltips();
+                // Fetch lastUpdated date from current-rankings.json — same
+                // source as all other pages so the date stays consistent.
+                // Runs after main data loads so it doesn't block rendering.
+                fetch('current-rankings.json')
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (data && data.lastUpdated) {
+                            const el = document.getElementById('lastUpdated');
+                            if (el) el.textContent = `Last Updated: ${data.lastUpdated}`;
+                        }
+                    })
+                    .catch(() => {}); // silently ignore if unavailable
             } catch (error) {
                 console.error('Init error:', error);
                 document.getElementById('content').innerHTML = `<div class="error">Failed to load data: ${error.message}</div>`;
@@ -2442,10 +2454,6 @@
         function updateHeader() {
             const heading = document.getElementById('currentHeading');
             heading.textContent = championshipData.currentWeek || 'Current Week';
-            const lastUpdatedEl = document.getElementById('lastUpdated');
-            if (lastUpdatedEl && championshipData.currentWeek) {
-                lastUpdatedEl.textContent = `Last Updated: ${championshipData.currentWeek}`;
-            }
         }
 
         async function renderChampionships() {
