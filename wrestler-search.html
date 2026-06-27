@@ -62,6 +62,12 @@
             font-size: 1.1em;
         }
 
+        .last-updated {
+            margin: 4px 0 0;
+            font-size: 0.85em;
+            color: #888;
+        }
+
         .nav-buttons {
             display: flex;
             gap: 12px;
@@ -664,6 +670,7 @@
     <div class="container">
         <header>
             <h1 onclick="window.location.reload()" style="cursor:pointer;" title="Click to refresh">🔍 Wrestler Search</h1>
+            <p class="last-updated" id="lastUpdated"></p>
             <p class="subtitle">Find any wrestler across all divisions</p>
             <div class="nav-buttons">
                 <button onclick="window.history.back()" class="back-link" style="background:none;border:2px solid #ffd700;font-family:inherit;font-size:14px;cursor:pointer;">← Back</button>
@@ -1185,6 +1192,10 @@
                         }
                     }
                     console.log('Active wrestlers loaded:', activeWrestlerNames.size);
+                    if (data.lastUpdated) {
+                        const el = document.getElementById('lastUpdated');
+                        if (el) el.textContent = `Last Updated: ${data.lastUpdated}`;
+                    }
                 }
             } catch (e) {
                 console.log('Could not load current-rankings.json');
