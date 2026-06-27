@@ -75,7 +75,11 @@
             font-size: 1.1em;
         }
 
-        .back-link {
+        .last-updated {
+            margin: 4px 0 0;
+            font-size: 0.85em;
+            color: #888;
+        }
             display: inline-block;
             margin-top: 15px;
             color: #ffd700;
@@ -765,6 +769,7 @@
     <div class="container">
         <header style="border: 2px solid #ffd700; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <h1 style="cursor: pointer;" onclick="window.location.href='wrestler-compare.html'" title="Reset to default">🥊 Compare Wrestlers</h1>
+            <p class="last-updated" id="lastUpdated"></p>
             <p class="subtitle">Side-by-side wrestler comparison</p>
             <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
                 <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none;">
@@ -1314,6 +1319,10 @@ async function loadCurrentRankings() {
             const response = await fetch('current-rankings.json');
             if (response.ok) {
                 currentRankingsData = await response.json();
+                if (currentRankingsData.lastUpdated) {
+                    const el = document.getElementById('lastUpdated');
+                    if (el) el.textContent = `Last Updated: ${currentRankingsData.lastUpdated}`;
+                }
             }
         } catch (error) {
             console.error('Could not load current rankings:', error);
