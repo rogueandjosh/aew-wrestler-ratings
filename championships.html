@@ -71,6 +71,12 @@
             font-size: 1em;
         }
 
+        .last-updated {
+            margin: 2px 0 6px;
+            font-size: 0.85em;
+            color: #888;
+        }
+
         .nav-buttons {
             position: absolute;
             top: 15px;
@@ -1710,6 +1716,7 @@
 
             <h1><a href="championships.html">🏆 Championship Ratings</a></h1>
             <p class="subtitle">Title prestige based on match quality</p>
+            <p class="last-updated" id="lastUpdated"></p>
 
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
 
@@ -2435,6 +2442,10 @@
         function updateHeader() {
             const heading = document.getElementById('currentHeading');
             heading.textContent = championshipData.currentWeek || 'Current Week';
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            if (lastUpdatedEl && championshipData.currentWeek) {
+                lastUpdatedEl.textContent = `Last Updated: ${championshipData.currentWeek}`;
+            }
         }
 
         async function renderChampionships() {
