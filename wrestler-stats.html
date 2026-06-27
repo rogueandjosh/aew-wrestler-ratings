@@ -75,7 +75,11 @@
             font-size: 1.1em;
         }
 
-        .back-link {
+        .last-updated {
+            margin: 4px 0 0;
+            font-size: 0.85em;
+            color: #888;
+        }
             display: inline-block;
             color: #ffd700;
             text-decoration: none;
@@ -587,6 +591,7 @@
     <div class="container">
         <header style="position: relative;">
             <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
+            <p class="last-updated" id="lastUpdated"></p>
             <p class="subtitle">Detailed statistics for individual wrestlers and teams</p>
             
             <div class="nav-buttons" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
@@ -1290,6 +1295,10 @@
                 if (response.ok) {
                     currentRankingsData = await response.json();
                     console.log('✅ Loaded current rankings data');
+                    if (currentRankingsData.lastUpdated) {
+                        const el = document.getElementById('lastUpdated');
+                        if (el) el.textContent = `Last Updated: ${currentRankingsData.lastUpdated}`;
+                    }
                 }
             } catch (error) {
                 console.warn('Could not load current rankings:', error);
