@@ -76,9 +76,15 @@
         }
 
         .last-updated {
-            margin: 4px 0 0;
+            margin: 0;
             font-size: 0.85em;
             color: #888;
+            line-height: 0;
+        }
+
+        .last-updated:not(:empty) {
+            margin: 4px 0 8px;
+            line-height: 1.4;
         }
 
         .back-link {
@@ -774,13 +780,13 @@
             <p class="subtitle">Side-by-side wrestler comparison</p>
             <p class="last-updated" id="lastUpdated"></p>
             <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
-                <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none;">
+                <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: transparent; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit;">
                     ← Back
                 </button>
-                <a href="index.html" class="back-link">
+                <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; font-size: 14px; font-weight: 600;">
                     🏠 Home
                 </a>
-                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Toggle on/off to show extra info when hovering over elements">
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: transparent; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit;" title="Toggle on/off to show extra info when hovering over elements">
                     💡 Tooltips ON
                 </button>
             </div>
