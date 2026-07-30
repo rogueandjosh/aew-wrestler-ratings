@@ -266,6 +266,14 @@
             background: rgba(255, 215, 0, 0.4) !important;
         }
 
+        .first-btn {
+            background: rgba(100, 160, 255, 0.15) !important;
+        }
+
+        .first-btn:hover:not(:disabled) {
+            background: rgba(100, 160, 255, 0.3) !important;
+        }
+
         .week-selector select {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
@@ -1525,6 +1533,9 @@
                     <div class="action-buttons">
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
                             ↻ Current
+                        </button>
+                        <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn first-btn tt" data-tt="Jump to the very first week of AEW ratings — Jun '19">
+                            ⏮ First
                         </button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
                             🎲 Random
@@ -2920,6 +2931,24 @@ let visibleColumns = {
             loadSelectedWeek();
         }
         
+        function loadFirstWeek() {
+            const validWeeks = getValidArchiveWeeks();
+            if (validWeeks.length === 0) return;
+            // The last entry in validWeeks is the oldest (archive is newest-first)
+            const firstWeek = validWeeks[validWeeks.length - 1];
+
+            const year = firstWeek.label.match(/'(\d+)/)?.[1];
+            const month = firstWeek.label.split(' ')[0];
+
+            isNavigating = true;
+            document.getElementById('yearFilter').value = year || '';
+            document.getElementById('monthFilter').value = month || '';
+            filterWeeks();
+            document.getElementById('weekSelect').value = `archive/${firstWeek.filename}`;
+            isNavigating = false;
+            loadSelectedWeek();
+        }
+
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
             let currentValue = weekSelect.value;
