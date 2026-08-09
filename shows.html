@@ -961,29 +961,7 @@
             else btn.textContent = `${checked.length} Divisions`;
         }
 
-        // Dropdown toggles
-        document.getElementById('yearDropdownBtn').addEventListener('click', e => {
-            e.stopPropagation();
-            const m = document.getElementById('yearDropdownMenu');
-            const d = document.getElementById('divDropdownMenu');
-            d.style.display = 'none';
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.getElementById('divDropdownBtn').addEventListener('click', e => {
-            e.stopPropagation();
-            const m = document.getElementById('divDropdownMenu');
-            const y = document.getElementById('yearDropdownMenu');
-            y.style.display = 'none';
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', e => {
-            if (!e.target.closest('#yearDropdownMenu') && !e.target.closest('#yearDropdownBtn'))
-                document.getElementById('yearDropdownMenu').style.display = 'none';
-            if (!e.target.closest('#divDropdownMenu') && !e.target.closest('#divDropdownBtn'))
-                document.getElementById('divDropdownMenu').style.display = 'none';
-        });
+        // Dropdown toggles and close handled in DOMContentLoaded below
 
         // ===========================================
         // HELPERS
@@ -1296,16 +1274,44 @@
         
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
 
-        // Hamburger menu
-        document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('otherMenuDropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#otherMenuBtn') && !e.target.closest('#otherMenuDropdown')) {
-                document.getElementById('otherMenuDropdown').style.display = 'none';
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Year dropdown toggle
+            document.getElementById('yearDropdownBtn').addEventListener('click', e => {
+                e.stopPropagation();
+                const m = document.getElementById('yearDropdownMenu');
+                const d = document.getElementById('divDropdownMenu');
+                d.style.display = 'none';
+                m.style.display = m.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Division dropdown toggle
+            document.getElementById('divDropdownBtn').addEventListener('click', e => {
+                e.stopPropagation();
+                const m = document.getElementById('divDropdownMenu');
+                const y = document.getElementById('yearDropdownMenu');
+                y.style.display = 'none';
+                m.style.display = m.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', e => {
+                if (!e.target.closest('#yearDropdownMenu') && !e.target.closest('#yearDropdownBtn'))
+                    document.getElementById('yearDropdownMenu').style.display = 'none';
+                if (!e.target.closest('#divDropdownMenu') && !e.target.closest('#divDropdownBtn'))
+                    document.getElementById('divDropdownMenu').style.display = 'none';
+            });
+
+            // Hamburger menu
+            document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('otherMenuDropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#otherMenuBtn') && !e.target.closest('#otherMenuDropdown')) {
+                    document.getElementById('otherMenuDropdown').style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
