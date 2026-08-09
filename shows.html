@@ -1015,7 +1015,14 @@
         }
 
         function getTop5(matches) {
-            return dedupeMatches(matches).sort((a, b) => b.rating - a.rating).slice(0, 5);
+            // Only use first-entry matches for top 5 to avoid duplicates
+            return dedupeMatches(matches.filter(m => m.isFirstEntry))
+                .sort((a, b) => b.rating - a.rating)
+                .slice(0, 5);
+        }
+
+        function getUniqueMatches(matches) {
+            return matches.filter(m => m.isFirstEntry);
         }
 
         function matchesYear(match) {
@@ -1045,7 +1052,8 @@
 
         function processAllData() {
             resetShowStats();
-            const seen = new Set();
+            const seenMatches = new Set(); // tracks unique matches globally
+            const seenParticipantMatches = new Set(); // tracks wrestler+match combos to avoid double-crediting
 
             allWrestlerData.forEach(wrestler => {
                 if (!wrestler.allMatches) return;
@@ -1053,18 +1061,18 @@
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
 
-                    // Normalise ALL names before dedup
                     const normWrestler = normaliseName(wrestler.name);
                     const normOpponents = (match.opponents || []).map(n => normaliseName(n));
 
-                    // Canonical dedup key — sort all participants so order doesn't matter
+                    // Canonical match key (all participants sorted)
                     const allNames = [normWrestler, ...normOpponents]
-                        .map(n => n.toLowerCase().trim())
-                        .filter(Boolean)
-                        .sort();
-                    const dedupKey = `${allNames.join('|')}__${(match.event || '').toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}`;
-                    if (seen.has(dedupKey)) return;
-                    seen.add(dedupKey);
+                        .map(n => n.toLowerCase().trim()).filter(Boolean).sort();
+                    const matchKey = `${allNames.join('|')}__${(match.event || '').toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}`;
+
+                    // Per-wrestler credit key — prevent same wrestler being credited twice for same match
+                    const participantKey = `${normWrestler.toLowerCase()}__${matchKey}`;
+                    if (seenParticipantMatches.has(participantKey)) return;
+                    seenParticipantMatches.add(participantKey);
 
                     const category = categorizeEvent(match.event);
                     const matchData = { 
@@ -1076,9 +1084,15 @@
                         matchType: match.matchType, 
                         stipulation: match.matchStipulation, 
                         stakes: match.stakes, 
-                        opponents: normOpponents
+                        opponents: normOpponents,
+                        isFirstEntry: !seenMatches.has(matchKey) // only first entry used for top 5/stats counts
                     };
-                    
+
+                    // Track whether this is the canonical first entry for this match
+                    const isFirst = !seenMatches.has(matchKey);
+                    if (isFirst) seenMatches.add(matchKey);
+
+                    // For leaderboards: store per-wrestler entry (so all participants get credited)
                     if (category.type === 'weekly') {
                         showStats.weekly[category.name].push(matchData);
                     } else if (category.type === 'ppv') {
@@ -1088,7 +1102,6 @@
                         if (!showStats.specials[category.name]) showStats.specials[category.name] = [];
                         showStats.specials[category.name].push(matchData);
                     }
-                    
                     if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
                         if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
                         showStats.stipulations[match.matchStipulation].push(matchData);
@@ -1100,18 +1113,13 @@
         function calculateWrestlerStats(matches) {
             const map = {};
             matches.forEach(m => {
-                // Credit all participants — primary wrestler plus opponents
-                const allParticipants = [
-                    { name: m.wrestler, slug: m.slug },
-                    ...(m.opponents || []).map(n => ({ name: n, slug: createSlug(n) }))
-                ];
-                allParticipants.forEach(p => {
-                    if (!p.name) return;
-                    if (!map[p.name]) map[p.name] = { name: p.name, slug: p.slug, matches: 0, totalRating: 0, best: 0 };
-                    map[p.name].matches++;
-                    map[p.name].totalRating += m.rating;
-                    if (m.rating > map[p.name].best) map[p.name].best = m.rating;
-                });
+                const name = m.wrestler;
+                const slug = m.slug;
+                if (!name) return;
+                if (!map[name]) map[name] = { name, slug, matches: 0, totalRating: 0, best: 0 };
+                map[name].matches++;
+                map[name].totalRating += m.rating;
+                if (m.rating > map[name].best) map[name].best = m.rating;
             });
             return Object.values(map)
                 .map(w => ({ ...w, avg: w.totalRating / w.matches }))
@@ -1136,16 +1144,18 @@
         
         function renderWeeklyTab() {
             const all = [...showStats.weekly.dynamite, ...showStats.weekly.collision, ...showStats.weekly.rampage];
-            document.getElementById('weekly-total-matches').textContent = all.length;
-            document.getElementById('weekly-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
-            document.getElementById('weekly-9plus').textContent = all.filter(m => m.rating >= 9).length;
+            const unique = getUniqueMatches(all);
+            document.getElementById('weekly-total-matches').textContent = unique.length;
+            document.getElementById('weekly-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
+            document.getElementById('weekly-9plus').textContent = unique.filter(m => m.rating >= 9).length;
             document.getElementById('weekly-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
             
             ['dynamite', 'collision', 'rampage'].forEach(show => {
                 const matches = showStats.weekly[show];
-                document.getElementById(`${show}-matches`).textContent = matches.length;
-                document.getElementById(`${show}-avg`).textContent = matches.length > 0 ? (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2) : '--';
-                document.getElementById(`${show}-best`).textContent = matches.length > 0 ? Math.max(...matches.map(m => m.rating)).toFixed(2) : '--';
+                const uniqueShow = getUniqueMatches(matches);
+                document.getElementById(`${show}-matches`).textContent = uniqueShow.length;
+                document.getElementById(`${show}-avg`).textContent = uniqueShow.length > 0 ? (uniqueShow.reduce((s, m) => s + m.rating, 0) / uniqueShow.length).toFixed(2) : '--';
+                document.getElementById(`${show}-best`).textContent = uniqueShow.length > 0 ? Math.max(...uniqueShow.map(m => m.rating)).toFixed(2) : '--';
             });
             
             renderLeaderboard('dynamite-leaderboard', calculateWrestlerStats(showStats.weekly.dynamite));
@@ -1155,12 +1165,13 @@
         
         function renderPPVTab() {
             const all = Object.values(showStats.ppv).flat();
-            document.getElementById('ppv-total-matches').textContent = all.length;
-            document.getElementById('ppv-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
-            document.getElementById('ppv-9plus').textContent = all.filter(m => m.rating >= 9).length;
+            const unique = getUniqueMatches(all);
+            document.getElementById('ppv-total-matches').textContent = unique.length;
+            document.getElementById('ppv-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
+            document.getElementById('ppv-9plus').textContent = unique.filter(m => m.rating >= 9).length;
             document.getElementById('ppv-events').textContent = Object.keys(showStats.ppv).length;
             
-            if (all.length > 0) {
+            if (unique.length > 0) {
                 const top5 = getTop5(all);
                 document.getElementById('best-ppv-match').innerHTML = top5.map((m, i) => `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
@@ -1172,10 +1183,11 @@
                     </div>`).join('');
             }
             
-            document.getElementById('ppv-grid').innerHTML = Object.entries(showStats.ppv).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
-                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
-                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${matches.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
+            document.getElementById('ppv-grid').innerHTML = Object.entries(showStats.ppv).sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length).map(([name, matches]) => {
+                const u = getUniqueMatches(matches);
+                const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
+                const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
+                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
             }).join('');
             
             renderLeaderboard('ppv-leaderboard', calculateWrestlerStats(all));
@@ -1183,11 +1195,12 @@
         
         function renderSpecialsTab() {
             const all = Object.values(showStats.specials).flat();
-            document.getElementById('specials-total-matches').textContent = all.length;
-            document.getElementById('specials-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            const unique = getUniqueMatches(all);
+            document.getElementById('specials-total-matches').textContent = unique.length;
+            document.getElementById('specials-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
             document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
 
-            if (all.length > 0) {
+            if (unique.length > 0) {
                 const top5 = getTop5(all);
                 document.getElementById('best-specials-match').innerHTML = top5.map((m, i) => `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
@@ -1199,10 +1212,11 @@
                     </div>`).join('');
             }
             
-            document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
-                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
-                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${matches.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
+            document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length).map(([name, matches]) => {
+                const u = getUniqueMatches(matches);
+                const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
+                const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
+                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
             }).join('');
             
             renderLeaderboard('specials-leaderboard', calculateWrestlerStats(all));
@@ -1210,8 +1224,9 @@
         
         function renderStipsTab() {
             const all = Object.values(showStats.stipulations).flat();
-            document.getElementById('stip-total').textContent = all.length;
-            document.getElementById('stip-avg').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
+            const unique = getUniqueMatches(all);
+            document.getElementById('stip-total').textContent = unique.length;
+            document.getElementById('stip-avg').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
             document.getElementById('stip-types').textContent = Object.keys(showStats.stipulations).length;
             
             if (all.length > 0) {
@@ -1227,10 +1242,11 @@
             }
             
             document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations)
-                .sort((a, b) => b[1].length - a[1].length)
+                .sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length)
                 .map(([name, matches]) => {
-                    const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
-                    const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
+                    const u = getUniqueMatches(matches);
+                    const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
+                    const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
                     const top5 = getTop5(matches).map(m => `
                         <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06);">
                             <span style="font-weight:bold;min-width:38px;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</span>
@@ -1241,7 +1257,7 @@
                         <div class="stip-item" style="cursor:pointer;" onclick="toggleStip('${id}')">
                             <span class="stip-name">${name}</span>
                             <div class="stip-stats">
-                                <div class="stip-stat"><div class="stip-stat-value">${matches.length}</div><div class="stip-stat-label">Matches</div></div>
+                                <div class="stip-stat"><div class="stip-stat-value">${u.length}</div><div class="stip-stat-label">Matches</div></div>
                                 <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="stip-stat-label">Avg</div></div>
                                 <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="stip-stat-label">Best</div></div>
                                 <div class="stip-stat"><div class="stip-stat-value" style="color:#ffd700;">▼</div><div class="stip-stat-label">Top 5</div></div>
