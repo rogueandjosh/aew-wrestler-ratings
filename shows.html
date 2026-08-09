@@ -180,6 +180,10 @@
             display: block;
         }
 
+        #tabsWrapper {
+            display: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -616,7 +620,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="tt" data-tt="Filter by division — select one or more divisions." style="cursor: help; margin-bottom: 10px;">Division</h2>
+                    <h2 class="tt" data-tt="Filter by division — select one or more to narrow results to specific wrestler types." style="cursor: help; margin-bottom: 10px;">Division</h2>
                     <div style="position: relative; display: inline-block;">
                         <button type="button" id="divDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Divisions</button>
                         <div id="divDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
@@ -637,6 +641,8 @@
             </div>
         </section>
 
+        <!-- Tab Navigation + Content (hidden until data loads) -->
+        <div id="tabsWrapper">
         <!-- Tab Navigation -->
         <div class="tabs">
             <button class="tab active" data-tab="weekly">📺 Weekly TV</button>
@@ -655,21 +661,21 @@
         </div>
 
         <!-- Weekly TV Tab -->
-        <div class="tab-content active" id="weekly" style="display: none;">
+        <div class="tab-content active" id="weekly">
             <div class="stats-summary">
-                <div class="stat-box">
+                <div class="stat-box tt" data-tt="Total number of matches across Dynamite, Collision and Rampage for the selected filters.">
                     <div class="stat-number" id="weekly-total-matches">--</div>
                     <div class="stat-label">Total Matches</div>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box tt" data-tt="Average Cagematch community rating across all weekly TV matches for the selected filters.">
                     <div class="stat-number" id="weekly-avg-rating">--</div>
                     <div class="stat-label">Average Rating</div>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community.">
                     <div class="stat-number" id="weekly-9plus">--</div>
                     <div class="stat-label">9+ Matches</div>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match.">
                     <div class="stat-number" id="weekly-wrestlers">--</div>
                     <div class="stat-label">Wrestlers</div>
                 </div>
@@ -718,10 +724,10 @@
         <!-- PPV Tab -->
         <div class="tab-content" id="ppv">
             <div class="stats-summary">
-                <div class="stat-box"><div class="stat-number" id="ppv-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                <div class="stat-box"><div class="stat-number" id="ppv-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box"><div class="stat-number" id="ppv-9plus">--</div><div class="stat-label">9+ Matches</div></div>
-                <div class="stat-box"><div class="stat-number" id="ppv-events">--</div><div class="stat-label">PPV Events</div></div>
+                <div class="stat-box tt" data-tt="Total number of matches across all PPV events for the selected filters."><div class="stat-number" id="ppv-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                <div class="stat-box tt" data-tt="Average Cagematch community rating across all PPV matches for the selected filters."><div class="stat-number" id="ppv-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box tt" data-tt="Number of PPV matches rated 9.0 or above out of 10."><div class="stat-number" id="ppv-9plus">--</div><div class="stat-label">9+ Matches</div></div>
+                <div class="stat-box tt" data-tt="Number of distinct PPV events included in the current filter."><div class="stat-number" id="ppv-events">--</div><div class="stat-label">PPV Events</div></div>
             </div>
 
             <div class="table-container">
@@ -744,9 +750,9 @@
         <!-- Specials Tab -->
         <div class="tab-content" id="specials">
             <div class="stats-summary">
-                <div class="stat-box"><div class="stat-number" id="specials-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                <div class="stat-box"><div class="stat-number" id="specials-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box"><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
+                <div class="stat-box tt" data-tt="Total number of matches across all special events for the selected filters."><div class="stat-number" id="specials-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                <div class="stat-box tt" data-tt="Average Cagematch community rating across all special event matches."><div class="stat-number" id="specials-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box tt" data-tt="Number of distinct special events included in the current filter."><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
             </div>
 
             <div class="table-container">
@@ -769,9 +775,9 @@
         <!-- Match Types Tab -->
         <div class="tab-content" id="stips">
             <div class="stats-summary">
-                <div class="stat-box"><div class="stat-number" id="stip-total">--</div><div class="stat-label">Stip Matches</div></div>
-                <div class="stat-box"><div class="stat-number" id="stip-avg">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box"><div class="stat-number" id="stip-types">--</div><div class="stat-label">Stipulation Types</div></div>
+                <div class="stat-box tt" data-tt="Total number of matches with a specific stipulation type."><div class="stat-number" id="stip-total">--</div><div class="stat-label">Stip Matches</div></div>
+                <div class="stat-box tt" data-tt="Average Cagematch community rating across all stipulation matches."><div class="stat-number" id="stip-avg">--</div><div class="stat-label">Average Rating</div></div>
+                <div class="stat-box tt" data-tt="Number of distinct stipulation types included in the current filter."><div class="stat-number" id="stip-types">--</div><div class="stat-label">Stipulation Types</div></div>
             </div>
 
             <div class="table-container">
@@ -789,7 +795,8 @@
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="stip-leaderboard"></tbody></table>
             </div>
-        </div>
+        </div><!-- end stips tab -->
+        </div><!-- end tabsWrapper -->
     </div>
 
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
@@ -987,12 +994,11 @@
         }
 
         function dedupeMatches(matches) {
-            // Deduplicate matches where the same bout appears multiple times
-            // (once per participant) by creating a canonical key from sorted names + event + date
             const seen = new Set();
             return matches.filter(m => {
-                const participants = [m.wrestler, ...(m.opponents || [])].map(n => n.toLowerCase().trim()).sort().join('|');
-                const key = `${participants}__${m.event}__${m.date}`;
+                // Build canonical participant list from all names involved
+                const allNames = [m.wrestler, ...(m.opponents || [])].map(n => (n || '').toLowerCase().trim()).filter(Boolean).sort();
+                const key = `${allNames.join('|')}__${(m.event || '').toLowerCase()}__${m.date || ''}__${(m.rating || 0).toFixed(2)}`;
                 if (seen.has(key)) return false;
                 seen.add(key);
                 return true;
@@ -1262,7 +1268,7 @@
                 
                 // Hide loading, show content
                 loadingContainer.style.display = 'none';
-                document.getElementById('weekly').style.display = 'block';
+                document.getElementById('tabsWrapper').style.display = 'block';
                 
             } catch (error) {
                 console.error('Error loading data:', error);
