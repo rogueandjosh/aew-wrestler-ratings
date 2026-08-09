@@ -599,28 +599,52 @@
             </div>
         </header>
 
-        <!-- Year Filter -->
+        <!-- Filters -->
         <section class="filter-section">
-            <h2 class="tt" data-tt="Filter all statistics to a specific year, or keep at 'All Years' to see all-time statistics." style="cursor: help;">Select Year</h2>
-            <select id="yearFilter">
-                <option value="ALL">All Years</option>
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2019">2019</option>
-            </select>
+            <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
+                <div>
+                    <h2 class="tt" data-tt="Filter by year — select one or more years, or keep All to see all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" id="yearDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 130px; text-align: left;">All Years</button>
+                        <div id="yearDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
+                            <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
+                                <button type="button" onclick="setAllYears(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
+                                <button type="button" onclick="setAllYears(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                            </div>
+                            <div id="yearCheckboxes"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="tt" data-tt="Filter by division — select one or more divisions." style="cursor: help; margin-bottom: 10px;">Division</h2>
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" id="divDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Divisions</button>
+                        <div id="divDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
+                            <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
+                                <button type="button" onclick="setAllDivisions(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
+                                <button type="button" onclick="setAllDivisions(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                            </div>
+                            <div style="padding: 6px 0;">
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="mens" checked onchange="updateDivisions()"> Men's Singles</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womens" checked onchange="updateDivisions()"> Women's Singles</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="menstag" checked onchange="updateDivisions()"> Men's Tag</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womenstag" checked onchange="updateDivisions()"> Women's Tag</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Tab Navigation -->
         <div class="tabs">
-            <button class="tab active" data-tab="weekly">Weekly TV</button>
-            <button class="tab" data-tab="ppv">PPVs</button>
-            <button class="tab" data-tab="specials">Specials</button>
-            <button class="tab" data-tab="stips">Match Types</button>
+            <button class="tab active" data-tab="weekly">📺 Weekly TV</button>
+            <button class="tab" data-tab="ppv">🏆 PPVs</button>
+            <button class="tab" data-tab="specials">⭐ Specials</button>
+        </div>
+        <div style="text-align: right; margin-bottom: 20px; margin-top: -15px;">
+            <button class="tab" data-tab="stips" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75;">🥊 Match Types</button>
         </div>
 
         <!-- Loading State -->
@@ -701,7 +725,7 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="The highest-rated PPV match based on Cagematch community ratings." style="cursor: help;">Best PPV Match</h3>
+                <h3 class="section-title tt" data-tt="The top 5 highest-rated PPV matches based on Cagematch community ratings." style="cursor: help;">Top 5 PPV Matches</h3>
                 <div class="best-match-card" id="best-ppv-match">
                     <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
@@ -726,7 +750,7 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="The highest-rated special event match based on Cagematch community ratings." style="cursor: help;">Best Special Event Match</h3>
+                <h3 class="section-title tt" data-tt="The top 5 highest-rated special event matches based on Cagematch community ratings." style="cursor: help;">Top 5 Special Event Matches</h3>
                 <div class="best-match-card" id="best-specials-match">
                     <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
@@ -751,7 +775,7 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="The highest-rated stipulation match based on Cagematch community ratings." style="cursor: help;">Best Stipulation Match</h3>
+                <h3 class="section-title tt" data-tt="The top 5 highest-rated stipulation matches based on Cagematch community ratings." style="cursor: help;">Top 5 Stipulation Matches</h3>
                 <div class="best-match-card" id="best-stip-match">
                     <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
                 </div>
@@ -788,7 +812,9 @@
         // ===========================================
         
         let allWrestlerData = [];
-        let selectedYear = 'ALL';
+        let selectedYears = new Set(); // empty = all years
+        let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']); // all by default
+        let availableYears = [];
         let showStats = { weekly: { dynamite: [], collision: [], rampage: [] }, ppv: {}, specials: {}, stipulations: {} };
 
         // ===========================================
@@ -846,10 +872,99 @@
         // YEAR FILTER
         // ===========================================
         
-        document.getElementById('yearFilter').addEventListener('change', function() {
-            selectedYear = this.value;
+        // ===========================================
+        // YEAR FILTER
+        // ===========================================
+
+        function buildYearDropdown() {
+            const yearSet = new Set();
+            allWrestlerData.forEach(w => {
+                if (!w.allMatches) return;
+                w.allMatches.forEach(m => {
+                    if (m.date) yearSet.add(m.date.substring(0, 4));
+                });
+            });
+            availableYears = [...yearSet].sort().reverse();
+            const container = document.getElementById('yearCheckboxes');
+            container.innerHTML = availableYears.map(y => `
+                <label style="display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;color:#ddd;font-size:0.9em;">
+                    <input type="checkbox" value="${y}" checked onchange="updateYears()"> ${y}
+                </label>`).join('');
+        }
+
+        function updateYears() {
+            const checked = [...document.querySelectorAll('#yearCheckboxes input:checked')].map(cb => cb.value);
+            selectedYears = new Set(checked);
+            updateYearBtn();
             processAllData();
             renderAllTabs();
+        }
+
+        function setAllYears(val) {
+            document.querySelectorAll('#yearCheckboxes input').forEach(cb => cb.checked = val);
+            updateYears();
+        }
+
+        function updateYearBtn() {
+            const btn = document.getElementById('yearDropdownBtn');
+            const all = document.querySelectorAll('#yearCheckboxes input');
+            const checked = document.querySelectorAll('#yearCheckboxes input:checked');
+            if (checked.length === 0) btn.textContent = 'None';
+            else if (checked.length === all.length) btn.textContent = 'All Years';
+            else if (checked.length === 1) btn.textContent = [...checked][0].value;
+            else btn.textContent = `${checked.length} Years`;
+        }
+
+        // ===========================================
+        // DIVISION FILTER
+        // ===========================================
+
+        function updateDivisions() {
+            const checked = [...document.querySelectorAll('#divDropdownMenu input:checked')].map(cb => cb.value);
+            selectedDivisions = new Set(checked);
+            updateDivBtn();
+            processAllData();
+            renderAllTabs();
+        }
+
+        function setAllDivisions(val) {
+            document.querySelectorAll('#divDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = val);
+            updateDivisions();
+        }
+
+        function updateDivBtn() {
+            const btn = document.getElementById('divDropdownBtn');
+            const all = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]');
+            const checked = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]:checked');
+            const labels = { mens: "Men's", womens: "Women's", menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios" };
+            if (checked.length === 0) btn.textContent = 'None';
+            else if (checked.length === all.length) btn.textContent = 'All Divisions';
+            else if (checked.length === 1) btn.textContent = labels[[...checked][0].value] || [...checked][0].value;
+            else btn.textContent = `${checked.length} Divisions`;
+        }
+
+        // Dropdown toggles
+        document.getElementById('yearDropdownBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            const m = document.getElementById('yearDropdownMenu');
+            const d = document.getElementById('divDropdownMenu');
+            d.style.display = 'none';
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.getElementById('divDropdownBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            const m = document.getElementById('divDropdownMenu');
+            const y = document.getElementById('yearDropdownMenu');
+            y.style.display = 'none';
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#yearDropdownMenu') && !e.target.closest('#yearDropdownBtn'))
+                document.getElementById('yearDropdownMenu').style.display = 'none';
+            if (!e.target.closest('#divDropdownMenu') && !e.target.closest('#divDropdownBtn'))
+                document.getElementById('divDropdownMenu').style.display = 'none';
         });
 
         // ===========================================
@@ -860,9 +975,6 @@
             for (const ppv of PPV_NAMES) if (eventName.includes(ppv)) return { type: 'ppv', name: ppv };
             for (const special of SPECIAL_NAMES) if (eventName.includes(special)) return { type: 'special', name: special };
             for (const [show, keywords] of Object.entries(WEEKLY_SHOWS)) for (const keyword of keywords) if (eventName.includes(keyword)) return { type: 'weekly', name: show };
-            // Log uncategorised events temporarily
-            if (!window._otherEvents) window._otherEvents = {};
-            window._otherEvents[eventName] = (window._otherEvents[eventName] || 0) + 1;
             return { type: 'other', name: eventName };
         }
         
@@ -879,9 +991,15 @@
         }
 
         function matchesYear(match) {
-            if (selectedYear === 'ALL') return true;
+            if (selectedYears.size === 0 || selectedYears.size === availableYears.length) return true;
             if (!match.date) return false;
-            return match.date.startsWith(selectedYear);
+            const matchYear = match.date.substring(0, 4);
+            return selectedYears.has(matchYear);
+        }
+
+        function matchesDivision(wrestlerDiv) {
+            if (selectedDivisions.size === 5) return true;
+            return selectedDivisions.has(wrestlerDiv);
         }
 
         // ===========================================
@@ -901,6 +1019,7 @@
             resetShowStats();
             allWrestlerData.forEach(wrestler => {
                 if (!wrestler.allMatches) return;
+                if (!matchesDivision(wrestler.division)) return;
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
                     
@@ -988,8 +1107,15 @@
             document.getElementById('ppv-events').textContent = Object.keys(showStats.ppv).length;
             
             if (all.length > 0) {
-                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
-                document.getElementById('best-ppv-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.matchType}${best.stipulation && best.stipulation !== 'None' ? ' • ' + best.stipulation : ''}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
+                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                document.getElementById('best-ppv-match').innerHTML = top5.map((m, i) => `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
+                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
+                        <div>
+                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
+                            <div style="color:#aaa;font-size:0.82em;">${m.event}${m.matchType ? ' · ' + m.matchType : ''}</div>
+                        </div>
+                    </div>`).join('');
             }
             
             document.getElementById('ppv-grid').innerHTML = Object.entries(showStats.ppv).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
@@ -1008,8 +1134,15 @@
             document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
 
             if (all.length > 0) {
-                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
-                document.getElementById('best-specials-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.matchType}${best.stipulation && best.stipulation !== 'None' ? ' • ' + best.stipulation : ''}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
+                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                document.getElementById('best-specials-match').innerHTML = top5.map((m, i) => `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
+                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
+                        <div>
+                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
+                            <div style="color:#aaa;font-size:0.82em;">${m.event}${m.matchType ? ' · ' + m.matchType : ''}</div>
+                        </div>
+                    </div>`).join('');
             }
             
             document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
@@ -1028,8 +1161,15 @@
             document.getElementById('stip-types').textContent = Object.keys(showStats.stipulations).length;
             
             if (all.length > 0) {
-                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
-                document.getElementById('best-stip-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.stipulation}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
+                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                document.getElementById('best-stip-match').innerHTML = top5.map((m, i) => `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
+                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
+                        <div>
+                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
+                            <div style="color:#aaa;font-size:0.82em;">${m.stipulation} · ${m.event}</div>
+                        </div>
+                    </div>`).join('');
             }
             
             document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
@@ -1064,7 +1204,7 @@
                     if (statsData[div]) {
                         statsData[div].forEach(w => { 
                             if (w.name && !allWrestlers.find(x => x.name === w.name)) {
-                                allWrestlers.push({ name: w.name, slug: createSlug(w.name) }); 
+                                allWrestlers.push({ name: w.name, slug: createSlug(w.name), division: div }); 
                             }
                         });
                     }
@@ -1083,7 +1223,11 @@
                     const batchResults = await Promise.all(batch.map(async w => {
                         try { 
                             const r = await fetch(`wrestlers/${w.slug}.json`); 
-                            if (r.ok) return await r.json(); 
+                            if (r.ok) {
+                                const data = await r.json();
+                                data.division = w.division;
+                                return data;
+                            }
                         } catch (e) {}
                         return null;
                     }));
@@ -1095,15 +1239,11 @@
                 
                 allWrestlerData = results.filter(w => w !== null);
                 
+                // Build year dropdown from actual data
+                buildYearDropdown();
+
                 // Process and render
                 processAllData();
-                // Log uncategorised events to console for analysis
-                if (window._otherEvents) {
-                    const sorted = Object.entries(window._otherEvents).sort((a,b) => b[1]-a[1]);
-                    console.log('=== UNCATEGORISED EVENTS (name: match count) ===');
-                    sorted.forEach(([name, count]) => console.log(`${count}x ${name}`));
-                    console.log('=== END ===');
-                }
                 renderAllTabs();
                 
                 // Hide loading, show content
