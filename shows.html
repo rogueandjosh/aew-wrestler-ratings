@@ -1002,6 +1002,8 @@
         function getTop5(matches) {
             return dedupeMatches(matches).sort((a, b) => b.rating - a.rating).slice(0, 5);
         }
+
+        function matchesYear(match) {
             if (selectedYears.size === 0 || selectedYears.size === availableYears.length) return true;
             if (!match.date) return false;
             const matchYear = match.date.substring(0, 4);
