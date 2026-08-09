@@ -860,6 +860,9 @@
             for (const ppv of PPV_NAMES) if (eventName.includes(ppv)) return { type: 'ppv', name: ppv };
             for (const special of SPECIAL_NAMES) if (eventName.includes(special)) return { type: 'special', name: special };
             for (const [show, keywords] of Object.entries(WEEKLY_SHOWS)) for (const keyword of keywords) if (eventName.includes(keyword)) return { type: 'weekly', name: show };
+            // Log uncategorised events temporarily
+            if (!window._otherEvents) window._otherEvents = {};
+            window._otherEvents[eventName] = (window._otherEvents[eventName] || 0) + 1;
             return { type: 'other', name: eventName };
         }
         
@@ -1094,6 +1097,13 @@
                 
                 // Process and render
                 processAllData();
+                // Log uncategorised events to console for analysis
+                if (window._otherEvents) {
+                    const sorted = Object.entries(window._otherEvents).sort((a,b) => b[1]-a[1]);
+                    console.log('=== UNCATEGORISED EVENTS (name: match count) ===');
+                    sorted.forEach(([name, count]) => console.log(`${count}x ${name}`));
+                    console.log('=== END ===');
+                }
                 renderAllTabs();
                 
                 // Hide loading, show content
