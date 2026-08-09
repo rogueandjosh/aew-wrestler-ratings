@@ -703,19 +703,19 @@
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top performers on Dynamite, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Dynamite Performers</h3>
+                <h3 class="section-title tt tt-below" data-tt="Top performers on Dynamite, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Dynamite Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="dynamite-leaderboard"></tbody></table>
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top performers on Collision, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Collision Performers</h3>
+                <h3 class="section-title tt tt-below" data-tt="Top performers on Collision, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Collision Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="collision-leaderboard"></tbody></table>
             </div>
 
             <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top performers on Rampage, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Rampage Performers</h3>
+                <h3 class="section-title tt tt-below" data-tt="Top performers on Rampage, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Rampage Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="rampage-leaderboard"></tbody></table>
             </div>
@@ -835,7 +835,16 @@
         }
 
         function normaliseName(name) {
-            return nameChanges[name.toLowerCase()] || name;
+            // Follow chain of name changes to final current name
+            let current = name;
+            const visited = new Set();
+            while (true) {
+                const next = nameChanges[current.toLowerCase()];
+                if (!next || visited.has(current.toLowerCase())) break;
+                visited.add(current.toLowerCase());
+                current = next;
+            }
+            return current;
         }
         let selectedYears = new Set(); // empty = all years
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']); // all by default
@@ -1036,12 +1045,20 @@
 
         function processAllData() {
             resetShowStats();
+            const seen = new Set(); // global dedup across all wrestlers
+
             allWrestlerData.forEach(wrestler => {
                 if (!wrestler.allMatches) return;
                 if (!matchesDivision(wrestler.division)) return;
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
-                    
+
+                    // Deduplicate at collection level — same match appears once per participant
+                    const allNames = [wrestler.name, ...(match.opponents || [])].map(n => (n || '').toLowerCase().trim()).filter(Boolean).sort();
+                    const dedupKey = `${allNames.join('|')}__${(match.event || '').toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}`;
+                    if (seen.has(dedupKey)) return;
+                    seen.add(dedupKey);
+
                     const category = categorizeEvent(match.event);
                     const matchData = { 
                         wrestler: normaliseName(wrestler.name), 
@@ -1191,13 +1208,39 @@
                     </div>`).join('');
             }
             
-            document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
-                const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
-                const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
-                return `<div class="stip-item"><span class="stip-name">${name}</span><div class="stip-stats"><div class="stip-stat"><div class="stip-stat-value">${matches.length}</div><div class="stip-stat-label">Matches</div></div><div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="stip-stat-label">Avg</div></div><div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="stip-stat-label">Best</div></div></div></div>`;
-            }).join('');
+            document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations)
+                .sort((a, b) => b[1].length - a[1].length)
+                .map(([name, matches]) => {
+                    const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
+                    const best = Math.max(...matches.map(m => m.rating)).toFixed(2);
+                    const top5 = getTop5(matches).map(m => `
+                        <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06);">
+                            <span style="font-weight:bold;min-width:38px;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</span>
+                            <span style="color:#ddd;font-size:0.88em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''} <span style="color:#777;">· ${m.event}</span></span>
+                        </div>`).join('');
+                    const id = `stip-${name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')}`;
+                    return `
+                        <div class="stip-item" style="cursor:pointer;" onclick="toggleStip('${id}')">
+                            <span class="stip-name">${name}</span>
+                            <div class="stip-stats">
+                                <div class="stip-stat"><div class="stip-stat-value">${matches.length}</div><div class="stip-stat-label">Matches</div></div>
+                                <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="stip-stat-label">Avg</div></div>
+                                <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="stip-stat-label">Best</div></div>
+                                <div class="stip-stat"><div class="stip-stat-value" style="color:#ffd700;">▼</div><div class="stip-stat-label">Top 5</div></div>
+                            </div>
+                        </div>
+                        <div id="${id}" style="display:none;padding:10px 16px 16px;background:rgba(255,255,255,0.03);border-radius:0 0 8px 8px;margin-top:-4px;margin-bottom:8px;">
+                            ${top5}
+                        </div>`;
+                }).join('');
             
             renderLeaderboard('stip-leaderboard', calculateWrestlerStats(all));
+        }
+
+        function toggleStip(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
         }
 
         function renderAllTabs() {
