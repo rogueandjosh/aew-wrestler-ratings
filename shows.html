@@ -60,6 +60,7 @@
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
         }
 
         h1 {
@@ -568,6 +569,21 @@
     <div class="container">
         <!-- Header -->
         <header>
+            <!-- Hamburger menu in top-right corner -->
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
+                <button id="otherMenuBtn" style="padding: 10px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; cursor: pointer; font-size: 1.5em; line-height: 1; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                    ☰
+                </button>
+                <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 180px; z-index: 1001; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <a href="index.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🏠 Rankings</a>
+                    <a href="index.html#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">ℹ️ About</a>
+                    <a href="championships.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🏆 Championships</a>
+                    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🥊 Compare Wrestlers</a>
+                    <a href="wrestler-search.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🔍 Wrestler Search</a>
+                    <a href="shows.html" class="active" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em; background: rgba(255,215,0,0.15); font-weight: 700;">📺 Show Stats</a>
+                    <a href="updates.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">📋 Updates</a>
+                </div>
+            </div>
             <h1 style="cursor: pointer;" onclick="window.location.href='shows.html'" title="Reset to default">📺 Show Performance Stats</h1>
             <p class="subtitle">How do wrestlers perform across different show types?</p>
             <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
@@ -654,12 +670,6 @@
                     <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="rampage-avg">--</span></div>
                     <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="rampage-best">--</span></div>
                 </div>
-                <div class="breakdown-card">
-                    <h4>Dark / Elevation</h4>
-                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dark-matches">--</span></div>
-                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dark-avg">--</span></div>
-                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-great" id="dark-best">--</span></div>
-                </div>
             </div>
 
             <div class="table-container">
@@ -672,6 +682,12 @@
                 <h3 class="section-title tt" data-tt="Top performers on Collision, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Collision Performers</h3>
                 <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="collision-leaderboard"></tbody></table>
+            </div>
+
+            <div class="table-container">
+                <h3 class="section-title tt" data-tt="Top performers on Rampage, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Rampage Performers</h3>
+                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <tbody id="rampage-leaderboard"></tbody></table>
             </div>
         </div>
 
@@ -707,6 +723,13 @@
                 <div class="stat-box"><div class="stat-number" id="specials-total-matches">--</div><div class="stat-label">Total Matches</div></div>
                 <div class="stat-box"><div class="stat-number" id="specials-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
                 <div class="stat-box"><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
+            </div>
+
+            <div class="table-container">
+                <h3 class="section-title tt" data-tt="The highest-rated special event match based on Cagematch community ratings." style="cursor: help;">Best Special Event Match</h3>
+                <div class="best-match-card" id="best-specials-match">
+                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
+                </div>
             </div>
 
             <h3 class="section-title tt" data-tt="Performance breakdown for special TV events like Grand Slam, Winter Is Coming, and Blood & Guts." style="cursor: help; margin-bottom: 20px;">Special Event Performance</h3>
@@ -756,9 +779,9 @@
         // CONFIGURATION
         // ===========================================
         
-        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End'];
-        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night'];
-        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'], dark: ['Dark', 'Elevation'] };
+        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End', 'Dynasty', 'All In London', 'Grand Slam Australia'];
+        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night', 'Summer Blockbuster', 'Owen Hart Foundation', 'Worlds Collide', 'Holiday Bash', 'Quake by the Lake', 'Forbidden Door Fallout', 'Rampage: Big Business', 'Dynamite: New Year\'s Smash'];
+        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'] };
 
         // ===========================================
         // STATE
@@ -766,7 +789,7 @@
         
         let allWrestlerData = [];
         let selectedYear = 'ALL';
-        let showStats = { weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, ppv: {}, specials: {}, stipulations: {} };
+        let showStats = { weekly: { dynamite: [], collision: [], rampage: [] }, ppv: {}, specials: {}, stipulations: {} };
 
         // ===========================================
         // NAVIGATION
@@ -849,7 +872,7 @@
         }
         
         function createSlug(name) {
-            return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
+            return name.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
         }
 
         function matchesYear(match) {
@@ -864,7 +887,7 @@
         
         function resetShowStats() {
             showStats = { 
-                weekly: { dynamite: [], collision: [], rampage: [], dark: [] }, 
+                weekly: { dynamite: [], collision: [], rampage: [] }, 
                 ppv: {}, 
                 specials: {}, 
                 stipulations: {} 
@@ -928,7 +951,7 @@
             const el = document.getElementById(id);
             el.innerHTML = wrestlers.slice(0, limit).map((w, i) => `
                 <tr><td class="rank ${i < 3 ? 'top3' : ''}">${i + 1}</td>
-                <td class="name"><a href="wrestler-stats.html?wrestler=${encodeURIComponent(w.name)}">${w.name}</a></td>
+                <td class="name"><a href="wrestler-stats.html?wrestler=${w.slug}">${w.name}</a></td>
                 <td class="${getRatingClass(w.avg)}" style="font-weight: bold;">${w.avg.toFixed(2)}</td>
                 <td class="hide-mobile">${w.matches}</td>
                 <td class="hide-mobile ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
@@ -936,13 +959,13 @@
         }
         
         function renderWeeklyTab() {
-            const all = [...showStats.weekly.dynamite, ...showStats.weekly.collision, ...showStats.weekly.rampage, ...showStats.weekly.dark];
+            const all = [...showStats.weekly.dynamite, ...showStats.weekly.collision, ...showStats.weekly.rampage];
             document.getElementById('weekly-total-matches').textContent = all.length;
             document.getElementById('weekly-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
             document.getElementById('weekly-9plus').textContent = all.filter(m => m.rating >= 9).length;
             document.getElementById('weekly-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
             
-            ['dynamite', 'collision', 'rampage', 'dark'].forEach(show => {
+            ['dynamite', 'collision', 'rampage'].forEach(show => {
                 const matches = showStats.weekly[show];
                 document.getElementById(`${show}-matches`).textContent = matches.length;
                 document.getElementById(`${show}-avg`).textContent = matches.length > 0 ? (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2) : '--';
@@ -951,6 +974,7 @@
             
             renderLeaderboard('dynamite-leaderboard', calculateWrestlerStats(showStats.weekly.dynamite));
             renderLeaderboard('collision-leaderboard', calculateWrestlerStats(showStats.weekly.collision));
+            renderLeaderboard('rampage-leaderboard', calculateWrestlerStats(showStats.weekly.rampage));
         }
         
         function renderPPVTab() {
@@ -979,6 +1003,11 @@
             document.getElementById('specials-total-matches').textContent = all.length;
             document.getElementById('specials-avg-rating').textContent = all.length > 0 ? (all.reduce((s, m) => s + m.rating, 0) / all.length).toFixed(2) : '--';
             document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
+
+            if (all.length > 0) {
+                const best = all.reduce((b, m) => m.rating > b.rating ? m : b);
+                document.getElementById('best-specials-match').innerHTML = `<div class="match-rating ${getRatingClass(best.rating)}">${best.rating.toFixed(2)}</div><div class="match-event">${best.event}</div><div class="match-details">${best.matchType}${best.stipulation && best.stipulation !== 'None' ? ' • ' + best.stipulation : ''}</div><div class="match-participants">Featuring: ${best.wrestler}${best.opponents ? ' vs ' + best.opponents.join(', ') : ''}</div>`;
+            }
             
             document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => b[1].length - a[1].length).map(([name, matches]) => {
                 const avg = (matches.reduce((s, m) => s + m.rating, 0) / matches.length).toFixed(2);
@@ -1082,6 +1111,18 @@
         // ===========================================
         
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
+
+        // Hamburger menu
+        document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('otherMenuDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#otherMenuBtn') && !e.target.closest('#otherMenuDropdown')) {
+                document.getElementById('otherMenuDropdown').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
