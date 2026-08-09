@@ -1045,7 +1045,7 @@
 
         function processAllData() {
             resetShowStats();
-            const seen = new Set(); // global dedup across all wrestlers
+            const seen = new Set();
 
             allWrestlerData.forEach(wrestler => {
                 if (!wrestler.allMatches) return;
@@ -1053,23 +1053,30 @@
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
 
-                    // Deduplicate at collection level — same match appears once per participant
-                    const allNames = [wrestler.name, ...(match.opponents || [])].map(n => (n || '').toLowerCase().trim()).filter(Boolean).sort();
+                    // Normalise ALL names before dedup
+                    const normWrestler = normaliseName(wrestler.name);
+                    const normOpponents = (match.opponents || []).map(n => normaliseName(n));
+
+                    // Canonical dedup key — sort all participants so order doesn't matter
+                    const allNames = [normWrestler, ...normOpponents]
+                        .map(n => n.toLowerCase().trim())
+                        .filter(Boolean)
+                        .sort();
                     const dedupKey = `${allNames.join('|')}__${(match.event || '').toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}`;
                     if (seen.has(dedupKey)) return;
                     seen.add(dedupKey);
 
                     const category = categorizeEvent(match.event);
                     const matchData = { 
-                        wrestler: normaliseName(wrestler.name), 
-                        slug: wrestler.slug || createSlug(normaliseName(wrestler.name)), 
+                        wrestler: normWrestler,
+                        slug: wrestler.slug || createSlug(normWrestler), 
                         rating: match.rating, 
                         event: match.event, 
                         date: match.date, 
                         matchType: match.matchType, 
                         stipulation: match.matchStipulation, 
                         stakes: match.stakes, 
-                        opponents: match.opponents 
+                        opponents: normOpponents
                     };
                     
                     if (category.type === 'weekly') {
@@ -1093,12 +1100,23 @@
         function calculateWrestlerStats(matches) {
             const map = {};
             matches.forEach(m => {
-                if (!map[m.wrestler]) map[m.wrestler] = { name: m.wrestler, slug: m.slug, matches: 0, totalRating: 0, best: 0 };
-                map[m.wrestler].matches++; 
-                map[m.wrestler].totalRating += m.rating;
-                if (m.rating > map[m.wrestler].best) map[m.wrestler].best = m.rating;
+                // Credit all participants — primary wrestler plus opponents
+                const allParticipants = [
+                    { name: m.wrestler, slug: m.slug },
+                    ...(m.opponents || []).map(n => ({ name: n, slug: createSlug(n) }))
+                ];
+                allParticipants.forEach(p => {
+                    if (!p.name) return;
+                    if (!map[p.name]) map[p.name] = { name: p.name, slug: p.slug, matches: 0, totalRating: 0, best: 0 };
+                    map[p.name].matches++;
+                    map[p.name].totalRating += m.rating;
+                    if (m.rating > map[p.name].best) map[p.name].best = m.rating;
+                });
             });
-            return Object.values(map).map(w => ({ ...w, avg: w.totalRating / w.matches })).filter(w => w.matches >= 3).sort((a, b) => b.avg - a.avg);
+            return Object.values(map)
+                .map(w => ({ ...w, avg: w.totalRating / w.matches }))
+                .filter(w => w.matches >= 3)
+                .sort((a, b) => b.avg - a.avg);
         }
 
         // ===========================================
