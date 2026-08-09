@@ -16,7 +16,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Stats - Elite Wrestler Ratings</title>
+    <title>Show Statistics - Elite Wrestler Ratings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css">
@@ -584,7 +584,7 @@
                     <a href="updates.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">📋 Updates</a>
                 </div>
             </div>
-            <h1 style="cursor: pointer;" onclick="window.location.href='shows.html'" title="Reset to default">📺 Show Performance Stats</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='shows.html'" title="Reset to default">📺 Show Statistics</h1>
             <p class="subtitle">How do wrestlers perform across different show types?</p>
             <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
                 <button onclick="goBack()" class="back-link" style="cursor: pointer; background: none;">
@@ -625,8 +625,8 @@
                                 <button type="button" onclick="setAllDivisions(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
                             </div>
                             <div style="padding: 6px 0;">
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="mens" checked onchange="updateDivisions()"> Men's Singles</label>
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womens" checked onchange="updateDivisions()"> Women's Singles</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="mens" checked onchange="updateDivisions()"> Men's</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womens" checked onchange="updateDivisions()"> Women's</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="menstag" checked onchange="updateDivisions()"> Men's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womenstag" checked onchange="updateDivisions()"> Women's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
@@ -793,8 +793,10 @@
     </div>
 
     <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
+        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
-        <p style="margin-top: 10px;">&copy; 2025-2026 Elite Wrestler Ratings. All rights reserved.</p>
+        <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 
     <script src="tooltips.js"></script>
@@ -811,7 +813,23 @@
         // STATE
         // ===========================================
         
-        let allWrestlerData = [];
+        let nameChanges = {}; // oldName -> currentName mapping
+
+        async function loadNameChanges() {
+            try {
+                const r = await fetch('name-changes.json');
+                if (r.ok) {
+                    const data = await r.json();
+                    (data.changes || []).forEach(c => {
+                        if (c.oldName && c.newName) nameChanges[c.oldName.toLowerCase()] = c.newName;
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function normaliseName(name) {
+            return nameChanges[name.toLowerCase()] || name;
+        }
         let selectedYears = new Set(); // empty = all years
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']); // all by default
         let availableYears = [];
@@ -990,7 +1008,22 @@
             return name.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
         }
 
-        function matchesYear(match) {
+        function dedupeMatches(matches) {
+            // Deduplicate matches where the same bout appears multiple times
+            // (once per participant) by creating a canonical key from sorted names + event + date
+            const seen = new Set();
+            return matches.filter(m => {
+                const participants = [m.wrestler, ...(m.opponents || [])].map(n => n.toLowerCase().trim()).sort().join('|');
+                const key = `${participants}__${m.event}__${m.date}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        function getTop5(matches) {
+            return dedupeMatches(matches).sort((a, b) => b.rating - a.rating).slice(0, 5);
+        }
             if (selectedYears.size === 0 || selectedYears.size === availableYears.length) return true;
             if (!match.date) return false;
             const matchYear = match.date.substring(0, 4);
@@ -1025,8 +1058,8 @@
                     
                     const category = categorizeEvent(match.event);
                     const matchData = { 
-                        wrestler: wrestler.name, 
-                        slug: wrestler.slug || createSlug(wrestler.name), 
+                        wrestler: normaliseName(wrestler.name), 
+                        slug: wrestler.slug || createSlug(normaliseName(wrestler.name)), 
                         rating: match.rating, 
                         event: match.event, 
                         date: match.date, 
@@ -1107,7 +1140,7 @@
             document.getElementById('ppv-events').textContent = Object.keys(showStats.ppv).length;
             
             if (all.length > 0) {
-                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                const top5 = getTop5(all);
                 document.getElementById('best-ppv-match').innerHTML = top5.map((m, i) => `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
                         <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
@@ -1134,7 +1167,7 @@
             document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
 
             if (all.length > 0) {
-                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                const top5 = getTop5(all);
                 document.getElementById('best-specials-match').innerHTML = top5.map((m, i) => `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
                         <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
@@ -1161,7 +1194,7 @@
             document.getElementById('stip-types').textContent = Object.keys(showStats.stipulations).length;
             
             if (all.length > 0) {
-                const top5 = all.slice().sort((a,b) => b.rating - a.rating).slice(0, 5);
+                const top5 = getTop5(all);
                 document.getElementById('best-stip-match').innerHTML = top5.map((m, i) => `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
                         <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
@@ -1197,6 +1230,7 @@
             const loadingProgress = document.getElementById('loadingProgress');
             
             try {
+                await loadNameChanges();
                 // Get list of all wrestlers from statistics.json
                 const statsData = await (await fetch('statistics.json')).json();
                 const allWrestlers = [];
