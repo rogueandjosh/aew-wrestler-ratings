@@ -384,6 +384,15 @@
             font-weight: 400;
         }
 
+        @media (max-width: 600px) {
+            .division-badge-inline {
+                display: block;
+                margin-left: 0;
+                margin-top: 3px;
+                width: fit-content;
+            }
+        }
+
         .tab {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
@@ -794,6 +803,13 @@
         #table-merged th.col-rating, #table-merged td.rating { width: 90px; }
         #table-merged th.col-matches, #table-merged td.matches-col { width: 90px; }
         #table-merged th.col-peak, #table-merged td.peak-col { width: 90px; }
+
+        @media (max-width: 600px) {
+            #table-merged th.col-name, #table-merged td.name { width: auto !important; }
+            #table-merged th.col-rating, #table-merged td.rating { width: 58px !important; font-size: 0.88em; }
+            #table-merged th.col-matches, #table-merged td.matches-col { display: none !important; }
+            #table-merged th.col-peak, #table-merged td.peak-col { display: none !important; }
+        }
 
         /* Mobile: fixed layout with explicit widths for true consistency across all divisions */
         @media (max-width: 600px) {
@@ -1804,6 +1820,8 @@
         let currentView = 'rankings'; // 'rankings' or 'statistics'
         let currentDivision = 'mens'; // Track which division/view is active
         let currentStatsDivision = 'mens';
+        let currentGroupFilter = 'all'; // 'all', 'singles', 'teams', 'all_merged'
+        let showAllMerged = false;
         let currentSortColumn = 'peak';
         let nameChangesData = null;
         let teamMembersData = null;
@@ -4180,8 +4198,6 @@ if (tableEl) {
             }
         }
         
-        let currentGroupFilter = 'all';
-
         let showAllMerged = false;
 
         function toggleShowAllMerged(group, total) {
