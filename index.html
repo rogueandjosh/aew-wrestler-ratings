@@ -372,8 +372,19 @@
             flex-wrap: wrap;
         }
 
+        .division-badge-inline {
+            display: inline-block;
+            font-size: 0.72em;
+            padding: 2px 7px;
+            border-radius: 4px;
+            margin-left: 7px;
+            background: rgba(255,215,0,0.12);
+            color: #b8b8b8;
+            vertical-align: middle;
+            font-weight: 400;
+        }
+
         .tab {
-            background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
             color: #e0e0e0;
             padding: 12px 25px;
@@ -1581,6 +1592,14 @@
             <button class="tab" onclick="handleDivisionClick('menstag')">Men's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
+            <div style="position:relative;display:inline-block;">
+                <button class="tab" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;">Select Multiple ▾</button>
+                <div id="groupDropdown" style="display:none;position:absolute;top:100%;left:0;margin-top:4px;background:#1a1a2e;border:2px solid #ffd700;border-radius:8px;z-index:200;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                    <button onclick="setGroupFilter('all')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">All Divisions</button>
+                    <button onclick="setGroupFilter('singles')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Singles</button>
+                    <button onclick="setGroupFilter('teams')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Teams</button>
+                </div>
+            </div>
         </div>
 
         <div id="content">
@@ -4150,13 +4169,134 @@ if (tableEl) {
             }
         }
         
+        let currentGroupFilter = 'all';
+
+        function toggleGroupDropdown() {
+            const dd = document.getElementById('groupDropdown');
+            dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function setGroupFilter(group) {
+            currentGroupFilter = group;
+
+            // Close dropdown
+            document.getElementById('groupDropdown').style.display = 'none';
+
+            // Update Select Multiple button active state
+            const multiBtn = document.getElementById('groupBtn-multi');
+
+            if (group === 'all') {
+                // Deactivate Select Multiple, restore division tabs
+                multiBtn.classList.remove('active');
+                document.getElementById('divisionTabs').querySelectorAll('.tab:not(#groupBtn-multi)').forEach(t => t.style.display = '');
+                handleDivisionClick(currentDivision === 'singles' || currentDivision === 'teams' ? 'mens' : currentDivision);
+            } else {
+                // Activate Select Multiple button, hide individual division tabs
+                multiBtn.classList.add('active');
+                document.getElementById('divisionTabs').querySelectorAll('.tab:not(#groupBtn-multi)').forEach(t => {
+                    t.classList.remove('active');
+                    t.style.display = 'none';
+                });
+                const label = group === 'singles' ? 'Singles ▾' : 'Teams ▾';
+                multiBtn.textContent = label;
+                currentDivision = group;
+                showMergedView(group);
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#groupBtn-multi') && !e.target.closest('#groupDropdown')) {
+                const dd = document.getElementById('groupDropdown');
+                if (dd) dd.style.display = 'none';
+            }
+        });
+
+        function showMergedView(group) {
+            if (!ratingsData) return;
+
+            currentView = 'rankings';
+            document.getElementById('rankingsToggle').classList.add('active');
+            document.getElementById('statsToggle').classList.remove('active');
+
+            const divs = group === 'singles'
+                ? ['mens', 'womens']
+                : ['menstag', 'womenstag', 'trios'];
+
+            const divLabels = {
+                mens: "Men's", womens: "Women's",
+                menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios"
+            };
+
+            // Merge all wrestlers from the relevant divisions, tagging each with their division
+            let merged = [];
+            divs.forEach(div => {
+                const arr = ratingsData[div] || [];
+                arr.forEach(w => merged.push({ ...w, _division: div }));
+            });
+
+            // Sort by rating descending, then alphabetically
+            merged.sort((a, b) => {
+                const rDiff = (b.rating || 100) - (a.rating || 100);
+                if (rDiff !== 0) return rDiff;
+                return a.name.localeCompare(b.name);
+            });
+
+            // Assign unified rank
+            merged.forEach((w, i) => w._mergedRank = i + 1);
+
+            const isTeam = div => ['menstag','womenstag','trios'].includes(div);
+            const weekVal = document.getElementById('weekSelect').value;
+
+            const rows = merged.map(w => {
+                const ratingClass = w.rating >= 120 ? 'rating-high' : w.rating >= 100 ? 'rating-medium' : 'rating-low';
+                const displayName = isTeam(w._division)
+                    ? stripTrioSuffix(getFactionDisplayName(w.name, ratingsData?.currentWeek))
+                    : w.name;
+                const slug = createSlug(w.name);
+
+                return `<tr>
+                    <td class="rank" style="color:${getTierTextColour(w.rating)};">${w._mergedRank}</td>
+                    <td class="name">
+                        <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${w._division}" class="wrestler-link">${displayName}</a>
+                        <span class="division-badge-inline">${divLabels[w._division]}</span>
+                    </td>
+                    <td class="rating ${ratingClass}">${(w.rating || 100).toFixed(2)}</td>
+                    <td class="peak-col">${(w.peak || 100).toFixed(2)}</td>
+                </tr>`;
+            }).join('');
+
+            const title = group === 'singles' ? 'Singles Rankings' : 'Tag &amp; Trios Rankings';
+
+            document.getElementById('content').innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-rating tt" data-tt="Current rating across both divisions combined.">Rating</th>
+                                <th class="peak-col col-peak tt" data-tt="Peak rating achieved.">Peak</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
         function handleDivisionClick(division) {
-            // Check which toggle is active and route accordingly
+            // Reset group filter when individual division tab clicked
+            if (currentGroupFilter !== 'all') {
+                currentGroupFilter = 'all';
+                const multiBtn = document.getElementById('groupBtn-multi');
+                multiBtn.classList.remove('active');
+                multiBtn.textContent = 'Select Multiple ▾';
+                // Restore hidden division tabs
+                document.getElementById('divisionTabs').querySelectorAll('.tab').forEach(t => t.style.display = '');
+            }
             if (document.getElementById('statsToggle').classList.contains('active')) {
-                // Statistics mode - show statistics for this division
                 showStatistics(division);
             } else {
-                // Rankings mode - show rankings for this division
                 showDivision(division);
             }
         }
@@ -4170,7 +4310,11 @@ if (tableEl) {
             currentView = 'rankings';
             
             // Show rankings for current division
-            showDivision(currentDivision === 'statistics' ? 'mens' : currentDivision);
+            showDivision(currentDivision === 'statistics' ? 'mens' : (currentDivision === 'singles' || currentDivision === 'teams' ? currentDivision : currentDivision));
+            // If in merged mode, re-render merged view
+            if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams') {
+                showMergedView(currentGroupFilter);
+            }
         }
 
         function switchToStatistics() {
