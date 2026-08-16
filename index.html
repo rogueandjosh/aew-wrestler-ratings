@@ -788,6 +788,12 @@
         th.col-matches, td.matches-col { width: 76px; white-space: nowrap; }
         th.col-peak, td.peak-col   { width: 82px; white-space: nowrap; }
 
+        /* Merged view — no change column, redistribute width */
+        #table-merged th.col-name, #table-merged td.name { width: 340px; }
+        #table-merged th.col-rating, #table-merged td.rating { width: 90px; }
+        #table-merged th.col-matches, #table-merged td.matches-col { width: 90px; }
+        #table-merged th.col-peak, #table-merged td.peak-col { width: 90px; }
+
         /* Mobile: fixed layout with explicit widths for true consistency across all divisions */
         @media (max-width: 600px) {
             table { table-layout: fixed !important; }
@@ -1592,12 +1598,12 @@
             <button class="tab" onclick="handleDivisionClick('menstag')">Men's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
-            <div style="position:relative;display:inline-block;">
-                <button class="tab" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;">Select Multiple ▾</button>
-                <div id="groupDropdown" style="display:none;position:absolute;top:100%;left:0;margin-top:4px;background:#1a1a2e;border:2px solid #ffd700;border-radius:8px;z-index:200;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
-                    <button onclick="setGroupFilter('all')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">All Divisions</button>
-                    <button onclick="setGroupFilter('singles')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Singles</button>
-                    <button onclick="setGroupFilter('teams')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Teams</button>
+            <div style="position:relative;display:contents;">
+                <button class="tab" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;position:relative;">Select Multiple ▾</button>
+                <div id="groupDropdown" style="display:none;position:absolute;top:0;left:0;margin-top:52px;background:#1a1a2e;border:2px solid #ffd700;border-radius:8px;z-index:200;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                    <button onclick="setGroupFilter('all')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">All Divisions</button>
+                    <button onclick="setGroupFilter('singles')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Singles</button>
+                    <button onclick="setGroupFilter('teams')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Teams</button>
                 </div>
             </div>
         </div>
@@ -4171,15 +4177,29 @@ if (tableEl) {
         
         let currentGroupFilter = 'all';
 
-        function toggleGroupDropdown() {
+        let showAllMerged = false;
+
+        function toggleShowAllMerged(group, total) {
+            showAllMerged = !showAllMerged;
+            showMergedView(group);
+        }
             const dd = document.getElementById('groupDropdown');
-            dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+            const btn = document.getElementById('groupBtn-multi');
+            if (dd.style.display === 'block') {
+                dd.style.display = 'none';
+            } else {
+                const rect = btn.getBoundingClientRect();
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                dd.style.position = 'fixed';
+                dd.style.top = (rect.bottom + 4) + 'px';
+                dd.style.left = rect.left + 'px';
+                dd.style.display = 'block';
+            }
         }
 
         function setGroupFilter(group) {
-            // 'group' is 'all' (meaning all divisions merged), 'singles', or 'teams'
-            // Store as 'all_merged' internally to distinguish from default 'all' (no merged view)
             currentGroupFilter = group === 'all' ? 'all_merged' : group;
+            showAllMerged = false;
             document.getElementById('groupDropdown').style.display = 'none';
 
             const multiBtn = document.getElementById('groupBtn-multi');
@@ -4226,7 +4246,10 @@ if (tableEl) {
             const weekVal = document.getElementById('weekSelect').value;
             const isTeamDiv = div => ['menstag','womenstag','trios'].includes(div);
 
-            const rows = merged.map((wrestler, idx) => {
+            const totalRows = merged.length;
+            const displayMerged = showAllMerged ? merged : merged.slice(0, TOP_N_WRESTLERS);
+
+            const rows = displayMerged.map((wrestler, idx) => {
                 const division = wrestler._division;
                 const ratingClass = getRatingClass(wrestler.rating);
                 const teamMembers = getTeamMembers(wrestler.name, division);
@@ -4315,6 +4338,11 @@ if (tableEl) {
 
             const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag &amp; Trios' : 'All Divisions';
 
+            const showAllBtn = totalRows > TOP_N_WRESTLERS ? `
+                <button class="expand-toggle show-all-toggle" onclick="toggleShowAllMerged('${group}', ${totalRows})" style="margin-top:10px;">
+                    ${showAllMerged ? '▲ Show Top 30 Only' : `▼ Show All ${totalRows} Wrestlers/Teams`}
+                </button>` : '';
+
             document.getElementById('content').innerHTML = `
                 <div class="table-container" id="table-merged">
                     <table>
@@ -4328,7 +4356,8 @@ if (tableEl) {
                         </tr></thead>
                         <tbody>${rows}</tbody>
                     </table>
-                </div>`;
+                </div>
+                ${showAllBtn}`;
         }
 
         function handleDivisionClick(division) {
