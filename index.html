@@ -4177,31 +4177,19 @@ if (tableEl) {
         }
 
         function setGroupFilter(group) {
-            currentGroupFilter = group;
-
-            // Close dropdown
+            // 'group' is 'all' (meaning all divisions merged), 'singles', or 'teams'
+            // Store as 'all_merged' internally to distinguish from default 'all' (no merged view)
+            currentGroupFilter = group === 'all' ? 'all_merged' : group;
             document.getElementById('groupDropdown').style.display = 'none';
 
-            // Update Select Multiple button active state
             const multiBtn = document.getElementById('groupBtn-multi');
+            document.querySelectorAll('#divisionTabs .tab').forEach(t => t.classList.remove('active'));
+            multiBtn.classList.add('active');
 
-            if (group === 'all') {
-                // Deactivate Select Multiple, restore division tabs
-                multiBtn.classList.remove('active');
-                document.getElementById('divisionTabs').querySelectorAll('.tab:not(#groupBtn-multi)').forEach(t => t.style.display = '');
-                handleDivisionClick(currentDivision === 'singles' || currentDivision === 'teams' ? 'mens' : currentDivision);
-            } else {
-                // Activate Select Multiple button, hide individual division tabs
-                multiBtn.classList.add('active');
-                document.getElementById('divisionTabs').querySelectorAll('.tab:not(#groupBtn-multi)').forEach(t => {
-                    t.classList.remove('active');
-                    t.style.display = 'none';
-                });
-                const label = group === 'singles' ? 'Singles ▾' : 'Teams ▾';
-                multiBtn.textContent = label;
-                currentDivision = group;
-                showMergedView(group);
-            }
+            const labels = { all: 'All ▾', singles: 'Singles ▾', teams: 'Teams ▾' };
+            multiBtn.textContent = labels[group] || 'Select Multiple ▾';
+
+            showMergedView(group);
         }
 
         // Close dropdown when clicking outside
@@ -4219,80 +4207,137 @@ if (tableEl) {
             document.getElementById('rankingsToggle').classList.add('active');
             document.getElementById('statsToggle').classList.remove('active');
 
-            const divs = group === 'singles'
-                ? ['mens', 'womens']
-                : ['menstag', 'womenstag', 'trios'];
+            const divs = group === 'singles' ? ['mens', 'womens']
+                       : group === 'teams'   ? ['menstag', 'womenstag', 'trios']
+                       :                       ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
+            const divLabels = { mens:"Men's", womens:"Women's", menstag:"Men's Tag", womenstag:"Women's Tag", trios:"Trios" };
 
-            const divLabels = {
-                mens: "Men's", womens: "Women's",
-                menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios"
-            };
-
-            // Merge all wrestlers from the relevant divisions, tagging each with their division
+            // Merge and sort
             let merged = [];
             divs.forEach(div => {
-                const arr = ratingsData[div] || [];
-                arr.forEach(w => merged.push({ ...w, _division: div }));
+                (ratingsData[div] || []).forEach(w => merged.push({ ...w, _division: div }));
             });
-
-            // Sort by rating descending, then alphabetically
             merged.sort((a, b) => {
                 const rDiff = (b.rating || 100) - (a.rating || 100);
-                if (rDiff !== 0) return rDiff;
-                return a.name.localeCompare(b.name);
+                return rDiff !== 0 ? rDiff : a.name.localeCompare(b.name);
             });
-
-            // Assign unified rank
             merged.forEach((w, i) => w._mergedRank = i + 1);
 
-            const isTeam = div => ['menstag','womenstag','trios'].includes(div);
             const weekVal = document.getElementById('weekSelect').value;
+            const isTeamDiv = div => ['menstag','womenstag','trios'].includes(div);
 
-            const rows = merged.map(w => {
-                const ratingClass = w.rating >= 120 ? 'rating-high' : w.rating >= 100 ? 'rating-medium' : 'rating-low';
-                const displayName = isTeam(w._division)
-                    ? stripTrioSuffix(getFactionDisplayName(w.name, ratingsData?.currentWeek))
-                    : w.name;
-                const slug = createSlug(w.name);
+            const rows = merged.map((wrestler, idx) => {
+                const division = wrestler._division;
+                const ratingClass = getRatingClass(wrestler.rating);
+                const teamMembers = getTeamMembers(wrestler.name, division);
+                const tagTriosClass = isTeamDiv(division) ? ' tag-trios-row' : '';
 
-                return `<tr>
-                    <td class="rank" style="color:${getTierTextColour(w.rating)};">${w._mergedRank}</td>
+                // Image cell — reuse same logic as main table, show photos for top 10
+                const withinThreshold = idx < 10;
+                let imageCell = '';
+
+                if (division === 'menstag' || division === 'womenstag') {
+                    const members = findTeamMembersArray(wrestler.name) || [];
+                    if (withinThreshold && members.length >= 2) {
+                        const slug1 = createSlug(members[0]);
+                        const slug2 = createSlug(members[1]);
+                        const ini1 = generateTagInitials(members[0]);
+                        const ini2 = generateTagInitials(members[1]);
+                        const iniUrl1 = createInitialsCircle(ini1, 65, getTierSolidColour(wrestler.rating));
+                        const iniUrl2 = createInitialsCircle(ini2, 65, getTierSolidColour(wrestler.rating));
+                        const img1 = `<img src="images/wrestlers/${slug1}.jpg" alt="${members[0]}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${iniUrl1}';">`;
+                        const img2 = `<img src="images/wrestlers/${slug2}.jpg" alt="${members[1]}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${iniUrl2}';">`;
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                            <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(img1, wrestler.rating, 58)}</a>
+                            <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(img2, wrestler.rating, 58)}</a>
+                        </div></td>`;
+                    } else {
+                        const ini1 = generateTagInitials((findTeamMembersArray(wrestler.name)||['?'])[0]);
+                        const ini2 = generateTagInitials((findTeamMembersArray(wrestler.name)||['?','?'])[1]||'?');
+                        const iniUrl1 = createInitialsCircle(ini1, 45, getTierSolidColour(wrestler.rating));
+                        const iniUrl2 = createInitialsCircle(ini2, 45, getTierSolidColour(wrestler.rating));
+                        const img1 = `<img src="${iniUrl1}" alt="" style="width:45px;height:45px;border-radius:50%;cursor:pointer;">`;
+                        const img2 = `<img src="${iniUrl2}" alt="" style="width:45px;height:45px;border-radius:50%;cursor:pointer;">`;
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                            ${wrapPhotoWithTier(img1, wrestler.rating, 45)}${wrapPhotoWithTier(img2, wrestler.rating, 45)}
+                        </div></td>`;
+                    }
+                } else if (division === 'trios') {
+                    const members = findTeamMembersArray(wrestler.name) || [];
+                    if (withinThreshold && members.length >= 3) {
+                        const slugs = members.slice(0,3).map(createSlug);
+                        const inis = members.slice(0,3).map(m => generateTagInitials(m));
+                        const iniUrls = inis.map(i => createInitialsCircle(i, 45, getTierSolidColour(wrestler.rating)));
+                        const imgs = slugs.map((s,i) => `<img src="images/wrestlers/${s}.jpg" alt="${members[i]}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;cursor:pointer;" onerror="this.onerror=null;this.src='${iniUrls[i]}';">`);
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                            ${slugs.map((s,i) => `<a href="wrestler-stats.html?wrestler=${s}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(imgs[i], wrestler.rating, 40)}</a>`).join('')}
+                        </div></td>`;
+                    } else {
+                        const inis = (findTeamMembersArray(wrestler.name)||['?','?','?']).slice(0,3).map(m => generateTagInitials(m));
+                        const iniUrls = inis.map(i => createInitialsCircle(i, 35, getTierSolidColour(wrestler.rating)));
+                        const imgs = iniUrls.map(u => `<img src="${u}" alt="" style="width:35px;height:35px;border-radius:50%;cursor:pointer;">`);
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
+                            ${imgs.map(img => wrapPhotoWithTier(img, wrestler.rating, 35)).join('')}
+                        </div></td>`;
+                    }
+                } else {
+                    // Singles
+                    const slug = createSlug(wrestler.name);
+                    const initials = generateInitials(wrestler.name);
+                    if (withinThreshold) {
+                        const iniUrl = createInitialsCircle(initials, 90, getTierSolidColour(wrestler.rating));
+                        const img = `<img src="images/wrestlers/${slug}.jpg" alt="${wrestler.name}" style="width:90px;height:90px;cursor:pointer;" onerror="this.onerror=null;this.src='${iniUrl}';">`;
+                        imageCell = `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}" style="display:block;">${wrapPhotoWithTier(img, wrestler.rating, 90)}</a></td>`;
+                    } else {
+                        const iniUrl = createInitialsCircle(initials, 70, getTierSolidColour(wrestler.rating));
+                        const img = `<img src="${iniUrl}" alt="${wrestler.name}" style="width:70px;height:70px;cursor:pointer;">`;
+                        imageCell = `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}" style="display:block;">${wrapPhotoWithTier(img, wrestler.rating, 70)}</a></td>`;
+                    }
+                }
+
+                const displayName = isTeamDiv(division)
+                    ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek))
+                    : wrestler.name;
+
+                return `<tr class="${tagTriosClass}">
+                    <td class="rank" style="color:${getTierTextColour(wrestler.rating)};">${wrestler._mergedRank}</td>
+                    ${imageCell}
                     <td class="name">
-                        <a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${w._division}" class="wrestler-link">${displayName}</a>
-                        <span class="division-badge-inline">${divLabels[w._division]}</span>
+                        <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}" class="wrestler-link">${displayName}</a>
+                        ${teamMembers}
+                        <span class="division-badge-inline">${divLabels[division]}</span>
                     </td>
-                    <td class="rating ${ratingClass}">${(w.rating || 100).toFixed(2)}</td>
-                    <td class="peak-col">${(w.peak || 100).toFixed(2)}</td>
+                    <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
+                    <td class="matches-col">${wrestler.matches || 0}</td>
+                    <td class="peak-col">${(wrestler.peak || 100).toFixed(2)}</td>
                 </tr>`;
             }).join('');
 
-            const title = group === 'singles' ? 'Singles Rankings' : 'Tag &amp; Trios Rankings';
+            const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag &amp; Trios' : 'All Divisions';
 
             document.getElementById('content').innerHTML = `
-                <div class="table-container">
+                <div class="table-container" id="table-merged">
                     <table>
-                        <thead>
-                            <tr>
-                                <th class="col-rank">Rank</th>
-                                <th class="col-name">Name</th>
-                                <th class="col-rating tt" data-tt="Current rating across both divisions combined.">Rating</th>
-                                <th class="peak-col col-peak tt" data-tt="Peak rating achieved.">Peak</th>
-                            </tr>
-                        </thead>
+                        <thead><tr>
+                            <th class="col-rank">Rank</th>
+                            <th class="col-photo"></th>
+                            <th class="col-name">Name</th>
+                            <th class="col-rating tt" data-tt="Current rating combined across selected divisions.">Rating</th>
+                            <th class="matches-col col-matches tt" data-tt="Number of counting matches.">Matches</th>
+                            <th class="peak-col col-peak tt" data-tt="Peak rating achieved.">Peak</th>
+                        </tr></thead>
                         <tbody>${rows}</tbody>
                     </table>
                 </div>`;
         }
 
         function handleDivisionClick(division) {
-            // Reset group filter when individual division tab clicked
-            if (currentGroupFilter !== 'all') {
-                currentGroupFilter = 'all';
-                const multiBtn = document.getElementById('groupBtn-multi');
+            // Deactivate Select Multiple if it was active
+            currentGroupFilter = 'all';
+            const multiBtn = document.getElementById('groupBtn-multi');
+            if (multiBtn) {
                 multiBtn.classList.remove('active');
                 multiBtn.textContent = 'Select Multiple ▾';
-                // Restore hidden division tabs
-                document.getElementById('divisionTabs').querySelectorAll('.tab').forEach(t => t.style.display = '');
             }
             if (document.getElementById('statsToggle').classList.contains('active')) {
                 showStatistics(division);
@@ -4310,10 +4355,10 @@ if (tableEl) {
             currentView = 'rankings';
             
             // Show rankings for current division
-            showDivision(currentDivision === 'statistics' ? 'mens' : (currentDivision === 'singles' || currentDivision === 'teams' ? currentDivision : currentDivision));
-            // If in merged mode, re-render merged view
-            if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams') {
-                showMergedView(currentGroupFilter);
+            if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams' || currentGroupFilter === 'all_merged') {
+                showMergedView(currentGroupFilter === 'all_merged' ? 'all' : currentGroupFilter);
+            } else {
+                showDivision(currentDivision === 'statistics' ? 'mens' : currentDivision);
             }
         }
 
