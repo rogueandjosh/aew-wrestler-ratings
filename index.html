@@ -4819,6 +4819,10 @@ function renderStatistics(division) {
                 <td class="rating s-stat s-hide-mobile">${(wrestler.average || 100).toFixed(2)}</td>
                 <td class="s-week s-hide-mobile">${wrestler.peakWeek}</td>
                 <td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1)}</td>
+            </tr>
+        `;
+    });
+
     html += `
                 </tbody>
             </table>
