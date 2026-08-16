@@ -3193,6 +3193,8 @@ let visibleColumns = {
                         // Restore the previous view instead of always showing Men's
                         if (currentView === 'statistics') {
                             showStatistics(currentStatsDivision);
+                        } else if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams' || currentGroupFilter === 'all_merged') {
+                            showMergedView(currentGroupFilter === 'all_merged' ? 'all' : currentGroupFilter);
                         } else {
                             showDivision(currentDivision);
                         }
@@ -3241,6 +3243,8 @@ let visibleColumns = {
                             // Restore the previous view instead of always showing Men's
                             if (currentView === 'statistics') {
                                 showStatistics(currentStatsDivision);
+                            } else if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams' || currentGroupFilter === 'all_merged') {
+                                showMergedView(currentGroupFilter === 'all_merged' ? 'all' : currentGroupFilter);
                             } else {
                                 showDivision(currentDivision);
                             }
