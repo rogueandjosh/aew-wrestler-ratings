@@ -4288,12 +4288,15 @@ if (tableEl) {
                     } else {
                         const ini1 = generateTagInitials((findTeamMembersArray(wrestler.name)||['?'])[0]);
                         const ini2 = generateTagInitials((findTeamMembersArray(wrestler.name)||['?','?'])[1]||'?');
-                        const iniUrl1 = createInitialsCircle(ini1, 45, getTierSolidColour(wrestler.rating));
-                        const iniUrl2 = createInitialsCircle(ini2, 45, getTierSolidColour(wrestler.rating));
-                        const img1 = `<img src="${iniUrl1}" alt="" style="width:45px;height:45px;border-radius:50%;cursor:pointer;">`;
-                        const img2 = `<img src="${iniUrl2}" alt="" style="width:45px;height:45px;border-radius:50%;cursor:pointer;">`;
-                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
-                            ${wrapPhotoWithTier(img1, wrestler.rating, 45)}${wrapPhotoWithTier(img2, wrestler.rating, 45)}
+                        const slug1 = createSlug((findTeamMembersArray(wrestler.name)||['?'])[0]);
+                        const slug2 = createSlug((findTeamMembersArray(wrestler.name)||['?','?'])[1]||'?');
+                        const iniUrl1 = createInitialsCircle(ini1, 32, getTierSolidColour(wrestler.rating));
+                        const iniUrl2 = createInitialsCircle(ini2, 32, getTierSolidColour(wrestler.rating));
+                        const img1 = `<img src="${iniUrl1}" alt="" style="width:32px;height:32px;border-radius:50%;cursor:pointer;">`;
+                        const img2 = `<img src="${iniUrl2}" alt="" style="width:32px;height:32px;border-radius:50%;cursor:pointer;">`;
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:1px;justify-content:center;">
+                            <a href="wrestler-stats.html?wrestler=${slug1}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(img1, wrestler.rating, 32)}</a>
+                            <a href="wrestler-stats.html?wrestler=${slug2}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(img2, wrestler.rating, 32)}</a>
                         </div></td>`;
                     }
                 } else if (division === 'trios') {
@@ -4307,11 +4310,13 @@ if (tableEl) {
                             ${slugs.map((s,i) => `<a href="wrestler-stats.html?wrestler=${s}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(imgs[i], wrestler.rating, 40)}</a>`).join('')}
                         </div></td>`;
                     } else {
-                        const inis = (findTeamMembersArray(wrestler.name)||['?','?','?']).slice(0,3).map(m => generateTagInitials(m));
-                        const iniUrls = inis.map(i => createInitialsCircle(i, 35, getTierSolidColour(wrestler.rating)));
-                        const imgs = iniUrls.map(u => `<img src="${u}" alt="" style="width:35px;height:35px;border-radius:50%;cursor:pointer;">`);
-                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">
-                            ${imgs.map(img => wrapPhotoWithTier(img, wrestler.rating, 35)).join('')}
+                        const trioMembers = findTeamMembersArray(wrestler.name)||['?','?','?'];
+                        const inis = trioMembers.slice(0,3).map(m => generateTagInitials(m));
+                        const trioSlugs = trioMembers.slice(0,3).map(m => createSlug(m));
+                        const iniUrls = inis.map(i => createInitialsCircle(i, 25, getTierSolidColour(wrestler.rating)));
+                        const imgs = iniUrls.map(u => `<img src="${u}" alt="" style="width:25px;height:25px;border-radius:50%;cursor:pointer;">`);
+                        imageCell = `<td class="wrestler-image"><div style="display:flex;gap:1px;justify-content:center;">
+                            ${imgs.map((img, i) => `<a href="wrestler-stats.html?wrestler=${trioSlugs[i]}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}">${wrapPhotoWithTier(img, wrestler.rating, 25)}</a>`).join('')}
                         </div></td>`;
                     }
                 } else {
