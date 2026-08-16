@@ -385,6 +385,7 @@
         }
 
         .tab {
+            background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
             color: #e0e0e0;
             padding: 12px 25px;
@@ -1599,7 +1600,7 @@
             <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
             <div style="position:relative;display:contents;">
-                <button class="tab" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;position:relative;">Select Multiple ▾</button>
+                <button class="tab tt" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;position:relative;" data-tt="Combine multiple divisions into one ranked list — choose All Divisions, Singles (Men's + Women's), or Teams (Tag + Trios).">Select Multiple ▾</button>
                 <div id="groupDropdown" style="display:none;position:absolute;top:0;left:0;margin-top:52px;background:#1a1a2e;border:2px solid #ffd700;border-radius:8px;z-index:200;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
                     <button onclick="setGroupFilter('all')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">All Divisions</button>
                     <button onclick="setGroupFilter('singles')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:#ffd700;cursor:pointer;font-family:'Overlock',cursive;font-size:0.95em;text-align:left;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='none'">Singles</button>
