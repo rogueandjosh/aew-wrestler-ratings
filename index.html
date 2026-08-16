@@ -4393,16 +4393,31 @@ if (tableEl) {
                 ${showAllBtn}`;
         }
 
-        function showMergedStatistics(group) {
-            if (!window.currentStatisticsData) {
-                // Stats not loaded yet — load them first
-                showStatistics(currentStatsDivision === 'statistics' ? 'mens' : currentStatsDivision);
-                return;
-            }
-
+        async function showMergedStatistics(group) {
             currentView = 'statistics';
             document.getElementById('rankingsToggle').classList.remove('active');
             document.getElementById('statsToggle').classList.add('active');
+
+            document.getElementById('content').innerHTML = '<div class="loading">📊 Calculating statistics... This may take 5-10 seconds...</div>';
+
+            // Always load fresh stats data for the selected week
+            try {
+                const select = document.getElementById('weekSelect');
+                let selectedWeekLabel = 'current';
+                if (select.value !== 'current') {
+                    const selectedFilename = select.value.replace('archive/', '');
+                    const weekInfo = archiveIndex.weeks.find(w => w.filename === selectedFilename);
+                    if (weekInfo) selectedWeekLabel = weekInfo.label;
+                } else if (ratingsData && ratingsData.currentWeek) {
+                    selectedWeekLabel = ratingsData.currentWeek;
+                }
+                const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
+                window.currentStatisticsData = dynamicStats;
+                window.currentSelectedWeek = selectedWeekLabel;
+            } catch(e) {
+                document.getElementById('content').innerHTML = '<div class="error">Error calculating statistics. Please try again.</div>';
+                return;
+            }
 
             const divs = group === 'singles' ? ['mens', 'womens']
                        : group === 'teams'   ? ['menstag', 'womenstag', 'trios']
@@ -4512,14 +4527,15 @@ if (tableEl) {
                     ${showAllMerged ? '▲ Show Top 30 Only' : `▼ Show All ${totalRows} Wrestlers/Teams`}
                    </button>` : '';
 
-            // Build header row same as single-division stats
+            // Build header row using same s-* classes as renderDynamicStatistics
             let headerHtml = '<tr>';
-            if (visibleColumns.rank) headerHtml += '<th class="col-rank">Rank</th>';
-            headerHtml += '<th class="col-photo"></th><th class="col-name">Name</th>';
-            if (visibleColumns.current) headerHtml += '<th class="col-rating tt" data-tt="Current rating.">Current</th>';
-            if (visibleColumns.peak) headerHtml += '<th class="col-rating s-hide-mobile tt" data-tt="Peak rating.">Peak</th>';
-            if (visibleColumns.floor) headerHtml += '<th class="col-rating s-hide-mobile tt" data-tt="Lowest rating.">Floor</th>';
-            if (visibleColumns.average) headerHtml += '<th class="col-rating s-hide-mobile tt" data-tt="Average rating.">Average</th>';
+            if (visibleColumns.rank) headerHtml += '<th class="no-sort s-rank">#</th>';
+            headerHtml += '<th class="no-sort s-photo"></th>';
+            headerHtml += '<th class="no-sort s-name">Name</th>';
+            if (visibleColumns.current) headerHtml += '<th class="s-stat tt" data-tt="Current rating.">Current</th>';
+            if (visibleColumns.peak) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Peak rating.">Peak</th>';
+            if (visibleColumns.floor) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Lowest rating.">Floor</th>';
+            if (visibleColumns.average) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Average rating.">Average</th>';
             if (visibleColumns.peakWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week peak was achieved.">Peak Week</th>';
             if (visibleColumns.floorWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week floor was achieved.">Floor Week</th>';
             if (visibleColumns.weeksAtNumber1) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Weeks at #1.">Weeks #1</th>';
@@ -4528,12 +4544,27 @@ if (tableEl) {
             const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag & Trios' : 'All Divisions';
 
             document.getElementById('content').innerHTML = `
-                <div class="table-container" id="table-merged-stats">
+                <div class="table-container">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                        <h2 style="color:#ffd700;margin:0;">📊 ${groupLabel} — All Wrestler Statistics</h2>
+                        <h2 style="color:#ffd700;margin:0;">📊 ${groupLabel}</h2>
                         <button onclick="toggleColumnSelector()" class="tt tt-below" style="background:rgba(255,215,0,0.2);border:2px solid #ffd700;color:#ffd700;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;" data-tt="Choose which statistics to show.">⚙️ Customize Columns</button>
                     </div>
-                    <table>
+                    <div id="columnSelector" style="display:none;background:rgba(255,255,255,0.05);border:1px solid #ffd700;border-radius:8px;padding:15px;margin-bottom:20px;">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.rank ? 'checked' : ''} onchange="toggleColumn('rank', this.checked)"> #</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" checked disabled> Name (required)</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.current ? 'checked' : ''} onchange="toggleColumn('current', this.checked)"> Current</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.peak ? 'checked' : ''} onchange="toggleColumn('peak', this.checked)"> Peak</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.floor ? 'checked' : ''} onchange="toggleColumn('floor', this.checked)"> Floor</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.average ? 'checked' : ''} onchange="toggleColumn('average', this.checked)"> Average</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.peakWeek ? 'checked' : ''} onchange="toggleColumn('peakWeek', this.checked)"> Peak Week</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.floorWeek ? 'checked' : ''} onchange="toggleColumn('floorWeek', this.checked)"> Floor Week</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.weeksAtNumber1 ? 'checked' : ''} onchange="toggleColumn('weeksAtNumber1', this.checked)"> Weeks at #1</label>
+                        </div>
+                    </div>
+                    <p style="color:#b8b8b8;margin-bottom:15px;">Through <strong style="color:#ffd700;">${window.currentSelectedWeek}</strong></p>
+                    <p class="scroll-hint" style="display:none;color:#b8b8b8;font-size:0.8em;margin-bottom:10px;">↔️ Swipe to see more columns</p>
+                    <table class="stats-table">
                         <thead>${headerHtml}</thead>
                         <tbody>${rowsHtml}</tbody>
                     </table>
@@ -5853,7 +5884,9 @@ function toggleColumnSelector() {
 
 function toggleColumn(column, checked) {
     visibleColumns[column] = checked;
-    if (window.currentStatisticsData) {
+    if (currentGroupFilter === 'singles' || currentGroupFilter === 'teams' || currentGroupFilter === 'all_merged') {
+        showMergedStatistics(currentGroupFilter === 'all_merged' ? 'all' : currentGroupFilter);
+    } else if (window.currentStatisticsData) {
         renderDynamicStatistics(currentStatsDivision, window.currentStatisticsData, window.currentSelectedWeek);
     }
 }
