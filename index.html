@@ -1938,6 +1938,42 @@
             }
         }
 
+        // Correction map for wrestlers affected by early month double-counting
+        // Jun, Jul and Aug 2019 were monthly entries counted as 2 weeks each
+        const weeksAtNumber1FullCorrections = {
+            'Cody': 2,
+            'Riho': 3,
+            'Young Bucks': 1,
+            'Lucha Brothers': 2,
+            'SCU': 1,
+            'Kenny Omega': 1
+        };
+
+        function getWeeksAtNumber1Correction(name, selectedWeekLabel) {
+            const w = selectedWeekLabel || window.currentSelectedWeek || '';
+
+            // Detect which phase we're in based on exact week label
+            // Jun '19 Week 1 = only first month processed
+            // Jul '19 Week 1 = first two months processed
+            // Aug '19 Week 1 onwards = all three months processed (full correction)
+            let phase = 'aug_or_later';
+            if (w === "Jun \u201919 Week 1" || w === "Jun '19 Week 1") phase = 'jun';
+            else if (w === "Jul \u201919 Week 1" || w === "Jul '19 Week 1") phase = 'jul';
+
+            const corrections = {
+                jun:          { 'Cody': 1, 'Riho': 1, 'Young Bucks': 1 },
+                jul:          { 'Cody': 2, 'Riho': 2, 'Young Bucks': 1, 'Lucha Brothers': 1 },
+                aug_or_later: weeksAtNumber1FullCorrections
+            };
+
+            return (corrections[phase] || {})[name] || 0;
+        }
+
+        function getCorrectedWeeksAtNumber1(name, raw, selectedWeekLabel) {
+            const correction = getWeeksAtNumber1Correction(name, selectedWeekLabel);
+            return Math.max(0, (raw || 0) - correction);
+        }
+
         // Toggle showing all wrestlers vs top N in statistics view
         function toggleShowAllStats(division) {
             showAllWrestlers['stats-' + division] = !showAllWrestlers['stats-' + division];
@@ -4518,14 +4554,13 @@ if (tableEl) {
                 if (visibleColumns.average) rowsHtml += `<td class="rating s-stat s-hide-mobile">${(wrestler.average || 100).toFixed(2)}</td>`;
                 if (visibleColumns.peakWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.peakWeek || ''}</td>`;
                 if (visibleColumns.floorWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.floorWeek || ''}</td>`;
-                if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${wrestler.weeksAtNumber1 || 0}</td>`;
+                if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1)}</td>`;
                 rowsHtml += '</tr>';
             });
 
+            const showAllBtnText = showAllMerged ? '▲ Show Top 30 Only' : '▼ Show All ' + totalRows + ' Wrestlers/Teams';
             const showAllBtnHtml = totalRows > TOP_N_WRESTLERS
-                ? `<button class="expand-toggle show-all-toggle" onclick="toggleShowAllMerged('${group}', ${totalRows})">
-                    ${showAllMerged ? '▲ Show Top 30 Only' : `▼ Show All ${totalRows} Wrestlers/Teams`}
-                   </button>` : '';
+                ? `<button class="expand-toggle show-all-toggle" onclick="toggleShowAllMerged('${group}', ${totalRows})">${showAllBtnText}</button>` : '';
 
             // Build header row using same s-* classes as renderDynamicStatistics
             let headerHtml = '<tr>';
@@ -4783,11 +4818,7 @@ function renderStatistics(division) {
                 <td class="rating s-stat s-hide-mobile">${(wrestler.floor || 100).toFixed(2)}</td>
                 <td class="rating s-stat s-hide-mobile">${(wrestler.average || 100).toFixed(2)}</td>
                 <td class="s-week s-hide-mobile">${wrestler.peakWeek}</td>
-                <td class="s-stat s-hide-mobile">${wrestler.weeksAtNumber1}</td>
-            </tr>
-        `;
-    });
-
+                <td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1)}</td>
     html += `
                 </tbody>
             </table>
@@ -4845,7 +4876,7 @@ function renderStatistics(division) {
                     ${visibleColumns.floor ? `<td>${(wrestler.floor || 100).toFixed(2)}</td>` : ''}
                     ${visibleColumns.floorWeek ? `<td>${wrestler.floorWeek}</td>` : ''}
                     ${visibleColumns.average ? `<td>${(wrestler.average || 100).toFixed(2)}</td>` : ''}
-                    ${visibleColumns.weeksAtNumber1 ? `<td>${wrestler.weeksAtNumber1}</td>` : ''}
+                    ${visibleColumns.weeksAtNumber1 ? `<td>${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1)}</td>` : ''}
                 </tr>
             `;
         }
@@ -5580,7 +5611,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             if (visibleColumns.average) rowsHtml += `<td class="rating s-stat s-hide-mobile">${(wrestler.average || 100).toFixed(2)}</td>`;
             if (visibleColumns.peakWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.peakWeek}</td>`;
             if (visibleColumns.floorWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.floorWeek}</td>`;
-            if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${wrestler.weeksAtNumber1}</td>`;
+            if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1)}</td>`;
             rowsHtml += '</tr>';
         }
     });
