@@ -1,17 +1,19 @@
 {
   "name": "Nigel McGuinness",
+  "slug": "nigel-mcguinness",
   "division": "Men",
   "formerNames": [],
-  "currentRating": 112.17552262031424,
-  "currentRank": 23,
+  "currentRating": 103.83028921424044,
+  "currentRank": 39,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 113.24084159230706,
   "peakRatingWeek": "Aug '25 Week 4",
   "peakRank": 20,
-  "totalMatches": 5,
-  "totalWeeks": 16,
+  "totalMatches": 6,
+  "totalWeeks": 17,
   "firstAppearance": "Sep '24 Week 5",
-  "lastAppearance": "Sep '25 Week 3",
+  "lastAppearance": "Aug '26 Week 3",
   "weeksInTop10": 0,
   "weeksInTop20": 2,
   "statsByYear": {
@@ -29,9 +31,16 @@
       "lowestRating": 7.01,
       "year": 2025
     },
+    "2026": {
+      "totalMatches": 1,
+      "averageRating": 7.32,
+      "highestRating": 7.32,
+      "lowestRating": 7.32,
+      "year": 2026
+    },
     "ALL": {
-      "totalMatches": 5,
-      "averageRating": 7.75,
+      "totalMatches": 6,
+      "averageRating": 7.68,
       "highestRating": 8.47,
       "lowestRating": 7.01,
       "year": null
@@ -40,13 +49,13 @@
   "matchDistribution": {
     "9.0+": 0,
     "8.0-8.99": 3,
-    "7.0-7.99": 2,
+    "7.0-7.99": 3,
     "6.0-6.99": 0,
     "Below 6.0": 0
   },
   "bestMatches": [
     {
-      "date": "2024-08-24",
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
       "opponents": [
@@ -61,39 +70,48 @@
         "Ricochet"
       ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
       "stakes": "Number One Contender"
     },
     {
-      "date": "2024-09-24",
+      "date": "2024-09-25",
       "year": 2024,
       "event": "Grand Slam '24 - Night 1",
       "opponents": [
         "Bryan Danielson"
       ],
       "rating": 8.06,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
       "stakes": "None"
     },
     {
-      "date": "2025-08-23",
+      "date": "2025-08-24",
       "year": 2025,
       "event": "Forbidden Door '25",
       "opponents": [
         "Zack Sabre Jr."
       ],
       "rating": 8.06,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
       "stakes": "Title Match"
     },
     {
-      "date": "2025-08-15",
+      "date": "2026-08-15",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        "Katsuyori Shibata"
+      ],
+      "rating": 7.32,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "Continental Cup Match"
+    },
+    {
+      "date": "2025-08-16",
       "year": 2025,
       "event": "Collision",
       "opponents": [
@@ -102,13 +120,12 @@
         "Lee Moriarty"
       ],
       "rating": 7.17,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
       "stakes": "Number One Contender"
     },
     {
-      "date": "2025-05-24",
+      "date": "2025-05-25",
       "year": 2025,
       "event": "Double or Nothing '25",
       "opponents": [
@@ -117,7 +134,6 @@
         "Daniel Garcia"
       ],
       "rating": 7.01,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
       "stakes": "None"
@@ -235,11 +251,18 @@
       "rating": 112.17552262031424,
       "rank": 23,
       "division": "Men"
+    },
+    {
+      "date": "2026-08-14",
+      "week": "Aug '26 Week 3",
+      "rating": 103.83028921424044,
+      "rank": 39,
+      "division": "Men"
     }
   ],
   "allMatches": [
     {
-      "date": "2024-08-24",
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
       "opponents": [
@@ -254,26 +277,24 @@
         "Ricochet"
       ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
       "stakes": "Number One Contender"
     },
     {
-      "date": "2024-09-24",
+      "date": "2024-09-25",
       "year": 2024,
       "event": "Grand Slam '24 - Night 1",
       "opponents": [
         "Bryan Danielson"
       ],
       "rating": 8.06,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
       "stakes": "None"
     },
     {
-      "date": "2025-05-24",
+      "date": "2025-05-25",
       "year": 2025,
       "event": "Double or Nothing '25",
       "opponents": [
@@ -282,13 +303,12 @@
         "Daniel Garcia"
       ],
       "rating": 7.01,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
       "stakes": "None"
     },
     {
-      "date": "2025-08-15",
+      "date": "2025-08-16",
       "year": 2025,
       "event": "Collision",
       "opponents": [
@@ -297,24 +317,33 @@
         "Lee Moriarty"
       ],
       "rating": 7.17,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
       "stakes": "Number One Contender"
     },
     {
-      "date": "2025-08-23",
+      "date": "2025-08-24",
       "year": 2025,
       "event": "Forbidden Door '25",
       "opponents": [
         "Zack Sabre Jr."
       ],
       "rating": 8.06,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
       "stakes": "Title Match"
+    },
+    {
+      "date": "2026-08-15",
+      "year": 2026,
+      "event": "Collision",
+      "opponents": [
+        "Katsuyori Shibata"
+      ],
+      "rating": 7.32,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "Continental Cup Match"
     }
-  ],
-  "isTeam": false
+  ]
 }
