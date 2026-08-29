@@ -336,11 +336,16 @@
             background: rgba(255, 215, 0, 0.2);
         }
 
+        .show-search-wrap {
+            position: relative;
+            width: 100%;
+        }
+
         .show-search-item input {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #ffd700;
             color: #e0e0e0;
-            padding: 8px 12px;
+            padding: 8px 34px 8px 12px;
             border-radius: 5px;
             font-size: 1em;
             width: 100%;
@@ -356,6 +361,32 @@
         .show-search-item input:focus {
             background: rgba(255, 215, 0, 0.15);
             outline: none;
+        }
+
+        .show-search-clear {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            color: #ffd700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 0.75em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .show-search-clear:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
         }
 
         .week-selector select:focus {
@@ -1605,9 +1636,12 @@
                             </div>
 
                             <div class="filter-item show-search-item">
-                                <label>Or search a show</label>
-                                <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" autocomplete="off">
-                                <datalist id="showSearchList"></datalist>
+                                <label>Or Search a Show</label>
+                                <div class="show-search-wrap">
+                                    <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" oninput="toggleShowSearchClear()" autocomplete="off">
+                                    <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
+                                    <datalist id="showSearchList"></datalist>
+                                </div>
                             </div>
                         </div>
                         
@@ -2928,6 +2962,12 @@ let visibleColumns = {
             if (!datalist || !showIndex || !showIndex.length) return;
 
             datalist.innerHTML = '';
+
+            // Random-pick sentinel option, always first
+            const randomOption = document.createElement('option');
+            randomOption.value = '🎲 Random Show';
+            datalist.appendChild(randomOption);
+
             // Oldest to newest
             const sorted = showIndex.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
             sorted.forEach(entry => {
@@ -2937,12 +2977,35 @@ let visibleColumns = {
             });
         }
 
+        function toggleShowSearchClear() {
+            const input = document.getElementById('showSearch');
+            const clearBtn = document.getElementById('showSearchClear');
+            if (!input || !clearBtn) return;
+            clearBtn.style.display = input.value.trim() ? 'flex' : 'none';
+        }
+
+        function clearShowSearch() {
+            const input = document.getElementById('showSearch');
+            const clearBtn = document.getElementById('showSearchClear');
+            if (!input) return;
+            input.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            input.focus();
+        }
+
         function loadShowFromSearch() {
             const input = document.getElementById('showSearch');
             const query = input.value.trim();
             if (!query || !showIndex || !showIndex.length) return;
 
-            const match = showIndex.find(entry => entry.show.toLowerCase() === query.toLowerCase());
+            let match;
+            if (query === '🎲 Random Show') {
+                match = showIndex[Math.floor(Math.random() * showIndex.length)];
+                input.value = match.show;
+            } else {
+                match = showIndex.find(entry => entry.show.toLowerCase() === query.toLowerCase());
+            }
+
             if (!match) {
                 console.log('No show match found for:', query);
                 return;
@@ -2967,6 +3030,7 @@ let visibleColumns = {
 
             weekSelect.value = targetValue;
             loadSelectedWeek();
+            toggleShowSearchClear();
 
             // Make sure the archive panel is open so the result is visible
             const panel = document.getElementById('weekSelectorPanel');
