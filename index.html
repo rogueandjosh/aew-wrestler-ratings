@@ -370,6 +370,7 @@
             transform: translateY(-50%);
             background: rgba(255, 215, 0, 0.15);
             border: 1px solid rgba(255, 215, 0, 0.5);
+            box-sizing: border-box;
             color: #ffd700;
             width: 22px;
             height: 22px;
@@ -381,12 +382,19 @@
             align-items: center;
             justify-content: center;
             padding: 0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
             transition: background 0.2s, border-color 0.2s;
         }
 
-        .show-search-clear:hover {
+        .show-search-clear:hover,
+        .show-search-clear:focus,
+        .show-search-clear:active {
             background: rgba(255, 215, 0, 0.3);
             border-color: #ffd700;
+            outline: none;
+            box-shadow: none;
         }
 
         .week-selector select:focus {
