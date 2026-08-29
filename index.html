@@ -100,6 +100,11 @@
             color: #888;
         }
 
+        .header-contact-sep {
+            color: rgba(184, 184, 184, 0.5);
+            font-size: 0.85em;
+        }
+
         .date-range {
             margin-top: 10px;
             font-size: 1em;
@@ -1302,6 +1307,36 @@
                 padding-top: 55px;
             }
 
+            .header-contact-row {
+                gap: 6px !important;
+                flex-wrap: nowrap !important;
+                width: 100%;
+            }
+
+            .header-contact-link {
+                font-size: 0.68em !important;
+                gap: 4px !important;
+                min-width: 0;
+                flex-shrink: 1;
+            }
+
+            .header-contact-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                min-width: 0;
+            }
+
+            .header-contact-icon {
+                width: 12px !important;
+                height: 12px !important;
+                flex-shrink: 0;
+            }
+
+            .header-contact-sep {
+                flex-shrink: 0;
+            }
+
             .expand-toggle {
                 font-size: 0.8em;
             }
@@ -1557,9 +1592,9 @@
 <div id="ttBox"></div>
     <div class="container">
         <header style="position: relative;">
-            <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 14px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://www.instagram.com/elitewrestlerratings" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #b8b8b8; font-size: 0.85em; font-family: 'Amaranth', sans-serif;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <div class="header-contact-row" style="margin-bottom: 6px; display: flex; align-items: center; gap: 14px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://www.instagram.com/elitewrestlerratings" target="_blank" rel="noopener noreferrer" class="header-contact-link" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #b8b8b8; font-size: 0.85em; font-family: 'Amaranth', sans-serif;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="header-contact-icon">
             <defs>
                 <radialGradient id="igGrad" cx="30%" cy="107%" r="150%">
                     <stop offset="0%" stop-color="#fdf497"/>
@@ -1574,14 +1609,15 @@
             <circle cx="12" cy="12" r="4" fill="none" stroke="white" stroke-width="2"/>
             <circle cx="17.5" cy="6.5" r="1" fill="white"/>
         </svg>
-            @elitewrestlerratings
+            <span class="header-contact-text">@elitewrestlerratings</span>
         </a>
-            <a href="mailto:contact@elitewrestlerratings.com" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #b8b8b8; font-size: 0.85em; font-family: 'Amaranth', sans-serif;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8b8b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <span class="header-contact-sep" aria-hidden="true">•</span>
+            <a href="mailto:contact@elitewrestlerratings.com" class="header-contact-link" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #b8b8b8; font-size: 0.85em; font-family: 'Amaranth', sans-serif;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8b8b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-contact-icon">
                     <rect x="2" y="4" width="20" height="16" rx="2"/>
                     <polyline points="2,4 12,13 22,4"/>
                 </svg>
-                contact@elitewrestlerratings.com
+                <span class="header-contact-text">contact@elitewrestlerratings.com</span>
             </a>
         </div>
             <h1><a href="index.html" style="color: inherit; text-decoration: none;" title="Return to current rankings"><span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">E</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">lite</span> <span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">W</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">restler</span> <span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">R</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">atings</span></a></h1>
