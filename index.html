@@ -298,7 +298,8 @@
             }
 
             .filter-item,
-            .week-item {
+            .week-item,
+            .show-search-item {
                 width: 100%;
                 min-width: unset;
             }
@@ -316,6 +317,28 @@
 
         .week-selector select:hover {
             background: rgba(255, 215, 0, 0.2);
+        }
+
+        .show-search-item input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 100%;
+            min-width: 200px;
+            font-family: inherit;
+        }
+
+        .show-search-item input::placeholder {
+            color: rgba(224, 224, 224, 0.5);
+        }
+
+        .show-search-item input:hover,
+        .show-search-item input:focus {
+            background: rgba(255, 215, 0, 0.15);
+            outline: none;
         }
 
         .week-selector select:focus {
@@ -2888,8 +2911,8 @@ let visibleColumns = {
             if (!datalist || !showIndex || !showIndex.length) return;
 
             datalist.innerHTML = '';
-            // Most recent shows first
-            const sorted = showIndex.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Oldest to newest
+            const sorted = showIndex.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
             sorted.forEach(entry => {
                 const option = document.createElement('option');
                 option.value = entry.show;
