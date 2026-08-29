@@ -1426,8 +1426,15 @@
             border-bottom-color: #ffd700;
         }
         body.tooltips-on .tt:not(th):not(td):hover::after,
-        body.tooltips-on .tt:not(th):not(td):hover::before {
+        body.tooltips-on .tt:not(th):not(td):hover::before,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
             opacity: 1;
+        }
+        /* Touch-triggered tooltips appear instantly (no hover delay) since a tap is already deliberate */
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
+            transition: opacity 0.1s ease 0s;
         }
         #tooltipToggle {
             background: none;
@@ -2027,6 +2034,45 @@
             clearTimeout(ttTimer);
             ttBox.style.display = 'none';
         });
+
+        // Touch handling: mobile browsers only fire :hover on tap (after the fact),
+        // which reads as "needs a click first". touchstart fires the instant a finger
+        // lands, so we mirror hover behavior there — the tap/click itself still fires
+        // normally afterward since we never call preventDefault.
+        let ttTouchEl = null;
+        document.addEventListener('touchstart', function(e) {
+            if (!document.body.classList.contains('tooltips-on')) return;
+
+            // CSS-pseudo tooltip system (buttons, labels, etc.)
+            const ttEl = e.target.closest('.tt:not(th):not(td)');
+            if (ttTouchEl && ttTouchEl !== ttEl) {
+                ttTouchEl.classList.remove('tt-touch-active');
+            }
+            if (ttEl) {
+                ttEl.classList.add('tt-touch-active');
+                ttTouchEl = ttEl;
+            } else {
+                ttTouchEl = null;
+            }
+
+            // JS-box tooltip system (table headers)
+            const tableEl = e.target.closest('th.tt, td.tt');
+            if (tableEl) {
+                const text = tableEl.getAttribute('data-tt');
+                if (text) {
+                    clearTimeout(ttTimer);
+                    const rect = tableEl.getBoundingClientRect();
+                    ttBox.textContent = text;
+                    ttBox.style.display = 'block';
+                    const left = rect.left + rect.width / 2 - 100;
+                    const top = rect.top - 70;
+                    ttBox.style.left = Math.max(5, left) + 'px';
+                    ttBox.style.top = Math.max(5, top) + 'px';
+                }
+            } else {
+                ttBox.style.display = 'none';
+            }
+        }, { passive: true });
 
         // Toggle showing all wrestlers vs top N
         function toggleShowAll(division) {
