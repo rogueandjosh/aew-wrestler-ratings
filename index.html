@@ -1563,6 +1563,12 @@
                                     <option value="current">Current Week</option>
                                 </select>
                             </div>
+
+                            <div class="filter-item show-search-item">
+                                <label>Or search a show</label>
+                                <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" autocomplete="off">
+                                <datalist id="showSearchList"></datalist>
+                            </div>
                         </div>
                         
                         <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
@@ -1815,6 +1821,7 @@
         let ratingsData = null;
         let statisticsData = null;
         let archiveIndex = null;
+        let showIndex = [];
         let nameChanges = {}; // Global name changes mapping
         let currentWeek = 'current';
         let currentView = 'rankings'; // 'rankings' or 'statistics'
@@ -2688,9 +2695,10 @@ let visibleColumns = {
         Promise.all([
             fetch('archive/index.json').catch(() => ({ weeks: [] })),
             fetch('current-rankings.json'),
-            fetch('statistics.json?v=2').catch(() => null)
+            fetch('statistics.json?v=2').catch(() => null),
+            fetch('show-index.json').catch(() => null)
         ])
-        .then(async ([archiveResponse, currentResponse, statsResponse]) => {
+        .then(async ([archiveResponse, currentResponse, statsResponse, showIndexResponse]) => {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
@@ -2754,6 +2762,18 @@ let visibleColumns = {
             
             // Populate week selector
             populateWeekSelector();
+
+            // Load show → week mapping (optional file; safe to skip if missing)
+            if (showIndexResponse) {
+                try {
+                    showIndex = await showIndexResponse.json();
+                } catch (e) {
+                    showIndex = [];
+                }
+            } else {
+                showIndex = [];
+            }
+            populateShowSearch();
             
             // Update header display
             updateHeaderDisplay(
@@ -2861,6 +2881,60 @@ let visibleColumns = {
                 // Initialize navigation buttons
                 updateNavigationButtons();
             }
+        }
+
+        function populateShowSearch() {
+            const datalist = document.getElementById('showSearchList');
+            if (!datalist || !showIndex || !showIndex.length) return;
+
+            datalist.innerHTML = '';
+            // Most recent shows first
+            const sorted = showIndex.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+            sorted.forEach(entry => {
+                const option = document.createElement('option');
+                option.value = entry.show;
+                datalist.appendChild(option);
+            });
+        }
+
+        function loadShowFromSearch() {
+            const input = document.getElementById('showSearch');
+            const query = input.value.trim();
+            if (!query || !showIndex || !showIndex.length) return;
+
+            const match = showIndex.find(entry => entry.show.toLowerCase() === query.toLowerCase());
+            if (!match) {
+                console.log('No show match found for:', query);
+                return;
+            }
+
+            const targetValue = `archive/${match.filename}`;
+            const weekSelect = document.getElementById('weekSelect');
+
+            // The dropdown may be narrowed by the year/month filters — reset them
+            // so the target week is guaranteed to be a valid option.
+            const yearFilter = document.getElementById('yearFilter');
+            const monthFilter = document.getElementById('monthFilter');
+            if (yearFilter) yearFilter.value = '';
+            if (monthFilter) monthFilter.value = '';
+            filterWeeks();
+
+            const optionExists = Array.from(weekSelect.options).some(opt => opt.value === targetValue);
+            if (!optionExists) {
+                console.log('Show matched but archive file not found in week selector:', targetValue);
+                return;
+            }
+
+            weekSelect.value = targetValue;
+            loadSelectedWeek();
+
+            // Make sure the archive panel is open so the result is visible
+            const panel = document.getElementById('weekSelectorPanel');
+            if (panel && panel.style.display === 'none') {
+                toggleWeekSelector();
+            }
+
+            input.blur();
         }
         
         // Restore state from URL hash (when returning from wrestler stats)
