@@ -398,11 +398,12 @@
         .show-search-clear:focus,
         .show-search-clear:focus-visible,
         .show-search-clear:active {
-            background: rgba(255, 215, 0, 0.3) !important;
+            background: rgba(255, 215, 0, 0.35) !important;
             border-color: #ffd700 !important;
             border-radius: 50% !important;
             outline: none !important;
             box-shadow: none !important;
+            transform: translateY(-50%) !important;
         }
 
         .week-selector select:focus {
@@ -1617,7 +1618,7 @@
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
             <p class="date-range" id="dateRange"></p>
             
-            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from June 2019 to the current one. Select a year/month/week. Or you can choose one at random! All the ratings shown will update to this week." onclick="toggleWeekSelector()">
+            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from June 2019 to the current one. Select a year/month/week, search for a specific show, or pick one at random! All the ratings shown will update to this week." onclick="toggleWeekSelector()">
                 ▼ Change Week / Browse Archive
             </button>
             
@@ -1652,7 +1653,7 @@
                             </div>
 
                             <div class="filter-item show-search-item">
-                                <label>Or Search a Show</label>
+                                <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the rankings from that week, or click into the empty box to browse every show in order.">Or Search a Show</label>
                                 <div class="show-search-wrap">
                                     <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" oninput="toggleShowSearchClear()" autocomplete="off">
                                     <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
