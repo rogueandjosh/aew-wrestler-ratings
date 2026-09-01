@@ -135,6 +135,23 @@
             color: #ffd700;
         }
 
+        #expandWeekBtn {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            border-radius: 20px;
+            padding: 10px 22px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: background 0.3s, border-color 0.3s, transform 0.2s;
+        }
+
+        #expandWeekBtn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: scale(1.03);
+        }
+
         .week-selector-panel {
             margin-top: 10px;
             padding-top: 10px;
@@ -1006,6 +1023,10 @@
             .back-link {
                 padding: 6px 12px;
                 font-size: 0.85em;
+            }
+
+            .expand-toggle {
+                font-size: 0.8em;
             }
 
             .table-container {
