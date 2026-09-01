@@ -225,6 +225,83 @@
             padding: 8px 15px !important;
         }
 
+        .show-search-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .show-search-item input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 34px 8px 12px;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 100%;
+            min-width: 200px;
+            font-family: inherit;
+        }
+
+        .show-search-item input::placeholder {
+            color: rgba(224, 224, 224, 0.5);
+        }
+
+        .show-search-item input:hover,
+        .show-search-item input:focus {
+            background: rgba(255, 215, 0, 0.15);
+            outline: none;
+        }
+
+        .show-search-clear {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 215, 0, 0.15) !important;
+            border: 1px solid rgba(255, 215, 0, 0.5) !important;
+            box-sizing: border-box;
+            color: #ffd700;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
+            max-width: 22px;
+            max-height: 22px;
+            border-radius: 50% !important;
+            font-size: 0.75em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+            margin: 0;
+            outline: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .show-search-clear:hover,
+        .show-search-clear:focus,
+        .show-search-clear:focus-visible,
+        .show-search-clear:active {
+            background: rgba(255, 215, 0, 0.3) !important;
+            border-color: #ffd700 !important;
+            border-radius: 50% !important;
+            outline: none !important;
+            box-shadow: none !important;
+            transform: translateY(-50%) !important;
+        }
+
+        #archiveStatusMsg {
+            display: none;
+            color: #ff8787;
+            font-size: 0.85em;
+            text-align: center;
+        }
+
         /* Championships Table */
         .table-container {
             background: rgba(255, 255, 255, 0.03);
@@ -1726,7 +1803,7 @@
 
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
 
-            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from June 2019 to the current one. Select a year/month/week. Or you can choose one at random! All the ratings shown will update to this week." onclick="toggleWeekSelector()">
+            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from June 2019 to the current one. Select a year/month/week, search for a specific show, or pick one at random! All the ratings shown will update to this week." onclick="toggleWeekSelector()">
                 ▼ Change Week / Browse Archive
             </button>
 
@@ -1756,6 +1833,15 @@
                                     <option value="current">Current Week</option>
                                 </select>
                             </div>
+
+                            <div class="filter-item show-search-item">
+                                <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the championship ratings from that week, or click into the empty box to browse every show in order.">Or Search a Show</label>
+                                <div class="show-search-wrap">
+                                    <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" oninput="toggleShowSearchClear()" autocomplete="off">
+                                    <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
+                                    <datalist id="showSearchList"></datalist>
+                                </div>
+                            </div>
                         </div>
 
                         <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">Newer ►</button>
@@ -1763,8 +1849,10 @@
 
                     <div class="action-buttons">
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
+                        <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn tt" data-tt="Jump to the very first week of Championship ratings">⏮ First</button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn">🎲 Random</button>
                     </div>
+                    <span id="archiveStatusMsg"></span>
                 </div>
             </div>
         </header>
@@ -1777,6 +1865,7 @@
     <script>
         let championshipData = null;
         let archiveIndex = null;
+        let showIndex = [];
         let competitorData = null;
         let currentWeekValue = 'current';
         let expandedRows = new Set();
@@ -2179,6 +2268,16 @@
                         }
                     })
                     .catch(() => {}); // silently ignore if unavailable
+
+                // Show search index — shared site-wide file, same one index.html uses.
+                // Non-critical: if it fails, the search box just stays empty.
+                fetch('show-index.json')
+                    .then(r => r.ok ? r.json() : [])
+                    .then(data => {
+                        showIndex = Array.isArray(data) ? data : [];
+                        populateShowSearch();
+                    })
+                    .catch(() => { showIndex = []; });
             } catch (error) {
                 console.error('Init error:', error);
                 document.getElementById('content').innerHTML = `<div class="error">Failed to load data: ${error.message}</div>`;
@@ -3475,6 +3574,26 @@
             nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
         }
 
+        // Shows a brief inline warning near the action buttons instead of
+        // failing silently, and self-heals from a transient failed fetch
+        // by retrying loadArchiveIndex once before giving up.
+        function showArchiveStatusMsg(text) {
+            const el = document.getElementById('archiveStatusMsg');
+            if (!el) return;
+            el.textContent = text;
+            el.style.display = 'block';
+            clearTimeout(showArchiveStatusMsg._t);
+            showArchiveStatusMsg._t = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        async function ensureArchiveIndexLoaded() {
+            if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) return true;
+            console.warn('⚠️ Archive index not loaded — retrying once...');
+            await loadArchiveIndex();
+            await checkIfCurrentMatchesMostRecent(); // also calls populateWeekSelector()
+            return !!(archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0);
+        }
+
         function resetToCurrent() {
             document.getElementById('yearFilter').value = '';
             document.getElementById('monthFilter').value = '';
@@ -3483,8 +3602,10 @@
             loadChampionshipData('current');
         }
 
-        function loadRandomWeek() {
-            if (!archiveIndex || !archiveIndex.weeks || archiveIndex.weeks.length === 0) {
+        async function loadRandomWeek() {
+            const ready = await ensureArchiveIndexLoaded();
+            if (!ready) {
+                showArchiveStatusMsg('⚠️ Could not load archive data — please refresh the page.');
                 return;
             }
 
@@ -3507,6 +3628,141 @@
             isNavigating = false;
 
             loadSelectedWeek();
+        }
+
+        async function loadFirstWeek() {
+            const ready = await ensureArchiveIndexLoaded();
+            if (!ready) {
+                showArchiveStatusMsg('⚠️ Could not load archive data — please refresh the page.');
+                return;
+            }
+
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            if (weeksToUse.length === 0) return;
+
+            // Archive is stored newest-first, so the last entry is the oldest
+            const firstWeek = weeksToUse[weeksToUse.length - 1];
+
+            const match = firstWeek.week.match(/^(\w+)\s+'(\d{2})/);
+            const month = match ? match[1] : '';
+            const year = match ? match[2] : '';
+
+            isNavigating = true;
+            document.getElementById('yearFilter').value = year;
+            document.getElementById('monthFilter').value = month;
+            filterWeeks();
+            document.getElementById('weekSelect').value = `championship-archive/${firstWeek.file}`;
+            isNavigating = false;
+            loadSelectedWeek();
+        }
+
+        // ===== SHOW SEARCH =====
+        // Reuses the site-wide show-index.json (same file index.html uses).
+        // Since that file stores a wrestler-rankings archive filename like
+        // "2025-07-week2.json", we convert it to the matching week LABEL
+        // ("Jul '25 Week 2") and look that label up in THIS page's own
+        // championship archive — both archives share the same weekly labels
+        // since they're generated by the same automation run.
+        function showIndexFilenameToLabel(filename) {
+            const m = filename.match(/^(\d{4})-(\d{2})-week(\d+)\.json$/);
+            if (!m) return null;
+            const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const monthIdx = parseInt(m[2], 10) - 1;
+            const yearShort = m[1].slice(2);
+            return `${monthNames[monthIdx]} '${yearShort} Week ${parseInt(m[3], 10)}`;
+        }
+
+        function populateShowSearch() {
+            const datalist = document.getElementById('showSearchList');
+            if (!datalist || !showIndex || !showIndex.length) return;
+
+            datalist.innerHTML = '';
+
+            const randomOption = document.createElement('option');
+            randomOption.value = '🎲 Random Show';
+            datalist.appendChild(randomOption);
+
+            const sorted = showIndex.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+            sorted.forEach(entry => {
+                const option = document.createElement('option');
+                option.value = entry.show;
+                datalist.appendChild(option);
+            });
+        }
+
+        async function loadShowFromSearch() {
+            const input = document.getElementById('showSearch');
+            const query = input.value.trim();
+            if (!query || !showIndex || !showIndex.length) return;
+
+            let match;
+            if (query === '🎲 Random Show') {
+                match = showIndex[Math.floor(Math.random() * showIndex.length)];
+                input.value = match.show;
+            } else {
+                match = showIndex.find(entry => entry.show.toLowerCase() === query.toLowerCase());
+            }
+
+            if (!match) {
+                console.log('No show match found for:', query);
+                return;
+            }
+
+            const ready = await ensureArchiveIndexLoaded();
+            if (!ready) {
+                showArchiveStatusMsg('⚠️ Could not load archive data — please refresh the page.');
+                return;
+            }
+
+            const label = showIndexFilenameToLabel(match.filename);
+            const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
+            const champWeek = label ? weeksToUse.find(w => w.week === label) : null;
+
+            if (!champWeek) {
+                showArchiveStatusMsg(`No championship data found for ${match.show}.`);
+                console.log('No championship archive week found for label:', label);
+                return;
+            }
+
+            const targetValue = `championship-archive/${champWeek.file}`;
+            const weekSelect = document.getElementById('weekSelect');
+
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+            filterWeeks();
+
+            const optionExists = Array.from(weekSelect.options).some(opt => opt.value === targetValue);
+            if (!optionExists) {
+                showArchiveStatusMsg(`No championship data found for ${match.show}.`);
+                return;
+            }
+
+            weekSelect.value = targetValue;
+            loadSelectedWeek();
+            toggleShowSearchClear();
+
+            const panel = document.getElementById('weekSelectorPanel');
+            if (panel && panel.style.display === 'none') {
+                toggleWeekSelector();
+            }
+
+            input.blur();
+        }
+
+        function toggleShowSearchClear() {
+            const input = document.getElementById('showSearch');
+            const clearBtn = document.getElementById('showSearchClear');
+            if (!input || !clearBtn) return;
+            clearBtn.style.display = input.value.trim() ? 'flex' : 'none';
+        }
+
+        function clearShowSearch() {
+            const input = document.getElementById('showSearch');
+            const clearBtn = document.getElementById('showSearchClear');
+            if (!input) return;
+            input.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            input.focus();
         }
 
         function toggleChampDetails() {
