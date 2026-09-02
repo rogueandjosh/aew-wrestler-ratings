@@ -1354,6 +1354,54 @@
             text-decoration: underline;
         }
 
+        .best-match-asterisk {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.15em;
+            cursor: pointer;
+            margin-left: 3px;
+            vertical-align: super;
+            line-height: 0;
+        }
+
+        .best-match-asterisk:hover {
+            color: #fff;
+        }
+
+        #bestMatchPopup {
+            display: none;
+            position: fixed;
+            padding: 12px;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            min-width: 250px;
+            max-width: 340px;
+            font-size: 0.92em;
+        }
+
+        #bestMatchPopup .best-match-title {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
+        #bestMatchPopup .best-match-row {
+            color: #e0e0e0;
+            margin-bottom: 6px;
+        }
+
+        #bestMatchPopup .best-match-row:last-child {
+            margin-bottom: 0;
+        }
+
+        #bestMatchPopup .best-match-row strong {
+            color: #ffd700;
+        }
+
         /* ===== TOOLTIP STYLES ===== */
         .tt:not(th):not(td) {
             position: relative;
@@ -1562,6 +1610,7 @@
 </head>
 <body>
 <div id="ttBox"></div>
+<div id="bestMatchPopup"></div>
     <div class="container">
         <header style="position: relative;">
             <h1><a href="index.html" style="color: inherit; text-decoration: none;" title="Return to current rankings"><span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">E</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">lite</span> <span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">W</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">restler</span> <span style="color: #c9a84c; font-family: 'Mokoto', sans-serif;">R</span><span style="color: #ffffff; font-family: 'Amaranth', sans-serif;">atings</span></a></h1>
@@ -3058,6 +3107,69 @@ let visibleColumns = {
             input.focus();
         }
 
+        // ===== BEST MATCH OF THE WEEK POPUP =====
+        // One shared popup, repositioned/refilled on each click — the content
+        // is identical everywhere it's triggered from (there's only one best
+        // match per week), so no need for a separate instance per asterisk.
+        function showBestMatchPopup(event) {
+            event.stopPropagation();
+            const bestMatch = ratingsData?.bestMatchOfWeek;
+            const popup = document.getElementById('bestMatchPopup');
+            if (!bestMatch || !popup) return;
+
+            const dateStr = bestMatch.date
+                ? new Date(bestMatch.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                : 'N/A';
+
+            const currentWeek = document.getElementById('weekSelect')?.value || 'current';
+            const wrestlersStr = (bestMatch.wrestlers || []).map(name => {
+                const slug = createSlug(name);
+                return `<a href="wrestler-stats.html?wrestler=${slug}&returnWeek=${encodeURIComponent(currentWeek)}"
+                           style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;"
+                           onmouseover="this.style.color='#fff'"
+                           onmouseout="this.style.color='#ffd700'">${name}</a>`;
+            }).join(', ');
+
+            popup.innerHTML = `
+                <div class="best-match-title">⭐ Best Match of the Week</div>
+                <div class="best-match-row"><strong>Date:</strong> ${dateStr}</div>
+                <div class="best-match-row"><strong>Event:</strong> ${bestMatch.show || 'N/A'}</div>
+                <div class="best-match-row"><strong>Rating:</strong> ${(bestMatch.rating || 0).toFixed(2)}</div>
+                <div class="best-match-row"><strong>Match Type:</strong> ${bestMatch.matchType || 'N/A'}</div>
+                <div class="best-match-row"><strong>Stipulation:</strong> ${bestMatch.stipulation || 'N/A'}</div>
+                <div class="best-match-row"><strong>Stakes:</strong> ${bestMatch.stakes || 'N/A'}</div>
+                <div class="best-match-row"><strong>Wrestlers:</strong> ${wrestlersStr || 'N/A'}</div>
+            `;
+
+            popup.style.display = 'block';
+
+            // Position near the clicked asterisk, staying on-screen
+            const rect = event.target.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            let left = rect.left;
+            let top = rect.bottom + 8;
+
+            if (left + popupRect.width > window.innerWidth - 10) {
+                left = window.innerWidth - popupRect.width - 10;
+            }
+            if (left < 10) left = 10;
+            if (top + popupRect.height > window.innerHeight - 10) {
+                top = rect.top - popupRect.height - 8;
+            }
+            if (top < 10) top = 10;
+
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+        }
+
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('bestMatchPopup');
+            if (!popup || popup.style.display === 'none') return;
+            if (!e.target.closest('#bestMatchPopup') && !e.target.closest('.best-match-asterisk')) {
+                popup.style.display = 'none';
+            }
+        });
+
         function loadShowFromSearch() {
             const input = document.getElementById('showSearch');
             const query = input.value.trim();
@@ -3517,6 +3629,18 @@ let visibleColumns = {
                     .then(async data => {
                         try {
                             ratingsData = fixEncodingIssues(data);
+
+                            // Attach Best Match of the Week from the separate best-match-archive
+                            // folder, if this week has one. Older weeks (before this feature
+                            // existed) simply won't have a file here — asterisks just won't
+                            // appear for those weeks, which is expected.
+                            try {
+                                const bestMatchFilename = selectedValue.replace('archive/', '');
+                                const bmResponse = await fetch(`best-match-archive/${bestMatchFilename}`);
+                                ratingsData.bestMatchOfWeek = bmResponse.ok ? await bmResponse.json() : null;
+                            } catch (bmError) {
+                                ratingsData.bestMatchOfWeek = null;
+                            }
                             
                             // Update button and header for archive week
                             const resetBtn = document.getElementById('resetBtn');
@@ -3955,11 +4079,30 @@ for (let i = 0; i < filteredData.length; i++) {
     const separatorClass = (wrestler.rank === imageThreshold && filteredData.length > imageThreshold) ? ' threshold-separator' : '';
     const tagTriosClass = (division === 'menstag' || division === 'womenstag' || division === 'trios') ? ' tag-trios-row' : '';
 
+    // Best Match of the Week indicator — only present on weeks that have this data
+    let bestMatchAsterisk = '';
+    const bestMatch = ratingsData?.bestMatchOfWeek;
+    if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
+        const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
+        let isInBestMatch = false;
+
+        if (division === 'menstag' || division === 'womenstag' || division === 'trios') {
+            const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
+            isInBestMatch = teamMembersArr.some(m => bestMatchNamesLower.includes(m.toLowerCase()));
+        } else {
+            isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
+        }
+
+        if (isInBestMatch) {
+            bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
+        }
+    }
+
 rows.push(`
      <tr class="${separatorClass}${tagTriosClass}">
         <td class="rank" style="color: ${getTierTextColour(wrestler.rating)};">${wrestler.rank}</td>
         ${imageCell}
-        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek)) : wrestler.name}</a>${teamMembers}</td>
+        <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek)) : wrestler.name}</a>${bestMatchAsterisk}${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
         <td class="change ${changeClass}">${changeSymbol}</td>
         <td class="matches-col">${wrestler.matches}</td>
