@@ -4084,11 +4084,20 @@ for (let i = 0; i < filteredData.length; i++) {
     const bestMatch = ratingsData?.bestMatchOfWeek;
     if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
         const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
+        const bestMatchTagTeamsLower = (bestMatch.tagTeams || []).map(n => n.toLowerCase());
+        const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => n.toLowerCase());
         let isInBestMatch = false;
 
-        if (division === 'menstag' || division === 'womenstag' || division === 'trios') {
+        if (division === 'menstag' || division === 'womenstag') {
             const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
-            isInBestMatch = teamMembersArr.some(m => bestMatchNamesLower.includes(m.toLowerCase()));
+            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
+            const namedTagMatch = bestMatchTagTeamsLower.includes(wrestler.name.toLowerCase());
+            isInBestMatch = memberMatch || namedTagMatch;
+        } else if (division === 'trios') {
+            const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
+            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
+            const namedTrioMatch = bestMatchTrioTeamsLower.includes(wrestler.name.toLowerCase());
+            isInBestMatch = memberMatch || namedTrioMatch;
         } else {
             isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
         }
