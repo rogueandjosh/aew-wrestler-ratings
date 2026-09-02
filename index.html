@@ -4085,7 +4085,10 @@ for (let i = 0; i < filteredData.length; i++) {
     if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
         const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
         const bestMatchTagTeamsLower = (bestMatch.tagTeams || []).map(n => n.toLowerCase());
-        const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => n.toLowerCase());
+        // Trio names may carry a "(Trio)" suffix from either data source — normalize
+        // both sides so formatting differences (spacing/casing/presence) never
+        // silently break the match.
+        const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
         let isInBestMatch = false;
 
         if (division === 'menstag' || division === 'womenstag') {
@@ -4096,7 +4099,7 @@ for (let i = 0; i < filteredData.length; i++) {
         } else if (division === 'trios') {
             const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
             const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
-            const namedTrioMatch = bestMatchTrioTeamsLower.includes(wrestler.name.toLowerCase());
+            const namedTrioMatch = bestMatchTrioTeamsLower.includes(stripTrioSuffix(wrestler.name).toLowerCase());
             isInBestMatch = memberMatch || namedTrioMatch;
         } else {
             isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
