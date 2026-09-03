@@ -4789,11 +4789,39 @@ if (tableEl) {
                     ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek))
                     : wrestler.name;
 
+                // Best Match of the Week indicator — same logic as the main division tables
+                let bestMatchAsterisk = '';
+                const bestMatch = ratingsData?.bestMatchOfWeek;
+                if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
+                    const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
+                    const bestMatchTagTeamsLower = (bestMatch.tagTeams || []).map(n => n.toLowerCase());
+                    const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
+                    let isInBestMatch = false;
+
+                    if (division === 'menstag' || division === 'womenstag') {
+                        const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
+                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
+                        const namedTagMatch = bestMatchTagTeamsLower.includes(wrestler.name.toLowerCase());
+                        isInBestMatch = memberMatch || namedTagMatch;
+                    } else if (division === 'trios') {
+                        const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
+                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
+                        const namedTrioMatch = bestMatchTrioTeamsLower.includes(stripTrioSuffix(wrestler.name).toLowerCase());
+                        isInBestMatch = memberMatch || namedTrioMatch;
+                    } else {
+                        isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
+                    }
+
+                    if (isInBestMatch) {
+                        bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
+                    }
+                }
+
                 return `<tr class="${tagTriosClass}">
                     <td class="rank" style="color:${getTierTextColour(wrestler.rating)};">${wrestler._mergedRank}</td>
                     ${imageCell}
                     <td class="name">
-                        <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}" class="wrestler-link">${displayName}</a>
+                        <a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(weekVal)}&returnDivision=${division}" class="wrestler-link">${displayName}</a>${bestMatchAsterisk}
                         ${teamMembers}
                         <span class="division-badge-inline">${divLabels[division]}</span>
                     </td>
