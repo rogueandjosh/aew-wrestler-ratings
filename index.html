@@ -3111,11 +3111,22 @@ let visibleColumns = {
         // One shared popup, repositioned/refilled on each click — the content
         // is identical everywhere it's triggered from (there's only one best
         // match per week), so no need for a separate instance per asterisk.
+        let bestMatchPopupTrigger = null;
+
         function showBestMatchPopup(event) {
             event.stopPropagation();
-            const bestMatch = ratingsData?.bestMatchOfWeek;
             const popup = document.getElementById('bestMatchPopup');
-            if (!bestMatch || !popup) return;
+            if (!popup) return;
+
+            // Clicking the same star that's already open acts as a toggle-close
+            if (popup.style.display === 'block' && bestMatchPopupTrigger === event.target) {
+                popup.style.display = 'none';
+                bestMatchPopupTrigger = null;
+                return;
+            }
+
+            const bestMatch = ratingsData?.bestMatchOfWeek;
+            if (!bestMatch) return;
 
             const dateStr = bestMatch.date
                 ? new Date(bestMatch.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
@@ -3142,6 +3153,7 @@ let visibleColumns = {
             `;
 
             popup.style.display = 'block';
+            bestMatchPopupTrigger = event.target;
 
             // Position near the clicked asterisk, staying on-screen
             const rect = event.target.getBoundingClientRect();
@@ -3167,6 +3179,7 @@ let visibleColumns = {
             if (!popup || popup.style.display === 'none') return;
             if (!e.target.closest('#bestMatchPopup') && !e.target.closest('.best-match-asterisk')) {
                 popup.style.display = 'none';
+                bestMatchPopupTrigger = null;
             }
         });
 
