@@ -283,8 +283,49 @@
 
     <script>
         let allEntries = [];
+        let nameChangesData = null;
         let currentSortColumn = 'date';
         let currentSortDirection = 'desc';
+
+        async function loadNameChanges() {
+            if (nameChangesData) return nameChangesData;
+            try {
+                const response = await fetch('name-changes.json');
+                nameChangesData = await response.json();
+                return nameChangesData;
+            } catch (error) {
+                console.warn('⚠️ Name changes file not found, names will not be merged');
+                nameChangesData = { changes: [] };
+                return nameChangesData;
+            }
+        }
+
+        function getCanonicalName(anyName, nameChanges) {
+            if (!nameChanges || nameChanges.length === 0) return anyName;
+
+            const relatedChanges = nameChanges.filter(change =>
+                change.oldName === anyName || change.newName === anyName
+            );
+            if (relatedChanges.length === 0) return anyName;
+
+            relatedChanges.sort((a, b) => a.matchId - b.matchId);
+
+            let earliestName = anyName;
+            for (const change of relatedChanges) {
+                if (change.newName === earliestName) {
+                    earliestName = change.oldName;
+                }
+            }
+
+            let currentName = earliestName;
+            for (const change of relatedChanges) {
+                if (currentName === change.oldName) {
+                    currentName = change.newName;
+                }
+            }
+
+            return currentName;
+        }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -332,6 +373,8 @@
                 );
                 const results = await Promise.all(fetchPromises);
                 allEntries = results.filter(e => e !== null);
+
+                await loadNameChanges();
 
                 // Sort newest first by default
                 allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -508,7 +551,8 @@
 
             entries.forEach(e => {
                 (e.wrestlers || []).forEach(name => {
-                    counts[name] = (counts[name] || 0) + 1;
+                    const canonical = getCanonicalName(name, nameChangesData?.changes || []);
+                    counts[canonical] = (counts[canonical] || 0) + 1;
                 });
                 (e.tagTeams || []).forEach(name => {
                     counts[name] = (counts[name] || 0) + 1;
