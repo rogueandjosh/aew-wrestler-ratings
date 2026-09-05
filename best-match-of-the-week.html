@@ -38,7 +38,7 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px 60px;
+            padding: 20px;
             background: rgba(255, 215, 0, 0.1);
             border-radius: 15px;
             border: 2px solid #ffd700;
@@ -49,7 +49,7 @@
         .subtitle { color: #b8b8b8; margin-bottom: 5px; }
         .last-updated { color: #888; font-size: 0.9em; }
 
-        .nav-buttons { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 12px 0 5px; }
 
         .back-link {
             background: rgba(255, 215, 0, 0.15);
@@ -109,6 +109,41 @@
             font-size: 0.95em;
         }
 
+        .division-checkboxes {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .division-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .division-checkboxes input[type="checkbox"] { accent-color: #ffd700; cursor: pointer; }
+
+        .show-more-btn {
+            display: block;
+            margin: 20px auto 0;
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .show-more-btn:hover { background: rgba(255, 215, 0, 0.3); }
+
+        .explanation-text { color: #d0d0d0; line-height: 1.6; }
+        .explanation-text p { margin-bottom: 12px; }
+        .explanation-text a { color: #ffd700; }
+
         table { width: 100%; border-collapse: collapse; }
         th {
             background: rgba(255, 215, 0, 0.2);
@@ -139,8 +174,7 @@
         .table-scroll { overflow-x: auto; }
 
         @media (max-width: 700px) {
-            header { padding: 20px 20px; padding-top: 90px; }
-            .nav-buttons { position: static; margin-bottom: 15px; justify-content: center; }
+            header { padding: 20px; }
             h1 { font-size: 1.6em; }
             table { font-size: 0.85em; }
         }
@@ -149,14 +183,18 @@
 <body>
     <div class="container">
         <header>
+            <h1>⭐ Best Match of the Week</h1>
+            <p class="subtitle">The full archive of every week's top-rated match</p>
             <div class="nav-buttons">
                 <a href="javascript:history.back()" class="back-link">← Back</a>
                 <a href="index.html" class="back-link">🏠 Home</a>
             </div>
-            <h1>⭐ Best Match of the Week</h1>
-            <p class="subtitle">The full archive of every week's top-rated match</p>
             <p class="last-updated" id="lastUpdated"></p>
         </header>
+
+        <p style="text-align: center; color: #b8b8b8; margin: -10px 0 25px; max-width: 750px; margin-left: auto; margin-right: auto;">
+            Every week, the highest Cagematch-rated match becomes that week's <strong style="color: #ffd700;">Best Match of the Week</strong>. This page is the full history of every winner since June 2019 — browse the archive, filter by division, or see who's featured the most.
+        </p>
 
         <div class="tabs">
             <button class="tab active" data-tab="archive" onclick="switchTab('archive')">📋 Archive</button>
@@ -185,6 +223,10 @@
                         </select>
                     </div>
                 </div>
+                <div class="filter-item" style="margin-bottom: 20px;">
+                    <label>Division</label>
+                    <div class="division-checkboxes" id="archiveDivisionFilters"></div>
+                </div>
                 <div class="table-scroll">
                     <table id="archiveTable">
                         <thead>
@@ -193,22 +235,34 @@
                                 <th class="sortable" onclick="sortArchive('show')">Show</th>
                                 <th>Wrestlers</th>
                                 <th class="sortable" onclick="sortArchive('rating')">Rating</th>
+                                <th>Division</th>
                                 <th>Match Type</th>
                                 <th>Stipulation</th>
                                 <th>Stakes</th>
                             </tr>
                         </thead>
                         <tbody id="archiveTableBody">
-                            <tr><td colspan="7" class="loading">Loading archive…</td></tr>
+                            <tr><td colspan="8" class="loading">Loading archive…</td></tr>
                         </tbody>
                     </table>
                 </div>
+                <button class="show-more-btn" id="showMoreBtn" onclick="expandArchive()" style="display: none;">Show More</button>
+            </div>
+
+            <div class="section-card explanation-text">
+                <div class="section-title">What is Best Match of the Week?</div>
+                <p>Each week, every match from that week's shows is compared by its Cagematch.net community rating — the highest-rated match becomes that week's <strong style="color:#ffd700;">Best Match of the Week</strong>.</p>
+                <p>You'll also see this indicated with a gold <strong style="color:#ffd700; font-size:1.2em;">*</strong> next to the relevant wrestler(s) or team(s) on the <a href="index.html">main rankings pages</a> — click it for a quick popup with the match details. And on the <strong>All Wrestler Statistics</strong> view, the <strong style="color:#ffd700;">⭐</strong> column shows a running total of how many times each wrestler or team has featured in a Best Match, cumulative up to whichever week you have selected.</p>
             </div>
         </div>
 
         <div id="leaderboardTab" style="display: none;">
             <div class="section-card">
                 <div class="section-title">Top Wrestlers &amp; Teams by Best Match Appearances</div>
+                <div class="filter-item" style="margin-bottom: 20px;">
+                    <label>Division</label>
+                    <div class="division-checkboxes" id="leaderboardDivisionFilters"></div>
+                </div>
                 <div class="table-scroll">
                     <table id="leaderboardTable">
                         <thead>
@@ -247,6 +301,24 @@
             return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
         }
 
+        // Amalgamate similar stipulation variants into one canonical bucket.
+        // Extend this list as more variants come up.
+        const STIPULATION_RULES = [
+            { pattern: /street fight/i, canonical: 'Street Fight' },
+            { pattern: /texas death/i, canonical: 'Texas Death' }
+        ];
+
+        function normalizeStipulation(raw) {
+            if (!raw) return raw;
+            for (const rule of STIPULATION_RULES) {
+                if (rule.pattern.test(raw)) return rule.canonical;
+            }
+            return raw;
+        }
+
+        const ALL_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios"];
+        let archiveDisplayCount = 30;
+
         async function init() {
             try {
                 const indexResponse = await fetch('best-match-archive/index.json');
@@ -264,6 +336,8 @@
                 // Sort newest first by default
                 allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
+                populateDivisionCheckboxes('archiveDivisionFilters', 'onArchiveDivisionChange');
+                populateDivisionCheckboxes('leaderboardDivisionFilters', 'onLeaderboardDivisionChange');
                 populateFilters();
                 renderArchiveTable();
                 renderLeaderboard();
@@ -275,8 +349,32 @@
             } catch (error) {
                 console.error('Failed to load Best Match archive:', error);
                 document.getElementById('archiveTableBody').innerHTML =
-                    '<tr><td colspan="7" class="empty-state">Failed to load archive data.</td></tr>';
+                    '<tr><td colspan="8" class="empty-state">Failed to load archive data.</td></tr>';
             }
+        }
+
+        function populateDivisionCheckboxes(containerId, onChangeHandlerName) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ALL_DIVISIONS.map(div => `
+                <label>
+                    <input type="checkbox" value="${div}" checked onchange="${onChangeHandlerName}()">
+                    ${div}
+                </label>
+            `).join('');
+        }
+
+        function onArchiveDivisionChange() {
+            archiveDisplayCount = 30;
+            renderArchiveTable();
+        }
+
+        function onLeaderboardDivisionChange() {
+            renderLeaderboard();
+        }
+
+        function getSelectedDivisions(containerId) {
+            const container = document.getElementById(containerId);
+            return [...container.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
         }
 
         function populateFilters() {
@@ -287,7 +385,8 @@
             allEntries.forEach(e => {
                 if (e.date) years.add(e.date.substring(0, 4));
                 if (e.matchType) matchTypes.add(e.matchType);
-                if (e.stipulation && e.stipulation.toLowerCase() !== 'none') stipulations.add(e.stipulation);
+                const normalizedStip = normalizeStipulation(e.stipulation);
+                if (normalizedStip && normalizedStip.toLowerCase() !== 'none') stipulations.add(normalizedStip);
             });
 
             const yearSelect = document.getElementById('yearFilter');
@@ -319,11 +418,13 @@
             const year = document.getElementById('yearFilter').value;
             const matchType = document.getElementById('matchTypeFilter').value;
             const stipulation = document.getElementById('stipulationFilter').value;
+            const selectedDivisions = getSelectedDivisions('archiveDivisionFilters');
 
             return allEntries.filter(e => {
                 if (year && !(e.date && e.date.startsWith(year))) return false;
                 if (matchType && e.matchType !== matchType) return false;
-                if (stipulation && e.stipulation !== stipulation) return false;
+                if (stipulation && normalizeStipulation(e.stipulation) !== stipulation) return false;
+                if (selectedDivisions.length > 0 && !selectedDivisions.includes(e.division)) return false;
                 return true;
             });
         }
@@ -335,6 +436,12 @@
                 currentSortColumn = column;
                 currentSortDirection = column === 'show' ? 'asc' : 'desc';
             }
+            archiveDisplayCount = 30;
+            renderArchiveTable();
+        }
+
+        function expandArchive() {
+            archiveDisplayCount = Infinity;
             renderArchiveTable();
         }
 
@@ -357,12 +464,17 @@
             });
 
             const tbody = document.getElementById('archiveTableBody');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No matches found for this filter.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No matches found for this filter.</td></tr>';
+                showMoreBtn.style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = filtered.map(e => {
+            const toDisplay = filtered.slice(0, archiveDisplayCount);
+
+            tbody.innerHTML = toDisplay.map(e => {
                 const wrestlersHtml = (e.wrestlers || []).map(name =>
                     `<a href="wrestler-stats.html?wrestler=${createSlug(name)}" style="color:#ffd700;text-decoration:none;border-bottom:1px dotted #ffd700;">${name}</a>`
                 ).join(', ');
@@ -376,17 +488,25 @@
                     <td>${e.show || 'N/A'}</td>
                     <td>${wrestlersHtml}</td>
                     <td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>
+                    <td>${e.division || 'N/A'}</td>
                     <td>${e.matchType || 'N/A'}</td>
-                    <td>${e.stipulation || 'N/A'}</td>
+                    <td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>
                     <td>${e.stakes || 'N/A'}</td>
                 </tr>`;
             }).join('');
+
+            showMoreBtn.style.display = filtered.length > archiveDisplayCount ? 'block' : 'none';
         }
 
         function renderLeaderboard() {
+            const selectedDivisions = getSelectedDivisions('leaderboardDivisionFilters');
+            const entries = selectedDivisions.length > 0
+                ? allEntries.filter(e => selectedDivisions.includes(e.division))
+                : allEntries;
+
             const counts = {};
 
-            allEntries.forEach(e => {
+            entries.forEach(e => {
                 (e.wrestlers || []).forEach(name => {
                     counts[name] = (counts[name] || 0) + 1;
                 });
