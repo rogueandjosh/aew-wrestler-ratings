@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="https://www.elitewrestlerratings.com/best-match-of-the-week.html" />
+    <!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6YFQ4441BC');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Match of the Week | AEW Wrestler Ratings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        button, input, select, textarea { font-family: 'Overlock', 'Arial', sans-serif; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            position: relative;
+        }
+
+        h1 { color: #ffd700; font-size: 2.2em; margin-bottom: 8px; }
+        .subtitle { color: #b8b8b8; margin-bottom: 5px; }
+        .last-updated { color: #888; font-size: 0.9em; }
+
+        .nav-buttons { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .back-link {
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-link:hover { background: rgba(255, 215, 0, 0.3); transform: translateY(-2px); }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .tab:hover { background: rgba(255, 215, 0, 0.2); }
+        .tab.active { background: rgba(255, 215, 0, 0.3); border-color: #ffd700; }
+
+        .filters-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-item { display: flex; flex-direction: column; gap: 5px; }
+        .filter-item label { color: #ffd700; font-size: 0.85em; font-weight: bold; }
+        .filter-item select, .filter-item input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ffd700;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        th:hover { background: rgba(255, 215, 0, 0.3); }
+        th.sortable::after { content: ' ⇅'; opacity: 0.5; }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95em;
+        }
+        tr:hover td { background: rgba(255, 215, 0, 0.05); }
+
+        .rank-cell { color: #ffd700; font-weight: bold; width: 40px; }
+        .rating-cell { color: #6bcf7f; font-weight: bold; }
+
+        .loading { text-align: center; padding: 40px; color: #b8b8b8; }
+        .empty-state { text-align: center; padding: 30px; color: #888; }
+
+        .table-scroll { overflow-x: auto; }
+
+        @media (max-width: 700px) {
+            header { padding: 20px 20px; padding-top: 90px; }
+            .nav-buttons { position: static; margin-bottom: 15px; justify-content: center; }
+            h1 { font-size: 1.6em; }
+            table { font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-buttons">
+                <a href="javascript:history.back()" class="back-link">← Back</a>
+                <a href="index.html" class="back-link">🏠 Home</a>
+            </div>
+            <h1>⭐ Best Match of the Week</h1>
+            <p class="subtitle">The full archive of every week's top-rated match</p>
+            <p class="last-updated" id="lastUpdated"></p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="archive" onclick="switchTab('archive')">📋 Archive</button>
+            <button class="tab" data-tab="leaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+        </div>
+
+        <div id="archiveTab">
+            <div class="section-card">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <label>Year</label>
+                        <select id="yearFilter" onchange="renderArchiveTable()">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Match Type</label>
+                        <select id="matchTypeFilter" onchange="renderArchiveTable()">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Stipulation</label>
+                        <select id="stipulationFilter" onchange="renderArchiveTable()">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table id="archiveTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortArchive('date')">Week</th>
+                                <th class="sortable" onclick="sortArchive('show')">Show</th>
+                                <th>Wrestlers</th>
+                                <th class="sortable" onclick="sortArchive('rating')">Rating</th>
+                                <th>Match Type</th>
+                                <th>Stipulation</th>
+                                <th>Stakes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="archiveTableBody">
+                            <tr><td colspan="7" class="loading">Loading archive…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboardTab" style="display: none;">
+            <div class="section-card">
+                <div class="section-title">Top Wrestlers &amp; Teams by Best Match Appearances</div>
+                <div class="table-scroll">
+                    <table id="leaderboardTable">
+                        <thead>
+                            <tr>
+                                <th class="rank-cell">#</th>
+                                <th>Name</th>
+                                <th>Best Match Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTableBody">
+                            <tr><td colspan="3" class="loading">Loading leaderboard…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allEntries = [];
+        let currentSortColumn = 'date';
+        let currentSortDirection = 'desc';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById('archiveTab').style.display = tab === 'archive' ? 'block' : 'none';
+            document.getElementById('leaderboardTab').style.display = tab === 'leaderboard' ? 'block' : 'none';
+        }
+
+        function createSlug(name) {
+            return name.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
+
+        function stripTrioSuffix(name) {
+            return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
+        }
+
+        async function init() {
+            try {
+                const indexResponse = await fetch('best-match-archive/index.json');
+                const indexData = await indexResponse.json();
+
+                // Fetch every week's file in parallel
+                const fetchPromises = indexData.map(entry =>
+                    fetch(`best-match-archive/${entry.file}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null)
+                );
+                const results = await Promise.all(fetchPromises);
+                allEntries = results.filter(e => e !== null);
+
+                // Sort newest first by default
+                allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                populateFilters();
+                renderArchiveTable();
+                renderLeaderboard();
+
+                const lastEl = document.getElementById('lastUpdated');
+                if (lastEl && allEntries.length > 0) {
+                    lastEl.textContent = `${allEntries.length} weeks tracked`;
+                }
+            } catch (error) {
+                console.error('Failed to load Best Match archive:', error);
+                document.getElementById('archiveTableBody').innerHTML =
+                    '<tr><td colspan="7" class="empty-state">Failed to load archive data.</td></tr>';
+            }
+        }
+
+        function populateFilters() {
+            const years = new Set();
+            const matchTypes = new Set();
+            const stipulations = new Set();
+
+            allEntries.forEach(e => {
+                if (e.date) years.add(e.date.substring(0, 4));
+                if (e.matchType) matchTypes.add(e.matchType);
+                if (e.stipulation && e.stipulation.toLowerCase() !== 'none') stipulations.add(e.stipulation);
+            });
+
+            const yearSelect = document.getElementById('yearFilter');
+            [...years].sort((a, b) => b - a).forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            });
+
+            const matchTypeSelect = document.getElementById('matchTypeFilter');
+            [...matchTypes].sort().forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                matchTypeSelect.appendChild(opt);
+            });
+
+            const stipSelect = document.getElementById('stipulationFilter');
+            [...stipulations].sort().forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                stipSelect.appendChild(opt);
+            });
+        }
+
+        function getFilteredEntries() {
+            const year = document.getElementById('yearFilter').value;
+            const matchType = document.getElementById('matchTypeFilter').value;
+            const stipulation = document.getElementById('stipulationFilter').value;
+
+            return allEntries.filter(e => {
+                if (year && !(e.date && e.date.startsWith(year))) return false;
+                if (matchType && e.matchType !== matchType) return false;
+                if (stipulation && e.stipulation !== stipulation) return false;
+                return true;
+            });
+        }
+
+        function sortArchive(column) {
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = column === 'show' ? 'asc' : 'desc';
+            }
+            renderArchiveTable();
+        }
+
+        function renderArchiveTable() {
+            const filtered = getFilteredEntries();
+
+            filtered.sort((a, b) => {
+                let valA = a[currentSortColumn];
+                let valB = b[currentSortColumn];
+                if (currentSortColumn === 'date') {
+                    valA = new Date(a.date);
+                    valB = new Date(b.date);
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+                if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const tbody = document.getElementById('archiveTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No matches found for this filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(e => {
+                const wrestlersHtml = (e.wrestlers || []).map(name =>
+                    `<a href="wrestler-stats.html?wrestler=${createSlug(name)}" style="color:#ffd700;text-decoration:none;border-bottom:1px dotted #ffd700;">${name}</a>`
+                ).join(', ');
+
+                const dateStr = e.date
+                    ? new Date(e.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'N/A';
+
+                return `<tr>
+                    <td>${e.week || dateStr}</td>
+                    <td>${e.show || 'N/A'}</td>
+                    <td>${wrestlersHtml}</td>
+                    <td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>
+                    <td>${e.matchType || 'N/A'}</td>
+                    <td>${e.stipulation || 'N/A'}</td>
+                    <td>${e.stakes || 'N/A'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderLeaderboard() {
+            const counts = {};
+
+            allEntries.forEach(e => {
+                (e.wrestlers || []).forEach(name => {
+                    counts[name] = (counts[name] || 0) + 1;
+                });
+                (e.tagTeams || []).forEach(name => {
+                    counts[name] = (counts[name] || 0) + 1;
+                });
+                (e.trioTeams || []).forEach(name => {
+                    const clean = stripTrioSuffix(name);
+                    counts[clean] = (counts[clean] || 0) + 1;
+                });
+            });
+
+            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+            const tbody = document.getElementById('leaderboardTableBody');
+            if (sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data available.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.slice(0, 50).map(([name, count], i) => `
+                <tr>
+                    <td class="rank-cell">${i + 1}</td>
+                    <td><a href="wrestler-stats.html?wrestler=${createSlug(name)}" style="color:#e0e0e0;text-decoration:none;">${name}</a></td>
+                    <td class="rating-cell">${count}</td>
+                </tr>
+            `).join('');
+        }
+
+        init();
+    </script>
+</body>
+</html>
