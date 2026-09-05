@@ -17,6 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Match of the Week | AEW Wrestler Ratings</title>
+    <script src="best-match-shared.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
@@ -322,85 +323,6 @@
             }
         }
 
-        // Verbatim port of index.html's findTeamMembersArray, for exact parity
-        function findTeamMembersArray(teamName) {
-            if (!teamMembersData || !teamMembersData.teams) return null;
-
-            let members = teamMembersData.teams[teamName];
-            if (members && members.length >= 2) return members;
-
-            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
-            members = teamMembersData.teams[nameWithoutThe];
-            if (members && members.length >= 2) return members;
-
-            const nameWithThe = 'The ' + teamName;
-            members = teamMembersData.teams[nameWithThe];
-            if (members && members.length >= 2) return members;
-
-            if (nameChangesMap) {
-                const oldNameEntry = Object.keys(nameChangesMap).find(oldName =>
-                    nameChangesMap[oldName] === teamName
-                );
-                if (oldNameEntry) {
-                    members = teamMembersData.teams[oldNameEntry];
-                    if (members && members.length >= 2) return members;
-                }
-                if (nameChangesMap[teamName]) {
-                    members = teamMembersData.teams[nameChangesMap[teamName]];
-                    if (members && members.length >= 2) return members;
-                }
-            }
-
-            if (teamName.includes(' & ')) {
-                const parts = [];
-                let current = '';
-                let depth = 0;
-                for (let i = 0; i < teamName.length; i++) {
-                    const ch = teamName[i];
-                    if (ch === '(') depth++;
-                    else if (ch === ')') depth--;
-                    if (depth === 0 && teamName.substring(i, i + 3) === ' & ') {
-                        parts.push(current.trim());
-                        current = '';
-                        i += 2;
-                    } else {
-                        current += ch;
-                    }
-                }
-                if (current.trim()) parts.push(current.trim());
-                if (parts.length >= 2) return parts;
-            }
-
-            return null;
-        }
-
-        function getCanonicalName(anyName, nameChanges) {
-            if (!nameChanges || nameChanges.length === 0) return anyName;
-
-            const relatedChanges = nameChanges.filter(change =>
-                change.oldName === anyName || change.newName === anyName
-            );
-            if (relatedChanges.length === 0) return anyName;
-
-            relatedChanges.sort((a, b) => a.matchId - b.matchId);
-
-            let earliestName = anyName;
-            for (const change of relatedChanges) {
-                if (change.newName === earliestName) {
-                    earliestName = change.oldName;
-                }
-            }
-
-            let currentName = earliestName;
-            for (const change of relatedChanges) {
-                if (currentName === change.oldName) {
-                    currentName = change.newName;
-                }
-            }
-
-            return currentName;
-        }
-
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
@@ -410,10 +332,6 @@
 
         function createSlug(name) {
             return name.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        }
-
-        function stripTrioSuffix(name) {
-            return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
         }
 
         // Amalgamate similar stipulation variants into one canonical bucket.
@@ -662,11 +580,7 @@
             weekRosterArray.forEach(weekData => {
                 const weekLabel = weekData.currentWeek;
                 const weekBestMatch = bestMatchByWeekLabel[weekLabel];
-                if (!weekBestMatch || !weekBestMatch.wrestlers || weekBestMatch.wrestlers.length === 0) return;
-
-                const bmNamesLower = weekBestMatch.wrestlers.map(n => n.toLowerCase());
-                const bmTagTeamsLower = (weekBestMatch.tagTeams || []).map(n => n.toLowerCase());
-                const bmTrioTeamsLower = (weekBestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
+                if (!weekBestMatch) return;
 
                 ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(divKey => {
                     const divisionLabel = divKeyToLabel[divKey];
@@ -677,23 +591,7 @@
                         const originalName = (wrestler.name || '').toString();
                         if (!originalName) return;
 
-                        let isBestMatchThisWeek = false;
-
-                        if (divKey === 'menstag' || divKey === 'womenstag') {
-                            const teamMembersArr = findTeamMembersArray(originalName) || [];
-                            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
-                            const namedMatch = bmTagTeamsLower.includes(originalName.toLowerCase());
-                            isBestMatchThisWeek = memberMatch || namedMatch;
-                        } else if (divKey === 'trios') {
-                            const teamMembersArr = findTeamMembersArray(originalName) || [];
-                            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
-                            const namedMatch = bmTrioTeamsLower.includes(stripTrioSuffix(originalName).toLowerCase());
-                            isBestMatchThisWeek = memberMatch || namedMatch;
-                        } else {
-                            isBestMatchThisWeek = bmNamesLower.includes(originalName.toLowerCase());
-                        }
-
-                        if (isBestMatchThisWeek) {
+                        if (isCreditedForBestMatch(divKey, originalName, weekBestMatch, teamMembersData, nameChangesMap)) {
                             const canonicalName = (divKey === 'mens' || divKey === 'womens')
                                 ? getCanonicalName(originalName, nameChangesData?.changes || [])
                                 : originalName;
