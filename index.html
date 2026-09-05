@@ -929,7 +929,7 @@
         .stats-table th.s-rank, .stats-table td.s-rank   { width: 40px; text-align: center; }
         .stats-table th.s-photo, .stats-table td.s-photo { width: 110px; }
         .stats-table th.s-name, .stats-table td.s-name   { width: 220px; }
-        .stats-table th.s-stat, .stats-table td.s-stat   { width: 78px; white-space: nowrap; }
+        .stats-table th.s-stat, .stats-table td.s-stat   { width: 78px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .stats-table th.s-week, .stats-table td.s-week   { width: 110px; white-space: nowrap; }
 
         @media (max-width: 600px) {
@@ -5015,7 +5015,7 @@ if (tableEl) {
             if (visibleColumns.peakWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week peak was achieved.">Peak Week</th>';
             if (visibleColumns.floorWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week floor was achieved.">Floor Week</th>';
             if (visibleColumns.weeksAtNumber1) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Weeks at #1.">Weeks #1</th>';
-            if (visibleColumns.bestMatchCount) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Number of times this wrestler or team has featured in that week\'s Best Match of the Week.">Best Matches</th>';
+            if (visibleColumns.bestMatchCount) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Number of times this wrestler or team has featured in that week\'s Best Match of the Week.">⭐</th>';
             headerHtml += '</tr>';
 
             const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag & Trios' : 'All Divisions';
@@ -6182,7 +6182,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                         ${visibleColumns.peakWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
                         ${visibleColumns.floorWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
                         ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
-                        ${visibleColumns.bestMatchCount ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('bestMatchCount')" data-tt="Number of times this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has featured in that week's Best Match of the Week.">Best Matches</th>` : ''}
+                        ${visibleColumns.bestMatchCount ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('bestMatchCount')" data-tt="Number of times this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has featured in that week's Best Match of the Week.">⭐</th>` : ''}
                     </tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
