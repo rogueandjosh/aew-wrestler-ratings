@@ -424,7 +424,7 @@
                 if (year && !(e.date && e.date.startsWith(year))) return false;
                 if (matchType && e.matchType !== matchType) return false;
                 if (stipulation && normalizeStipulation(e.stipulation) !== stipulation) return false;
-                if (selectedDivisions.length > 0 && !selectedDivisions.includes(e.division)) return false;
+                if (e.division !== 'None' && selectedDivisions.length > 0 && !selectedDivisions.includes(e.division)) return false;
                 return true;
             });
         }
@@ -501,7 +501,7 @@
         function renderLeaderboard() {
             const selectedDivisions = getSelectedDivisions('leaderboardDivisionFilters');
             const entries = selectedDivisions.length > 0
-                ? allEntries.filter(e => selectedDivisions.includes(e.division))
+                ? allEntries.filter(e => e.division === 'None' || selectedDivisions.includes(e.division))
                 : allEntries;
 
             const counts = {};
