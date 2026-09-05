@@ -284,6 +284,8 @@
     <script>
         let allEntries = [];
         let nameChangesData = null;
+        let nameChangesMap = {};
+        let teamMembersData = null;
         let currentSortColumn = 'date';
         let currentSortDirection = 'desc';
 
@@ -292,12 +294,84 @@
             try {
                 const response = await fetch('name-changes.json');
                 nameChangesData = await response.json();
+
+                nameChangesMap = {};
+                const changesArray = nameChangesData.changes || nameChangesData;
+                if (Array.isArray(changesArray)) {
+                    changesArray.forEach(change => {
+                        if (change.oldName && change.newName) {
+                            nameChangesMap[change.oldName] = change.newName;
+                        }
+                    });
+                }
                 return nameChangesData;
             } catch (error) {
                 console.warn('⚠️ Name changes file not found, names will not be merged');
                 nameChangesData = { changes: [] };
                 return nameChangesData;
             }
+        }
+
+        async function loadTeamMembers() {
+            try {
+                const response = await fetch('team-members.json');
+                teamMembersData = await response.json();
+            } catch (error) {
+                console.warn('⚠️ team-members.json not found, team crediting will be incomplete');
+                teamMembersData = { teams: {} };
+            }
+        }
+
+        // Verbatim port of index.html's findTeamMembersArray, for exact parity
+        function findTeamMembersArray(teamName) {
+            if (!teamMembersData || !teamMembersData.teams) return null;
+
+            let members = teamMembersData.teams[teamName];
+            if (members && members.length >= 2) return members;
+
+            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
+            members = teamMembersData.teams[nameWithoutThe];
+            if (members && members.length >= 2) return members;
+
+            const nameWithThe = 'The ' + teamName;
+            members = teamMembersData.teams[nameWithThe];
+            if (members && members.length >= 2) return members;
+
+            if (nameChangesMap) {
+                const oldNameEntry = Object.keys(nameChangesMap).find(oldName =>
+                    nameChangesMap[oldName] === teamName
+                );
+                if (oldNameEntry) {
+                    members = teamMembersData.teams[oldNameEntry];
+                    if (members && members.length >= 2) return members;
+                }
+                if (nameChangesMap[teamName]) {
+                    members = teamMembersData.teams[nameChangesMap[teamName]];
+                    if (members && members.length >= 2) return members;
+                }
+            }
+
+            if (teamName.includes(' & ')) {
+                const parts = [];
+                let current = '';
+                let depth = 0;
+                for (let i = 0; i < teamName.length; i++) {
+                    const ch = teamName[i];
+                    if (ch === '(') depth++;
+                    else if (ch === ')') depth--;
+                    if (depth === 0 && teamName.substring(i, i + 3) === ' & ') {
+                        parts.push(current.trim());
+                        current = '';
+                        i += 2;
+                    } else {
+                        current += ch;
+                    }
+                }
+                if (current.trim()) parts.push(current.trim());
+                if (parts.length >= 2) return parts;
+            }
+
+            return null;
         }
 
         function getCanonicalName(anyName, nameChanges) {
@@ -365,7 +439,7 @@
                 const indexResponse = await fetch('best-match-archive/index.json');
                 const indexData = await indexResponse.json();
 
-                // Fetch every week's file in parallel
+                // Fetch every Best Match week file in parallel
                 const fetchPromises = indexData.map(entry =>
                     fetch(`best-match-archive/${entry.file}`)
                         .then(r => r.ok ? r.json() : null)
@@ -374,7 +448,37 @@
                 const results = await Promise.all(fetchPromises);
                 allEntries = results.filter(e => e !== null);
 
+                // bestMatchByWeek: lookup by week label, used by the leaderboard's
+                // exact-parity crediting logic below
+                window.bestMatchByWeekLabel = {};
+                allEntries.forEach(e => {
+                    if (e.week) window.bestMatchByWeekLabel[e.week] = e;
+                });
+
                 await loadNameChanges();
+                await loadTeamMembers();
+
+                // Fetch every week's FULL roster (all 5 divisions) — needed so the
+                // leaderboard can check "was this wrestler/team actually active and
+                // ranked that week" before granting Best Match credit, exactly
+                // matching the All Wrestler Statistics page's own logic.
+                const archiveIndexResponse = await fetch('archive/index.json');
+                const archiveIndexData = await archiveIndexResponse.json();
+                const seenFilenames = new Set();
+                const validWeeks = archiveIndexData.weeks.filter(w => {
+                    if (w.filename === 'archive-index.json' || w.filename === 'index.json') return false;
+                    if (seenFilenames.has(w.filename)) return false;
+                    seenFilenames.add(w.filename);
+                    return true;
+                });
+
+                const rosterFetchPromises = validWeeks.map(w =>
+                    fetch(`archive/${w.filename}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null)
+                );
+                const rosterResults = await Promise.all(rosterFetchPromises);
+                window.weekRosterArray = rosterResults.filter(w => w !== null);
 
                 // Sort newest first by default
                 allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -543,23 +647,59 @@
 
         function renderLeaderboard() {
             const selectedDivisions = getSelectedDivisions('leaderboardDivisionFilters');
-            const entries = selectedDivisions.length > 0
-                ? allEntries.filter(e => e.division === 'None' || selectedDivisions.includes(e.division))
-                : allEntries;
+            const divKeyToLabel = {
+                mens: "Men's",
+                womens: "Women's",
+                menstag: 'Tag',
+                womenstag: "Women's Tag",
+                trios: 'Trios'
+            };
 
             const counts = {};
+            const weekRosterArray = window.weekRosterArray || [];
+            const bestMatchByWeekLabel = window.bestMatchByWeekLabel || {};
 
-            entries.forEach(e => {
-                (e.wrestlers || []).forEach(name => {
-                    const canonical = getCanonicalName(name, nameChangesData?.changes || []);
-                    counts[canonical] = (counts[canonical] || 0) + 1;
-                });
-                (e.tagTeams || []).forEach(name => {
-                    counts[name] = (counts[name] || 0) + 1;
-                });
-                (e.trioTeams || []).forEach(name => {
-                    const clean = stripTrioSuffix(name);
-                    counts[clean] = (counts[clean] || 0) + 1;
+            weekRosterArray.forEach(weekData => {
+                const weekLabel = weekData.currentWeek;
+                const weekBestMatch = bestMatchByWeekLabel[weekLabel];
+                if (!weekBestMatch || !weekBestMatch.wrestlers || weekBestMatch.wrestlers.length === 0) return;
+
+                const bmNamesLower = weekBestMatch.wrestlers.map(n => n.toLowerCase());
+                const bmTagTeamsLower = (weekBestMatch.tagTeams || []).map(n => n.toLowerCase());
+                const bmTrioTeamsLower = (weekBestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
+
+                ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(divKey => {
+                    const divisionLabel = divKeyToLabel[divKey];
+                    if (selectedDivisions.length > 0 && !selectedDivisions.includes(divisionLabel)) return;
+
+                    const divisionData = weekData[divKey] || [];
+                    divisionData.forEach(wrestler => {
+                        const originalName = (wrestler.name || '').toString();
+                        if (!originalName) return;
+
+                        let isBestMatchThisWeek = false;
+
+                        if (divKey === 'menstag' || divKey === 'womenstag') {
+                            const teamMembersArr = findTeamMembersArray(originalName) || [];
+                            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
+                            const namedMatch = bmTagTeamsLower.includes(originalName.toLowerCase());
+                            isBestMatchThisWeek = memberMatch || namedMatch;
+                        } else if (divKey === 'trios') {
+                            const teamMembersArr = findTeamMembersArray(originalName) || [];
+                            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
+                            const namedMatch = bmTrioTeamsLower.includes(stripTrioSuffix(originalName).toLowerCase());
+                            isBestMatchThisWeek = memberMatch || namedMatch;
+                        } else {
+                            isBestMatchThisWeek = bmNamesLower.includes(originalName.toLowerCase());
+                        }
+
+                        if (isBestMatchThisWeek) {
+                            const canonicalName = (divKey === 'mens' || divKey === 'womens')
+                                ? getCanonicalName(originalName, nameChangesData?.changes || [])
+                                : originalName;
+                            counts[canonicalName] = (counts[canonicalName] || 0) + 1;
+                        }
+                    });
                 });
             });
 
