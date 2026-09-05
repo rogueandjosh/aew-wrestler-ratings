@@ -17,6 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elite Wrestler Ratings</title>
+    <script src="best-match-shared.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
@@ -4099,32 +4100,8 @@ for (let i = 0; i < filteredData.length; i++) {
     // Best Match of the Week indicator — only present on weeks that have this data
     let bestMatchAsterisk = '';
     const bestMatch = ratingsData?.bestMatchOfWeek;
-    if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
-        const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
-        const bestMatchTagTeamsLower = (bestMatch.tagTeams || []).map(n => n.toLowerCase());
-        // Trio names may carry a "(Trio)" suffix from either data source — normalize
-        // both sides so formatting differences (spacing/casing/presence) never
-        // silently break the match.
-        const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
-        let isInBestMatch = false;
-
-        if (division === 'menstag' || division === 'womenstag') {
-            const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
-            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
-            const namedTagMatch = bestMatchTagTeamsLower.includes(wrestler.name.toLowerCase());
-            isInBestMatch = memberMatch || namedTagMatch;
-        } else if (division === 'trios') {
-            const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
-            const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
-            const namedTrioMatch = bestMatchTrioTeamsLower.includes(stripTrioSuffix(wrestler.name).toLowerCase());
-            isInBestMatch = memberMatch || namedTrioMatch;
-        } else {
-            isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
-        }
-
-        if (isInBestMatch) {
-            bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
-        }
+    if (isCreditedForBestMatch(division, wrestler.name, bestMatch, teamMembersData, nameChanges)) {
+        bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
     }
 
 rows.push(`
@@ -4809,29 +4786,8 @@ if (tableEl) {
                 // Best Match of the Week indicator — same logic as the main division tables
                 let bestMatchAsterisk = '';
                 const bestMatch = ratingsData?.bestMatchOfWeek;
-                if (bestMatch && bestMatch.wrestlers && bestMatch.wrestlers.length > 0) {
-                    const bestMatchNamesLower = bestMatch.wrestlers.map(n => n.toLowerCase());
-                    const bestMatchTagTeamsLower = (bestMatch.tagTeams || []).map(n => n.toLowerCase());
-                    const bestMatchTrioTeamsLower = (bestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
-                    let isInBestMatch = false;
-
-                    if (division === 'menstag' || division === 'womenstag') {
-                        const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
-                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
-                        const namedTagMatch = bestMatchTagTeamsLower.includes(wrestler.name.toLowerCase());
-                        isInBestMatch = memberMatch || namedTagMatch;
-                    } else if (division === 'trios') {
-                        const teamMembersArr = findTeamMembersArray(wrestler.name) || [];
-                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bestMatchNamesLower.includes(m.toLowerCase()));
-                        const namedTrioMatch = bestMatchTrioTeamsLower.includes(stripTrioSuffix(wrestler.name).toLowerCase());
-                        isInBestMatch = memberMatch || namedTrioMatch;
-                    } else {
-                        isInBestMatch = bestMatchNamesLower.includes(wrestler.name.toLowerCase());
-                    }
-
-                    if (isInBestMatch) {
-                        bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
-                    }
+                if (isCreditedForBestMatch(division, wrestler.name, bestMatch, teamMembersData, nameChanges)) {
+                    bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
                 }
 
                 return `<tr class="${tagTriosClass}">
@@ -5752,32 +5708,12 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
 
                 if (rank === 1) ws.weeksAtNumber1++;
 
-                // Best Match of the Week tally — same matching rules as the
-                // asterisk indicator on the rankings tables: an exact match
-                // participant, OR (for teams) every member present, OR a named
-                // tag/trio affiliation from the Data sheet's AN/AC columns.
+                // Best Match of the Week tally — uses the shared crediting logic in
+                // best-match-shared.js, which best-match-of-the-week.html also calls,
+                // so both pages always produce identical counts.
                 const weekBestMatch = bestMatchByWeek[weekLabel];
-                if (weekBestMatch && weekBestMatch.wrestlers && weekBestMatch.wrestlers.length > 0) {
-                    const bmNamesLower = weekBestMatch.wrestlers.map(n => n.toLowerCase());
-                    const bmTagTeamsLower = (weekBestMatch.tagTeams || []).map(n => n.toLowerCase());
-                    const bmTrioTeamsLower = (weekBestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
-                    let isBestMatchThisWeek = false;
-
-                    if (divKey === 'menstag' || divKey === 'womenstag') {
-                        const teamMembersArr = findTeamMembersArray(originalName) || [];
-                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
-                        const namedMatch = bmTagTeamsLower.includes(originalName.toLowerCase());
-                        isBestMatchThisWeek = memberMatch || namedMatch;
-                    } else if (divKey === 'trios') {
-                        const teamMembersArr = findTeamMembersArray(originalName) || [];
-                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
-                        const namedMatch = bmTrioTeamsLower.includes(stripTrioSuffix(originalName).toLowerCase());
-                        isBestMatchThisWeek = memberMatch || namedMatch;
-                    } else {
-                        isBestMatchThisWeek = bmNamesLower.includes(originalName.toLowerCase());
-                    }
-
-                    if (isBestMatchThisWeek) ws.bestMatchCount++;
+                if (isCreditedForBestMatch(divKey, originalName, weekBestMatch, teamMembersData, nameChanges)) {
+                    ws.bestMatchCount++;
                 }
 
                 if (weekLabel === selectedWeekLabel || 
