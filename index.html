@@ -5015,7 +5015,7 @@ if (tableEl) {
             if (visibleColumns.peakWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week peak was achieved.">Peak Week</th>';
             if (visibleColumns.floorWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week floor was achieved.">Floor Week</th>';
             if (visibleColumns.weeksAtNumber1) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Weeks at #1.">Weeks #1</th>';
-            if (visibleColumns.bestMatchCount) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Number of times this wrestler or team has featured in that week\'s Best Match of the Week.">⭐ Best Matches</th>';
+            if (visibleColumns.bestMatchCount) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Number of times this wrestler or team has featured in that week\'s Best Match of the Week.">Best Matches</th>';
             headerHtml += '</tr>';
 
             const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag & Trios' : 'All Divisions';
@@ -5637,21 +5637,26 @@ async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     }
 
     const weeksToLoad = [];
-    
+    // Use the deduped list — the early archive era (Jun/Jul/Aug '19) has both
+    // an old-style label ("Jun '19") and a new-style one ("Jun '19 Week 1")
+    // pointing at the same underlying file; without deduping, those weeks get
+    // fetched and counted twice everywhere (Weeks at #1, Best Matches, etc.)
+    const validWeeks = getValidArchiveWeeks();
+
     if (selectedWeek === 'current') {
-        archiveIndex.weeks.forEach(w => {
+        validWeeks.forEach(w => {
             weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
         });
     } else {
-        const selectedIndex = archiveIndex.weeks.findIndex(w => w.label === selectedWeek);
+        const selectedIndex = validWeeks.findIndex(w => w.label === selectedWeek);
         
         if (selectedIndex === -1) {
-            archiveIndex.weeks.forEach(w => {
+            validWeeks.forEach(w => {
                 weeksToLoad.push({ label: w.label, filename: w.filename, url: `archive/${w.filename}` });
             });
         } else {
-            for (let i = archiveIndex.weeks.length - 1; i >= selectedIndex; i--) {
-                const week = archiveIndex.weeks[i];
+            for (let i = validWeeks.length - 1; i >= selectedIndex; i--) {
+                const week = validWeeks[i];
                 weeksToLoad.push({ label: week.label, filename: week.filename, url: `archive/${week.filename}` });
             }
         }
@@ -6177,7 +6182,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                         ${visibleColumns.peakWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
                         ${visibleColumns.floorWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
                         ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
-                        ${visibleColumns.bestMatchCount ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('bestMatchCount')" data-tt="Number of times this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has featured in that week's Best Match of the Week.">⭐ Best Matches</th>` : ''}
+                        ${visibleColumns.bestMatchCount ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('bestMatchCount')" data-tt="Number of times this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has featured in that week's Best Match of the Week.">Best Matches</th>` : ''}
                     </tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
