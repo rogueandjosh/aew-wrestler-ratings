@@ -2746,7 +2746,8 @@ let visibleColumns = {
     average: true,
     peakWeek: false,
     floorWeek: false,
-    weeksAtNumber1: true
+    weeksAtNumber1: true,
+    bestMatchCount: true
 };
 
         // Helper function to fix encoding issues in JSON data
@@ -4994,6 +4995,7 @@ if (tableEl) {
                 if (visibleColumns.peakWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.peakWeek || ''}</td>`;
                 if (visibleColumns.floorWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.floorWeek || ''}</td>`;
                 if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1, window.currentSelectedWeek)}</td>`;
+                if (visibleColumns.bestMatchCount) rowsHtml += `<td class="s-stat s-hide-mobile">${wrestler.bestMatchCount || 0}</td>`;
                 rowsHtml += '</tr>';
             });
 
@@ -5013,6 +5015,7 @@ if (tableEl) {
             if (visibleColumns.peakWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week peak was achieved.">Peak Week</th>';
             if (visibleColumns.floorWeek) headerHtml += '<th class="s-week s-hide-mobile tt" data-tt="Week floor was achieved.">Floor Week</th>';
             if (visibleColumns.weeksAtNumber1) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Weeks at #1.">Weeks #1</th>';
+            if (visibleColumns.bestMatchCount) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Number of times this wrestler or team has featured in that week\'s Best Match of the Week.">⭐ Best Matches</th>';
             headerHtml += '</tr>';
 
             const groupLabel = group === 'singles' ? 'Singles' : group === 'teams' ? 'Tag & Trios' : 'All Divisions';
@@ -5034,6 +5037,7 @@ if (tableEl) {
                             <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.peakWeek ? 'checked' : ''} onchange="toggleColumn('peakWeek', this.checked)"> Peak Week</label>
                             <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.floorWeek ? 'checked' : ''} onchange="toggleColumn('floorWeek', this.checked)"> Floor Week</label>
                             <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.weeksAtNumber1 ? 'checked' : ''} onchange="toggleColumn('weeksAtNumber1', this.checked)"> Weeks at #1</label>
+                            <label style="color:#e0e0e0;cursor:pointer;"><input type="checkbox" ${visibleColumns.bestMatchCount ? 'checked' : ''} onchange="toggleColumn('bestMatchCount', this.checked)"> ⭐ Best Matches</label>
                         </div>
                     </div>
                     <p style="color:#b8b8b8;margin-bottom:15px;">Through <strong style="color:#ffd700;">${window.currentSelectedWeek}</strong></p>
@@ -5676,16 +5680,30 @@ async function loadDynamicStatistics(selectedWeek, archiveIndex) {
     const loadedData = await Promise.all(fetchPromises);
     weekDataArray.push(...loadedData.filter(data => data !== null));
 
+    // Also fetch Best Match of the Week data for the same weeks. Best-effort —
+    // not every week has this yet, so a missing/failed fetch just means that
+    // week contributes nothing to the Best Match count, not an error.
+    const bestMatchFetchPromises = weeksToLoad.map(weekInfo => {
+        const bmUrl = `best-match-archive/${weekInfo.filename}`;
+        return fetch(bmUrl)
+            .then(response => response.ok ? response.json() : null)
+            .then(data => ({ label: weekInfo.label, data }))
+            .catch(() => ({ label: weekInfo.label, data: null }));
+    });
+    const bestMatchResults = await Promise.all(bestMatchFetchPromises);
+    const bestMatchByWeek = {};
+    bestMatchResults.forEach(r => { if (r.data) bestMatchByWeek[r.label] = r.data; });
+
     // Load name changes data
     const nameChangesInfo = await loadNameChanges();
     const nameChanges = nameChangesInfo.changes || [];
 
-    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek, nameChanges);
+    const statistics = calculateStatsFromWeeks(weekDataArray, selectedWeek, nameChanges, bestMatchByWeek);
     statisticsCache[cacheKey] = statistics;
     return statistics;
 }
 
-function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges = []) {
+function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges = [], bestMatchByWeek = {}) {
     const statistics = { mens: {}, womens: {}, menstag: {}, womenstag: {}, trios: {} };
     const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
 
@@ -5713,6 +5731,7 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
                         weeks: [],
                         ranks: [],
                         weeksAtNumber1: 0,
+                        bestMatchCount: 0,
                         currentRating: null,
                         inSelectedWeek: false
                     };
@@ -5724,6 +5743,34 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
                 ws.ranks.push(rank);
 
                 if (rank === 1) ws.weeksAtNumber1++;
+
+                // Best Match of the Week tally — same matching rules as the
+                // asterisk indicator on the rankings tables: an exact match
+                // participant, OR (for teams) every member present, OR a named
+                // tag/trio affiliation from the Data sheet's AN/AC columns.
+                const weekBestMatch = bestMatchByWeek[weekLabel];
+                if (weekBestMatch && weekBestMatch.wrestlers && weekBestMatch.wrestlers.length > 0) {
+                    const bmNamesLower = weekBestMatch.wrestlers.map(n => n.toLowerCase());
+                    const bmTagTeamsLower = (weekBestMatch.tagTeams || []).map(n => n.toLowerCase());
+                    const bmTrioTeamsLower = (weekBestMatch.trioTeams || []).map(n => stripTrioSuffix(n).toLowerCase());
+                    let isBestMatchThisWeek = false;
+
+                    if (divKey === 'menstag' || divKey === 'womenstag') {
+                        const teamMembersArr = findTeamMembersArray(originalName) || [];
+                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
+                        const namedMatch = bmTagTeamsLower.includes(originalName.toLowerCase());
+                        isBestMatchThisWeek = memberMatch || namedMatch;
+                    } else if (divKey === 'trios') {
+                        const teamMembersArr = findTeamMembersArray(originalName) || [];
+                        const memberMatch = teamMembersArr.length > 0 && teamMembersArr.every(m => bmNamesLower.includes(m.toLowerCase()));
+                        const namedMatch = bmTrioTeamsLower.includes(stripTrioSuffix(originalName).toLowerCase());
+                        isBestMatchThisWeek = memberMatch || namedMatch;
+                    } else {
+                        isBestMatchThisWeek = bmNamesLower.includes(originalName.toLowerCase());
+                    }
+
+                    if (isBestMatchThisWeek) ws.bestMatchCount++;
+                }
 
                 if (weekLabel === selectedWeekLabel || 
                     (selectedWeekLabel === 'current' && weekIndex === weekDataArray.length - 1)) {
@@ -5903,7 +5950,8 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                 average: average,
                 peakWeek: peakWeek,
                 floorWeek: floorWeek,
-                weeksAtNumber1: wrestler.weeksAtNumber1
+                weeksAtNumber1: wrestler.weeksAtNumber1,
+                bestMatchCount: wrestler.bestMatchCount
             });
         });
 
@@ -6056,6 +6104,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             if (visibleColumns.peakWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.peakWeek}</td>`;
             if (visibleColumns.floorWeek) rowsHtml += `<td class="s-week s-hide-mobile">${wrestler.floorWeek}</td>`;
             if (visibleColumns.weeksAtNumber1) rowsHtml += `<td class="s-stat s-hide-mobile">${getCorrectedWeeksAtNumber1(wrestler.name, wrestler.weeksAtNumber1, selectedWeekLabel)}</td>`;
+            if (visibleColumns.bestMatchCount) rowsHtml += `<td class="s-stat s-hide-mobile">${wrestler.bestMatchCount || 0}</td>`;
             rowsHtml += '</tr>';
         }
     });
@@ -6108,6 +6157,9 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                     <label style="color: #e0e0e0; cursor: pointer;">
                         <input type="checkbox" ${visibleColumns.weeksAtNumber1 ? 'checked' : ''} onchange="toggleColumn('weeksAtNumber1', this.checked)"> Weeks at #1
                     </label>
+                    <label style="color: #e0e0e0; cursor: pointer;">
+                        <input type="checkbox" ${visibleColumns.bestMatchCount ? 'checked' : ''} onchange="toggleColumn('bestMatchCount', this.checked)"> ⭐ Best Matches
+                    </label>
                 </div>
             </div>
             
@@ -6125,6 +6177,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
                         ${visibleColumns.peakWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('peakWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their highest rating.">Peak Week</th>` : ''}
                         ${visibleColumns.floorWeek ? `<th class="sortable tt s-week s-hide-mobile" onclick="sortStatsData('floorWeek')" data-tt="The week where this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} had their lowest rating.">Floor Week</th>` : ''}
                         ${visibleColumns.weeksAtNumber1 ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('weeksAtNumber1')" data-tt="Only a certain number of ${['menstag','womenstag','trios'].includes(division) ? 'teams' : 'wrestlers'} have been ranked at number 1.">Weeks at #1</th>` : ''}
+                        ${visibleColumns.bestMatchCount ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('bestMatchCount')" data-tt="Number of times this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has featured in that week's Best Match of the Week.">⭐ Best Matches</th>` : ''}
                     </tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
