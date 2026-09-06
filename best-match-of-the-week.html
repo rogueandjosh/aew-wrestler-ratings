@@ -234,6 +234,9 @@
             #archiveTable { min-width: 900px; }
             #leaderboardTable { min-width: 750px; }
             #tooltipToggle { top: 10px !important; left: 10px !important; font-size: 0.7em !important; }
+            #archiveFiltersToggle { display: block !important; }
+            #archiveFiltersPanel { display: none; }
+            #archiveFiltersPanel.expanded { display: block; }
         }
 
         .tt:not(th):not(td) { position: relative; display: inline-block; }
@@ -354,6 +357,10 @@
 
         <div id="archiveTab">
             <div class="section-card">
+                <button id="archiveFiltersToggle" onclick="toggleArchiveFilters()" style="display: none; width: 100%; background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; text-align: left;">
+                    🔍 Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
+                </button>
+                <div id="archiveFiltersPanel">
                 <div class="filters-row">
                     <div class="filter-item">
                         <label class="tt tt-left" data-tt="Filter the archive to a specific calendar year.">Year</label>
@@ -384,6 +391,7 @@
                 <div class="filter-item" style="margin-bottom: 20px;">
                     <label class="tt" data-tt="Filter by division. All are selected by default — untick any to narrow the results, or use None to see matches with no assigned division.">Division</label>
                     <div class="division-checkboxes" id="archiveDivisionFilters"></div>
+                </div>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
@@ -790,6 +798,13 @@
 
         function isMobileView() {
             return window.innerWidth <= 700;
+        }
+
+        function toggleArchiveFilters() {
+            const panel = document.getElementById('archiveFiltersPanel');
+            const arrow = document.getElementById('archiveFiltersToggleArrow');
+            const expanded = panel.classList.toggle('expanded');
+            arrow.textContent = expanded ? '▲' : '▼';
         }
 
         // Show, Wrestlers, and Rating are always visible (not in this object).
