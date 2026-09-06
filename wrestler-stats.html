@@ -17,6 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wrestler Stats - Elite Wrestler Ratings</title>
+    <script src="best-match-shared.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css">
@@ -1275,10 +1276,76 @@
         let currentYear = 'ALL';
         let ratingChart = null;
         let chartScaleFixed = false;
+        let allBestMatchEntries = [];
+        let bestMatchCreditedKeys = new Set();
+        let bestMatchTotalCount = 0;
 
-        // Load team data on page load
+        // Load all Best Match of the Week archive data — used to flag which of
+        // this wrestler's matches were their week's Best Match. Reuses the
+        // same shared crediting logic (best-match-shared.js) as the other
+        // Best Match pages, so results always stay consistent.
+        async function loadBestMatchArchive() {
+            try {
+                const indexResponse = await fetch('best-match-archive/index.json');
+                const indexData = await indexResponse.json();
+                const fetchPromises = indexData.map(entry =>
+                    fetch(`best-match-archive/${entry.file}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null)
+                );
+                const results = await Promise.all(fetchPromises);
+                allBestMatchEntries = results.filter(e => e !== null);
+            } catch (error) {
+                console.warn('Could not load Best Match archive:', error);
+                allBestMatchEntries = [];
+            }
+        }
+
+        // Determines which of this wrestler's own matches were a Best Match
+        // of the Week. Matches are identified by date+rating, since that
+        // uniquely identifies a specific real-world match within a week.
+        function computeBestMatchCredits() {
+            bestMatchCreditedKeys = new Set();
+            bestMatchTotalCount = 0;
+            if (!wrestlerData || allBestMatchEntries.length === 0) return;
+
+            let divKey = 'mens';
+            if (wrestlerData.division) {
+                if (wrestlerData.division.includes('Women') && !wrestlerData.division.includes('Tag')) {
+                    divKey = 'womens';
+                } else if (wrestlerData.division.includes('Men') && wrestlerData.division.includes('Tag')) {
+                    divKey = 'menstag';
+                } else if (wrestlerData.division.includes('Women') && wrestlerData.division.includes('Tag')) {
+                    divKey = 'womenstag';
+                } else if (wrestlerData.division.includes('Trio')) {
+                    divKey = 'trios';
+                }
+            }
+
+            const changesArray = Array.isArray(allNameChanges) ? allNameChanges : (allNameChanges?.changes || []);
+            const nameChangesMap = {};
+            changesArray.forEach(change => {
+                if (change.oldName && change.newName) nameChangesMap[change.oldName] = change.newName;
+            });
+
+            allBestMatchEntries.forEach(entry => {
+                if (isCreditedForBestMatch(divKey, wrestlerData.name, entry, allTeamMembers, nameChangesMap)) {
+                    bestMatchTotalCount++;
+                    if (entry.date && typeof entry.rating === 'number') {
+                        bestMatchCreditedKeys.add(`${entry.date}_${entry.rating.toFixed(2)}`);
+                    }
+                }
+            });
+        }
+
+        function isMatchBestMatchOfWeek(match) {
+            if (!match || !match.date || typeof match.rating !== 'number') return false;
+            const dateOnly = match.date.substring(0, 10);
+            return bestMatchCreditedKeys.has(`${dateOnly}_${match.rating.toFixed(2)}`);
+        }
+
         (async function() {
-            await loadTeamData();
+            await Promise.all([loadTeamData(), loadBestMatchArchive()]);
             await loadCurrentRankings();  // Must complete before loadWrestlerData so
                                           // currentRankingsData is populated when
                                           // displayWrestlerImage() checks active status
@@ -1576,6 +1643,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             
             // Display future names with async JSON check
             displayFutureNames();
+
+            computeBestMatchCredits();
 
             updateAllSections();
             setupYearButtons();
@@ -2225,7 +2294,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 { label: 'First Week', value: getFirstWeek(), subtext: 'Debut' },
                 { label: 'Last Week', value: getLastWeek(), subtext: getLastWeekSubtext() },
                 { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
-                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` }
+                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` },
+                { label: 'Best Matches', value: bestMatchTotalCount, subtext: '⭐ All-time', tierColour: bestMatchTotalCount > 0 ? '#ffd700' : undefined }
             ];
 
             grid.innerHTML = cards.map(card => `
@@ -2339,15 +2409,20 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 
                 // Show ALL wrestlers with hyperlinks (including current wrestler)
                 const wrestlersStr = createAllWrestlerLinks(m.opponents);
-                
+                const wasBestMatch = isMatchBestMatchOfWeek(m);
+                const bestMatchStar = wasBestMatch
+                    ? `<span style="color:#ffd700; font-size:1.2em; margin-left:2px;" title="Best Match of the Week">⭐</span>`
+                    : '';
+
                 return `
                     <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
                         <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
                         <div>
                             <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
-                                ${m.rating.toFixed(2)}
+                                ${m.rating.toFixed(2)}${bestMatchStar}
                             </div>
                             <div id="${matchId}" class="match-details" style="display: none; position: absolute; margin-top: 5px; padding: 12px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); min-width: 250px; max-width: 400px;">
+                                ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 8px;">⭐ Best Match of the Week</div>` : ''}
                                 <div style="color: #e0e0e0; margin-bottom: 6px;">
                                     <strong style="color: #ffd700;">Date:</strong> ${dateStr}
                                 </div>
@@ -2389,14 +2464,19 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 
                 // Show ALL wrestlers with hyperlinks (including current wrestler)
                 const wrestlersStr = createAllWrestlerLinks(m.opponents);
+                const wasBestMatch = isMatchBestMatchOfWeek(m);
+                const bestMatchStar = wasBestMatch
+                    ? `<span style="color:#ffd700; font-size:1.1em; margin-left:4px;" title="Best Match of the Week">⭐</span>`
+                    : '';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}${bestMatchStar}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                        ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
                         <div style="margin-bottom: 6px;">
                             <strong>Date:</strong> ${dateStr}
                         </div>
@@ -2426,14 +2506,19 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 
                 // Show ALL wrestlers with hyperlinks (including current wrestler)
                 const wrestlersStr = createAllWrestlerLinks(m.opponents);
+                const wasBestMatch = isMatchBestMatchOfWeek(m);
+                const bestMatchStar = wasBestMatch
+                    ? `<span style="color:#ffd700; font-size:1.1em; margin-left:4px;" title="Best Match of the Week">⭐</span>`
+                    : '';
                 
                 return `
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}</div>
+                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}${bestMatchStar}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
+                        ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
                         <div style="margin-bottom: 6px;">
                             <strong>Date:</strong> ${dateStr}
                         </div>
