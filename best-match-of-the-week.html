@@ -706,10 +706,7 @@
 
             // Base order everywhere; on mobile, Division moves to the far
             // right regardless of where it'd normally sit.
-            let order = ['week', 'show', 'rating', 'wrestlers', 'division', 'matchType', 'stipulation', 'stakes'];
-            if (isMobileView()) {
-                order = order.filter(k => k !== 'division').concat('division');
-            }
+            let order = ['week', 'show', 'rating', 'wrestlers', 'matchType', 'stipulation', 'stakes', 'division'];
 
             headerRow.innerHTML = order.map(k => cells[k]).join('');
         }
@@ -1044,10 +1041,7 @@
                     stakes: visibleColumns.stakes ? `<td>${e.stakes || 'N/A'}</td>` : ''
                 };
 
-                let order = ['week', 'show', 'rating', 'wrestlers', 'division', 'matchType', 'stipulation', 'stakes'];
-                if (isMobileView()) {
-                    order = order.filter(k => k !== 'division').concat('division');
-                }
+                let order = ['week', 'show', 'rating', 'wrestlers', 'matchType', 'stipulation', 'stakes', 'division'];
 
                 return `<tr>${order.map(k => cells[k]).join('')}</tr>`;
             }).join('');
@@ -1151,10 +1145,7 @@
                 percentage: `<th class="sortable tt col-percentage" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>`
             };
 
-            let order = ['rank', 'photo', 'name', 'divisions', 'count', 'totalMatches', 'percentage'];
-            if (isMobileView()) {
-                order = order.filter(k => k !== 'divisions').concat('divisions');
-            }
+            let order = ['rank', 'photo', 'name', 'count', 'totalMatches', 'percentage', 'divisions'];
 
             headerRow.innerHTML = order.map(k => cells[k]).join('');
         }
@@ -1212,10 +1203,7 @@
                     percentage: `<td class="col-percentage">${row.percentage !== null ? row.percentage.toFixed(1) + '%' : 'N/A'}</td>`
                 };
 
-                let order = ['rank', 'photo', 'name', 'divisions', 'count', 'totalMatches', 'percentage'];
-                if (isMobileView()) {
-                    order = order.filter(k => k !== 'divisions').concat('divisions');
-                }
+                let order = ['rank', 'photo', 'name', 'count', 'totalMatches', 'percentage', 'divisions'];
 
                 return `<tr>${order.map(k => cells[k]).join('')}</tr>`;
             }).join('');
