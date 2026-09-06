@@ -236,11 +236,103 @@
             table { font-size: 0.85em; }
             .scroll-hint { display: block; }
         }
+
+        .tt:not(th):not(td) { position: relative; display: inline-block; }
+
+        #ttBox {
+            display: none;
+            position: fixed;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-size: 0.78em;
+            white-space: normal;
+            width: 200px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 99999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            line-height: 1.4;
+            transition: opacity 0.15s ease;
+        }
+
+        .tt:not(th):not(td)::after {
+            content: attr(data-tt);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-size: 0.78em;
+            font-weight: normal;
+            white-space: normal;
+            width: 200px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.4s;
+            z-index: 9999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
+        .tt.tt-below:not(th):not(td)::after { bottom: auto; top: calc(100% + 8px); }
+        .tt:not(th):not(td)::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #ffd700;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.4s;
+            z-index: 9999;
+        }
+        .tt.tt-below:not(th):not(td)::before {
+            bottom: auto;
+            top: calc(100% + 2px);
+            border-top-color: transparent;
+            border-bottom-color: #ffd700;
+        }
+        body.tooltips-on .tt:not(th):not(td):hover::after,
+        body.tooltips-on .tt:not(th):not(td):hover::before,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
+            opacity: 1;
+        }
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
+        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
+            transition: opacity 0.1s ease 0s;
+        }
+
+        #tooltipToggle {
+            background: none;
+            border: 1px solid rgba(136,136,136,0.5);
+            color: #888;
+            cursor: pointer;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        #tooltipToggle:hover { color: #ffd700; border-color: #ffd700; }
+        #tooltipToggle.active { color: #ffd700; border-color: rgba(255,215,0,0.6); }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <header style="position: relative;">
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements" style="position: absolute; top: 15px; left: 15px; background: none; border: 1px solid rgba(255,215,0,0.4); cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">
+                💡 Tooltips ON
+            </button>
             <h1>⭐ Best Match of the Week</h1>
             <p class="subtitle">The full archive of every week's top-rated match</p>
             <div class="nav-buttons">
@@ -255,33 +347,33 @@
         </p>
 
         <div class="tabs">
-            <button class="tab active" data-tab="archive" onclick="switchTab('archive')">📋 Archive</button>
-            <button class="tab" data-tab="leaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+            <button class="tab active tt" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded, with filters for year, division, match type, and stipulation." onclick="switchTab('archive')">📋 Archive</button>
+            <button class="tab tt" data-tab="leaderboard" data-tt="See which wrestlers and teams have featured in the most Best Matches of the Week, all-time." onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
         </div>
 
         <div id="archiveTab">
             <div class="section-card">
                 <div class="filters-row">
                     <div class="filter-item">
-                        <label>Year</label>
+                        <label class="tt" data-tt="Filter the archive to a specific calendar year.">Year</label>
                         <select id="yearFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label>Match Type</label>
+                        <label class="tt" data-tt="Filter by the type of match, e.g. One on One, Tag Team, Trios.">Match Type</label>
                         <select id="matchTypeFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label>Stipulation</label>
+                        <label class="tt" data-tt="Filter by stipulation. Similar variants (e.g. different Street Fight or Texas Death matches) are grouped together automatically.">Stipulation</label>
                         <select id="stipulationFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
-                        <label>Search Wrestler</label>
+                        <label class="tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
                             <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onArchiveSearchInput()" autocomplete="off">
                             <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -289,7 +381,7 @@
                     </div>
                 </div>
                 <div class="filter-item" style="margin-bottom: 20px;">
-                    <label>Division</label>
+                    <label class="tt" data-tt="Filter by division. All are selected by default — untick any to narrow the results, or use None to see matches with no assigned division.">Division</label>
                     <div class="division-checkboxes" id="archiveDivisionFilters"></div>
                 </div>
                 <p class="scroll-hint">↔️ Swipe to see more columns</p>
@@ -300,10 +392,10 @@
                                 <th class="sortable" onclick="sortArchive('date')">Week</th>
                                 <th class="sortable" onclick="sortArchive('show')">Show</th>
                                 <th class="sortable" onclick="sortArchive('wrestlers')">Wrestlers</th>
-                                <th class="sortable" onclick="sortArchive('rating')">Rating</th>
-                                <th class="sortable" onclick="sortArchive('division')">Division</th>
+                                <th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>
+                                <th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>
                                 <th class="sortable" onclick="sortArchive('matchType')">Match Type</th>
-                                <th class="sortable" onclick="sortArchive('stipulation')">Stipulation</th>
+                                <th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>
                                 <th class="sortable" onclick="sortArchive('stakes')">Stakes</th>
                             </tr>
                         </thead>
@@ -312,7 +404,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="show-more-btn" id="showMoreBtn" onclick="expandArchive()" style="display: none;">Show More</button>
+                <button class="show-more-btn tt" id="showMoreBtn" onclick="expandArchive()" data-tt="Only the most recent 30 results show by default — click to reveal the rest." style="display: none;">Show More</button>
             </div>
 
             <div class="section-card explanation-text">
@@ -327,7 +419,7 @@
                 <div class="section-title">Top Wrestlers &amp; Teams by Best Match Appearances</div>
                 <div class="filters-row">
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
-                        <label>Search Wrestler</label>
+                        <label class="tt" data-tt="Type a wrestler or team name to filter the leaderboard to just them.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
                             <input type="text" id="leaderboardWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onLeaderboardSearchInput()" autocomplete="off">
                             <button type="button" id="leaderboardWrestlerSearchClear" class="wrestler-search-clear" onclick="clearLeaderboardSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -335,7 +427,7 @@
                     </div>
                 </div>
                 <div class="filter-item" style="margin-bottom: 20px;">
-                    <label>Division</label>
+                    <label class="tt" data-tt="Filter by division. All are selected by default — untick any to narrow the leaderboard.">Division</label>
                     <div class="division-checkboxes" id="leaderboardDivisionFilters"></div>
                 </div>
                 <p class="scroll-hint">↔️ Swipe to see more columns</p>
@@ -345,10 +437,10 @@
                             <tr>
                                 <th class="rank-cell">#</th>
                                 <th class="sortable" onclick="sortLeaderboard('name')">Name</th>
-                                <th class="sortable" onclick="sortLeaderboard('divisions')">Division</th>
-                                <th class="sortable" onclick="sortLeaderboard('count')">Best Match Count</th>
-                                <th class="sortable" onclick="sortLeaderboard('totalMatches')">Total Matches</th>
-                                <th class="sortable" onclick="sortLeaderboard('percentage')">Best Match %</th>
+                                <th class="sortable tt" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>
+                                <th class="sortable tt" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week.">Best Match Count</th>
+                                <th class="sortable tt" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Total Matches</th>
+                                <th class="sortable tt" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardTableBody">
@@ -356,12 +448,13 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="show-more-btn" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" style="display: none;">Show All</button>
+                <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show by default — click to reveal the full leaderboard." style="display: none;">Show All</button>
             </div>
         </div>
     </div>
 
     <datalist id="wrestlerSearchList"></datalist>
+    <div id="ttBox"></div>
 
     <script>
         let allEntries = [];
@@ -522,7 +615,7 @@
         function populateDivisionCheckboxes(containerId, divisionList, onChangeHandlerName) {
             const container = document.getElementById(containerId);
             const allOption = `
-                <label>
+                <label class="tt" data-tt="Selects or deselects every division at once.">
                     <input type="checkbox" value="__ALL__" checked onchange="onDivisionCheckboxChange('${containerId}', this, '${onChangeHandlerName}')">
                     <strong>All</strong>
                 </label>
@@ -909,6 +1002,85 @@
 
             showMoreBtn.style.display = rows.length > leaderboardDisplayCount ? 'block' : 'none';
         }
+
+        // ===== TOOLTIP TOGGLE =====
+        (function() {
+            const stored = localStorage.getItem('aewTooltips');
+            const on = stored === null ? true : stored === 'true';
+            if (on) document.body.classList.add('tooltips-on');
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+                btn.classList.toggle('active', on);
+            }
+        })();
+
+        function toggleTooltips() {
+            const on = document.body.classList.toggle('tooltips-on');
+            localStorage.setItem('aewTooltips', on);
+            const btn = document.getElementById('tooltipToggle');
+            if (btn) {
+                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
+                btn.classList.toggle('active', on);
+            }
+        }
+
+        const ttBox = document.getElementById('ttBox');
+        let ttTimer = null;
+        document.addEventListener('mouseover', function(e) {
+            const el = e.target.closest('th.tt, td.tt');
+            if (!el || !document.body.classList.contains('tooltips-on')) return;
+            const text = el.getAttribute('data-tt');
+            if (!text) return;
+            ttTimer = setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                ttBox.textContent = text;
+                ttBox.style.display = 'block';
+                const left = rect.left + rect.width / 2 - 100;
+                const top = rect.top - 70;
+                ttBox.style.left = Math.max(5, left) + 'px';
+                ttBox.style.top = Math.max(5, top) + 'px';
+            }, 400);
+        });
+        document.addEventListener('mouseout', function(e) {
+            const el = e.target.closest('th.tt, td.tt');
+            if (!el) return;
+            clearTimeout(ttTimer);
+            ttBox.style.display = 'none';
+        });
+
+        let ttTouchEl = null;
+        document.addEventListener('touchstart', function(e) {
+            if (!document.body.classList.contains('tooltips-on')) return;
+
+            const ttEl = e.target.closest('.tt:not(th):not(td)');
+            if (ttTouchEl && ttTouchEl !== ttEl) {
+                ttTouchEl.classList.remove('tt-touch-active');
+            }
+            if (ttEl) {
+                ttEl.classList.add('tt-touch-active');
+                ttTouchEl = ttEl;
+            } else {
+                ttTouchEl = null;
+            }
+
+            const tableEl = e.target.closest('th.tt, td.tt');
+            if (tableEl) {
+                const text = tableEl.getAttribute('data-tt');
+                if (text) {
+                    clearTimeout(ttTimer);
+                    const rect = tableEl.getBoundingClientRect();
+                    ttBox.textContent = text;
+                    ttBox.style.display = 'block';
+                    const left = rect.left + rect.width / 2 - 100;
+                    const top = rect.top - 70;
+                    ttBox.style.left = Math.max(5, left) + 'px';
+                    ttBox.style.top = Math.max(5, top) + 'px';
+                }
+            } else {
+                ttBox.style.display = 'none';
+            }
+        }, { passive: true });
 
         init();
     </script>
