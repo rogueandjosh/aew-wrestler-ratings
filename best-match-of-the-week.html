@@ -352,7 +352,7 @@
 
         <div class="tabs">
             <button class="tab active tt tt-left" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded, with filters for year, division, match type, and stipulation." onclick="switchTab('archive')">📋 Archive</button>
-            <button class="tab tt" data-tab="leaderboard" data-tt="See which wrestlers and teams have featured in the most Best Matches of the Week, all-time." onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+            <button class="tab tt" data-tab="leaderboard" data-tt="See which wrestlers and teams have featured in the most Best Matches of the Week, all-time. Only those with 2 or more appearances are shown." onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
         </div>
 
         <div id="archiveTab">
@@ -447,12 +447,13 @@
                 <div class="section-title">What is Best Match of the Week?</div>
                 <p>Each week, every match from that week's shows is compared by its Cagematch.net community rating — the highest-rated match becomes that week's <strong style="color:#ffd700;">Best Match of the Week</strong>.</p>
                 <p>You'll also see this indicated with a gold <strong style="color:#ffd700; font-size:1.2em;">*</strong> next to the relevant wrestler(s) or team(s) on the <a href="index.html">main rankings pages</a> — click it for a quick popup with the match details. And on the <strong>All Wrestler Statistics</strong> view, the <strong style="color:#ffd700;">⭐</strong> column shows a running total of how many times each wrestler or team has featured in a Best Match, cumulative up to whichever week you have selected.</p>
+                <p>The <strong>Leaderboard</strong> tab only includes wrestlers and teams with 2 or more Best Match appearances, to keep the list focused on genuinely repeat performers rather than one-off entries.</p>
             </div>
         </div>
 
         <div id="leaderboardTab" style="display: none;">
             <div class="section-card">
-                <div class="section-title">Top Wrestlers &amp; Teams by Best Match Appearances</div>
+                <div class="section-title tt" data-tt="Only wrestlers and teams with 2 or more Best Match appearances are shown.">Top Wrestlers &amp; Teams by Best Match Appearances</div>
                 <div class="filters-row">
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
                         <label class="tt" data-tt="Type a wrestler or team name to filter the leaderboard to just them.">Search Wrestler</label>
@@ -1245,7 +1246,9 @@
                 });
             });
 
-            leaderboardRows = Object.entries(counts).map(([name, count]) => {
+            leaderboardRows = Object.entries(counts)
+                .filter(([name, count]) => count >= 2)
+                .map(([name, count]) => {
                 const totalMatches = totalMatchesByName[name] || null;
                 const percentage = totalMatches ? (count / totalMatches * 100) : null;
 
@@ -1293,7 +1296,7 @@
                 photo: `<th class="col-photo"></th>`,
                 name: `<th class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
                 divisions: `<th class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
-                count: `<th class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week.">⭐</th>`,
+                count: `<th class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week. Only those with 2 or more appearances are shown here.">⭐</th>`,
                 totalMatches: `<th class="sortable tt col-total-matches" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Matches</th>`,
                 percentage: `<th class="sortable tt col-percentage" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>`
             };
