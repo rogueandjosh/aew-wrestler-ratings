@@ -189,13 +189,13 @@
         #archiveTable .col-wrestlers { width: 32%; }
         #archiveTable .col-show { width: 20%; }
 
-        #leaderboardTable th:nth-child(1), #leaderboardTable td:nth-child(1) { width: 5%; }
-        #leaderboardTable th:nth-child(2), #leaderboardTable td:nth-child(2) { width: 13%; }
-        #leaderboardTable th:nth-child(3), #leaderboardTable td:nth-child(3) { width: 20%; }
-        #leaderboardTable th:nth-child(4), #leaderboardTable td:nth-child(4) { width: 16%; }
-        #leaderboardTable th:nth-child(5), #leaderboardTable td:nth-child(5) { width: 15%; }
-        #leaderboardTable th:nth-child(6), #leaderboardTable td:nth-child(6) { width: 15%; }
-        #leaderboardTable th:nth-child(7), #leaderboardTable td:nth-child(7) { width: 16%; }
+        #leaderboardTable .col-rank { width: 5%; }
+        #leaderboardTable .col-photo { width: 13%; }
+        #leaderboardTable .col-name { width: 20%; }
+        #leaderboardTable .col-divisions { width: 16%; }
+        #leaderboardTable .col-count { width: 15%; }
+        #leaderboardTable .col-total-matches { width: 15%; }
+        #leaderboardTable .col-percentage { width: 16%; }
         th {
             background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
@@ -462,14 +462,7 @@
                 <div class="table-scroll">
                     <table id="leaderboardTable">
                         <thead>
-                            <tr>
-                                <th class="rank-cell">#</th>
-                                <th>Photo</th>
-                                <th class="sortable" onclick="sortLeaderboard('name')">Name</th>
-                                <th class="sortable tt" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>
-                                <th class="sortable tt" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week.">Best Match Count</th>
-                                <th class="sortable tt" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Total Matches</th>
-                                <th class="sortable tt" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>
+                            <tr id="leaderboardTableHeaderRow">
                             </tr>
                         </thead>
                         <tbody id="leaderboardTableBody">
@@ -667,15 +660,18 @@
         }
         let archiveDisplayCount = 30;
         let archiveSearchTerm = '';
+
+        function isMobileView() {
+            return window.innerWidth <= 700;
+        }
+
         // Show, Wrestlers, and Rating are always visible (not in this object).
-        // Everything else defaults off — the user opts in via Customize Columns.
-        let visibleColumns = {
-            week: false,
-            division: false,
-            matchType: false,
-            stipulation: false,
-            stakes: false
-        };
+        // Desktop defaults to showing everything except Division and Stakes.
+        // Mobile defaults to a leaner set, leaving more as opt-in extras
+        // since there's less screen space to work with.
+        let visibleColumns = isMobileView()
+            ? { week: true, division: false, matchType: false, stipulation: false, stakes: false }
+            : { week: true, division: false, matchType: true, stipulation: true, stakes: false };
 
         function toggleColumnSelector() {
             const selector = document.getElementById('columnSelector');
@@ -687,18 +683,35 @@
             renderArchiveTable();
         }
 
+        function syncColumnCheckboxes() {
+            document.getElementById('colWeek').checked = visibleColumns.week;
+            document.getElementById('colDivision').checked = visibleColumns.division;
+            document.getElementById('colMatchType').checked = visibleColumns.matchType;
+            document.getElementById('colStipulation').checked = visibleColumns.stipulation;
+            document.getElementById('colStakes').checked = visibleColumns.stakes;
+        }
+
         function renderArchiveTableHeader() {
             const headerRow = document.getElementById('archiveTableHeaderRow');
-            let html = '';
-            if (visibleColumns.week) html += `<th class="sortable" onclick="sortArchive('date')">Week</th>`;
-            html += `<th class="sortable col-show" onclick="sortArchive('show')">Show</th>`;
-            html += `<th class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`;
-            html += `<th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`;
-            if (visibleColumns.division) html += `<th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>`;
-            if (visibleColumns.matchType) html += `<th class="sortable" onclick="sortArchive('matchType')">Match Type</th>`;
-            if (visibleColumns.stipulation) html += `<th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>`;
-            if (visibleColumns.stakes) html += `<th class="sortable" onclick="sortArchive('stakes')">Stakes</th>`;
-            headerRow.innerHTML = html;
+            const cells = {
+                week: visibleColumns.week ? `<th class="sortable" onclick="sortArchive('date')">Week</th>` : '',
+                show: `<th class="sortable col-show" onclick="sortArchive('show')">Show</th>`,
+                rating: `<th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
+                wrestlers: `<th class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`,
+                division: visibleColumns.division ? `<th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>` : '',
+                matchType: visibleColumns.matchType ? `<th class="sortable" onclick="sortArchive('matchType')">Match Type</th>` : '',
+                stipulation: visibleColumns.stipulation ? `<th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>` : '',
+                stakes: visibleColumns.stakes ? `<th class="sortable" onclick="sortArchive('stakes')">Stakes</th>` : ''
+            };
+
+            // Base order everywhere; on mobile, Division moves to the far
+            // right regardless of where it'd normally sit.
+            let order = ['week', 'show', 'rating', 'wrestlers', 'division', 'matchType', 'stipulation', 'stakes'];
+            if (isMobileView()) {
+                order = order.filter(k => k !== 'division').concat('division');
+            }
+
+            headerRow.innerHTML = order.map(k => cells[k]).join('');
         }
 
 
@@ -761,6 +774,7 @@
                 populateDivisionCheckboxes('leaderboardDivisionFilters', ALL_DIVISIONS, 'onLeaderboardDivisionChange');
                 populateFilters();
                 populateWrestlerSearchList();
+                syncColumnCheckboxes();
                 renderArchiveTable();
                 renderLeaderboard();
 
@@ -1019,17 +1033,23 @@
                     ? new Date(e.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                     : 'N/A';
 
-                let rowHtml = '<tr>';
-                if (visibleColumns.week) rowHtml += `<td>${e.week || dateStr}</td>`;
-                rowHtml += `<td class="col-show">${e.show || 'N/A'}</td>`;
-                rowHtml += `<td class="col-wrestlers">${wrestlersHtml}</td>`;
-                rowHtml += `<td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>`;
-                if (visibleColumns.division) rowHtml += `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>`;
-                if (visibleColumns.matchType) rowHtml += `<td>${e.matchType || 'N/A'}</td>`;
-                if (visibleColumns.stipulation) rowHtml += `<td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>`;
-                if (visibleColumns.stakes) rowHtml += `<td>${e.stakes || 'N/A'}</td>`;
-                rowHtml += '</tr>';
-                return rowHtml;
+                const cells = {
+                    week: visibleColumns.week ? `<td>${e.week || dateStr}</td>` : '',
+                    show: `<td class="col-show">${e.show || 'N/A'}</td>`,
+                    rating: `<td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>`,
+                    wrestlers: `<td class="col-wrestlers">${wrestlersHtml}</td>`,
+                    division: visibleColumns.division ? `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>` : '',
+                    matchType: visibleColumns.matchType ? `<td>${e.matchType || 'N/A'}</td>` : '',
+                    stipulation: visibleColumns.stipulation ? `<td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>` : '',
+                    stakes: visibleColumns.stakes ? `<td>${e.stakes || 'N/A'}</td>` : ''
+                };
+
+                let order = ['week', 'show', 'rating', 'wrestlers', 'division', 'matchType', 'stipulation', 'stakes'];
+                if (isMobileView()) {
+                    order = order.filter(k => k !== 'division').concat('division');
+                }
+
+                return `<tr>${order.map(k => cells[k]).join('')}</tr>`;
             }).join('');
 
             showMoreBtn.style.display = filtered.length > archiveDisplayCount ? 'block' : 'none';
@@ -1119,7 +1139,28 @@
             sortAndRenderLeaderboard();
         }
 
+        function renderLeaderboardTableHeader() {
+            const headerRow = document.getElementById('leaderboardTableHeaderRow');
+            const cells = {
+                rank: `<th class="rank-cell col-rank">#</th>`,
+                photo: `<th class="col-photo"></th>`,
+                name: `<th class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
+                divisions: `<th class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
+                count: `<th class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week.">⭐</th>`,
+                totalMatches: `<th class="sortable tt col-total-matches" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Matches</th>`,
+                percentage: `<th class="sortable tt col-percentage" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>`
+            };
+
+            let order = ['rank', 'photo', 'name', 'divisions', 'count', 'totalMatches', 'percentage'];
+            if (isMobileView()) {
+                order = order.filter(k => k !== 'divisions').concat('divisions');
+            }
+
+            headerRow.innerHTML = order.map(k => cells[k]).join('');
+        }
+
         function sortAndRenderLeaderboard() {
+            renderLeaderboardTableHeader();
             let rows = [...leaderboardRows];
 
             if (leaderboardSearchTerm) {
@@ -1160,17 +1201,24 @@
 
             const toDisplay = rows.slice(0, leaderboardDisplayCount);
 
-            tbody.innerHTML = toDisplay.map((row, i) => `
-                <tr>
-                    <td class="rank-cell">${i + 1}</td>
-                    <td class="wrestler-image">${buildLeaderboardImageCell(row.name)}</td>
-                    <td><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.name}</a></td>
-                    <td>${row.divisions}</td>
-                    <td class="rating-cell">${row.count}</td>
-                    <td>${row.totalMatches !== null ? row.totalMatches : 'N/A'}</td>
-                    <td>${row.percentage !== null ? row.percentage.toFixed(1) + '%' : 'N/A'}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = toDisplay.map((row, i) => {
+                const cells = {
+                    rank: `<td class="rank-cell col-rank">${i + 1}</td>`,
+                    photo: `<td class="wrestler-image col-photo">${buildLeaderboardImageCell(row.name)}</td>`,
+                    name: `<td class="col-name"><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.name}</a></td>`,
+                    divisions: `<td class="col-divisions">${row.divisions}</td>`,
+                    count: `<td class="rating-cell col-count">${row.count}</td>`,
+                    totalMatches: `<td class="col-total-matches">${row.totalMatches !== null ? row.totalMatches : 'N/A'}</td>`,
+                    percentage: `<td class="col-percentage">${row.percentage !== null ? row.percentage.toFixed(1) + '%' : 'N/A'}</td>`
+                };
+
+                let order = ['rank', 'photo', 'name', 'divisions', 'count', 'totalMatches', 'percentage'];
+                if (isMobileView()) {
+                    order = order.filter(k => k !== 'divisions').concat('divisions');
+                }
+
+                return `<tr>${order.map(k => cells[k]).join('')}</tr>`;
+            }).join('');
 
             showMoreBtn.style.display = rows.length > leaderboardDisplayCount ? 'block' : 'none';
         }
