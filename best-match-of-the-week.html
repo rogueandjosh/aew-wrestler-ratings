@@ -84,7 +84,7 @@
             font-weight: bold;
         }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
         .tab {
             background: rgba(255, 215, 0, 0.1);
             border: 2px solid rgba(255, 215, 0, 0.4);
@@ -231,10 +231,13 @@
         .scroll-hint { display: none; color: #b8b8b8; font-size: 0.8em; margin-bottom: 10px; }
 
         @media (max-width: 700px) {
-            header { padding: 20px; }
+            header { padding: 20px; padding-top: 55px; }
             h1 { font-size: 1.6em; }
             table { font-size: 0.85em; }
             .scroll-hint { display: block; }
+            #archiveTable { min-width: 900px; }
+            #leaderboardTable { min-width: 650px; }
+            #tooltipToggle { top: 10px !important; left: 10px !important; font-size: 0.7em !important; }
         }
 
         .tt:not(th):not(td) { position: relative; display: inline-block; }
@@ -301,6 +304,8 @@
             border-top-color: transparent;
             border-bottom-color: #ffd700;
         }
+        .tt.tt-left:not(th):not(td)::after { left: 0; transform: none; }
+        .tt.tt-left:not(th):not(td)::before { left: 20px; transform: none; }
         body.tooltips-on .tt:not(th):not(td):hover::after,
         body.tooltips-on .tt:not(th):not(td):hover::before,
         body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
@@ -347,7 +352,7 @@
         </p>
 
         <div class="tabs">
-            <button class="tab active tt" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded, with filters for year, division, match type, and stipulation." onclick="switchTab('archive')">📋 Archive</button>
+            <button class="tab active tt tt-left" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded, with filters for year, division, match type, and stipulation." onclick="switchTab('archive')">📋 Archive</button>
             <button class="tab tt" data-tab="leaderboard" data-tt="See which wrestlers and teams have featured in the most Best Matches of the Week, all-time." onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
         </div>
 
@@ -355,7 +360,7 @@
             <div class="section-card">
                 <div class="filters-row">
                     <div class="filter-item">
-                        <label class="tt" data-tt="Filter the archive to a specific calendar year.">Year</label>
+                        <label class="tt tt-left" data-tt="Filter the archive to a specific calendar year.">Year</label>
                         <select id="yearFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
