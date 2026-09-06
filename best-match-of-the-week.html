@@ -145,7 +145,23 @@
         .explanation-text p { margin-bottom: 12px; }
         .explanation-text a { color: #ffd700; }
 
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+        #archiveTable th:nth-child(1), #archiveTable td:nth-child(1) { width: 10%; }
+        #archiveTable th:nth-child(2), #archiveTable td:nth-child(2) { width: 14%; }
+        #archiveTable th:nth-child(3), #archiveTable td:nth-child(3) { width: 26%; }
+        #archiveTable th:nth-child(4), #archiveTable td:nth-child(4) { width: 7%; }
+        #archiveTable th:nth-child(5), #archiveTable td:nth-child(5) { width: 9%; }
+        #archiveTable th:nth-child(6), #archiveTable td:nth-child(6) { width: 11%; }
+        #archiveTable th:nth-child(7), #archiveTable td:nth-child(7) { width: 13%; }
+        #archiveTable th:nth-child(8), #archiveTable td:nth-child(8) { width: 10%; }
+
+        #leaderboardTable th:nth-child(1), #leaderboardTable td:nth-child(1) { width: 5%; }
+        #leaderboardTable th:nth-child(2), #leaderboardTable td:nth-child(2) { width: 25%; }
+        #leaderboardTable th:nth-child(3), #leaderboardTable td:nth-child(3) { width: 20%; }
+        #leaderboardTable th:nth-child(4), #leaderboardTable td:nth-child(4) { width: 16%; }
+        #leaderboardTable th:nth-child(5), #leaderboardTable td:nth-child(5) { width: 16%; }
+        #leaderboardTable th:nth-child(6), #leaderboardTable td:nth-child(6) { width: 18%; }
         th {
             background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
@@ -359,6 +375,13 @@
 
         const ALL_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios"];
         const ARCHIVE_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios", "None"];
+
+        // "Tag" is the raw value stored in the data (matching the sheet's own
+        // "Specific Division" column), but should always read as "Men's Tag"
+        // wherever it's shown to the user.
+        function getDivisionDisplayLabel(raw) {
+            return raw === 'Tag' ? "Men's Tag" : raw;
+        }
         let archiveDisplayCount = 30;
         let leaderboardDisplayCount = 50;
         let leaderboardSortColumn = 'count';
@@ -447,7 +470,7 @@
             const divisionOptions = divisionList.map(div => `
                 <label>
                     <input type="checkbox" value="${div}" checked onchange="onDivisionCheckboxChange('${containerId}', this, '${onChangeHandlerName}')">
-                    ${div}
+                    ${getDivisionDisplayLabel(div)}
                 </label>
             `).join('');
             container.innerHTML = allOption + divisionOptions;
@@ -580,6 +603,9 @@
                 } else if (currentSortColumn === 'stipulation') {
                     valA = (normalizeStipulation(a.stipulation) || '').toLowerCase();
                     valB = (normalizeStipulation(b.stipulation) || '').toLowerCase();
+                } else if (currentSortColumn === 'division') {
+                    valA = (getDivisionDisplayLabel(a.division) || '').toLowerCase();
+                    valB = (getDivisionDisplayLabel(b.division) || '').toLowerCase();
                 } else if (typeof valA === 'string') {
                     valA = valA.toLowerCase();
                     valB = valB.toLowerCase();
@@ -614,7 +640,7 @@
                     <td>${e.show || 'N/A'}</td>
                     <td>${wrestlersHtml}</td>
                     <td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>
-                    <td>${e.division || 'N/A'}</td>
+                    <td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>
                     <td>${e.matchType || 'N/A'}</td>
                     <td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>
                     <td>${e.stakes || 'N/A'}</td>
@@ -683,7 +709,7 @@
                 return {
                     name,
                     count,
-                    divisions: divisionsByName[name] ? [...divisionsByName[name]].sort().join(', ') : 'N/A',
+                    divisions: divisionsByName[name] ? [...divisionsByName[name]].map(getDivisionDisplayLabel).sort().join(', ') : 'N/A',
                     totalMatches,
                     percentage
                 };
