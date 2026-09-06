@@ -2178,6 +2178,27 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     }
                 });
             }
+
+            // FLOOR & AVERAGE RATING - same year-filtered ratingHistory pattern
+            let floorRatingForYear = null;
+            let averageRatingForYear = null;
+
+            if (wrestlerData.ratingHistory && wrestlerData.ratingHistory.length > 0) {
+                let filteredHistory = wrestlerData.ratingHistory;
+
+                if (currentYear !== 'ALL') {
+                    filteredHistory = wrestlerData.ratingHistory.filter(snap => {
+                        const snapDate = new Date(snap.date);
+                        return snapDate.getFullYear() === parseInt(currentYear);
+                    });
+                }
+
+                const ratedSnaps = filteredHistory.filter(snap => typeof snap.rating === 'number');
+                if (ratedSnaps.length > 0) {
+                    floorRatingForYear = Math.min(...ratedSnaps.map(s => s.rating));
+                    averageRatingForYear = ratedSnaps.reduce((sum, s) => sum + s.rating, 0) / ratedSnaps.length;
+                }
+            }
             
             // CURRENT RATING/RANK
             let displayRating, displayRank, displaySubtext;
@@ -2286,10 +2307,21 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const peakTier = getTierColour(peakRatingForYear > 0 ? peakRatingForYear : null);
             const peakTierColour = peakTier.tier === 'platinum' ? '#c9a0ff' : peakTier.solid;
 
+            const floorValue = floorRatingForYear !== null ? floorRatingForYear.toFixed(2) : 'N/A';
+            const floorTier = getTierColour(floorRatingForYear);
+            const floorTierColour = floorRatingForYear !== null ? (floorTier.tier === 'platinum' ? '#c9a0ff' : floorTier.solid) : undefined;
+
+            const averageValue = averageRatingForYear !== null ? averageRatingForYear.toFixed(2) : 'N/A';
+            const averageTier = getTierColour(averageRatingForYear);
+            const averageTierColour = averageRatingForYear !== null ? (averageTier.tier === 'platinum' ? '#c9a0ff' : averageTier.solid) : undefined;
+
             const cards = [
                 { label: 'Current Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}`, tierColour: currentRatingTierColour },
                 { label: 'Peak', value: peakRatingValue, subtext: peakSubtext, tierColour: peakTierColour },
+                { label: 'Floor', value: floorValue, subtext: currentYear === 'ALL' ? 'Career low' : `Lowest in ${currentYear}`, tierColour: floorTierColour },
+                { label: 'Average', value: averageValue, subtext: currentYear === 'ALL' ? 'Career average' : `Average in ${currentYear}`, tierColour: averageTierColour },
                 { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
+                { label: 'Weeks at #1', value: weeksAtNumber1, subtext: currentYear === 'ALL' ? 'Career' : currentYear, tierColour: weeksAtNumber1 > 0 ? '#ffd700' : undefined },
                 { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
                 { label: 'First Week', value: getFirstWeek(), subtext: 'Debut' },
                 { label: 'Last Week', value: getLastWeek(), subtext: getLastWeekSubtext() },
@@ -2298,13 +2330,29 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 { label: 'Best Matches', value: bestMatchTotalCount, subtext: '⭐ All-time', tierColour: bestMatchTotalCount > 0 ? '#ffd700' : undefined }
             ];
 
-            grid.innerHTML = cards.map(card => `
+            const cardsToShow = pickStatCardsToShow(cards, 8);
+
+            grid.innerHTML = cardsToShow.map(card => `
                 <div class="stat-card"${card.tierColour ? ` style="border-color: ${card.tierColour};"` : ''}>
                     <div class="stat-label">${card.label}</div>
                     <div class="stat-value"${card.tierColour ? ` style="color: ${card.tierColour};"` : ''}>${card.value}</div>
                     ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
                 </div>
             `).join('');
+        }
+
+        // Randomly picks `count` of the 12 available stat cards, once per
+        // page load — cached by label so the SAME 8 stay visible as the
+        // user clicks between year filters (which re-renders this grid
+        // repeatedly), rather than reshuffling on every click. A fresh
+        // page load resets the cache, giving a new random set next time.
+        let selectedStatCardLabels = null;
+        function pickStatCardsToShow(allCards, count) {
+            if (!selectedStatCardLabels) {
+                const shuffled = [...allCards].sort(() => Math.random() - 0.5);
+                selectedStatCardLabels = new Set(shuffled.slice(0, count).map(c => c.label));
+            }
+            return allCards.filter(c => selectedStatCardLabels.has(c.label));
         }
 
         function updateDistributionBars() {
