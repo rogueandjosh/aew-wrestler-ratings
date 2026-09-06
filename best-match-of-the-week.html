@@ -237,12 +237,12 @@
                             <tr>
                                 <th class="sortable" onclick="sortArchive('date')">Week</th>
                                 <th class="sortable" onclick="sortArchive('show')">Show</th>
-                                <th>Wrestlers</th>
+                                <th class="sortable" onclick="sortArchive('wrestlers')">Wrestlers</th>
                                 <th class="sortable" onclick="sortArchive('rating')">Rating</th>
-                                <th>Division</th>
-                                <th>Match Type</th>
-                                <th>Stipulation</th>
-                                <th>Stakes</th>
+                                <th class="sortable" onclick="sortArchive('division')">Division</th>
+                                <th class="sortable" onclick="sortArchive('matchType')">Match Type</th>
+                                <th class="sortable" onclick="sortArchive('stipulation')">Stipulation</th>
+                                <th class="sortable" onclick="sortArchive('stakes')">Stakes</th>
                             </tr>
                         </thead>
                         <tbody id="archiveTableBody">
@@ -274,9 +274,9 @@
                             <tr>
                                 <th class="rank-cell">#</th>
                                 <th class="sortable" onclick="sortLeaderboard('name')">Name</th>
-                                <th>Division</th>
+                                <th class="sortable" onclick="sortLeaderboard('divisions')">Division</th>
                                 <th class="sortable" onclick="sortLeaderboard('count')">Best Match Count</th>
-                                <th>Total Matches</th>
+                                <th class="sortable" onclick="sortLeaderboard('totalMatches')">Total Matches</th>
                                 <th class="sortable" onclick="sortLeaderboard('percentage')">Best Match %</th>
                             </tr>
                         </thead>
@@ -358,6 +358,7 @@
         }
 
         const ALL_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios"];
+        const ARCHIVE_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios", "None"];
         let archiveDisplayCount = 30;
         let leaderboardDisplayCount = 50;
         let leaderboardSortColumn = 'count';
@@ -413,8 +414,8 @@
                 // Sort newest first by default
                 allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                populateDivisionCheckboxes('archiveDivisionFilters', 'onArchiveDivisionChange');
-                populateDivisionCheckboxes('leaderboardDivisionFilters', 'onLeaderboardDivisionChange');
+                populateDivisionCheckboxes('archiveDivisionFilters', ARCHIVE_DIVISIONS, 'onArchiveDivisionChange');
+                populateDivisionCheckboxes('leaderboardDivisionFilters', ALL_DIVISIONS, 'onLeaderboardDivisionChange');
                 populateFilters();
                 renderArchiveTable();
                 renderLeaderboard();
@@ -435,21 +436,41 @@
             }
         }
 
-        function populateDivisionCheckboxes(containerId, onChangeHandlerName) {
+        function populateDivisionCheckboxes(containerId, divisionList, onChangeHandlerName) {
             const container = document.getElementById(containerId);
             const allOption = `
                 <label>
-                    <input type="checkbox" value="__ALL__" checked onchange="${onChangeHandlerName}()">
+                    <input type="checkbox" value="__ALL__" checked onchange="onDivisionCheckboxChange('${containerId}', this, '${onChangeHandlerName}')">
                     <strong>All</strong>
                 </label>
             `;
-            const divisionOptions = ALL_DIVISIONS.map(div => `
+            const divisionOptions = divisionList.map(div => `
                 <label>
-                    <input type="checkbox" value="${div}" checked onchange="${onChangeHandlerName}()">
+                    <input type="checkbox" value="${div}" checked onchange="onDivisionCheckboxChange('${containerId}', this, '${onChangeHandlerName}')">
                     ${div}
                 </label>
             `).join('');
             container.innerHTML = allOption + divisionOptions;
+        }
+
+        // Two-way sync: toggling "All" sets every individual box to match it;
+        // toggling an individual box updates "All" to reflect whether every
+        // individual is now checked, so the checkboxes never visually
+        // contradict what's actually being filtered.
+        function onDivisionCheckboxChange(containerId, changedCheckbox, refreshHandlerName) {
+            const container = document.getElementById(containerId);
+            const allCheckbox = container.querySelector('input[value="__ALL__"]');
+            const individualCheckboxes = [...container.querySelectorAll('input[type="checkbox"]')]
+                .filter(cb => cb.value !== '__ALL__');
+
+            if (changedCheckbox.value === '__ALL__') {
+                individualCheckboxes.forEach(cb => { cb.checked = changedCheckbox.checked; });
+            } else {
+                const allChecked = individualCheckboxes.every(cb => cb.checked);
+                allCheckbox.checked = allChecked;
+            }
+
+            window[refreshHandlerName]();
         }
 
         function onArchiveDivisionChange() {
@@ -522,17 +543,18 @@
                 if (year && !(e.date && e.date.startsWith(year))) return false;
                 if (matchType && e.matchType !== matchType) return false;
                 if (stipulation && normalizeStipulation(e.stipulation) !== stipulation) return false;
-                if (selectedDivisions !== null && e.division !== 'None' && !selectedDivisions.includes(e.division)) return false;
+                if (selectedDivisions !== null && !selectedDivisions.includes(e.division)) return false;
                 return true;
             });
         }
 
         function sortArchive(column) {
+            const textColumns = ['show', 'wrestlers', 'division', 'matchType', 'stipulation', 'stakes'];
             if (currentSortColumn === column) {
                 currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
             } else {
                 currentSortColumn = column;
-                currentSortDirection = column === 'show' ? 'asc' : 'desc';
+                currentSortDirection = textColumns.includes(column) ? 'asc' : 'desc';
             }
             archiveDisplayCount = 30;
             renderArchiveTable();
@@ -552,6 +574,12 @@
                 if (currentSortColumn === 'date') {
                     valA = new Date(a.date);
                     valB = new Date(b.date);
+                } else if (currentSortColumn === 'wrestlers') {
+                    valA = (a.wrestlers || []).join(', ').toLowerCase();
+                    valB = (b.wrestlers || []).join(', ').toLowerCase();
+                } else if (currentSortColumn === 'stipulation') {
+                    valA = (normalizeStipulation(a.stipulation) || '').toLowerCase();
+                    valB = (normalizeStipulation(b.stipulation) || '').toLowerCase();
                 } else if (typeof valA === 'string') {
                     valA = valA.toLowerCase();
                     valB = valB.toLowerCase();
@@ -665,11 +693,12 @@
         }
 
         function sortLeaderboard(column) {
+            const textColumns = ['name', 'divisions'];
             if (leaderboardSortColumn === column) {
                 leaderboardSortDirection = leaderboardSortDirection === 'desc' ? 'asc' : 'desc';
             } else {
                 leaderboardSortColumn = column;
-                leaderboardSortDirection = column === 'name' ? 'asc' : 'desc';
+                leaderboardSortDirection = textColumns.includes(column) ? 'asc' : 'desc';
             }
             sortAndRenderLeaderboard();
         }
@@ -687,9 +716,15 @@
                 if (leaderboardSortColumn === 'name') {
                     valA = a.name.toLowerCase();
                     valB = b.name.toLowerCase();
+                } else if (leaderboardSortColumn === 'divisions') {
+                    valA = (a.divisions || '').toLowerCase();
+                    valB = (b.divisions || '').toLowerCase();
                 } else if (leaderboardSortColumn === 'percentage') {
                     valA = a.percentage ?? -1;
                     valB = b.percentage ?? -1;
+                } else if (leaderboardSortColumn === 'totalMatches') {
+                    valA = a.totalMatches ?? -1;
+                    valB = b.totalMatches ?? -1;
                 } else {
                     valA = a.count;
                     valB = b.count;
