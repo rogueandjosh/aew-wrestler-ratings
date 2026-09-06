@@ -186,14 +186,8 @@
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 
-        #archiveTable th:nth-child(1), #archiveTable td:nth-child(1) { width: 10%; }
-        #archiveTable th:nth-child(2), #archiveTable td:nth-child(2) { width: 14%; }
-        #archiveTable th:nth-child(3), #archiveTable td:nth-child(3) { width: 26%; }
-        #archiveTable th:nth-child(4), #archiveTable td:nth-child(4) { width: 7%; }
-        #archiveTable th:nth-child(5), #archiveTable td:nth-child(5) { width: 9%; }
-        #archiveTable th:nth-child(6), #archiveTable td:nth-child(6) { width: 11%; }
-        #archiveTable th:nth-child(7), #archiveTable td:nth-child(7) { width: 13%; }
-        #archiveTable th:nth-child(8), #archiveTable td:nth-child(8) { width: 10%; }
+        #archiveTable .col-wrestlers { width: 32%; }
+        #archiveTable .col-show { width: 20%; }
 
         #leaderboardTable th:nth-child(1), #leaderboardTable td:nth-child(1) { width: 5%; }
         #leaderboardTable th:nth-child(2), #leaderboardTable td:nth-child(2) { width: 25%; }
@@ -389,19 +383,46 @@
                     <label class="tt" data-tt="Filter by division. All are selected by default — untick any to narrow the results, or use None to see matches with no assigned division.">Division</label>
                     <div class="division-checkboxes" id="archiveDivisionFilters"></div>
                 </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                    <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Wrestlers, and Rating are always visible.">
+                        ⚙️ Customize Columns
+                    </button>
+                </div>
+                <div id="columnSelector" style="display: none; background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" checked disabled> Show (required)
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" checked disabled> Wrestlers (required)
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" checked disabled> Rating (required)
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" id="colWeek" onchange="toggleColumn('week', this.checked)"> Week
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" id="colDivision" onchange="toggleColumn('division', this.checked)"> Division
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" id="colMatchType" onchange="toggleColumn('matchType', this.checked)"> Match Type
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" id="colStipulation" onchange="toggleColumn('stipulation', this.checked)"> Stipulation
+                        </label>
+                        <label style="color: #e0e0e0; cursor: pointer;">
+                            <input type="checkbox" id="colStakes" onchange="toggleColumn('stakes', this.checked)"> Stakes
+                        </label>
+                    </div>
+                </div>
+
                 <p class="scroll-hint">↔️ Swipe to see more columns</p>
                 <div class="table-scroll">
                     <table id="archiveTable">
                         <thead>
-                            <tr>
-                                <th class="sortable" onclick="sortArchive('date')">Week</th>
-                                <th class="sortable" onclick="sortArchive('show')">Show</th>
-                                <th class="sortable" onclick="sortArchive('wrestlers')">Wrestlers</th>
-                                <th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>
-                                <th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>
-                                <th class="sortable" onclick="sortArchive('matchType')">Match Type</th>
-                                <th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>
-                                <th class="sortable" onclick="sortArchive('stakes')">Stakes</th>
+                            <tr id="archiveTableHeaderRow">
                             </tr>
                         </thead>
                         <tbody id="archiveTableBody">
@@ -539,6 +560,41 @@
         }
         let archiveDisplayCount = 30;
         let archiveSearchTerm = '';
+        // Show, Wrestlers, and Rating are always visible (not in this object).
+        // Everything else defaults off — the user opts in via Customize Columns.
+        let visibleColumns = {
+            week: false,
+            division: false,
+            matchType: false,
+            stipulation: false,
+            stakes: false
+        };
+
+        function toggleColumnSelector() {
+            const selector = document.getElementById('columnSelector');
+            selector.style.display = selector.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleColumn(column, checked) {
+            visibleColumns[column] = checked;
+            renderArchiveTable();
+        }
+
+        function renderArchiveTableHeader() {
+            const headerRow = document.getElementById('archiveTableHeaderRow');
+            let html = '';
+            if (visibleColumns.week) html += `<th class="sortable" onclick="sortArchive('date')">Week</th>`;
+            html += `<th class="sortable col-show" onclick="sortArchive('show')">Show</th>`;
+            html += `<th class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`;
+            html += `<th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`;
+            if (visibleColumns.division) html += `<th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>`;
+            if (visibleColumns.matchType) html += `<th class="sortable" onclick="sortArchive('matchType')">Match Type</th>`;
+            if (visibleColumns.stipulation) html += `<th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>`;
+            if (visibleColumns.stakes) html += `<th class="sortable" onclick="sortArchive('stakes')">Stakes</th>`;
+            headerRow.innerHTML = html;
+        }
+
+
         let leaderboardSearchTerm = '';
         let leaderboardDisplayCount = 50;
         let leaderboardSortColumn = 'count';
@@ -808,6 +864,8 @@
         }
 
         function renderArchiveTable() {
+            renderArchiveTableHeader();
+            const visibleCount = 3 + Object.values(visibleColumns).filter(Boolean).length;
             const filtered = getFilteredEntries();
 
             filtered.sort((a, b) => {
@@ -838,7 +896,7 @@
             const showMoreBtn = document.getElementById('showMoreBtn');
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No matches found for this filter.</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="${visibleCount}" class="empty-state">No matches found for this filter.</td></tr>`;
                 showMoreBtn.style.display = 'none';
                 return;
             }
@@ -854,16 +912,17 @@
                     ? new Date(e.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                     : 'N/A';
 
-                return `<tr>
-                    <td>${e.week || dateStr}</td>
-                    <td>${e.show || 'N/A'}</td>
-                    <td>${wrestlersHtml}</td>
-                    <td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>
-                    <td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>
-                    <td>${e.matchType || 'N/A'}</td>
-                    <td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>
-                    <td>${e.stakes || 'N/A'}</td>
-                </tr>`;
+                let rowHtml = '<tr>';
+                if (visibleColumns.week) rowHtml += `<td>${e.week || dateStr}</td>`;
+                rowHtml += `<td class="col-show">${e.show || 'N/A'}</td>`;
+                rowHtml += `<td class="col-wrestlers">${wrestlersHtml}</td>`;
+                rowHtml += `<td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>`;
+                if (visibleColumns.division) rowHtml += `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>`;
+                if (visibleColumns.matchType) rowHtml += `<td>${e.matchType || 'N/A'}</td>`;
+                if (visibleColumns.stipulation) rowHtml += `<td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>`;
+                if (visibleColumns.stakes) rowHtml += `<td>${e.stakes || 'N/A'}</td>`;
+                rowHtml += '</tr>';
+                return rowHtml;
             }).join('');
 
             showMoreBtn.style.display = filtered.length > archiveDisplayCount ? 'block' : 'none';
