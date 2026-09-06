@@ -519,6 +519,133 @@
             }
         }
 
+        let factionsData = null;
+        async function loadFactions() {
+            try {
+                const response = await fetch('factions.json');
+                factionsData = await response.json();
+            } catch (error) {
+                console.warn('⚠️ factions.json not found, faction names will not be applied');
+                factionsData = { factions: [] };
+            }
+        }
+
+        function compareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            if (week1 === 'current') return 1;
+            if (week2 === 'current') return -1;
+
+            const parseWeek = (week) => {
+                const match = week.match(/(\w+)\s+'(\d+)\s+Week\s+(\d+)/);
+                if (!match) return null;
+                const monthMap = {
+                    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+                };
+                const month = monthMap[match[1]];
+                const year = 2000 + parseInt(match[2]);
+                const weekNum = parseInt(match[3]);
+                return { year, month, weekNum };
+            };
+
+            const w1 = parseWeek(week1);
+            const w2 = parseWeek(week2);
+            if (!w1 || !w2) return 0;
+            if (w1.year !== w2.year) return w1.year - w2.year;
+            if (w1.month !== w2.month) return w1.month - w2.month;
+            return w1.weekNum - w2.weekNum;
+        }
+
+        // Ported verbatim from index.html — converts a raw team name (e.g.
+        // "Castagnoli, Moxley & Yuta") to its established faction/stable name
+        // (e.g. "Death Riders") where one applies. ignoreDate=true is used
+        // here since leaderboard entries are aggregated across all time,
+        // not tied to one specific week.
+        function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
+            if (!factionsData || !factionsData.factions) return teamName;
+            if (!weekLabel) return teamName;
+
+            const candidates = [];
+
+            for (const faction of factionsData.factions) {
+                if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) {
+                    return faction.name;
+                }
+                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if (faction.overrides.some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (ignoreDate) {
+                        if (!former.leftDate || compareWeeks(former.leftDate, faction.dateFrom) > 0) {
+                            activeMembers.push(former.name);
+                        }
+                    } else if (compareWeeks(weekLabel, former.leftDate) < 0) {
+                        activeMembers.push(former.name);
+                    }
+                }
+
+                const teamMembersList = findTeamMembersArrayShared(teamName, teamMembersData, nameChangesMap) || [];
+
+                if (faction.replacePartialCombos && teamMembersList.length === 0) {
+                    const matched = activeMembers.filter(member => {
+                        const surname = member.trim().split(/\s+/).pop().toLowerCase();
+                        return teamName.toLowerCase().includes(surname);
+                    });
+                    if (matched.length >= 2) {
+                        candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+                    }
+                    continue;
+                }
+
+                if (teamMembersList.length === 0) continue;
+
+                const factionMembersInTeam = teamMembersList.filter(member =>
+                    activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+                );
+
+                if (factionMembersInTeam.length < 2) continue;
+
+                candidates.push({ faction, matchCount: factionMembersInTeam.length, total: teamMembersList.length, activeMembers });
+            }
+
+            if (candidates.length === 0) return teamName;
+
+            candidates.sort((a, b) => {
+                const aAllMatch = a.matchCount === a.total;
+                const bAllMatch = b.matchCount === b.total;
+                if (aAllMatch && !bAllMatch) return -1;
+                if (!aAllMatch && bAllMatch) return 1;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                return aEnded - bEnded;
+            });
+
+            const best = candidates[0];
+            const faction = best.faction;
+            const activeMembers = best.activeMembers;
+            const teamMembersList = findTeamMembersArrayShared(teamName, teamMembersData, nameChangesMap) || [];
+
+            if (faction.replacePartialCombos) return faction.name;
+            if (best.matchCount === best.total) return faction.name;
+
+            const nonFactionMembers = teamMembersList.filter(member =>
+                !activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase())
+            );
+            if (nonFactionMembers.length > 0) {
+                const surnames = nonFactionMembers.map(m => {
+                    const parts = m.trim().split(/\s+/);
+                    return parts[parts.length - 1];
+                });
+                return `${faction.name} & ${surnames.join(' & ')}`;
+            }
+
+            return teamName;
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
@@ -741,6 +868,7 @@
 
                 await loadNameChanges();
                 await loadTeamMembers();
+                await loadFactions();
 
                 // Fetch every week's FULL roster (all 5 divisions) — needed so the
                 // leaderboard can check "was this wrestler/team actually active and
@@ -1105,8 +1233,18 @@
             leaderboardRows = Object.entries(counts).map(([name, count]) => {
                 const totalMatches = totalMatchesByName[name] || null;
                 const percentage = totalMatches ? (count / totalMatches * 100) : null;
+
+                // Team entries (2-3 members) get the faction/stable name where
+                // one applies, e.g. "Castagnoli, Moxley & Yuta" -> "Death Riders".
+                // Individual names pass through unchanged.
+                const members = findTeamMembersArrayShared(name, teamMembersData, nameChangesMap) || [];
+                const displayName = members.length >= 2
+                    ? stripTrioSuffix(getFactionDisplayName(name, 'current', true))
+                    : name;
+
                 return {
                     name,
+                    displayName,
                     count,
                     divisions: divisionsByName[name] ? [...divisionsByName[name]].map(getDivisionDisplayLabel).sort().join(', ') : 'N/A',
                     totalMatches,
@@ -1155,14 +1293,17 @@
             let rows = [...leaderboardRows];
 
             if (leaderboardSearchTerm) {
-                rows = rows.filter(r => r.name.toLowerCase().includes(leaderboardSearchTerm));
+                rows = rows.filter(r =>
+                    r.name.toLowerCase().includes(leaderboardSearchTerm) ||
+                    r.displayName.toLowerCase().includes(leaderboardSearchTerm)
+                );
             }
 
             rows.sort((a, b) => {
                 let valA, valB;
                 if (leaderboardSortColumn === 'name') {
-                    valA = a.name.toLowerCase();
-                    valB = b.name.toLowerCase();
+                    valA = a.displayName.toLowerCase();
+                    valB = b.displayName.toLowerCase();
                 } else if (leaderboardSortColumn === 'divisions') {
                     valA = (a.divisions || '').toLowerCase();
                     valB = (b.divisions || '').toLowerCase();
@@ -1196,7 +1337,7 @@
                 const cells = {
                     rank: `<td class="rank-cell col-rank">${i + 1}</td>`,
                     photo: `<td class="wrestler-image col-photo">${buildLeaderboardImageCell(row.name)}</td>`,
-                    name: `<td class="col-name"><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.name}</a></td>`,
+                    name: `<td class="col-name"><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.displayName}</a></td>`,
                     divisions: `<td class="col-divisions">${row.divisions}</td>`,
                     count: `<td class="rating-cell col-count">${row.count}</td>`,
                     totalMatches: `<td class="col-total-matches">${row.totalMatches !== null ? row.totalMatches : 'N/A'}</td>`,
