@@ -2330,29 +2330,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 { label: 'Best Matches', value: bestMatchTotalCount, subtext: '⭐ All-time', tierColour: bestMatchTotalCount > 0 ? '#ffd700' : undefined }
             ];
 
-            const cardsToShow = pickStatCardsToShow(cards, 8);
-
-            grid.innerHTML = cardsToShow.map(card => `
+            grid.innerHTML = cards.map(card => `
                 <div class="stat-card"${card.tierColour ? ` style="border-color: ${card.tierColour};"` : ''}>
                     <div class="stat-label">${card.label}</div>
                     <div class="stat-value"${card.tierColour ? ` style="color: ${card.tierColour};"` : ''}>${card.value}</div>
                     ${card.subtext ? `<div class="stat-subtext">${card.subtext}</div>` : ''}
                 </div>
             `).join('');
-        }
-
-        // Randomly picks `count` of the 12 available stat cards, once per
-        // page load — cached by label so the SAME 8 stay visible as the
-        // user clicks between year filters (which re-renders this grid
-        // repeatedly), rather than reshuffling on every click. A fresh
-        // page load resets the cache, giving a new random set next time.
-        let selectedStatCardLabels = null;
-        function pickStatCardsToShow(allCards, count) {
-            if (!selectedStatCardLabels) {
-                const shuffled = [...allCards].sort(() => Math.random() - 0.5);
-                selectedStatCardLabels = new Set(shuffled.slice(0, count).map(c => c.label));
-            }
-            return allCards.filter(c => selectedStatCardLabels.has(c.label));
         }
 
         function updateDistributionBars() {
