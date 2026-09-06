@@ -190,11 +190,12 @@
         #archiveTable .col-show { width: 20%; }
 
         #leaderboardTable th:nth-child(1), #leaderboardTable td:nth-child(1) { width: 5%; }
-        #leaderboardTable th:nth-child(2), #leaderboardTable td:nth-child(2) { width: 25%; }
+        #leaderboardTable th:nth-child(2), #leaderboardTable td:nth-child(2) { width: 13%; }
         #leaderboardTable th:nth-child(3), #leaderboardTable td:nth-child(3) { width: 20%; }
         #leaderboardTable th:nth-child(4), #leaderboardTable td:nth-child(4) { width: 16%; }
-        #leaderboardTable th:nth-child(5), #leaderboardTable td:nth-child(5) { width: 16%; }
-        #leaderboardTable th:nth-child(6), #leaderboardTable td:nth-child(6) { width: 18%; }
+        #leaderboardTable th:nth-child(5), #leaderboardTable td:nth-child(5) { width: 15%; }
+        #leaderboardTable th:nth-child(6), #leaderboardTable td:nth-child(6) { width: 15%; }
+        #leaderboardTable th:nth-child(7), #leaderboardTable td:nth-child(7) { width: 16%; }
         th {
             background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
@@ -216,6 +217,7 @@
         tr:hover td { background: rgba(255, 215, 0, 0.05); }
 
         .rank-cell { color: #ffd700; font-weight: bold; width: 40px; }
+        .wrestler-image { text-align: center; padding: 6px !important; }
         .rating-cell { color: #6bcf7f; font-weight: bold; }
 
         .loading { text-align: center; padding: 40px; color: #b8b8b8; }
@@ -230,7 +232,7 @@
             table { font-size: 0.85em; }
             .scroll-hint { display: block; }
             #archiveTable { min-width: 900px; }
-            #leaderboardTable { min-width: 650px; }
+            #leaderboardTable { min-width: 750px; }
             #tooltipToggle { top: 10px !important; left: 10px !important; font-size: 0.7em !important; }
         }
 
@@ -462,6 +464,7 @@
                         <thead>
                             <tr>
                                 <th class="rank-cell">#</th>
+                                <th>Photo</th>
                                 <th class="sortable" onclick="sortLeaderboard('name')">Name</th>
                                 <th class="sortable tt" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>
                                 <th class="sortable tt" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week.">Best Match Count</th>
@@ -470,7 +473,7 @@
                             </tr>
                         </thead>
                         <tbody id="leaderboardTableBody">
-                            <tr><td colspan="6" class="loading">Loading leaderboard…</td></tr>
+                            <tr><td colspan="7" class="loading">Loading leaderboard…</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -555,6 +558,110 @@
         // "Tag" is the raw value stored in the data (matching the sheet's own
         // "Specific Division" column), but should always read as "Men's Tag"
         // wherever it's shown to the user.
+        function generateInitials(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            if (cleanName.includes('(')) cleanName = cleanName.split('(')[0].trim();
+            if (cleanName.includes('&')) {
+                let parts = cleanName.split('&').map(p => p.trim());
+                return parts.map(p => p.charAt(0)).join('').toUpperCase();
+            }
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            if (words.length === 1 && words[0].length <= 4 && words[0] === words[0].toUpperCase()) {
+                return words[0];
+            }
+            if (words.length >= 4) {
+                return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+            }
+            return words.slice(0, 3).map(w => w.charAt(0)).join('').toUpperCase();
+        }
+
+        function generateTagInitials(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            if (cleanName.includes('(')) cleanName = cleanName.split('(')[0].trim();
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            if (words.length === 1) return words[0].charAt(0).toUpperCase();
+            return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+        }
+
+        function generateTrioInitial(name) {
+            let cleanName = name
+                .replace(/\bThe\b/gi, '')
+                .replace(/\band\b/gi, '')
+                .replace(/\bof\b/gi, '')
+                .replace(/\bin\b/gi, '')
+                .replace(/\bour\b/gi, '')
+                .trim();
+            if (cleanName.includes('(')) cleanName = cleanName.split('(')[0].trim();
+            let words = cleanName.split(/\s+/).filter(w => w.length > 0);
+            words = words.filter(w => !w.includes('"') && !w.includes("'"));
+            if (words.length === 1) return words[0].charAt(0).toUpperCase();
+            if (words.length >= 3 && words[0].toLowerCase() === 'penta') return 'P';
+            return words[words.length - 1].charAt(0).toUpperCase();
+        }
+
+        function createInitialsCircle(initials, size) {
+            const radius = size / 2;
+            const center = size / 2;
+            let fontSize;
+            if (initials.length === 1) fontSize = size * 0.4;
+            else if (initials.length === 2) fontSize = size * 0.3;
+            else fontSize = size * 0.25;
+            const textY = center + fontSize * 0.35;
+            const svg = `
+                <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="${center}" cy="${center}" r="${radius}" fill="#2d2d2d"/>
+                    <text x="${center}" y="${textY}" text-anchor="middle" fill="white" font-size="${fontSize}" font-weight="bold" font-family="Arial, sans-serif">${initials}</text>
+                </svg>
+            `;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        // Builds the Photo cell for a leaderboard row — one photo for an
+        // individual, two side-by-side for a tag team, three for a trio.
+        // Uses a simple gold border rather than the rating-based tier rings
+        // used on the rankings pages, since the leaderboard doesn't track
+        // ratings at all.
+        function buildLeaderboardImageCell(name) {
+            const members = findTeamMembersArrayShared(name, teamMembersData, nameChangesMap) || [];
+            const borderStyle = 'border:2px solid #ffd700;border-radius:50%;object-fit:cover;';
+
+            if (members.length === 3) {
+                const imgs = members.map(m => {
+                    const slug = createSlug(m);
+                    const fallback = createInitialsCircle(generateTrioInitial(m), 35);
+                    return `<img src="images/wrestlers/${slug}.jpg" alt="${m}" style="width:35px;height:35px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
+                }).join('');
+                return `<div style="display:flex;gap:2px;justify-content:center;">${imgs}</div>`;
+            }
+
+            if (members.length === 2) {
+                const imgs = members.map(m => {
+                    const slug = createSlug(m);
+                    const fallback = createInitialsCircle(generateTagInitials(m), 50);
+                    return `<img src="images/wrestlers/${slug}.jpg" alt="${m}" style="width:50px;height:50px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
+                }).join('');
+                return `<div style="display:flex;gap:2px;justify-content:center;">${imgs}</div>`;
+            }
+
+            const slug = createSlug(name);
+            const fallback = createInitialsCircle(generateInitials(name), 60);
+            return `<img src="images/wrestlers/${slug}.jpg" alt="${name}" style="width:60px;height:60px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
+        }
+
         function getDivisionDisplayLabel(raw) {
             return raw === 'Tag' ? "Men's Tag" : raw;
         }
@@ -1046,7 +1153,7 @@
             const showMoreBtn = document.getElementById('leaderboardShowMoreBtn');
 
             if (rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No data available for this filter.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No data available for this filter.</td></tr>';
                 showMoreBtn.style.display = 'none';
                 return;
             }
@@ -1056,6 +1163,7 @@
             tbody.innerHTML = toDisplay.map((row, i) => `
                 <tr>
                     <td class="rank-cell">${i + 1}</td>
+                    <td class="wrestler-image">${buildLeaderboardImageCell(row.name)}</td>
                     <td><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.name}</a></td>
                     <td>${row.divisions}</td>
                     <td class="rating-cell">${row.count}</td>
