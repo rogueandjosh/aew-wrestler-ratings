@@ -237,6 +237,13 @@
             #archiveFiltersToggle { display: block !important; }
             #archiveFiltersPanel { display: none; }
             #archiveFiltersPanel.expanded { display: block; }
+            #archiveTable .col-week { width: 14% !important; }
+            #archiveTable .col-rating { width: 9% !important; }
+            .division-checkboxes {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px 14px;
+            }
         }
 
         .tt:not(th):not(td) { position: relative; display: inline-block; }
@@ -837,9 +844,9 @@
         function renderArchiveTableHeader() {
             const headerRow = document.getElementById('archiveTableHeaderRow');
             const cells = {
-                week: visibleColumns.week ? `<th class="sortable" onclick="sortArchive('date')">Week</th>` : '',
+                week: visibleColumns.week ? `<th class="sortable col-week" onclick="sortArchive('date')">Week</th>` : '',
                 show: `<th class="sortable col-show" onclick="sortArchive('show')">Show</th>`,
-                rating: `<th class="sortable tt" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
+                rating: `<th class="sortable tt col-rating" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
                 wrestlers: `<th class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`,
                 division: visibleColumns.division ? `<th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>` : '',
                 matchType: visibleColumns.matchType ? `<th class="sortable" onclick="sortArchive('matchType')">Match Type</th>` : '',
@@ -1175,9 +1182,9 @@
                     : 'N/A';
 
                 const cells = {
-                    week: visibleColumns.week ? `<td>${e.week || dateStr}</td>` : '',
+                    week: visibleColumns.week ? `<td class="col-week">${e.week || dateStr}</td>` : '',
                     show: `<td class="col-show">${e.show || 'N/A'}</td>`,
-                    rating: `<td class="rating-cell">${(e.rating || 0).toFixed(2)}</td>`,
+                    rating: `<td class="rating-cell col-rating">${(e.rating || 0).toFixed(2)}</td>`,
                     wrestlers: `<td class="col-wrestlers">${wrestlersHtml}</td>`,
                     division: visibleColumns.division ? `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>` : '',
                     matchType: visibleColumns.matchType ? `<td>${e.matchType || 'N/A'}</td>` : '',
