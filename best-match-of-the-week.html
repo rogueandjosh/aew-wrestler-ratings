@@ -173,11 +173,13 @@
         .empty-state { text-align: center; padding: 30px; color: #888; }
 
         .table-scroll { overflow-x: auto; }
+        .scroll-hint { display: none; color: #b8b8b8; font-size: 0.8em; margin-bottom: 10px; }
 
         @media (max-width: 700px) {
             header { padding: 20px; }
             h1 { font-size: 1.6em; }
             table { font-size: 0.85em; }
+            .scroll-hint { display: block; }
         }
     </style>
 </head>
@@ -228,6 +230,7 @@
                     <label>Division</label>
                     <div class="division-checkboxes" id="archiveDivisionFilters"></div>
                 </div>
+                <p class="scroll-hint">↔️ Swipe to see more columns</p>
                 <div class="table-scroll">
                     <table id="archiveTable">
                         <thead>
@@ -264,20 +267,25 @@
                     <label>Division</label>
                     <div class="division-checkboxes" id="leaderboardDivisionFilters"></div>
                 </div>
+                <p class="scroll-hint">↔️ Swipe to see more columns</p>
                 <div class="table-scroll">
                     <table id="leaderboardTable">
                         <thead>
                             <tr>
                                 <th class="rank-cell">#</th>
-                                <th>Name</th>
-                                <th>Best Match Count</th>
+                                <th class="sortable" onclick="sortLeaderboard('name')">Name</th>
+                                <th>Division</th>
+                                <th class="sortable" onclick="sortLeaderboard('count')">Best Match Count</th>
+                                <th>Total Matches</th>
+                                <th class="sortable" onclick="sortLeaderboard('percentage')">Best Match %</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardTableBody">
-                            <tr><td colspan="3" class="loading">Loading leaderboard…</td></tr>
+                            <tr><td colspan="6" class="loading">Loading leaderboard…</td></tr>
                         </tbody>
                     </table>
                 </div>
+                <button class="show-more-btn" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" style="display: none;">Show All</button>
             </div>
         </div>
     </div>
@@ -351,6 +359,10 @@
 
         const ALL_DIVISIONS = ["Men's", "Women's", "Tag", "Women's Tag", "Trios"];
         let archiveDisplayCount = 30;
+        let leaderboardDisplayCount = 50;
+        let leaderboardSortColumn = 'count';
+        let leaderboardSortDirection = 'desc';
+        let leaderboardRows = [];
 
         async function init() {
             try {
@@ -407,10 +419,15 @@
                 renderArchiveTable();
                 renderLeaderboard();
 
-                const lastEl = document.getElementById('lastUpdated');
-                if (lastEl && allEntries.length > 0) {
-                    lastEl.textContent = `${allEntries.length} weeks tracked`;
-                }
+                fetch('current-rankings.json')
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (data && data.lastUpdated) {
+                            const lastEl = document.getElementById('lastUpdated');
+                            if (lastEl) lastEl.textContent = `Last Updated: ${data.lastUpdated}`;
+                        }
+                    })
+                    .catch(() => {});
             } catch (error) {
                 console.error('Failed to load Best Match archive:', error);
                 document.getElementById('archiveTableBody').innerHTML =
@@ -420,12 +437,19 @@
 
         function populateDivisionCheckboxes(containerId, onChangeHandlerName) {
             const container = document.getElementById(containerId);
-            container.innerHTML = ALL_DIVISIONS.map(div => `
+            const allOption = `
+                <label>
+                    <input type="checkbox" value="__ALL__" checked onchange="${onChangeHandlerName}()">
+                    <strong>All</strong>
+                </label>
+            `;
+            const divisionOptions = ALL_DIVISIONS.map(div => `
                 <label>
                     <input type="checkbox" value="${div}" checked onchange="${onChangeHandlerName}()">
                     ${div}
                 </label>
             `).join('');
+            container.innerHTML = allOption + divisionOptions;
         }
 
         function onArchiveDivisionChange() {
@@ -437,9 +461,18 @@
             renderLeaderboard();
         }
 
+        // Returns null if "All" is checked (no filtering, show everything).
+        // Otherwise returns the array of specifically-checked divisions —
+        // which may be empty if nothing is checked.
         function getSelectedDivisions(containerId) {
             const container = document.getElementById(containerId);
-            return [...container.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+            const allCheckbox = container.querySelector('input[value="__ALL__"]');
+            if (allCheckbox && allCheckbox.checked) {
+                return null;
+            }
+            return [...container.querySelectorAll('input[type="checkbox"]:checked')]
+                .map(cb => cb.value)
+                .filter(v => v !== '__ALL__');
         }
 
         function populateFilters() {
@@ -489,7 +522,7 @@
                 if (year && !(e.date && e.date.startsWith(year))) return false;
                 if (matchType && e.matchType !== matchType) return false;
                 if (stipulation && normalizeStipulation(e.stipulation) !== stipulation) return false;
-                if (e.division !== 'None' && selectedDivisions.length > 0 && !selectedDivisions.includes(e.division)) return false;
+                if (selectedDivisions !== null && e.division !== 'None' && !selectedDivisions.includes(e.division)) return false;
                 return true;
             });
         }
@@ -574,51 +607,131 @@
             };
 
             const counts = {};
+            const divisionsByName = {};
+            const totalMatchesByName = {};
             const weekRosterArray = window.weekRosterArray || [];
             const bestMatchByWeekLabel = window.bestMatchByWeekLabel || {};
 
             weekRosterArray.forEach(weekData => {
                 const weekLabel = weekData.currentWeek;
                 const weekBestMatch = bestMatchByWeekLabel[weekLabel];
-                if (!weekBestMatch) return;
 
                 ['mens', 'womens', 'menstag', 'womenstag', 'trios'].forEach(divKey => {
                     const divisionLabel = divKeyToLabel[divKey];
-                    if (selectedDivisions.length > 0 && !selectedDivisions.includes(divisionLabel)) return;
+                    if (selectedDivisions !== null && !selectedDivisions.includes(divisionLabel)) return;
 
                     const divisionData = weekData[divKey] || [];
                     divisionData.forEach(wrestler => {
                         const originalName = (wrestler.name || '').toString();
                         if (!originalName) return;
 
-                        if (isCreditedForBestMatch(divKey, originalName, weekBestMatch, teamMembersData, nameChangesMap)) {
-                            const canonicalName = (divKey === 'mens' || divKey === 'womens')
-                                ? getCanonicalName(originalName, nameChangesData?.changes || [])
-                                : originalName;
+                        const isIndividual = (divKey === 'mens' || divKey === 'womens');
+                        const canonicalName = isIndividual
+                            ? getCanonicalName(originalName, nameChangesData?.changes || [])
+                            : originalName;
+
+                        // Total matches: this field already reflects a wrestler/team's
+                        // full career total (cumulative), so the highest value seen
+                        // across all weeks is their current, correct total.
+                        const matchesVal = parseInt(wrestler.matches, 10);
+                        if (!isNaN(matchesVal)) {
+                            if (!totalMatchesByName[canonicalName] || matchesVal > totalMatchesByName[canonicalName]) {
+                                totalMatchesByName[canonicalName] = matchesVal;
+                            }
+                        }
+
+                        if (weekBestMatch && isCreditedForBestMatch(divKey, originalName, weekBestMatch, teamMembersData, nameChangesMap)) {
                             counts[canonicalName] = (counts[canonicalName] || 0) + 1;
+                            if (!divisionsByName[canonicalName]) divisionsByName[canonicalName] = new Set();
+                            divisionsByName[canonicalName].add(divisionLabel);
                         }
                     });
                 });
             });
 
-            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            leaderboardRows = Object.entries(counts).map(([name, count]) => {
+                const totalMatches = totalMatchesByName[name] || null;
+                const percentage = totalMatches ? (count / totalMatches * 100) : null;
+                return {
+                    name,
+                    count,
+                    divisions: divisionsByName[name] ? [...divisionsByName[name]].sort().join(', ') : 'N/A',
+                    totalMatches,
+                    percentage
+                };
+            });
+
+            sortAndRenderLeaderboard();
+        }
+
+        function sortLeaderboard(column) {
+            if (leaderboardSortColumn === column) {
+                leaderboardSortDirection = leaderboardSortDirection === 'desc' ? 'asc' : 'desc';
+            } else {
+                leaderboardSortColumn = column;
+                leaderboardSortDirection = column === 'name' ? 'asc' : 'desc';
+            }
+            sortAndRenderLeaderboard();
+        }
+
+        function expandLeaderboard() {
+            leaderboardDisplayCount = Infinity;
+            sortAndRenderLeaderboard();
+        }
+
+        function sortAndRenderLeaderboard() {
+            const rows = [...leaderboardRows];
+
+            rows.sort((a, b) => {
+                let valA, valB;
+                if (leaderboardSortColumn === 'name') {
+                    valA = a.name.toLowerCase();
+                    valB = b.name.toLowerCase();
+                } else if (leaderboardSortColumn === 'percentage') {
+                    valA = a.percentage ?? -1;
+                    valB = b.percentage ?? -1;
+                } else {
+                    valA = a.count;
+                    valB = b.count;
+                }
+                if (valA < valB) return leaderboardSortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return leaderboardSortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
 
             const tbody = document.getElementById('leaderboardTableBody');
-            if (sorted.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data available.</td></tr>';
+            const showMoreBtn = document.getElementById('leaderboardShowMoreBtn');
+
+            if (rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No data available for this filter.</td></tr>';
+                showMoreBtn.style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = sorted.slice(0, 50).map(([name, count], i) => `
+            const toDisplay = rows.slice(0, leaderboardDisplayCount);
+
+            tbody.innerHTML = toDisplay.map((row, i) => `
                 <tr>
                     <td class="rank-cell">${i + 1}</td>
-                    <td><a href="wrestler-stats.html?wrestler=${createSlug(name)}" style="color:#e0e0e0;text-decoration:none;">${name}</a></td>
-                    <td class="rating-cell">${count}</td>
+                    <td><a href="wrestler-stats.html?wrestler=${createSlug(row.name)}" style="color:#e0e0e0;text-decoration:none;">${row.name}</a></td>
+                    <td>${row.divisions}</td>
+                    <td class="rating-cell">${row.count}</td>
+                    <td>${row.totalMatches !== null ? row.totalMatches : 'N/A'}</td>
+                    <td>${row.percentage !== null ? row.percentage.toFixed(1) + '%' : 'N/A'}</td>
                 </tr>
             `).join('');
+
+            showMoreBtn.style.display = rows.length > leaderboardDisplayCount ? 'block' : 'none';
         }
 
         init();
     </script>
+
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
+        <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+        <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
+    </footer>
 </body>
 </html>
