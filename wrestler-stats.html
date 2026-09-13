@@ -330,6 +330,7 @@
             font-weight: bold;
             font-size: 1.1em;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
         }
 
         /* Color scale from red (0) to dark green (10) */
@@ -2443,7 +2444,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const wrestlersStr = createAllWrestlerLinks(m.opponents);
                 const wasBestMatch = isMatchBestMatchOfWeek(m);
                 const bestMatchStar = wasBestMatch
-                    ? `<span style="color:#ffd700; font-size:1.2em; margin-left:2px;" title="Best Match of the Week">⭐</span>`
+                    ? `<span style="position:absolute; top:-6px; right:-6px; color:#ffd700; font-size:0.7em; line-height:1;" title="Best Match of the Week">⭐</span>`
                     : '';
 
                 return `
