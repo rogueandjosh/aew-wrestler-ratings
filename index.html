@@ -2745,7 +2745,7 @@
         // distinctive PPV/special name is present, so two entries from the same regular
         // episode can still be recognized as "the same show" for diversity purposes.
         function extractBaseShow(text) {
-            const match = text.match(/(?:appearing on|on) (Dynamite|Collision|Rampage|Dark|Dark Elevation)\b/);
+            const match = text.match(/(?:appearing on|on) (Dynamite|Collision|Rampage|Dark|Dark Elevation|Revolution|Double or Nothing|Full Gear|All Out|Forbidden Door|WrestleDream|Worlds End|Dynasty|Redemption|Grand Slam(?::? \w+)?)\b/);
             return match ? match[1] : null;
         }
 
