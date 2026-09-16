@@ -2719,7 +2719,11 @@
         function hyperlinkNames(text) {
             if (!wrestlersIndexData) return text;
             let result = text;
-            const allNames = wrestlersIndexData.slice().sort((a, b) => b.name.length - a.name.length);
+            // Exclude combined stat-tracking entries ("Fletcher & Takeshita" etc.) — these
+            // aren't genuine standalone entities and cause partial/awkward links when only
+            // some of a group's members happen to match a registered ad-hoc pairing.
+            const eligible = wrestlersIndexData.filter(w => !w.name.includes('&'));
+            const allNames = eligible.slice().sort((a, b) => b.name.length - a.name.length);
             allNames.forEach(w => {
                 const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'g');
                 const slug = createSlug(w.name);
@@ -2750,10 +2754,17 @@
             const headline = headlines[Math.floor(Math.random() * headlines.length)];
             const headlineShow = extractSpecialShowName(headline.text);
 
-            let candidatePool = secondaries;
-            if (headlineShow) {
-                const differentShow = secondaries.filter(s => extractSpecialShowName(s.text) !== headlineShow);
-                if (differentShow.length > 0) candidatePool = differentShow;
+            let candidatePool;
+            if (secondaries.length > 0) {
+                candidatePool = secondaries;
+                if (headlineShow) {
+                    const differentShow = secondaries.filter(s => extractSpecialShowName(s.text) !== headlineShow);
+                    if (differentShow.length > 0) candidatePool = differentShow;
+                }
+            } else {
+                // No secondaries at all for this date — fall back to any OTHER headline
+                // (that wasn't picked as the main one) so the section isn't just empty.
+                candidatePool = headlines.filter(h => h !== headline);
             }
             if (candidatePool.length === 0) return { headline, secondary: null };
 
