@@ -2479,15 +2479,38 @@
             return result;
         }
 
+                function getSurname(fullName) {
+            const parts = fullName.trim().split(/\s+/);
+            return parts[parts.length - 1];
+        }
+
+        // Real team names that happen to match the generic-pairing pattern below (because
+        // the members' actual ring names are literally part of the team name) — these must
+        // still be treated as real teams, not skipped as ad-hoc pairings.
+        const TEAM_NAME_EXCEPTIONS = new Set(['The Butcher and The Blade']);
+
+        // Distinguishes a real, distinct team name ("Proud-N-Powerful," "Best Friends") from
+        // an auto-generated "Surname & Surname" stats label for a one-off team-up. Only real
+        // names should ever trigger consolidation — merging into a stats label nobody
+        // recognizes is worse than just leaving the individual names as written.
+        function isGenericPairingName(teamName, members) {
+            if (TEAM_NAME_EXCEPTIONS.has(teamName)) return false;
+            const surnames = members.map(getSurname);
+            const allSurnamesPresent = surnames.every(s => teamName.toLowerCase().includes(s.toLowerCase()));
+            const surnameLengthSum = surnames.reduce((sum, s) => sum + s.length, 0);
+            return allSurnamesPresent && teamName.length < surnameLengthSum + 15;
+        }
+
         // Builds one compiled pattern per team per name-ordering, matching the whole
         // contiguous "A & B" / "A, B" / "A and B" span as a single unit. Skips 1-member
-        // "teams" and anything larger than trios (3) as out of scope. Trios are checked
-        // before pairs so a 3-person match isn't partially consumed by a 2-person pattern.
+        // "teams," anything larger than trios (3), and generic ad-hoc pairings. Trios are
+        // checked before pairs so a 3-person match isn't partially consumed by a 2-person one.
         function buildTeamMemberLookup(teamsObj) {
             const CONNECTOR = '\\s*(?:&|,|\\band\\b)\\s*';
             const patterns = [];
             Object.entries(teamsObj || {}).forEach(([teamName, members]) => {
                 if (members.length < 2 || members.length > 3) return;
+                if (isGenericPairingName(teamName, members)) return;
                 getPermutations(members).forEach(perm => {
                     const body = perm.map(escapeRegex).join(CONNECTOR);
                     patterns.push({ teamName, size: members.length, regex: new RegExp(`\\b${body}\\b`) });
@@ -2535,14 +2558,17 @@
                 adjusted = adjusted.replace(regex, teamName);
             });
 
-            // --- Step 2: find any individuals still named after team consolidation ---
-            const namesFoundIndividually = [];
+                        // --- Step 2: find any individuals still named after team consolidation ---
+            // Deduped via Set, since a duplicate wrestler-index entry (same name, two rows)
+            // would otherwise count as two people and wrongly disable the pronoun swap below.
+            const namesFoundSet = new Set();
             wrestlersIndexData.forEach(w => {
                 if (w.isTeam) return;
                 if (new RegExp(`\\b${escapeRegex(w.name)}\\b`).test(adjusted)) {
-                    namesFoundIndividually.push(w.name);
+                    namesFoundSet.add(w.name);
                 }
             });
+            const namesFoundIndividually = Array.from(namesFoundSet);
 
             // --- Step 3: pronoun correction, only when exactly one individual is the subject ---
             if (namesFoundIndividually.length === 1) {
@@ -2553,13 +2579,11 @@
                         .replace(/\btheirs\b/g, pronoun.possessive)
                         .replace(/\btheir\b/g, pronoun.possessive)
                         .replace(/\bthemselves\b/g, reflexive)
+                        .replace(/\bthem\b/g, pronoun.object)
                         .replace(/\bThey\b/g, pronoun.subject.charAt(0).toUpperCase() + pronoun.subject.slice(1))
                         .replace(/\bthey\b/g, pronoun.subject);
                 }
             }
-
-            return adjusted;
-        }
 
         // Create URL slug from wrestler name
         function stripTrioSuffix(name) {
