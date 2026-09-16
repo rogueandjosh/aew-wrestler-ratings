@@ -1633,6 +1633,12 @@
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
+        .otd-photo-row{
+            display:flex;align-items:center;justify-content:center;gap:14px;
+            margin-bottom:14px;
+        }
+        .otd-photo-side{display:flex;}
+        .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
         .otd-teaser-body{
             font-size:1.02em;line-height:1.55;color:#fff;margin:0;
             display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
@@ -2739,6 +2745,79 @@
             return result;
         }
 
+        // Resolves a team's member list from team-members.json, with a fallback for teams
+        // that only exist as part of a rotating-member combo (e.g. "The Acclaimed" only
+        // appears as "Acclaimed & B.Gunn"/"Acclaimed & A.Gunn"/etc, never as a clean
+        // standalone entry) — takes the intersection of members across all matching
+        // variants to find the stable core duo.
+        function resolveTeamMembers(teamName, teamsData) {
+            if (teamsData[teamName]) return teamsData[teamName];
+            const core = teamName.replace(/^The\s+/i, '').trim();
+            const prefixMatches = Object.keys(teamsData).filter(k => k.includes(core));
+            if (prefixMatches.length > 0) {
+                let common = new Set(teamsData[prefixMatches[0]]);
+                for (let i = 1; i < prefixMatches.length; i++) {
+                    common = new Set([...common].filter(m => teamsData[prefixMatches[i]].includes(m)));
+                }
+                if (common.size > 0) return [...common];
+            }
+            return null;
+        }
+
+        // Finds up to `cap` wrestler/team names in the order they first appear in the
+        // text, for the photo row. Reuses the same eligible-name pool as hyperlinkNames.
+        function getMatchParticipants(text, cap) {
+            if (!wrestlersIndexData) return [];
+            const eligible = wrestlersIndexData.filter(w => !w.name.includes('&'));
+            const found = [];
+            eligible.forEach(w => {
+                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
+                const match = text.match(pattern);
+                if (match) found.push({ name: w.name, isTeam: w.isTeam, index: match.index });
+            });
+            found.sort((a, b) => a.index - b.index);
+            const seen = new Set();
+            const unique = [];
+            for (const f of found) {
+                if (!seen.has(f.name)) { seen.add(f.name); unique.push(f); }
+                if (unique.length >= cap) break;
+            }
+            return unique;
+        }
+
+        function buildPhotoRow(text) {
+            if (!wrestlersIndexData || !teamMembersData) return '';
+            const participants = getMatchParticipants(text, 4);
+            if (participants.length === 0) return '';
+
+            const photoTag = (name, slug) => {
+                const initials = generateInitials(name);
+                const initialsUrl = createInitialsCircle(initials, 45, '#ffd700');
+                return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
+                    <img src="images/wrestlers/${slug}.jpg" alt="${name}"
+                         style="width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;"
+                         onerror="this.onerror=null;this.src='${initialsUrl}';">
+                </a>`;
+            };
+
+            const sideHtml = p => {
+                if (!p.isTeam) {
+                    return `<div class="otd-photo-side">${photoTag(p.name, createSlug(p.name))}</div>`;
+                }
+                const members = resolveTeamMembers(p.name, teamMembersData.teams);
+                if (!members) {
+                    const initials = generateInitials(p.name);
+                    const initialsUrl = createInitialsCircle(initials, 45, '#ffd700');
+                    const slug = createSlug(p.name);
+                    return `<div class="otd-photo-side"><a href="wrestler-stats.html?wrestler=${slug}"><img src="${initialsUrl}" style="width:45px;height:45px;border-radius:50%;border:2px solid #ffd700;"></a></div>`;
+                }
+                const cluster = members.slice(0, 2).map(m => photoTag(m, createSlug(m))).join('');
+                return `<div class="otd-photo-side" style="display:flex;gap:4px;">${cluster}</div>`;
+            };
+
+            return `<div class="otd-photo-row">${participants.map(sideHtml).join('<span class="otd-photo-vs">vs</span>')}</div>`;
+        }
+
         // Extracts a distinctive PPV/special-episode name if one is present in the text
         // (e.g. "Sep to Remember '25 - Night 1"), so two entries can be compared for sameness.
         function extractSpecialShowName(text) {
@@ -2832,6 +2911,8 @@
             const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(fixMojibake(text))));
             const headlineHtml = process(picked.headline.text);
             const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
+            const headlinePhotoRow = buildPhotoRow(picked.headline.text);
+            const secondaryPhotoRow = picked.secondary ? buildPhotoRow(picked.secondary.text) : '';
             const dateLabel = formatOrdinalDate(today);
 
             container.innerHTML = `
@@ -2841,12 +2922,14 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                     </div>
                 </div>
+                ${headlinePhotoRow}
                 <p class="otd-teaser-body">${headlineHtml}</p>
                 <div class="otd-teaser-expandable">
                     <div class="otd-teaser-divider" style="margin-top:4px;"></div>
                     ${secondaryHtml ? `
                     <div class="otd-remember-block" style="margin-top:0;">
                         <div class="otd-mini-section-label">Do You Remember When...</div>
+                        ${secondaryPhotoRow}
                         <div class="otd-mini-headline">${secondaryHtml}</div>
                     </div>` : ''}
                     <a href="on-this-day.html" class="otd-teaser-more">Open full page for every year \u2192</a>
