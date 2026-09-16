@@ -1630,6 +1630,8 @@
         }
         .otd-teaser-date{color:#a8a394;font-size:0.95em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);}
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
+        .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
+        .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
         .otd-teaser-body{
             font-size:1.02em;line-height:1.55;color:#fff;margin:0;
@@ -2727,7 +2729,7 @@
             allNames.forEach(w => {
                 const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'g');
                 const slug = createSlug(w.name);
-                result = result.replace(pattern, `<a href="wrestler-stats.html?wrestler=${slug}" class="wrestler-link">${w.name}</a>`);
+                result = result.replace(pattern, `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${w.name}</a>`);
             });
             return result;
         }
