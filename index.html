@@ -2553,9 +2553,22 @@
 
             let adjusted = text;
 
-            // --- Step 1: team consolidation ---
+                        // --- Step 1: team consolidation ---
+            const insertedTeamNames = [];
             teamMemberLookup.patterns.forEach(({ teamName, regex }) => {
-                adjusted = adjusted.replace(regex, teamName);
+                if (regex.test(adjusted)) {
+                    adjusted = adjusted.replace(regex, teamName);
+                    if (!insertedTeamNames.includes(teamName)) insertedTeamNames.push(teamName);
+                }
+            });
+            // If two different teams both got consolidated in this same blurb, tidy up
+            // a bare comma left between them into "and" ("Team A, Team B" -> "Team A and Team B").
+            insertedTeamNames.forEach(a => {
+                insertedTeamNames.forEach(b => {
+                    if (a === b) return;
+                    const connectorPattern = new RegExp(`\\b${escapeRegex(a)}\\s*,\\s*${escapeRegex(b)}\\b`);
+                    adjusted = adjusted.replace(connectorPattern, `${a} and ${b}`);
+                });
             });
 
                         // --- Step 2: find any individuals still named after team consolidation ---
