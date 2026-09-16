@@ -2727,7 +2727,12 @@
             const eligible = wrestlersIndexData.filter(w => !w.name.includes('&'));
             const allNames = eligible.slice().sort((a, b) => b.name.length - a.name.length);
             allNames.forEach(w => {
-                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'g');
+                // No 'g' flag — only the first mention of each name gets linked, so a
+                // name repeated later in the same blurb stays plain text rather than
+                // linking every single occurrence. Still case-insensitive ('i'), so it
+                // catches inconsistent capitalization (e.g. "Swerve in our Glory" vs
+                // "Swerve In Our Glory") and always displays the registered casing.
+                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
                 const slug = createSlug(w.name);
                 result = result.replace(pattern, `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${w.name}</a>`);
             });
