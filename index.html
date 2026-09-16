@@ -2570,7 +2570,7 @@
             });
             const namesFoundIndividually = Array.from(namesFoundSet);
 
-            // --- Step 3: pronoun correction, only when exactly one individual is the subject ---
+                        // --- Step 3: pronoun correction, only when exactly one individual is the subject ---
             if (namesFoundIndividually.length === 1) {
                 const pronoun = getPronounForName(namesFoundIndividually[0], wrestlersIndexData);
                 if (pronoun) {
@@ -2584,6 +2584,9 @@
                         .replace(/\bthey\b/g, pronoun.subject);
                 }
             }
+
+            return adjusted;
+        }
 
         // Create URL slug from wrestler name
         function stripTrioSuffix(name) {
