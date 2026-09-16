@@ -2741,11 +2741,31 @@
             return match ? match[1].trim() : null;
         }
 
+        // Falls back to the plain weekly show name (Dynamite/Collision/Rampage/etc.) when no
+        // distinctive PPV/special name is present, so two entries from the same regular
+        // episode can still be recognized as "the same show" for diversity purposes.
+        function extractBaseShow(text) {
+            const match = text.match(/(?:appearing on|on) (Dynamite|Collision|Rampage|Dark|Dark Elevation)\b/);
+            return match ? match[1] : null;
+        }
+
+        function getShowKey(text) {
+            return extractSpecialShowName(text) || extractBaseShow(text);
+        }
+
         function stripShowRatingClause(text) {
             return text
                 .replace(/,?\s*on an outstanding [^,.]+ show that earned an overall rating of \d+\.\d+/g, '')
                 .replace(/\s*[—-]?\s*part of (?:a |that year's |the )?stacked [^,.]+ card, rated \d+\.\d+ overall/g, '')
                 .trim();
+        }
+
+        // Fixes the '?' mojibake that sometimes appears where an em-dash should be, from
+        // encoding loss during the Google Sheets -> GitHub export. Only targets the specific
+        // " ? " pattern (space-question mark-space), so a genuine question mark at the end
+        // of a real question ("...right?") is never touched.
+        function fixMojibake(text) {
+            return text.replace(/ \? /g, ' — ');
         }
 
         function pickOnThisDayContent(otdData) {
@@ -2754,13 +2774,14 @@
             if (headlines.length === 0) return null;
 
             const headline = headlines[Math.floor(Math.random() * headlines.length)];
-            const headlineShow = extractSpecialShowName(headline.text);
+            const headlineSpecialShow = extractSpecialShowName(headline.text);
+            const headlineShowKey = getShowKey(headline.text);
 
             let candidatePool;
             if (secondaries.length > 0) {
                 candidatePool = secondaries;
-                if (headlineShow) {
-                    const differentShow = secondaries.filter(s => extractSpecialShowName(s.text) !== headlineShow);
+                if (headlineShowKey) {
+                    const differentShow = secondaries.filter(s => getShowKey(s.text) !== headlineShowKey);
                     if (differentShow.length > 0) candidatePool = differentShow;
                 }
             } else {
@@ -2771,7 +2792,7 @@
             if (candidatePool.length === 0) return { headline, secondary: null };
 
             let secondary = candidatePool[Math.floor(Math.random() * candidatePool.length)];
-            if (headlineShow && extractSpecialShowName(secondary.text) === headlineShow) {
+            if (headlineSpecialShow && extractSpecialShowName(secondary.text) === headlineSpecialShow) {
                 secondary = { ...secondary, text: stripShowRatingClause(secondary.text) };
             }
             return { headline, secondary };
@@ -2803,7 +2824,7 @@
             const picked = pickOnThisDayContent(otdData);
             if (!picked) return;
 
-            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(text)));
+            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(fixMojibake(text))));
             const headlineHtml = process(picked.headline.text);
             const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
             const dateLabel = formatOrdinalDate(today);
