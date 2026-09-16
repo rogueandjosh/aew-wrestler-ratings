@@ -2561,7 +2561,7 @@
                     if (!insertedTeamNames.includes(teamName)) insertedTeamNames.push(teamName);
                 }
             });
-            // If two different teams both got consolidated in this same blurb, tidy up
+                        // If two different teams both got consolidated in this same blurb, tidy up
             // a bare comma left between them into "and" ("Team A, Team B" -> "Team A and Team B").
             insertedTeamNames.forEach(a => {
                 insertedTeamNames.forEach(b => {
@@ -2570,6 +2570,16 @@
                     adjusted = adjusted.replace(connectorPattern, `${a} and ${b}`);
                 });
             });
+
+            // If the sentence already named a team explicitly AND then listed its members
+            // right after (e.g. "The Brawling Birds — Alex Windsor and Jamie Hayter —"), the
+            // members just got consolidated back into the same team name, leaving a duplicate
+            // sitting right next to itself. Collapse "Team — Team —" / "Team (Team)" into one.
+            insertedTeamNames.forEach(teamName => {
+                const dupPattern = new RegExp(`${escapeRegex(teamName)}\\s*[—\\-(]\\s*${escapeRegex(teamName)}\\s*[—\\-)]?\\s*`);
+                adjusted = adjusted.replace(dupPattern, teamName + ' ');
+            });
+            adjusted = adjusted.replace(/\s{2,}/g, ' ').trim();
 
                         // --- Step 2: find any individuals still named after team consolidation ---
             // Deduped via Set, since a duplicate wrestler-index entry (same name, two rows)
