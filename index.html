@@ -1983,6 +1983,8 @@
         let currentSortColumn = 'peak';
         let nameChangesData = null;
         let teamMembersData = null;
+        let wrestlersIndexData = null; // for on-this-day pronoun/team adjustments — not yet used in any render
+        let teamMemberLookup = null;   // built lazily from teamMembersData the first time it's needed
         let factionsData = null;
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
         const TOP_N_WRESTLERS = 30; // Show top N wrestlers initially
@@ -2429,6 +2431,7 @@
             }
         }
         // Load factions data
+                // Load factions data
         async function loadFactions() {
             if (factionsData) return factionsData;
             try {
@@ -2441,6 +2444,118 @@
                 factionsData = { factions: [] };
                 return factionsData;
             }
+        }
+
+        // Load wrestlers index (name, division, isTeam) — used for on-this-day pronoun/team adjustments.
+        // Not called anywhere yet; wired up in advance of the on-this-day feature build.
+        async function loadWrestlersIndex() {
+            if (wrestlersIndexData) return wrestlersIndexData;
+            try {
+                const response = await fetch('wrestlers/index.json');
+                wrestlersIndexData = await response.json();
+                console.log('✅ Loaded wrestlers index:', wrestlersIndexData.length);
+                return wrestlersIndexData;
+            } catch (error) {
+                console.warn('⚠️ Wrestlers index not found, pronoun/team adjustments will be skipped');
+                wrestlersIndexData = [];
+                return wrestlersIndexData;
+            }
+        }
+
+        // Small helper: escape a string for safe use inside a RegExp
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Builds a member-name -> team-name lookup and a team-name -> members list,
+        // from the { teams: { "Team Name": [members] } } shape of team-members.json.
+        function buildTeamMemberLookup(teamsObj) {
+            const lookup = {
+                memberToTeam: new Map(),
+                teamMembers: new Map()
+            };
+            Object.entries(teamsObj || {}).forEach(([teamName, members]) => {
+                lookup.teamMembers.set(teamName, members);
+                members.forEach(member => lookup.memberToTeam.set(member, teamName));
+            });
+            return lookup;
+        }
+
+        // Returns { subject, object, possessive } for a recognized individual (Men/Women only),
+        // or null — null always means "leave the text's existing 'their' as-is."
+        function getPronounForName(name, wrestlersIndex) {
+            const entry = wrestlersIndex.find(w => w.name === name);
+            if (!entry || entry.isTeam) return null;
+            if (entry.division === 'Men') return { subject: 'he', object: 'him', possessive: 'his' };
+            if (entry.division === 'Women') return { subject: 'she', object: 'her', possessive: 'her' };
+            return null; // Men Tag / Women Tag / Trios / unrecognized division -> stays "their"
+        }
+
+        /**
+         * Applies the two on-this-day display adjustments to a blurb's text:
+         *   1. Team consolidation — if every member of a known team is named in the text,
+         *      collapse those individual mentions into the team name (never both).
+         *   2. Pronoun correction — if exactly one individual (non-team) wrestler remains as
+         *      the clear subject after step 1, swap "their"/"they"/"theirs"/"themselves" for
+         *      the correct he/she form based on their division. Falls back to "their" whenever
+         *      a name isn't recognized or belongs to a team/trio, so unindexed or new names
+         *      never break.
+         *
+         * Requires wrestlersIndexData and teamMembersData to already be loaded — returns the
+         * text unchanged if either hasn't loaded yet. Not called anywhere yet.
+         */
+        function applyOnThisDayTextAdjustments(text) {
+            if (!wrestlersIndexData || !teamMembersData) return text;
+
+            if (!teamMemberLookup) {
+                teamMemberLookup = buildTeamMemberLookup(teamMembersData.teams);
+            }
+
+            let adjusted = text;
+
+            // --- Step 1: team consolidation ---
+            teamMemberLookup.teamMembers.forEach((members, teamName) => {
+                const allPresent = members.every(member =>
+                    new RegExp(`\\b${escapeRegex(member)}\\b`).test(adjusted)
+                );
+                if (!allPresent) return;
+
+                members.forEach((member, i) => {
+                    const pattern = new RegExp(`\\b${escapeRegex(member)}\\b`, 'g');
+                    adjusted = adjusted.replace(pattern, i === 0 ? teamName : '');
+                });
+                adjusted = adjusted
+                    .replace(/\s*&\s*&\s*/g, ' & ')
+                    .replace(/\s*,\s*,\s*/g, ', ')
+                    .replace(/(\s*&\s*|\s*,\s*)(?=[.,;]|$)/g, '')
+                    .replace(/\s{2,}/g, ' ')
+                    .trim();
+            });
+
+            // --- Step 2: find any individuals still named after team consolidation ---
+            const namesFoundIndividually = [];
+            wrestlersIndexData.forEach(w => {
+                if (w.isTeam) return;
+                if (new RegExp(`\\b${escapeRegex(w.name)}\\b`).test(adjusted)) {
+                    namesFoundIndividually.push(w.name);
+                }
+            });
+
+            // --- Step 3: pronoun correction, only when exactly one individual is the subject ---
+            if (namesFoundIndividually.length === 1) {
+                const pronoun = getPronounForName(namesFoundIndividually[0], wrestlersIndexData);
+                if (pronoun) {
+                    const reflexive = pronoun.object === 'him' ? 'himself' : 'herself';
+                    adjusted = adjusted
+                        .replace(/\btheirs\b/g, pronoun.possessive)
+                        .replace(/\btheir\b/g, pronoun.possessive)
+                        .replace(/\bthemselves\b/g, reflexive)
+                        .replace(/\bThey\b/g, pronoun.subject.charAt(0).toUpperCase() + pronoun.subject.slice(1))
+                        .replace(/\bthey\b/g, pronoun.subject);
+                }
+            }
+
+            return adjusted;
         }
 
         // Create URL slug from wrestler name
