@@ -2467,19 +2467,36 @@
             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        // Builds a member-name -> team-name lookup and a team-name -> members list,
-        // from the { teams: { "Team Name": [members] } } shape of team-members.json.
-        function buildTeamMemberLookup(teamsObj) {
-            const lookup = {
-                memberToTeam: new Map(),
-                teamMembers: new Map()
-            };
-            Object.entries(teamsObj || {}).forEach(([teamName, members]) => {
-                lookup.teamMembers.set(teamName, members);
-                members.forEach(member => lookup.memberToTeam.set(member, teamName));
+                // Generates every ordering of an array (so "Ortiz & Santana" and "Santana & Ortiz"
+        // both match the same team, regardless of how the blurb happened to list them).
+        function getPermutations(arr) {
+            if (arr.length <= 1) return [arr];
+            const result = [];
+            arr.forEach((item, i) => {
+                const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+                getPermutations(rest).forEach(perm => result.push([item, ...perm]));
             });
-            return lookup;
+            return result;
         }
+
+        // Builds one compiled pattern per team per name-ordering, matching the whole
+        // contiguous "A & B" / "A, B" / "A and B" span as a single unit. Skips 1-member
+        // "teams" and anything larger than trios (3) as out of scope. Trios are checked
+        // before pairs so a 3-person match isn't partially consumed by a 2-person pattern.
+        function buildTeamMemberLookup(teamsObj) {
+            const CONNECTOR = '\\s*(?:&|,|\\band\\b)\\s*';
+            const patterns = [];
+            Object.entries(teamsObj || {}).forEach(([teamName, members]) => {
+                if (members.length < 2 || members.length > 3) return;
+                getPermutations(members).forEach(perm => {
+                    const body = perm.map(escapeRegex).join(CONNECTOR);
+                    patterns.push({ teamName, size: members.length, regex: new RegExp(`\\b${body}\\b`) });
+                });
+            });
+            patterns.sort((a, b) => b.size - a.size);
+            return { patterns };
+        }
+        
 
         // Returns { subject, object, possessive } for a recognized individual (Men/Women only),
         // or null — null always means "leave the text's existing 'their' as-is."
@@ -2507,29 +2524,15 @@
         function applyOnThisDayTextAdjustments(text) {
             if (!wrestlersIndexData || !teamMembersData) return text;
 
-            if (!teamMemberLookup) {
+                        if (!teamMemberLookup) {
                 teamMemberLookup = buildTeamMemberLookup(teamMembersData.teams);
             }
 
             let adjusted = text;
 
             // --- Step 1: team consolidation ---
-            teamMemberLookup.teamMembers.forEach((members, teamName) => {
-                const allPresent = members.every(member =>
-                    new RegExp(`\\b${escapeRegex(member)}\\b`).test(adjusted)
-                );
-                if (!allPresent) return;
-
-                members.forEach((member, i) => {
-                    const pattern = new RegExp(`\\b${escapeRegex(member)}\\b`, 'g');
-                    adjusted = adjusted.replace(pattern, i === 0 ? teamName : '');
-                });
-                adjusted = adjusted
-                    .replace(/\s*&\s*&\s*/g, ' & ')
-                    .replace(/\s*,\s*,\s*/g, ', ')
-                    .replace(/(\s*&\s*|\s*,\s*)(?=[.,;]|$)/g, '')
-                    .replace(/\s{2,}/g, ' ')
-                    .trim();
+            teamMemberLookup.patterns.forEach(({ teamName, regex }) => {
+                adjusted = adjusted.replace(regex, teamName);
             });
 
             // --- Step 2: find any individuals still named after team consolidation ---
