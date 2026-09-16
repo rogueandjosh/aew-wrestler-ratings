@@ -1605,6 +1605,82 @@
         .analysis-text a:hover {
             text-decoration: underline;
         }
+
+        /* ===== On This Day teaser widget ===== */
+        .otd-teaser{
+            background:rgba(255,215,0,0.05);
+            border:2px solid #ffd700;
+            border-radius:14px;
+            padding:22px 26px;
+            margin-bottom:32px;
+            position:relative;
+            overflow:hidden;
+        }
+        .otd-teaser::before{
+            content:"";position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,transparent,#ffd700,transparent);
+        }
+        .otd-teaser-head{
+            display:flex;align-items:baseline;justify-content:space-between;
+            margin-bottom:16px;flex-wrap:wrap;gap:8px;cursor:pointer;
+        }
+        .otd-teaser-title{
+            font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
+            display:flex;align-items:center;gap:10px;
+        }
+        .otd-teaser-date{color:#a8a394;font-size:0.95em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);}
+        .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
+        .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
+        .otd-teaser-body{
+            font-size:1.02em;line-height:1.55;color:#fff;margin:0;
+            display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
+            overflow:hidden;text-overflow:ellipsis;
+        }
+        .otd-teaser.expanded .otd-teaser-body{
+            -webkit-line-clamp:unset;display:block;overflow:visible;
+        }
+        .otd-teaser-more{
+            display:inline-block;margin-top:14px;color:#ffd700;text-decoration:none;
+            font-weight:bold;font-size:0.88em;border-bottom:1px solid rgba(255,215,0,0.4);
+            padding-bottom:2px;transition:all .2s;
+        }
+        .otd-teaser-more:hover{border-color:#ffd700;}
+
+        .otd-rating{font-weight:bold;}
+        .rating-excellent{color:#4ade80;} /* 9.0+ */
+        .rating-great{color:#86efac;}     /* 8.0-8.99 */
+        .rating-good{color:#a3e635;}      /* 7.0-7.99 */
+        .rating-average{color:#fbbf24;}   /* 6.0-6.99 */
+        .rating-below{color:#fb923c;}     /* 5.0-5.99 */
+        .rating-poor{color:#f87171;}      /* under 5.0 */
+
+        .otd-expand-btn{
+            background:rgba(255,255,255,0.08);border:2px solid #ffd700;color:#ffd700;
+            width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;cursor:pointer;transition:all .25s ease;flex-shrink:0;
+            font-size:0.85em;
+        }
+        .otd-expand-btn:hover{background:rgba(255,215,0,0.18);}
+        .otd-expand-btn svg{transition:transform .3s ease;}
+        .otd-teaser.expanded .otd-expand-btn svg{transform:rotate(180deg);}
+
+        .otd-teaser-expandable{
+            max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease,margin-top .4s ease;
+        }
+        .otd-teaser.expanded .otd-teaser-expandable{
+            max-height:900px;opacity:1;margin-top:18px;
+        }
+        .otd-teaser-divider{
+            height:1px;background:rgba(255,215,0,0.2);margin-bottom:18px;
+        }
+        .otd-mini-section-label{
+            color:#ffd700;font-family:'Amaranth',sans-serif;font-size:1.15em;
+            margin-bottom:10px;
+        }
+        .otd-mini-headline{
+            font-size:1.02em;line-height:1.55;color:#fff;margin-bottom:14px;
+        }
+        .otd-remember-block{margin-top:20px;}
     </style>
 </head>
 <body>
@@ -1742,6 +1818,8 @@
                 </div>
             </div>
         </header>
+
+        <div class="otd-teaser" id="teaserCard" style="display:none;"></div>
 
         <!-- Weekly Analysis Banner -->
         <div id="analysisBanner" class="analysis-banner" style="display:none;">
@@ -2611,6 +2689,133 @@
             return adjusted;
         }
 
+        // ===== On This Day teaser widget — display helpers =====
+        function formatOrdinalDate(date) {
+            const day = date.getDate();
+            const month = date.toLocaleString('en-GB', { month: 'long' });
+            const suffix = (day % 10 === 1 && day !== 11) ? 'st'
+                         : (day % 10 === 2 && day !== 12) ? 'nd'
+                         : (day % 10 === 3 && day !== 13) ? 'rd'
+                         : 'th';
+            return `${day}${suffix} ${month}`;
+        }
+
+        function getRatingColorClass(rating) {
+            if (rating >= 9) return 'rating-excellent';
+            if (rating >= 8) return 'rating-great';
+            if (rating >= 7) return 'rating-good';
+            if (rating >= 6) return 'rating-average';
+            if (rating >= 5) return 'rating-below';
+            return 'rating-poor';
+        }
+
+        function colorCodeRatings(text) {
+            const wrap = num => `<span class="otd-rating ${getRatingColorClass(parseFloat(num))}">${num}</span>`;
+            return text
+                .replace(/\brated (\d+\.\d+)/g, (m, num) => `rated ${wrap(num)}`)
+                .replace(/\brating of (\d+\.\d+)/g, (m, num) => `rating of ${wrap(num)}`);
+        }
+
+        function hyperlinkNames(text) {
+            if (!wrestlersIndexData) return text;
+            let result = text;
+            const allNames = wrestlersIndexData.slice().sort((a, b) => b.name.length - a.name.length);
+            allNames.forEach(w => {
+                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'g');
+                const slug = createSlug(w.name);
+                result = result.replace(pattern, `<a href="wrestler-stats.html?wrestler=${slug}" class="wrestler-link">${w.name}</a>`);
+            });
+            return result;
+        }
+
+        // Extracts a distinctive PPV/special-episode name if one is present in the text
+        // (e.g. "Sep to Remember '25 - Night 1"), so two entries can be compared for sameness.
+        function extractSpecialShowName(text) {
+            const match = text.match(/([A-Z][A-Za-z0-9:'\u2019\- ]+? '\d{2}(?:\s*-\s*Night\s*\d+)?)/);
+            return match ? match[1].trim() : null;
+        }
+
+        function stripShowRatingClause(text) {
+            return text
+                .replace(/,?\s*on an outstanding [^,.]+ show that earned an overall rating of \d+\.\d+/g, '')
+                .replace(/\s*[—-]?\s*part of (?:a |that year's |the )?stacked [^,.]+ card, rated \d+\.\d+ overall/g, '')
+                .trim();
+        }
+
+        function pickOnThisDayContent(otdData) {
+            const headlines = otdData.headlines || [];
+            const secondaries = (otdData.secondaries || []).slice();
+            if (headlines.length === 0) return null;
+
+            const headline = headlines[Math.floor(Math.random() * headlines.length)];
+            const headlineShow = extractSpecialShowName(headline.text);
+
+            let candidatePool = secondaries;
+            if (headlineShow) {
+                const differentShow = secondaries.filter(s => extractSpecialShowName(s.text) !== headlineShow);
+                if (differentShow.length > 0) candidatePool = differentShow;
+            }
+            if (candidatePool.length === 0) return { headline, secondary: null };
+
+            let secondary = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+            if (headlineShow && extractSpecialShowName(secondary.text) === headlineShow) {
+                secondary = { ...secondary, text: stripShowRatingClause(secondary.text) };
+            }
+            return { headline, secondary };
+        }
+
+        function toggleTeaser() {
+            document.getElementById('teaserCard').classList.toggle('expanded');
+        }
+
+        async function renderOnThisDayTeaser() {
+            const container = document.getElementById('teaserCard');
+            if (!container) return;
+
+            const today = new Date();
+            const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+            let otdData;
+            try {
+                const response = await fetch(`on-this-day-daily/${mmdd}.json`);
+                if (!response.ok) throw new Error('not found');
+                otdData = await response.json();
+            } catch (error) {
+                console.warn('\u26a0\ufe0f No On This Day data for', mmdd);
+                return;
+            }
+
+            await Promise.all([loadWrestlersIndex(), loadTeamMembers()]);
+
+            const picked = pickOnThisDayContent(otdData);
+            if (!picked) return;
+
+            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(text)));
+            const headlineHtml = process(picked.headline.text);
+            const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
+            const dateLabel = formatOrdinalDate(today);
+
+            container.innerHTML = `
+                <div class="otd-teaser-head" onclick="toggleTeaser()">
+                    <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
+                    <div class="otd-expand-btn" title="Show more">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </div>
+                <p class="otd-teaser-body">${headlineHtml}</p>
+                <div class="otd-teaser-expandable">
+                    <div class="otd-teaser-divider" style="margin-top:4px;"></div>
+                    ${secondaryHtml ? `
+                    <div class="otd-remember-block" style="margin-top:0;">
+                        <div class="otd-mini-section-label">Do You Remember When...</div>
+                        <div class="otd-mini-headline">${secondaryHtml}</div>
+                    </div>` : ''}
+                    <a href="on-this-day.html" class="otd-teaser-more">Open full page for every year \u2192</a>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
         // Create URL slug from wrestler name
         function stripTrioSuffix(name) {
             return name.replace(/\s*\(Trio\)\s*/gi, '').trim();
@@ -3061,6 +3266,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
+            renderOnThisDayTeaser();
             
             // Load name changes (don't block on failure)
             try {
