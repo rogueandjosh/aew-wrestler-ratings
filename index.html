@@ -1621,14 +1621,20 @@
             background:linear-gradient(90deg,transparent,#ffd700,transparent);
         }
         .otd-teaser-head{
-            display:flex;align-items:baseline;justify-content:space-between;
-            margin-bottom:16px;flex-wrap:wrap;gap:8px;cursor:pointer;
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:16px;flex-wrap:nowrap;gap:8px;cursor:pointer;
         }
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
-            display:flex;align-items:center;gap:10px;
+            display:flex;align-items:center;gap:10px;min-width:0;
         }
-        .otd-teaser-date{color:#a8a394;font-size:0.95em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);}
+        .otd-teaser-date{color:#a8a394;font-size:0.95em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);white-space:nowrap;}
+        @media (max-width:480px){
+            .otd-teaser-title{font-size:0.95em;gap:6px;}
+            .otd-teaser-date{font-size:0.78em;}
+            .otd-teaser-body{font-size:0.92em;}
+            .otd-mini-headline{font-size:0.92em;}
+        }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
@@ -1639,6 +1645,13 @@
         }
         .otd-photo-side{display:flex;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
+        .otd-photo-img{
+            width:45px;height:45px;border-radius:50%;object-fit:cover;
+            border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;
+        }
+        @media (min-width:768px){
+            .otd-photo-img{width:60px;height:60px;}
+        }
         .otd-teaser-body{
             font-size:1.02em;line-height:1.55;color:#fff;margin:0;
             display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
@@ -2792,10 +2805,9 @@
 
             const photoTag = (name, slug) => {
                 const initials = generateInitials(name);
-                const initialsUrl = createInitialsCircle(initials, 45, '#ffd700');
+                const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
                 return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
-                    <img src="images/wrestlers/${slug}.jpg" alt="${name}"
-                         style="width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;"
+                    <img class="otd-photo-img" src="images/wrestlers/${slug}.jpg" alt="${name}"
                          onerror="this.onerror=null;this.src='${initialsUrl}';">
                 </a>`;
             };
@@ -2807,9 +2819,9 @@
                 const members = resolveTeamMembers(p.name, teamMembersData.teams);
                 if (!members) {
                     const initials = generateInitials(p.name);
-                    const initialsUrl = createInitialsCircle(initials, 45, '#ffd700');
+                    const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
                     const slug = createSlug(p.name);
-                    return `<div class="otd-photo-side"><a href="wrestler-stats.html?wrestler=${slug}"><img src="${initialsUrl}" style="width:45px;height:45px;border-radius:50%;border:2px solid #ffd700;"></a></div>`;
+                    return `<div class="otd-photo-side"><a href="wrestler-stats.html?wrestler=${slug}"><img class="otd-photo-img" src="${initialsUrl}"></a></div>`;
                 }
                 const cluster = members.slice(0, 2).map(m => photoTag(m, createSlug(m))).join('');
                 return `<div class="otd-photo-side" style="display:flex;gap:4px;">${cluster}</div>`;
