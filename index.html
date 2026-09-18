@@ -2805,7 +2805,19 @@
 
         function buildPhotoRow(text) {
             if (!wrestlersIndexData || !teamMembersData) return '';
-            const participants = getMatchParticipants(text, 12);
+            let participants = getMatchParticipants(text, 12);
+            if (participants.length === 0) return '';
+
+            // Resolve each team's members once, then drop any individual participant who's
+            // already represented inside another participant's team cluster (avoids showing
+            // e.g. "Max Caster" both inside The Acclaimed's cluster AND as his own entry).
+            const teamMemberSets = new Map();
+            participants.filter(p => p.isTeam).forEach(p => {
+                const members = resolveTeamMembers(p.name, teamMembersData.teams);
+                if (members) teamMemberSets.set(p.name, members);
+            });
+            const clusteredMembers = new Set([...teamMemberSets.values()].flat());
+            participants = participants.filter(p => p.isTeam || !clusteredMembers.has(p.name));
             if (participants.length === 0) return '';
 
             const photoTag = (name, slug) => {
@@ -2821,7 +2833,7 @@
                 if (!p.isTeam) {
                     return `<div class="otd-photo-side">${photoTag(p.name, createSlug(p.name))}</div>`;
                 }
-                const members = resolveTeamMembers(p.name, teamMembersData.teams);
+                const members = teamMemberSets.get(p.name);
                 if (!members) {
                     const initials = generateInitials(p.name);
                     const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
