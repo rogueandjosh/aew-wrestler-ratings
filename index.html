@@ -2881,6 +2881,13 @@
             return text.replace(/ \? /g, ' — ');
         }
 
+        // Rewrites the awkward source-template phrase "X vs. Y put the [Title] on the line"
+        // into "X and Y battled it out over the [Title]" — a full, natural phrase rather than
+        // a single-word swap, since "vs." doesn't work as a grammatical subject for "put."
+        function fixVsPutGrammar(text) {
+            return text.replace(/(.+?) vs\. (.+?) put the (.+?) on the line/, '$1 and $2 battled it out over the $3');
+        }
+
         function pickOnThisDayContent(otdData) {
             const headlines = otdData.headlines || [];
             const secondaries = (otdData.secondaries || []).slice();
@@ -2937,7 +2944,7 @@
             const picked = pickOnThisDayContent(otdData);
             if (!picked) return;
 
-            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(fixMojibake(text))));
+            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(fixVsPutGrammar(fixMojibake(text)))));
             const headlineHtml = process(picked.headline.text);
             const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
             const headlinePhotoRow = buildPhotoRow(picked.headline.text);
