@@ -2864,9 +2864,9 @@
         // distinctive PPV/special name is present, so two entries from the same regular
         // episode can still be recognized as "the same show" for diversity purposes.
         function extractBaseShow(text) {
-            const match = text.match(/(?:appearing on|on) (Dynamite|Collision|Rampage|Dark|Dark Elevation|Revolution|Double or Nothing|Full Gear|All Out|Forbidden Door|WrestleDream|Worlds End|Dynasty|Redemption|Grand Slam(?::? \w+)?)\b/);
-            return match ? match[1] : null;
-        }
+    const match = text.match(/\b(Dynamite|Collision|Rampage|Dark Elevation|Dark|Revolution|Double or Nothing|Full Gear|All Out|Forbidden Door|WrestleDream|Worlds End|Dynasty|Redemption|Grand Slam(?::? \w+)?)\b/);
+    return match ? match[1] : null;
+}
 
         function getShowKey(text) {
             return extractSpecialShowName(text) || extractBaseShow(text);
@@ -2892,7 +2892,7 @@
                 }
             }
             for (const show of MAJOR_SHOWS) {
-                if (new RegExp(`(?:appearing on|on) ${escapeRegex(show)}\\b`, 'i').test(text)) {
+                if (new RegExp(`\\b${escapeRegex(show)}\\b`, 'i').test(text)) {
                     return `<div class="otd-show-badges"><span class="otd-show-badge major">${show}</span></div>`;
                 }
             }
@@ -3474,7 +3474,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            // renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            renderOnThisDayTeaser();
             
             // Load name changes (don't block on failure)
             try {
