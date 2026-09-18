@@ -1641,9 +1641,9 @@
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
         .otd-photo-row{
             display:flex;align-items:center;justify-content:center;gap:14px;
-            margin-bottom:14px;
+            margin-bottom:14px;flex-wrap:wrap;row-gap:8px;
         }
-        .otd-photo-side{display:flex;}
+        .otd-photo-side{display:flex;gap:4px;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
         .otd-photo-img{
             width:45px;height:45px;border-radius:50%;object-fit:cover;
@@ -2796,14 +2796,16 @@
             const unique = [];
             for (const f of found) {
                 if (!seen.has(f.name)) { seen.add(f.name); unique.push(f); }
-                if (unique.length >= cap) break;
             }
+            // If the match has more participants than the cap, skip the photo row entirely
+            // rather than silently showing a partial, misleading subset of the field.
+            if (unique.length > cap) return [];
             return unique;
         }
 
         function buildPhotoRow(text) {
             if (!wrestlersIndexData || !teamMembersData) return '';
-            const participants = getMatchParticipants(text, 4);
+            const participants = getMatchParticipants(text, 12);
             if (participants.length === 0) return '';
 
             const photoTag = (name, slug) => {
