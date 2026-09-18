@@ -2789,25 +2789,37 @@
         // Finds up to `cap` wrestler/team names in the order they first appear in the
         // text, for the photo row. Reuses the same eligible-name pool as hyperlinkNames.
         function getMatchParticipants(text, cap) {
-            if (!wrestlersIndexData) return [];
-            const eligible = wrestlersIndexData.filter(w => !w.name.includes('&'));
-            const found = [];
-            eligible.forEach(w => {
-                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
-                const match = text.match(pattern);
-                if (match) found.push({ name: w.name, isTeam: w.isTeam, index: match.index });
-            });
-            found.sort((a, b) => a.index - b.index);
-            const seen = new Set();
-            const unique = [];
-            for (const f of found) {
-                if (!seen.has(f.name)) { seen.add(f.name); unique.push(f); }
-            }
-            // If the match has more participants than the cap, skip the photo row entirely
-            // rather than silently showing a partial, misleading subset of the field.
-            if (unique.length > cap) return [];
-            return unique;
+    if (!wrestlersIndexData || !teamMembersData) return [];
+
+    const found = [];
+    let masked = text;
+
+    const teamKeys = Object.keys(teamMembersData.teams).sort((a, b) => b.length - a.length);
+    teamKeys.forEach(key => {
+        const pattern = new RegExp(`\\b${escapeRegex(key)}\\b`, 'i');
+        const match = masked.match(pattern);
+        if (match) {
+            found.push({ name: key, isTeam: true, index: match.index });
+            masked = masked.slice(0, match.index) + ' '.repeat(match[0].length) + masked.slice(match.index + match[0].length);
         }
+    });
+
+    const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
+    eligibleIndividuals.forEach(w => {
+        const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
+        const match = masked.match(pattern);
+        if (match) found.push({ name: w.name, isTeam: false, index: match.index });
+    });
+
+    found.sort((a, b) => a.index - b.index);
+    const seen = new Set();
+    const unique = [];
+    for (const f of found) {
+        if (!seen.has(f.name)) { seen.add(f.name); unique.push(f); }
+    }
+    if (unique.length > cap) return [];
+    return unique;
+}
 
         function buildPhotoRow(text) {
             if (!wrestlersIndexData || !teamMembersData) return '';
