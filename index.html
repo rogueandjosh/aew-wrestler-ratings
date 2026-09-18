@@ -1639,6 +1639,12 @@
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
+        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+        .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.72em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:4px 13px;border-radius:20px;}
+        .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
+        .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
+        .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:5px 16px;}
+        .otd-show-badge-connector{color:#a8a394;font-size:0.75em;}
         .otd-photo-row{
             display:flex;align-items:center;justify-content:center;gap:14px;
             margin-bottom:14px;flex-wrap:wrap;row-gap:8px;
@@ -2866,6 +2872,46 @@
             return extractSpecialShowName(text) || extractBaseShow(text);
         }
 
+        // Standalone numbered PPVs — double-ring gold badge, no weekly-show badge
+        const MAJOR_SHOWS = ['Revolution','Double or Nothing','Full Gear','All Out','Forbidden Door','WrestleDream','Worlds End','Dynasty','Redemption'];
+        // Standalone specials that aren't full PPVs but still air on their own, never framed
+        // as a numbered Dynamite/Collision episode — single-border gold badge
+        const SOLO_SHOWS = ['Battle of the Belts','Grand Slam: Mexico','Grand Slam: Australia','Grand Slam: France'];
+        // "Named Dynamites" — genuinely a Dynamite (or Collision/Rampage) episode, just branded
+        // with a special name layered on top. Every one of these gets the same dual-badge
+        // treatment, recurring or one-off alike.
+        const NAMED_DYNAMITE_SPECIALS = ['Grand Slam','Winter Is Coming','Beach Break','Fyter Fest','Fight for the Fallen','Bash at the Beach','Homecoming','Maximum Carnage','Sep to Remember','Holiday Bash',"New Year's Smash",'Spring BreakThru','Summer Blockbuster','Fright Night Dynamite','Dynamite on 34th Street','Rebel Heart','Big Business','The Crossroads','House of the Dragon','Tag Team Appreciation Night',"St. Patrick's Day Slam",'Brodie Lee Celebration of Life'];
+
+        // Builds the show-badge HTML for a blurb: checks solo specials and majors first
+        // (most specific), then named-Dynamites, then falls back to a plain weekly badge.
+        // Returns '' if no recognizable show is mentioned at all.
+        function buildShowBadges(text) {
+            for (const show of SOLO_SHOWS) {
+                if (new RegExp(`\\b${escapeRegex(show)}\\b`, 'i').test(text)) {
+                    return `<div class="otd-show-badges"><span class="otd-show-badge solo">${show}</span></div>`;
+                }
+            }
+            for (const show of MAJOR_SHOWS) {
+                if (new RegExp(`(?:appearing on|on) ${escapeRegex(show)}\\b`, 'i').test(text)) {
+                    return `<div class="otd-show-badges"><span class="otd-show-badge major">${show}</span></div>`;
+                }
+            }
+            const baseShow = extractBaseShow(text);
+            if (baseShow && ['Dynamite','Collision','Rampage'].includes(baseShow)) {
+                for (const special of NAMED_DYNAMITE_SPECIALS) {
+                    if (new RegExp(`\\b${escapeRegex(special)}\\b`, 'i').test(text)) {
+                        return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${special}</span></div>`;
+                    }
+                }
+                const yearSuffixSpecial = extractSpecialShowName(text);
+                if (yearSuffixSpecial) {
+                    return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${yearSuffixSpecial}</span></div>`;
+                }
+                return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span></div>`;
+            }
+            return '';
+        }
+
         function stripShowRatingClause(text) {
             return text
                 .replace(/,?\s*on an outstanding [^,.]+ show that earned an overall rating of \d+\.\d+/g, '')
@@ -2949,6 +2995,8 @@
             const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
             const headlinePhotoRow = buildPhotoRow(picked.headline.text);
             const secondaryPhotoRow = picked.secondary ? buildPhotoRow(picked.secondary.text) : '';
+            const headlineBadges = buildShowBadges(picked.headline.text);
+            const secondaryBadges = picked.secondary ? buildShowBadges(picked.secondary.text) : '';
             const dateLabel = formatOrdinalDate(today);
 
             container.innerHTML = `
@@ -2958,6 +3006,7 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                     </div>
                 </div>
+                ${headlineBadges}
                 ${headlinePhotoRow}
                 <p class="otd-teaser-body">${headlineHtml}</p>
                 <div class="otd-teaser-expandable">
@@ -2965,6 +3014,7 @@
                     ${secondaryHtml ? `
                     <div class="otd-remember-block" style="margin-top:0;">
                         <div class="otd-mini-section-label">Do You Remember When...</div>
+                        ${secondaryBadges}
                         ${secondaryPhotoRow}
                         <div class="otd-mini-headline">${secondaryHtml}</div>
                     </div>` : ''}
