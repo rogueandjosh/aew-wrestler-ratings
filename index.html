@@ -2823,6 +2823,18 @@
             return current;
         }
 
+        // Restricts text to just the factual portion of a blurb — everything up through the
+// rating number ("rated X.XX") — discarding whatever comes after it. This matters because
+// the flavor/narrative sentence that follows often mentions OTHER people for color (a
+// teammate checking on someone after the match, a team name used descriptively) who were
+// never actually in the match itself. Falls back to the full text if no rating is found
+// (e.g. a return/debut blurb with no rating at all).
+function getFactualPortion(text) {
+    const match = text.match(/rated \d+\.\d+\.?/);
+    if (!match) return text;
+    return text.slice(0, match.index + match[0].length);
+}
+
         function getMatchParticipants(text, cap) {
             if (!wrestlersIndexData || !teamMembersData) return [];
 
@@ -2877,8 +2889,8 @@
         }
 
         function buildPhotoRow(text) {
-            if (!wrestlersIndexData || !teamMembersData) return '';
-            let participants = getMatchParticipants(text, 12);
+    if (!wrestlersIndexData || !teamMembersData) return '';
+    let participants = getMatchParticipants(getFactualPortion(text), 12);
             if (participants.length === 0) return '';
 
             // Resolve each team's members once, then drop any individual participant who's
@@ -3565,7 +3577,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            // renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
             
             // Load name changes (don't block on failure)
             try {
