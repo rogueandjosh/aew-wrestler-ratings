@@ -2777,7 +2777,7 @@
     let masked = text;
     const matches = [];
     candidates.forEach(c => {
-        const pattern = new RegExp(`\\b${escapeRegex(c.searchName)}\\b`, 'i');
+        const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(c.searchName)}(?![a-zA-Z0-9])`, 'i');
         const match = masked.match(pattern);
         if (match) {
             matches.push({ start: match.index, end: match.index + match[0].length, displayName: c.displayName, slugName: c.slugName });
@@ -2981,19 +2981,19 @@ function getFactualPortion(text) {
         // Returns '' if no recognizable show is mentioned at all.
         function buildShowBadges(text) {
             for (const show of SOLO_SHOWS) {
-                if (new RegExp(`\\b${escapeRegex(show)}\\b`, 'i').test(text)) {
+                if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(show)}(?![a-zA-Z0-9])`, 'i').test(text)) {
                     return `<div class="otd-show-badges"><span class="otd-show-badge solo">${show}</span></div>`;
                 }
             }
             for (const show of MAJOR_SHOWS) {
-                if (new RegExp(`\\b${escapeRegex(show)}\\b`, 'i').test(text)) {
+                if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(show)}(?![a-zA-Z0-9])`, 'i').test(text)) {
                     return `<div class="otd-show-badges"><span class="otd-show-badge major">${show}</span></div>`;
                 }
             }
             const baseShow = extractBaseShow(text);
             if (baseShow && ['Dynamite','Collision','Rampage'].includes(baseShow)) {
                 for (const special of NAMED_DYNAMITE_SPECIALS) {
-                    if (new RegExp(`\\b${escapeRegex(special)}\\b`, 'i').test(text)) {
+                    if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(special)}(?![a-zA-Z0-9])`, 'i').test(text)) {
                         return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${special}</span></div>`;
                     }
                 }
