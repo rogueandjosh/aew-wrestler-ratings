@@ -2747,44 +2747,59 @@
         }
 
         function hyperlinkNames(text) {
-            if (!wrestlersIndexData) return text;
-            // Exclude combined stat-tracking entries ("Fletcher & Takeshita" etc.) — these
-            // aren't genuine standalone entities and cause partial/awkward links when only
-            // some of a group's members happen to match a registered ad-hoc pairing.
-            const eligible = wrestlersIndexData.filter(w => !w.name.includes('&'));
-            const allNames = eligible.slice().sort((a, b) => b.name.length - a.name.length);
+    if (!wrestlersIndexData || !teamMembersData) return text;
 
-            // Find all matches against the ORIGINAL plain text first, masking out each
-            // claimed span so a shorter name (e.g. "Cody") can never match again inside a
-            // longer name's already-claimed span (e.g. "Cody Rhodes") — this is what stops
-            // a second match from landing inside the HTML just inserted for the first one
-            // and corrupting the markup. Still case-insensitive, still first-mention-only
-            // (one .match() per name, not a global replace), still shows registered casing.
-            let masked = text;
-            const matches = [];
-            allNames.forEach(w => {
-                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
-                const match = masked.match(pattern);
-                if (match) {
-                    matches.push({ start: match.index, end: match.index + match[0].length, name: w.name });
-                    masked = masked.slice(0, match.index) + ' '.repeat(match[0].length) + masked.slice(match.index + match[0].length);
-                }
-            });
+    // Individuals — same exclusion as before (no combined stat-tracking entries)
+    const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
 
-            // Build the final string in one pass, using the original text everywhere except
-            // the matched spans, which each get replaced with exactly one link.
-            matches.sort((a, b) => a.start - b.start);
-            let result = '';
-            let cursor = 0;
-            matches.forEach(m => {
-                result += text.slice(cursor, m.start);
-                const slug = createSlug(m.name);
-                result += `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${m.name}</a>`;
-                cursor = m.end;
-            });
-            result += text.slice(cursor);
-            return result;
+    // Teams — every team-members.json key, PLUS historical names from name-changes.json
+    // that resolve to a real current team (e.g. "Lucha Brothers & PAC" -> "Death Triangle")
+    const teamKeySet = new Set(Object.keys(teamMembersData.teams));
+    if (nameChangesData && nameChangesData.changes) {
+        nameChangesData.changes.forEach(c => {
+            if (teamMembersData.teams[resolveCurrentName(c.oldName)]) {
+                teamKeySet.add(c.oldName);
+            }
+        });
+    }
+
+    // Combine into one candidate list: searchName is what we match in the text,
+    // displayName is what stays visible (the historical wording, grammatically correct
+    // for that blurb), slugName is what the link actually points to (always current).
+    const candidates = [
+        ...eligibleIndividuals.map(w => ({ searchName: w.name, displayName: w.name, slugName: w.name })),
+        ...[...teamKeySet].map(key => {
+            const currentName = teamMembersData.teams[key] ? key : resolveCurrentName(key);
+            return { searchName: key, displayName: key, slugName: currentName };
+        })
+    ];
+    candidates.sort((a, b) => b.searchName.length - a.searchName.length);
+
+    // Same masking approach as before: match against the original text, mask claimed
+    // spans so a shorter name can't match inside a longer one's already-claimed territory.
+    let masked = text;
+    const matches = [];
+    candidates.forEach(c => {
+        const pattern = new RegExp(`\\b${escapeRegex(c.searchName)}\\b`, 'i');
+        const match = masked.match(pattern);
+        if (match) {
+            matches.push({ start: match.index, end: match.index + match[0].length, displayName: c.displayName, slugName: c.slugName });
+            masked = masked.slice(0, match.index) + ' '.repeat(match[0].length) + masked.slice(match.index + match[0].length);
         }
+    });
+
+    matches.sort((a, b) => a.start - b.start);
+    let result = '';
+    let cursor = 0;
+    matches.forEach(m => {
+        result += text.slice(cursor, m.start);
+        const slug = createSlug(m.slugName);
+        result += `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${m.displayName}</a>`;
+        cursor = m.end;
+    });
+    result += text.slice(cursor);
+    return result;
+}
 
         // Resolves a team's member list from team-members.json, with a fallback for teams
         // that only exist as part of a rotating-member combo (e.g. "The Acclaimed" only
