@@ -2900,50 +2900,66 @@ function getFactualPortion(text) {
             return unique;
         }
 
-        function buildPhotoRow(text) {
+       function buildPhotoRow(text) {
     if (!wrestlersIndexData || !teamMembersData) return '';
-    let participants = getMatchParticipants(getFactualPortion(text), 12);
-            if (participants.length === 0) return '';
+    const factualText = getFactualPortion(text);
+    let participants = getMatchParticipants(factualText, 12);
+    if (participants.length === 0) return '';
 
-            // Resolve each team's members once, then drop any individual participant who's
-            // already represented inside another participant's team cluster (avoids showing
-            // e.g. "Max Caster" both inside The Acclaimed's cluster AND as his own entry).
-            const teamMemberSets = new Map();
-            participants.filter(p => p.isTeam).forEach(p => {
-                const members = resolveTeamMembers(p.name, teamMembersData.teams);
-                if (members) teamMemberSets.set(p.name, members);
-            });
-            const clusteredMembers = new Set([...teamMemberSets.values()].flat());
-            participants = participants.filter(p => p.isTeam || !clusteredMembers.has(p.name));
-            if (participants.length === 0) return '';
+    // Resolve each team's members once, then drop any individual participant who's
+    // already represented inside another participant's team cluster (avoids showing
+    // e.g. "Max Caster" both inside The Acclaimed's cluster AND as his own entry).
+    const teamMemberSets = new Map();
+    participants.filter(p => p.isTeam).forEach(p => {
+        const members = resolveTeamMembers(p.name, teamMembersData.teams);
+        if (members) teamMemberSets.set(p.name, members);
+    });
+    const clusteredMembers = new Set([...teamMemberSets.values()].flat());
+    participants = participants.filter(p => p.isTeam || !clusteredMembers.has(p.name));
+    if (participants.length === 0) return '';
 
-            const photoTag = (name, slug) => {
-                const initials = generateInitials(name);
-                const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
-                return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
-                    <img class="otd-photo-img" src="images/wrestlers/${slug}.jpg" alt="${name}"
-                         onerror="this.onerror=null;this.src='${initialsUrl}';">
-                </a>`;
-            };
+    const photoTag = (name, slug) => {
+        const initials = generateInitials(name);
+        const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
+        return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
+            <img class="otd-photo-img" src="images/wrestlers/${slug}.jpg" alt="${name}"
+                 onerror="this.onerror=null;this.src='${initialsUrl}';">
+        </a>`;
+    };
 
-            const sideHtml = p => {
-                if (!p.isTeam) {
-                    return `<div class="otd-photo-side">${photoTag(p.name, createSlug(p.name))}</div>`;
-                }
-                const members = teamMemberSets.get(p.name);
-                if (!members) {
-                    const initials = generateInitials(p.name);
-                    const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
-                    const slug = createSlug(p.name);
-                    return `<div class="otd-photo-side"><a href="wrestler-stats.html?wrestler=${slug}"><img class="otd-photo-img" src="${initialsUrl}"></a></div>`;
-                }
-                const cluster = members.map(m => photoTag(m, createSlug(m))).join('');
-                return `<div class="otd-photo-side" style="display:flex;gap:4px;">${cluster}</div>`;
-            };
-
-            return `<div class="otd-photo-row">${participants.map(sideHtml).join('<span class="otd-photo-vs">vs</span>')}</div>`;
+    const photosForParticipant = p => {
+        if (!p.isTeam) return photoTag(p.name, createSlug(p.name));
+        const members = teamMemberSets.get(p.name);
+        if (!members) {
+            const initials = generateInitials(p.name);
+            const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
+            const slug = createSlug(p.name);
+            return `<a href="wrestler-stats.html?wrestler=${slug}"><img class="otd-photo-img" src="${initialsUrl}"></a>`;
         }
+        return members.map(m => photoTag(m, createSlug(m))).join('');
+    };
 
+    const sideHtml = p => `<div class="otd-photo-side" style="display:flex;gap:4px;">${photosForParticipant(p)}</div>`;
+
+    // Pre-official-team blurbs (roughly anything before Nov 2025) often phrase a tag match
+    // as "teaming with X against Y and Z" instead of "X & Y vs. Z" — with no "vs." at all.
+    // In that case, group everyone found before "against" into one side and everyone after
+    // into the other, instead of rendering all 4 as separate individual sides.
+    const hasVs = /\bvs\.?\b/i.test(factualText);
+    const againstMatch = factualText.match(/\bagainst\b/i);
+
+    if (!hasVs && againstMatch && participants.length > 1) {
+        const splitIndex = againstMatch.index;
+        const sideA = participants.filter(p => p.index < splitIndex);
+        const sideB = participants.filter(p => p.index >= splitIndex);
+        if (sideA.length > 0 && sideB.length > 0) {
+            const groupHtml = group => `<div class="otd-photo-side" style="display:flex;gap:4px;">${group.map(photosForParticipant).join('')}</div>`;
+            return `<div class="otd-photo-row">${groupHtml(sideA)}<span class="otd-photo-vs">vs</span>${groupHtml(sideB)}</div>`;
+        }
+    }
+
+    return `<div class="otd-photo-row">${participants.map(sideHtml).join('<span class="otd-photo-vs">vs</span>')}</div>`;
+}
         // Extracts a distinctive PPV/special-episode name if one is present in the text
         // (e.g. "Sep to Remember '25 - Night 1"), so two entries can be compared for sameness.
         function extractSpecialShowName(text) {
