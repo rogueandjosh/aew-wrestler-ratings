@@ -1616,10 +1616,6 @@
     position:relative;
     overflow:hidden;
 }
-        .otd-teaser::before{
-            content:"";position:absolute;top:0;left:0;right:0;height:3px;
-            background:linear-gradient(90deg,transparent,#ffd700,transparent);
-        }
         .otd-teaser-head{
     display:flex;align-items:center;justify-content:space-between;
     margin-bottom:4px;flex-wrap:nowrap;gap:8px;cursor:pointer;
@@ -2887,10 +2883,10 @@ function getFactualPortion(text) {
             // Individuals — search whatever text is left after team spans are masked out
             const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
             eligibleIndividuals.forEach(w => {
-                const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
-                const match = masked.match(pattern);
-                if (match) found.push({ name: w.name, isTeam: false, index: match.index });
-            });
+    const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
+    const match = masked.match(pattern);
+    if (match) found.push({ name: resolveCurrentName(w.name), isTeam: false, index: match.index });
+});
 
             found.sort((a, b) => a.index - b.index);
             const seen = new Set();
