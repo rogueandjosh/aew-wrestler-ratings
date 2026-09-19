@@ -1622,7 +1622,7 @@
         }
         .otd-teaser-head{
     display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:10px;flex-wrap:nowrap;gap:8px;cursor:pointer;
+    margin-bottom:4px;flex-wrap:nowrap;gap:8px;cursor:pointer;
 }
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1639,7 +1639,7 @@
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.72em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:4px 13px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
         .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
@@ -1652,20 +1652,21 @@
         .otd-photo-side{display:flex;gap:4px;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
         .otd-photo-img{
-            width:45px;height:45px;border-radius:50%;object-fit:cover;
-            border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;
-        }
-        @media (min-width:600px){
-            .otd-photo-img{width:60px;height:60px;}
-        }
-        @media (min-width:1025px){
-            .otd-photo-img{width:75px;height:75px;}
-        }
+    width:55px;height:55px;border-radius:50%;object-fit:cover;
+    border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;
+}
+@media (min-width:600px){
+    .otd-photo-img{width:75px;height:75px;}
+}
+@media (min-width:1025px){
+    .otd-photo-img{width:90px;height:90px;}
+}
         .otd-teaser-body{
-    font-size:1.1em;line-height:1.5;color:#fff;margin:0;
+    font-size:1.2em;line-height:1.5;color:#fff;margin:0;
     display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
     overflow:hidden;text-overflow:ellipsis;
 }
+        
         .otd-teaser.expanded .otd-teaser-body{
             -webkit-line-clamp:unset;display:block;overflow:visible;
         }
