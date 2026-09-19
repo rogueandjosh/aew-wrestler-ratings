@@ -1550,10 +1550,10 @@
         }
 
         .analysis-title {
-            color: #ffd700;
-            font-weight: 700;
-            font-size: 1em;
-        }
+    color: #ffd700;
+    font-weight: 700;
+    font-size: 1.15em;
+}
 
         .analysis-week {
             color: #b8b8b8;
@@ -2867,8 +2867,8 @@ function getFactualPortion(text) {
             }
             const teamKeys = [...teamKeySet].sort((a, b) => b.length - a.length);
 
-            teamKeys.forEach(key => {
-                const pattern = new RegExp(`\\b${escapeRegex(key)}\\b`, 'i');
+                teamKeys.forEach(key => {
+                const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(key)}(?![a-zA-Z0-9])`, 'i');
                 const match = masked.match(pattern);
                 if (match) {
                     // Push the CURRENT (real, lookup-able) name, even though the match itself
@@ -2882,8 +2882,8 @@ function getFactualPortion(text) {
 
             // Individuals — search whatever text is left after team spans are masked out
             const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
-            eligibleIndividuals.forEach(w => {
-    const pattern = new RegExp(`\\b${escapeRegex(w.name)}\\b`, 'i');
+                       eligibleIndividuals.forEach(w => {
+                const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(w.name)}(?![a-zA-Z0-9])`, 'i');
     const match = masked.match(pattern);
     if (match) found.push({ name: resolveCurrentName(w.name), isTeam: false, index: match.index });
 });
