@@ -1621,9 +1621,9 @@
             background:linear-gradient(90deg,transparent,#ffd700,transparent);
         }
         .otd-teaser-head{
-            display:flex;align-items:center;justify-content:space-between;
-            margin-bottom:16px;flex-wrap:nowrap;gap:8px;cursor:pointer;
-        }
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;flex-wrap:nowrap;gap:8px;cursor:pointer;
+}
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
             display:flex;align-items:center;gap:10px;min-width:0;
@@ -1639,16 +1639,16 @@
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.72em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:4px 13px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
         .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
         .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:5px 16px;}
         .otd-show-badge-connector{color:#a8a394;font-size:0.75em;}
         .otd-photo-row{
-            display:flex;align-items:center;justify-content:center;gap:14px;
-            margin-bottom:14px;flex-wrap:wrap;row-gap:8px;
-        }
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    margin-bottom:10px;flex-wrap:wrap;row-gap:8px;
+}
         .otd-photo-side{display:flex;gap:4px;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
         .otd-photo-img{
@@ -1662,10 +1662,10 @@
             .otd-photo-img{width:75px;height:75px;}
         }
         .otd-teaser-body{
-            font-size:1.02em;line-height:1.55;color:#fff;margin:0;
-            display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
-            overflow:hidden;text-overflow:ellipsis;
-        }
+    font-size:1.1em;line-height:1.5;color:#fff;margin:0;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
+    overflow:hidden;text-overflow:ellipsis;
+}
         .otd-teaser.expanded .otd-teaser-body{
             -webkit-line-clamp:unset;display:block;overflow:visible;
         }
@@ -3121,8 +3121,8 @@ function getFactualPortion(text) {
                 <div class="otd-teaser-head" onclick="toggleTeaser()">
                     <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
                     <div class="otd-expand-btn" title="Show more">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
-                    </div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+</div>
                 </div>
                 ${headlineBadges}
                 ${headlinePhotoRow}
@@ -3136,7 +3136,7 @@ function getFactualPortion(text) {
                         ${secondaryPhotoRow}
                         <div class="otd-mini-headline">${secondaryHtml}</div>
                     </div>` : ''}
-                    <a href="on-this-day.html" class="otd-teaser-more">Open full page for every year \u2192</a>
+                    <!-- <a href="on-this-day.html" class="otd-teaser-more">Open full page for every year \u2192</a> -->
                 </div>
             `;
             container.style.display = 'block';
