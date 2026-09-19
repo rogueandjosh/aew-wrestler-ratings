@@ -2925,7 +2925,7 @@ function getFactualPortion(text) {
                     const slug = createSlug(p.name);
                     return `<div class="otd-photo-side"><a href="wrestler-stats.html?wrestler=${slug}"><img class="otd-photo-img" src="${initialsUrl}"></a></div>`;
                 }
-                const cluster = members.slice(0, 2).map(m => photoTag(m, createSlug(m))).join('');
+                const cluster = members.map(m => photoTag(m, createSlug(m))).join('');
                 return `<div class="otd-photo-side" style="display:flex;gap:4px;">${cluster}</div>`;
             };
 
