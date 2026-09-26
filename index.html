@@ -2907,7 +2907,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date();
+            const today = new Date(2026, 8, 25); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3398,7 +3398,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            //renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
             
             // Load name changes (don't block on failure)
             try {
