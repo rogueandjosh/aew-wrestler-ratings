@@ -1645,14 +1645,21 @@
         .otd-championship-img{height:38px;width:auto;object-fit:contain;}
         .otd-photo-title-divider{display:inline-flex;align-items:center;justify-content:center;}
 
-        .otd-match-table{width:100%;border-collapse:collapse;margin-top:14px;}
-        .otd-match-table tr{border-bottom:1px solid rgba(255,255,255,0.06);}
-        .otd-match-table tr:last-child{border-bottom:none;}
-        .otd-table-field{
-            color:#a8a394;font-size:0.85em;font-weight:bold;text-transform:uppercase;
-            letter-spacing:0.4px;padding:8px 14px 8px 0;white-space:nowrap;vertical-align:top;width:1%;
+        .otd-details-grid{
+            display:grid;grid-template-columns:auto 1fr;
+            column-gap:20px;row-gap:0;margin-top:16px;
         }
-        .otd-table-value{color:#fff;font-size:0.98em;line-height:1.5;padding:8px 0;}
+        .otd-detail-field{
+            color:#a8a394;font-size:0.75em;font-weight:bold;text-transform:uppercase;
+            letter-spacing:0.6px;white-space:nowrap;padding:11px 0;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .otd-detail-value{
+            color:#fff;font-size:1em;line-height:1.5;padding:11px 0;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .otd-details-grid > .otd-detail-field:nth-last-child(2),
+        .otd-details-grid > .otd-detail-value:last-child{border-bottom:none;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:10px;flex-wrap:wrap;row-gap:8px;
@@ -1665,9 +1672,14 @@
 }
 @media (min-width:600px){
     .otd-photo-img{width:75px;height:75px;}
+    .otd-detail-field{font-size:0.8em;}
+    .otd-detail-value{font-size:1.05em;}
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
+    .otd-details-grid{column-gap:28px;}
+    .otd-detail-field{font-size:0.85em;padding:13px 0;}
+    .otd-detail-value{font-size:1.1em;padding:13px 0;}
 }
         .otd-teaser-body{
     font-size:1.2em;line-height:1.5;color:#fff;margin:0;
@@ -2818,9 +2830,11 @@
             return notes.join('; ');
         }
 
-        // Builds the factual details table beneath the badge/photo header. Deliberately
-        // omits "Show" as its own row (the badge above already covers it), and omits
-        // details.competitors in favour of the already-joined, hyperlinked Wrestlers row.
+        // Builds the factual details grid beneath the badge/photo header, as plain divs in
+        // a CSS grid — not a real <table>, since the site's global table-layout:fixed rule
+        // (built for the rankings tables) would otherwise collapse the field-label column.
+        // Deliberately omits "Show" as its own row (the badge above already covers it), and
+        // omits details.competitors in favour of the already-joined, hyperlinked Wrestlers row.
         function buildMatchTable(details) {
             const rows = [];
 
@@ -2848,10 +2862,10 @@
             const otherNotes = buildOtherNotes(details);
             if (otherNotes) rows.push(['Other Notes', otherNotes]);
 
-            const rowsHtml = rows
-                .map(([field, value]) => `<tr><td class="otd-table-field">${field}</td><td class="otd-table-value">${value}</td></tr>`)
+            const gridHtml = rows
+                .map(([field, value]) => `<div class="otd-detail-field">${field}</div><div class="otd-detail-value">${value}</div>`)
                 .join('');
-            return `<table class="otd-match-table">${rowsHtml}</table>`;
+            return `<div class="otd-details-grid">${gridHtml}</div>`;
         }
 
         // Deterministic seeded random number generator, seeded by a date string. This means
@@ -2890,7 +2904,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 25); 
+            const today = new Date();
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -2916,12 +2930,17 @@
             const dateLabel = formatOrdinalDate(today);
 
             container.innerHTML = `
-                <div class="otd-teaser-head">
+                <div class="otd-teaser-head" onclick="toggleTeaser()">
                     <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
+                    <div class="otd-expand-btn" title="Show more">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
                 </div>
                 ${badges}
                 ${photoRow}
-                ${table}
+                <div class="otd-teaser-expandable">
+                    ${table}
+                </div>
             `;
             container.style.display = 'block';
         }
@@ -3376,7 +3395,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            renderOnThisDayTeaser(); 
+            //renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
             
             // Load name changes (don't block on failure)
             try {
