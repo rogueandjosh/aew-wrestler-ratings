@@ -1630,12 +1630,15 @@
             .otd-teaser-date{font-size:0.78em;}
             .otd-teaser-body{font-size:0.92em;}
             .otd-mini-headline{font-size:0.92em;}
+            .otd-detail-field{font-size:0.62em;letter-spacing:0.3px;}
+            .otd-detail-value{font-size:0.82em;}
+            .otd-details-grid{column-gap:10px;}
         }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.72em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:4px 13px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
         .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
@@ -1647,22 +1650,22 @@
 
         .otd-details-grid{
             display:grid;grid-template-columns:auto 1fr;
-            column-gap:20px;row-gap:0;margin-top:16px;
+            column-gap:16px;row-gap:0;margin-top:12px;
         }
         .otd-detail-field{
-            color:#a8a394;font-size:0.75em;font-weight:bold;text-transform:uppercase;
-            letter-spacing:0.6px;white-space:nowrap;padding:11px 0;
+            color:#a8a394;font-size:0.68em;font-weight:bold;text-transform:uppercase;
+            letter-spacing:0.5px;white-space:nowrap;padding:7px 0;
             border-bottom:1px solid rgba(255,255,255,0.06);
         }
         .otd-detail-value{
-            color:#fff;font-size:1em;line-height:1.5;padding:11px 0;
+            color:#fff;font-size:0.88em;line-height:1.4;padding:7px 0;
             border-bottom:1px solid rgba(255,255,255,0.06);
         }
         .otd-details-grid > .otd-detail-field:nth-last-child(2),
         .otd-details-grid > .otd-detail-value:last-child{border-bottom:none;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
-    margin-bottom:10px;flex-wrap:wrap;row-gap:8px;
+    margin-bottom:2px;flex-wrap:wrap;row-gap:8px;
 }
         .otd-photo-side{display:flex;gap:4px;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
@@ -1672,14 +1675,14 @@
 }
 @media (min-width:600px){
     .otd-photo-img{width:75px;height:75px;}
-    .otd-detail-field{font-size:0.8em;}
-    .otd-detail-value{font-size:1.05em;}
+    .otd-detail-field{font-size:0.72em;}
+    .otd-detail-value{font-size:0.92em;}
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
-    .otd-details-grid{column-gap:28px;}
-    .otd-detail-field{font-size:0.85em;padding:13px 0;}
-    .otd-detail-value{font-size:1.1em;padding:13px 0;}
+    .otd-details-grid{column-gap:20px;}
+    .otd-detail-field{font-size:0.75em;padding:9px 0;}
+    .otd-detail-value{font-size:0.95em;padding:9px 0;}
 }
         .otd-teaser-body{
     font-size:1.2em;line-height:1.5;color:#fff;margin:0;
@@ -2904,7 +2907,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 25); // TEMP TEST DATE — remember to revert!
+            const today = new Date();
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3395,7 +3398,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            //renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
             
             // Load name changes (don't block on failure)
             try {
