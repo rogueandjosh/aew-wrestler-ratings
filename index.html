@@ -3376,7 +3376,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            //renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            renderOnThisDayTeaser(); 
             
             // Load name changes (don't block on failure)
             try {
