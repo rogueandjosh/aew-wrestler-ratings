@@ -1641,6 +1641,18 @@
         .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
         .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:5px 16px;}
         .otd-show-badge-connector{color:#a8a394;font-size:0.75em;}
+
+        .otd-championship-img{height:38px;width:auto;object-fit:contain;}
+        .otd-photo-title-divider{display:inline-flex;align-items:center;justify-content:center;}
+
+        .otd-match-table{width:100%;border-collapse:collapse;margin-top:14px;}
+        .otd-match-table tr{border-bottom:1px solid rgba(255,255,255,0.06);}
+        .otd-match-table tr:last-child{border-bottom:none;}
+        .otd-table-field{
+            color:#a8a394;font-size:0.85em;font-weight:bold;text-transform:uppercase;
+            letter-spacing:0.4px;padding:8px 14px 8px 0;white-space:nowrap;vertical-align:top;width:1%;
+        }
+        .otd-table-value{color:#fff;font-size:0.98em;line-height:1.5;padding:8px 0;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:10px;flex-wrap:wrap;row-gap:8px;
@@ -2089,7 +2101,6 @@
         let nameChangesData = null;
         let teamMembersData = null;
         let wrestlersIndexData = null; // for on-this-day pronoun/team adjustments — not yet used in any render
-        let teamMemberLookup = null;   // built lazily from teamMembersData the first time it's needed
         let factionsData = null;
         const INACTIVITY_WEEKS = 12; // Number of weeks with no new matches before dropping out
         const TOP_N_WRESTLERS = 30; // Show top N wrestlers initially
@@ -2567,236 +2578,18 @@
             }
         }
 
-        // Small helper: escape a string for safe use inside a RegExp
-        function escapeRegex(str) {
-            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-                // Generates every ordering of an array (so "Ortiz & Santana" and "Santana & Ortiz"
-        // both match the same team, regardless of how the blurb happened to list them).
-        function getPermutations(arr) {
-            if (arr.length <= 1) return [arr];
-            const result = [];
-            arr.forEach((item, i) => {
-                const rest = arr.slice(0, i).concat(arr.slice(i + 1));
-                getPermutations(rest).forEach(perm => result.push([item, ...perm]));
-            });
-            return result;
-        }
-
-                function getSurname(fullName) {
-            const parts = fullName.trim().split(/\s+/);
-            return parts[parts.length - 1];
-        }
-
-        // Real team names that happen to match the generic-pairing pattern below (because
-        // the members' actual ring names are literally part of the team name) — these must
-        // still be treated as real teams, not skipped as ad-hoc pairings.
-        const TEAM_NAME_EXCEPTIONS = new Set(['The Butcher and The Blade']);
-
-        // Distinguishes a real, distinct team name ("Proud-N-Powerful," "Best Friends") from
-        // an auto-generated "Surname & Surname" stats label for a one-off team-up. Only real
-        // names should ever trigger consolidation — merging into a stats label nobody
-        // recognizes is worse than just leaving the individual names as written.
-        function isGenericPairingName(teamName, members) {
-            if (TEAM_NAME_EXCEPTIONS.has(teamName)) return false;
-            const surnames = members.map(getSurname);
-            const allSurnamesPresent = surnames.every(s => teamName.toLowerCase().includes(s.toLowerCase()));
-            const surnameLengthSum = surnames.reduce((sum, s) => sum + s.length, 0);
-            return allSurnamesPresent && teamName.length < surnameLengthSum + 15;
-        }
-
-        // Builds one compiled pattern per team per name-ordering, matching the whole
-        // contiguous "A & B" / "A, B" / "A and B" span as a single unit. Skips 1-member
-        // "teams," anything larger than trios (3), and generic ad-hoc pairings. Trios are
-        // checked before pairs so a 3-person match isn't partially consumed by a 2-person one.
-        function buildTeamMemberLookup(teamsObj) {
-            const CONNECTOR = '\\s*(?:&|,|\\band\\b)\\s*';
-            const patterns = [];
-            Object.entries(teamsObj || {}).forEach(([teamName, members]) => {
-                if (members.length < 2 || members.length > 3) return;
-                if (isGenericPairingName(teamName, members)) return;
-                getPermutations(members).forEach(perm => {
-                    const body = perm.map(escapeRegex).join(CONNECTOR);
-                    patterns.push({ teamName, size: members.length, regex: new RegExp(`\\b${body}\\b`) });
-                });
-            });
-            patterns.sort((a, b) => b.size - a.size);
-            return { patterns };
-        }
-        
-
-        // Returns { subject, object, possessive } for a recognized individual (Men/Women only),
-        // or null — null always means "leave the text's existing 'their' as-is."
-        function getPronounForName(name, wrestlersIndex) {
-            const entry = wrestlersIndex.find(w => w.name === name);
-            if (!entry || entry.isTeam) return null;
-            if (entry.division === 'Men') return { subject: 'he', object: 'him', possessive: 'his' };
-            if (entry.division === 'Women') return { subject: 'she', object: 'her', possessive: 'her' };
-            return null; // Men Tag / Women Tag / Trios / unrecognized division -> stays "their"
-        }
-
-        /**
-         * Applies the two on-this-day display adjustments to a blurb's text:
-         *   1. Team consolidation — if every member of a known team is named in the text,
-         *      collapse those individual mentions into the team name (never both).
-         *   2. Pronoun correction — if exactly one individual (non-team) wrestler remains as
-         *      the clear subject after step 1, swap "their"/"they"/"theirs"/"themselves" for
-         *      the correct he/she form based on their division. Falls back to "their" whenever
-         *      a name isn't recognized or belongs to a team/trio, so unindexed or new names
-         *      never break.
-         *
-         * Requires wrestlersIndexData and teamMembersData to already be loaded — returns the
-         * text unchanged if either hasn't loaded yet. Not called anywhere yet.
-         */
-        function applyOnThisDayTextAdjustments(text) {
-            if (!wrestlersIndexData || !teamMembersData) return text;
-
-                        if (!teamMemberLookup) {
-                teamMemberLookup = buildTeamMemberLookup(teamMembersData.teams);
-            }
-
-            let adjusted = text;
-
-                        // --- Step 1: team consolidation ---
-            const insertedTeamNames = [];
-            teamMemberLookup.patterns.forEach(({ teamName, regex }) => {
-                if (regex.test(adjusted)) {
-                    adjusted = adjusted.replace(regex, teamName);
-                    if (!insertedTeamNames.includes(teamName)) insertedTeamNames.push(teamName);
-                }
-            });
-                        // If two different teams both got consolidated in this same blurb, tidy up
-            // a bare comma left between them into "and" ("Team A, Team B" -> "Team A and Team B").
-            insertedTeamNames.forEach(a => {
-                insertedTeamNames.forEach(b => {
-                    if (a === b) return;
-                    const connectorPattern = new RegExp(`\\b${escapeRegex(a)}\\s*,\\s*${escapeRegex(b)}\\b`);
-                    adjusted = adjusted.replace(connectorPattern, `${a} and ${b}`);
-                });
-            });
-
-            // If the sentence already named a team explicitly AND then listed its members
-            // right after (e.g. "The Brawling Birds — Alex Windsor and Jamie Hayter —"), the
-            // members just got consolidated back into the same team name, leaving a duplicate
-            // sitting right next to itself. Collapse "Team — Team —" / "Team (Team)" into one.
-            insertedTeamNames.forEach(teamName => {
-                const dupPattern = new RegExp(`${escapeRegex(teamName)}\\s*[—\\-(]\\s*${escapeRegex(teamName)}\\s*[—\\-)]?\\s*`);
-                adjusted = adjusted.replace(dupPattern, teamName + ' ');
-            });
-            adjusted = adjusted.replace(/\s{2,}/g, ' ').trim();
-
-                        // --- Step 2: find any individuals still named after team consolidation ---
-            // Deduped via Set, since a duplicate wrestler-index entry (same name, two rows)
-            // would otherwise count as two people and wrongly disable the pronoun swap below.
-            const namesFoundSet = new Set();
-            wrestlersIndexData.forEach(w => {
-                if (w.isTeam) return;
-                if (new RegExp(`\\b${escapeRegex(w.name)}\\b`).test(adjusted)) {
-                    namesFoundSet.add(w.name);
-                }
-            });
-            const namesFoundIndividually = Array.from(namesFoundSet);
-
-                        // --- Step 3: pronoun correction, only when exactly one individual is the subject ---
-            if (namesFoundIndividually.length === 1) {
-                const pronoun = getPronounForName(namesFoundIndividually[0], wrestlersIndexData);
-                if (pronoun) {
-                    const reflexive = pronoun.object === 'him' ? 'himself' : 'herself';
-                    adjusted = adjusted
-                        .replace(/\btheirs\b/g, pronoun.possessive)
-                        .replace(/\btheir\b/g, pronoun.possessive)
-                        .replace(/\bthemselves\b/g, reflexive)
-                        .replace(/\bthem\b/g, pronoun.object)
-                        .replace(/\bThey\b/g, pronoun.subject.charAt(0).toUpperCase() + pronoun.subject.slice(1))
-                        .replace(/\bthey\b/g, pronoun.subject);
-                }
-            }
-
-            return adjusted;
-        }
-
-        // ===== On This Day teaser widget — display helpers =====
-        function formatOrdinalDate(date) {
-            const day = date.getDate();
-            const month = date.toLocaleString('en-GB', { month: 'long' });
-            const suffix = (day % 10 === 1 && day !== 11) ? 'st'
-                         : (day % 10 === 2 && day !== 12) ? 'nd'
-                         : (day % 10 === 3 && day !== 13) ? 'rd'
-                         : 'th';
-            return `${day}${suffix} ${month}`;
-        }
-
-        function getRatingColorClass(rating) {
-            if (rating >= 9) return 'rating-excellent';
-            if (rating >= 8) return 'rating-great';
-            if (rating >= 7) return 'rating-good';
-            if (rating >= 6) return 'rating-average';
-            if (rating >= 5) return 'rating-below';
-            return 'rating-poor';
-        }
-
-        function colorCodeRatings(text) {
-            const wrap = num => `<span class="otd-rating ${getRatingColorClass(parseFloat(num))}">${num}</span>`;
-            return text
-                .replace(/\brated (\d+\.\d+)/g, (m, num) => `rated ${wrap(num)}`)
-                .replace(/\brating of (\d+\.\d+)/g, (m, num) => `rating of ${wrap(num)}`);
-        }
-
-        function hyperlinkNames(text) {
-    if (!wrestlersIndexData || !teamMembersData) return text;
-
-    // Individuals — same exclusion as before (no combined stat-tracking entries)
-    const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
-
-    // Teams — every team-members.json key, PLUS historical names from name-changes.json
-    // that resolve to a real current team (e.g. "Lucha Brothers & PAC" -> "Death Triangle")
-    const teamKeySet = new Set(Object.keys(teamMembersData.teams));
-    if (nameChangesData && nameChangesData.changes) {
-        nameChangesData.changes.forEach(c => {
-            if (teamMembersData.teams[resolveCurrentName(c.oldName)]) {
-                teamKeySet.add(c.oldName);
-            }
-        });
-    }
-
-    // Combine into one candidate list: searchName is what we match in the text,
-    // displayName is what stays visible (the historical wording, grammatically correct
-    // for that blurb), slugName is what the link actually points to (always current).
-    const candidates = [
-        ...eligibleIndividuals.map(w => ({ searchName: w.name, displayName: w.name, slugName: w.name })),
-        ...[...teamKeySet].map(key => {
-            const currentName = teamMembersData.teams[key] ? key : resolveCurrentName(key);
-            return { searchName: key, displayName: key, slugName: currentName };
-        })
-    ];
-    candidates.sort((a, b) => b.searchName.length - a.searchName.length);
-
-    // Same masking approach as before: match against the original text, mask claimed
-    // spans so a shorter name can't match inside a longer one's already-claimed territory.
-    let masked = text;
-    const matches = [];
-    candidates.forEach(c => {
-        const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(c.searchName)}(?![a-zA-Z0-9])`, 'i');
-        const match = masked.match(pattern);
-        if (match) {
-            matches.push({ start: match.index, end: match.index + match[0].length, displayName: c.displayName, slugName: c.slugName });
-            masked = masked.slice(0, match.index) + ' '.repeat(match[0].length) + masked.slice(match.index + match[0].length);
-        }
-    });
-
-    matches.sort((a, b) => a.start - b.start);
-    let result = '';
-    let cursor = 0;
-    matches.forEach(m => {
-        result += text.slice(cursor, m.start);
-        const slug = createSlug(m.slugName);
-        result += `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${m.displayName}</a>`;
-        cursor = m.end;
-    });
-    result += text.slice(cursor);
-    return result;
-}
+        // ============================================================
+        // On This Day — structured-data rendering (post-blurb rewrite)
+        //
+        // The old prose-based pipeline (pronoun swapping, team-name
+        // consolidation mid-sentence, regex-scanning free text for show
+        // names/participants, mojibake/grammar patches) has been removed
+        // entirely. Every on-this-day entry now carries its own structured
+        // `details` JSON (from FlavorWorkbench), so instead of guessing
+        // meaning out of a sentence, everything below reads the exact
+        // fields directly: details.competitors, details.event, details.rating,
+        // etc. This is simpler and more reliable than the old approach.
+        // ============================================================
 
         // Resolves a team's member list from team-members.json, with a fallback for teams
         // that only exist as part of a rotating-member combo (e.g. "The Acclaimed" only
@@ -2817,11 +2610,11 @@
             return null;
         }
 
-        // Finds up to `cap` wrestler/team names in the order they first appear in the
-        // text, for the photo row. Reuses the same eligible-name pool as hyperlinkNames.
         // Resolves a historical name to its current name via name-changes.json, walking
         // multiple hops if a name changed more than once. Returns the name unchanged if no
-        // rename is known for it.
+        // rename is known for it. Still needed: details.competitors can contain a team's
+        // name as it was at the time of the match (e.g. "Lucha Brothers & PAC"), which
+        // needs resolving to "Death Triangle" to find its real member list / current page.
         function resolveCurrentName(name) {
             if (!nameChangesData || !nameChangesData.changes) return name;
             let current = name;
@@ -2835,219 +2628,235 @@
             return current;
         }
 
-        // Restricts text to just the factual portion of a blurb — everything up through the
-// rating number ("rated X.XX") — discarding whatever comes after it. This matters because
-// the flavor/narrative sentence that follows often mentions OTHER people for color (a
-// teammate checking on someone after the match, a team name used descriptively) who were
-// never actually in the match itself. Falls back to the full text if no rating is found
-// (e.g. a return/debut blurb with no rating at all).
-function getFactualPortion(text) {
-    const match = text.match(/rated \d+\.\d+\.?/);
-    if (!match) return text;
-    return text.slice(0, match.index + match[0].length);
-}
+        // ===== On This Day teaser widget — display helpers =====
+        function formatOrdinalDate(date) {
+            const day = date.getDate();
+            const month = date.toLocaleString('en-GB', { month: 'long' });
+            const suffix = (day % 10 === 1 && day !== 11) ? 'st'
+                         : (day % 10 === 2 && day !== 12) ? 'nd'
+                         : (day % 10 === 3 && day !== 13) ? 'rd'
+                         : 'th';
+            return `${day}${suffix} ${month}`;
+        }
 
-        function getMatchParticipants(text, cap) {
-            if (!wrestlersIndexData || !teamMembersData) return [];
+        // Formats a "YYYY-MM-DD" details.date string into "1st January 2020"
+        function formatFullDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = String(dateStr).split('-');
+            if (parts.length !== 3) return dateStr;
+            const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (isNaN(d)) return dateStr;
+            return `${formatOrdinalDate(d)} ${d.getFullYear()}`;
+        }
 
-            const found = [];
-            let masked = text;
+        function getRatingColorClass(rating) {
+            if (rating >= 9) return 'rating-excellent';
+            if (rating >= 8) return 'rating-great';
+            if (rating >= 7) return 'rating-good';
+            if (rating >= 6) return 'rating-average';
+            if (rating >= 5) return 'rating-below';
+            return 'rating-poor';
+        }
 
-            // Team search list: every team-members.json key, PLUS every historical team name
-            // from name-changes.json that resolves to a real current team-members.json entry
-            // (e.g. "Lucha Brothers & PAC" -> "Death Triangle") — so a blurb correctly using
-            // period-accurate historical naming still resolves to real photos.
-            const teamKeySet = new Set(Object.keys(teamMembersData.teams));
-            if (nameChangesData && nameChangesData.changes) {
-                nameChangesData.changes.forEach(c => {
-                    if (teamMembersData.teams[resolveCurrentName(c.oldName)]) {
-                        teamKeySet.add(c.oldName);
-                    }
-                });
+        function formatRatingSpan(rating) {
+            if (typeof rating !== 'number') return null;
+            return `<span class="otd-rating ${getRatingColorClass(rating)}">${rating.toFixed(2)} out of 10</span>`;
+        }
+
+        // Simple ordinal formatter (1st, 2nd, 3rd, 4th...) for streaks/milestones
+        function ordinalNumber(n) {
+            const v = n % 100;
+            if (v >= 11 && v <= 13) return `${n}th`;
+            switch (n % 10) {
+                case 1: return `${n}st`;
+                case 2: return `${n}nd`;
+                case 3: return `${n}rd`;
+                default: return `${n}th`;
             }
-            const teamKeys = [...teamKeySet].sort((a, b) => b.length - a.length);
-
-                teamKeys.forEach(key => {
-                const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(key)}(?![a-zA-Z0-9])`, 'i');
-                const match = masked.match(pattern);
-                if (match) {
-                    // Push the CURRENT (real, lookup-able) name, even though the match itself
-                    // happened against the historical text — so buildPhotoRow's later
-                    // resolveTeamMembers() call finds a real entry.
-                    const resolvedName = teamMembersData.teams[key] ? key : resolveCurrentName(key);
-                    found.push({ name: resolvedName, isTeam: true, index: match.index });
-                    masked = masked.slice(0, match.index) + ' '.repeat(match[0].length) + masked.slice(match.index + match[0].length);
-                }
-            });
-
-            // Individuals — search whatever text is left after team spans are masked out
-            const eligibleIndividuals = wrestlersIndexData.filter(w => !w.isTeam && !w.name.includes('&'));
-                       eligibleIndividuals.forEach(w => {
-                const pattern = new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(w.name)}(?![a-zA-Z0-9])`, 'i');
-    const match = masked.match(pattern);
-    if (match) found.push({ name: resolveCurrentName(w.name), isTeam: false, index: match.index });
-});
-
-            found.sort((a, b) => a.index - b.index);
-            const seen = new Set();
-            const unique = [];
-            for (const f of found) {
-                if (!seen.has(f.name)) { seen.add(f.name); unique.push(f); }
-            }
-            // If the match has more participants than the cap, skip the photo row entirely
-            // rather than silently showing a partial, misleading subset of the field.
-            if (unique.length > cap) return [];
-            return unique;
         }
 
-       function buildPhotoRow(text) {
-    if (!wrestlersIndexData || !teamMembersData) return '';
-    const factualText = getFactualPortion(text);
-    let participants = getMatchParticipants(factualText, 12);
-    if (participants.length === 0) return '';
-
-    // Resolve each team's members once, then drop any individual participant who's
-    // already represented inside another participant's team cluster (avoids showing
-    // e.g. "Max Caster" both inside The Acclaimed's cluster AND as his own entry).
-    const teamMemberSets = new Map();
-    participants.filter(p => p.isTeam).forEach(p => {
-        const members = resolveTeamMembers(p.name, teamMembersData.teams);
-        if (members) teamMemberSets.set(p.name, members);
-    });
-    const clusteredMembers = new Set([...teamMemberSets.values()].flat());
-    participants = participants.filter(p => p.isTeam || !clusteredMembers.has(p.name));
-    if (participants.length === 0) return '';
-
-    const photoTag = (name, slug) => {
-        const initials = generateInitials(name);
-        const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
-        return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
-            <img class="otd-photo-img" src="images/wrestlers/${slug}.jpg" alt="${name}"
-                 onerror="this.onerror=null;this.src='${initialsUrl}';">
-        </a>`;
-    };
-
-    const photosForParticipant = p => {
-        if (!p.isTeam) return photoTag(p.name, createSlug(p.name));
-        const members = teamMemberSets.get(p.name);
-        if (!members) {
-            const initials = generateInitials(p.name);
-            const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
-            const slug = createSlug(p.name);
-            return `<a href="wrestler-stats.html?wrestler=${slug}"><img class="otd-photo-img" src="${initialsUrl}"></a>`;
-        }
-        return members.map(m => photoTag(m, createSlug(m))).join('');
-    };
-
-    const sideHtml = p => `<div class="otd-photo-side" style="display:flex;gap:4px;">${photosForParticipant(p)}</div>`;
-
-    // Pre-official-team blurbs (roughly anything before Nov 2025) often phrase a tag match
-    // as "teaming with X against Y and Z" instead of "X & Y vs. Z" — with no "vs." at all.
-    // In that case, group everyone found before "against" into one side and everyone after
-    // into the other, instead of rendering all 4 as separate individual sides.
-    const hasVs = /\bvs\.?\b/i.test(factualText);
-    const againstMatch = factualText.match(/\bagainst\b/i);
-
-    if (!hasVs && againstMatch && participants.length > 1) {
-        const splitIndex = againstMatch.index;
-        const sideA = participants.filter(p => p.index < splitIndex);
-        const sideB = participants.filter(p => p.index >= splitIndex);
-        if (sideA.length > 0 && sideB.length > 0) {
-            const groupHtml = group => `<div class="otd-photo-side" style="display:flex;gap:4px;">${group.map(photosForParticipant).join('')}</div>`;
-            return `<div class="otd-photo-row">${groupHtml(sideA)}<span class="otd-photo-vs">vs</span>${groupHtml(sideB)}</div>`;
-        }
-    }
-
-    return `<div class="otd-photo-row">${participants.map(sideHtml).join('<span class="otd-photo-vs">vs</span>')}</div>`;
-}
-        // Extracts a distinctive PPV/special-episode name if one is present in the text
-        // (e.g. "Sep to Remember '25 - Night 1"), so two entries can be compared for sameness.
-        function extractSpecialShowName(text) {
-            const match = text.match(/([A-Z][A-Za-z0-9:'\u2019\- ]+? '\d{2}(?:\s*-\s*Night\s*\d+)?)/);
-            return match ? match[1].trim() : null;
+        function formatWeeksAwayFriendly(weeks) {
+            if (typeof weeks !== 'number') return '';
+            const months = Math.round(weeks / 4.345);
+            const years = Math.floor(months / 12);
+            const remMonths = months % 12;
+            if (years === 0) return `${months} month${months === 1 ? '' : 's'}`;
+            if (remMonths === 0) return `${years} year${years === 1 ? '' : 's'}`;
+            return `${years} year${years === 1 ? '' : 's'} and ${remMonths} month${remMonths === 1 ? '' : 's'}`;
         }
 
-        // Falls back to the plain weekly show name (Dynamite/Collision/Rampage/etc.) when no
-        // distinctive PPV/special name is present, so two entries from the same regular
-        // episode can still be recognized as "the same show" for diversity purposes. Doesn't
-        // require a specific preceding verb ("on"/"appearing on") — blurb templates phrase this
-        // many different ways ("headlined Dynamite," "closed out Collision," etc.), so this just
-        // looks for the show name itself anywhere in the text.
-        function extractBaseShow(text) {
-            const match = text.match(/\b(Dynamite|Collision|Rampage|Dark Elevation|Dark|Revolution|Double or Nothing|Full Gear|All Out|Forbidden Door|WrestleDream|Worlds End|Dynasty|Redemption|Grand Slam(?::? \w+)?)\b/);
-            return match ? match[1] : null;
+        // Hyperlinks a single competitor entry (individual OR team name, exactly as it
+        // appears in details.competitors) to its wrestler-stats page. Resolves historical
+        // team names to their current page via resolveCurrentName, same as before — but
+        // no scanning needed now, since each competitor is already a known, exact value.
+        function hyperlinkCompetitor(name) {
+            if (!teamMembersData) return name;
+            const isRegisteredTeamName = !!teamMembersData.teams[name];
+            const slugSource = isRegisteredTeamName ? name : resolveCurrentName(name);
+            const slug = createSlug(slugSource);
+            return `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${name}</a>`;
         }
 
-        function getShowKey(text) {
-            return extractSpecialShowName(text) || extractBaseShow(text);
-        }
-
-        // Standalone numbered PPVs — double-ring gold badge, no weekly-show badge
+        // Numbered/standalone majors — full "double-ring" bold gold badge, no weekly badge
         const MAJOR_SHOWS = ['Revolution','Double or Nothing','Full Gear','All Out','Forbidden Door','WrestleDream','Worlds End','Dynasty','Redemption'];
         // Standalone specials that aren't full PPVs but still air on their own, never framed
         // as a numbered Dynamite/Collision episode — single-border gold badge
         const SOLO_SHOWS = ['Battle of the Belts','Grand Slam: Mexico','Grand Slam: Australia','Grand Slam: France'];
-        // "Named Dynamites" — genuinely a Dynamite (or Collision/Rampage) episode, just branded
-        // with a special name layered on top. Every one of these gets the same dual-badge
-        // treatment, recurring or one-off alike.
+        // "Named Dynamites" — genuinely a Dynamite (or Collision/Rampage) episode, just
+        // branded with a special name layered on top — dual-badge treatment
         const NAMED_DYNAMITE_SPECIALS = ['Grand Slam','Winter Is Coming','Beach Break','Fyter Fest','Fight for the Fallen','Bash at the Beach','Homecoming','Maximum Carnage','Sep to Remember','Holiday Bash',"New Year's Smash",'Spring BreakThru','Summer Blockbuster','Fright Night Dynamite','Dynamite on 34th Street','Rebel Heart','Big Business','The Crossroads','House of the Dragon','Tag Team Appreciation Night',"St. Patrick's Day Slam",'Brodie Lee Celebration of Life'];
 
-        // Builds the show-badge HTML for a blurb: checks solo specials and majors first
-        // (most specific), then named-Dynamites, then falls back to a plain weekly badge.
-        // Returns '' if no recognizable show is mentioned at all.
-        function buildShowBadges(text) {
-            for (const show of SOLO_SHOWS) {
-                if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(show)}(?![a-zA-Z0-9])`, 'i').test(text)) {
-                    return `<div class="otd-show-badges"><span class="otd-show-badge solo">${show}</span></div>`;
-                }
+        // Builds the show badge(s) directly from details.event / details.suppName — exact
+        // value matching against the curated lists above, no text-scanning needed since
+        // these are already clean, direct fields rather than free-written prose.
+        function buildShowBadgesFromDetails(details) {
+            const event = details.event;
+            if (!event) return '';
+            const suppName = (details.suppName && details.suppName !== 'N/A') ? details.suppName : null;
+
+            if (SOLO_SHOWS.includes(event)) {
+                return `<div class="otd-show-badges"><span class="otd-show-badge solo">${event}</span></div>`;
             }
-            for (const show of MAJOR_SHOWS) {
-                if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(show)}(?![a-zA-Z0-9])`, 'i').test(text)) {
-                    return `<div class="otd-show-badges"><span class="otd-show-badge major">${show}</span></div>`;
-                }
+            if (MAJOR_SHOWS.includes(event)) {
+                return `<div class="otd-show-badges"><span class="otd-show-badge major">${event}</span></div>`;
             }
-            const baseShow = extractBaseShow(text);
-            if (baseShow && ['Dynamite','Collision','Rampage'].includes(baseShow)) {
-                for (const special of NAMED_DYNAMITE_SPECIALS) {
-                    if (new RegExp(`(?<![a-zA-Z0-9])${escapeRegex(special)}(?![a-zA-Z0-9])`, 'i').test(text)) {
-                        return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${special}</span></div>`;
-                    }
+            if (['Dynamite', 'Collision', 'Rampage'].includes(event)) {
+                if (suppName) {
+                    return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${event}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${suppName}</span></div>`;
                 }
-                const yearSuffixSpecial = extractSpecialShowName(text);
-                if (yearSuffixSpecial) {
-                    return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span><span class="otd-show-badge-connector">\u00b7</span><span class="otd-show-badge special">${yearSuffixSpecial}</span></div>`;
-                }
-                return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${baseShow}</span></div>`;
+                return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${event}</span></div>`;
             }
-            return '';
+            // Unrecognized show name — fall back to a plain quiet badge rather than nothing
+            return `<div class="otd-show-badges"><span class="otd-show-badge weekly">${event}</span></div>`;
         }
 
-        function stripShowRatingClause(text) {
-            return text
-                .replace(/,?\s*on an outstanding [^,.]+ show that earned an overall rating of \d+\.\d+/g, '')
-                .replace(/\s*[—-]?\s*part of (?:a |that year's |the )?stacked [^,.]+ card, rated \d+\.\d+ overall/g, '')
-                .trim();
+        // Builds one wrestler/team photo tag with the standard fallback-to-initials pattern
+        function buildPhotoTag(name) {
+            const slug = createSlug(name);
+            const initials = generateInitials(name);
+            const initialsUrl = createInitialsCircle(initials, 60, '#ffd700');
+            return `<a href="wrestler-stats.html?wrestler=${slug}" style="display:inline-block;">
+                <img class="otd-photo-img" src="images/wrestlers/${slug}.jpg" alt="${name}"
+                     onerror="this.onerror=null;this.src='${initialsUrl}';">
+            </a>`;
         }
 
-        // Fixes the '?' mojibake that sometimes appears where an em-dash should be, from
-        // encoding loss during the Google Sheets -> GitHub export. Only targets the specific
-        // " ? " pattern (space-question mark-space), so a genuine question mark at the end
-        // of a real question ("...right?") is never touched.
-        function fixMojibake(text) {
-            return text.replace(/ \? /g, ' — ');
+        // Expands one competitor entry into its photo(s) — a single photo for an individual,
+        // or a clustered set for a team (resolving historical team names first if needed).
+        function buildCompetitorPhotos(competitorName) {
+            if (!teamMembersData) return buildPhotoTag(competitorName);
+            let members = null;
+            if (teamMembersData.teams[competitorName]) {
+                members = resolveTeamMembers(competitorName, teamMembersData.teams);
+            } else {
+                const resolved = resolveCurrentName(competitorName);
+                if (resolved !== competitorName && teamMembersData.teams[resolved]) {
+                    members = resolveTeamMembers(resolved, teamMembersData.teams);
+                }
+            }
+            if (!members) return buildPhotoTag(competitorName);
+            return members.map(buildPhotoTag).join('');
         }
 
-        // Rewrites the awkward source-template phrase "X vs. Y put the [Title] on the line"
-        // into "X and Y battled it out over the [Title]" — a full, natural phrase rather than
-        // a single-word swap, since "vs." doesn't work as a grammatical subject for "put."
-        function fixVsPutGrammar(text) {
-            return text.replace(/(.+?) vs\. (.+?) put the (.+?) on the line/, '$1 and $2 battled it out over the $3');
+        // Championship belt image, shown centrally between sides for a title match —
+        // same slug convention and folder pattern as wrestler photos.
+        function buildChampionshipImage(title) {
+            if (!title) return '';
+            const slug = createSlug(title);
+            return `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${title}" onerror="this.style.display='none';">`;
+        }
+
+        // Builds the photo row directly from details.competitors — no scanning, no
+        // guessing, since this is already the exact participant list. Skips entirely for
+        // fields beyond 12 participants (the same extreme-battle-royal safeguard as before).
+        function buildPhotoRowFromDetails(details) {
+            if (!details.competitors || !Array.isArray(details.competitors) || details.competitors.length === 0) return '';
+            if (details.competitors.length > 12) return '';
+
+            const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
+            const divider = details.title
+                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImage(details.title)}</span>`
+                : `<span class="otd-photo-vs">vs</span>`;
+
+            return `<div class="otd-photo-row">${sides.join(divider)}</div>`;
+        }
+
+        // Combines whichever of these genuinely apply into one readable "Other Notes"
+        // line — title changes/defenses, debuts, returns, milestones, name changes.
+        function buildOtherNotes(details) {
+            const notes = [];
+
+            if (details.titleChanged === true) {
+                notes.push(typeof details.streak === 'number'
+                    ? `Title change — ending a ${details.streak}-defense reign`
+                    : 'Title change');
+            } else if (typeof details.streak === 'number' && details.streak > 0) {
+                notes.push(`${ordinalNumber(details.streak + 1)} successful title defense`);
+            }
+
+            if (details.debutType) {
+                const label = String(details.debutType).charAt(0).toUpperCase() + String(details.debutType).slice(1);
+                notes.push(`${label} debut`);
+            }
+
+            if (typeof details.weeksAway === 'number') {
+                notes.push(`Returning after ${formatWeeksAwayFriendly(details.weeksAway)} away`);
+            }
+
+            if (typeof details.matchCount === 'number') {
+                notes.push(`${ordinalNumber(details.matchCount)} AEW match`);
+            }
+
+            if (details.oldName && details.newName) {
+                notes.push(`Name change: ${details.oldName} \u2192 ${details.newName}`);
+            }
+
+            if (details.newTitleCompetitors && details.newTitleCompetitors.length > 0) {
+                notes.push(`New champion: ${details.newTitleCompetitors.join(', ')}`);
+            }
+
+            return notes.join('; ');
+        }
+
+        // Builds the factual details table beneath the badge/photo header. Deliberately
+        // omits "Show" as its own row (the badge above already covers it), and omits
+        // details.competitors in favour of the already-joined, hyperlinked Wrestlers row.
+        function buildMatchTable(details) {
+            const rows = [];
+
+            if (details.date) rows.push(['Date', formatFullDate(details.date)]);
+            if (details.location) rows.push(['Location', String(details.location).replace(/;\s*/g, ', ')]);
+            if (details.competitors && details.competitors.length > 0) {
+                rows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
+            }
+            if (details.title) rows.push(['Title', details.title]);
+            if (details.matchType) rows.push(['Match Type', details.matchType]);
+            if (details.matchPos) rows.push(['Position', details.matchPos]);
+
+            const ratingSpan = formatRatingSpan(details.rating);
+            if (ratingSpan) rows.push(['Match Rating', ratingSpan]);
+            const showRatingSpan = formatRatingSpan(details.showRating);
+            if (showRatingSpan) rows.push(['Show Rating', showRatingSpan]);
+
+            if (details.stipulation && details.stipulation !== 'N/A' && details.stipulation !== 'None') {
+                rows.push(['Stipulation', details.stipulation]);
+            }
+            if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None') {
+                rows.push(['Stakes', details.stakes]);
+            }
+
+            const otherNotes = buildOtherNotes(details);
+            if (otherNotes) rows.push(['Other Notes', otherNotes]);
+
+            const rowsHtml = rows
+                .map(([field, value]) => `<tr><td class="otd-table-field">${field}</td><td class="otd-table-value">${value}</td></tr>`)
+                .join('');
+            return `<table class="otd-match-table">${rowsHtml}</table>`;
         }
 
         // Deterministic seeded random number generator, seeded by a date string. This means
-        // every visitor sees the same headline/secondary pairing on a given calendar day
-        // (stable across refreshes), while it still varies from day to day and year to year —
-        // matching the seededRandom(mmdd) convention already used elsewhere in the pipeline.
+        // every visitor sees the same headline pairing on a given calendar day (stable
+        // across refreshes), while it still varies from day to day and year to year.
         function seededRandomFromDate(dateStr) {
             let hash = 0;
             for (let i = 0; i < dateStr.length; i++) {
@@ -3063,35 +2872,14 @@ function getFactualPortion(text) {
             };
         }
 
+        // Picks ONE random headline entry from the day's list — every entry in the daily
+        // export is already a genuine, real match (no secondaries, no diversity logic
+        // needed, since there's now just one flat pool of 2-4 real candidates per date).
         function pickOnThisDayContent(otdData, seedStr) {
             const rand = seededRandomFromDate(seedStr);
             const headlines = otdData.headlines || [];
-            const secondaries = (otdData.secondaries || []).slice();
             if (headlines.length === 0) return null;
-
-            const headline = headlines[Math.floor(rand() * headlines.length)];
-            const headlineSpecialShow = extractSpecialShowName(headline.text);
-            const headlineShowKey = getShowKey(headline.text);
-
-            let candidatePool;
-            if (secondaries.length > 0) {
-                candidatePool = secondaries;
-                if (headlineShowKey) {
-                    const differentShow = secondaries.filter(s => getShowKey(s.text) !== headlineShowKey);
-                    if (differentShow.length > 0) candidatePool = differentShow;
-                }
-            } else {
-                // No secondaries at all for this date — fall back to any OTHER headline
-                // (that wasn't picked as the main one) so the section isn't just empty.
-                candidatePool = headlines.filter(h => h !== headline);
-            }
-            if (candidatePool.length === 0) return { headline, secondary: null };
-
-            let secondary = candidatePool[Math.floor(rand() * candidatePool.length)];
-            if (headlineSpecialShow && extractSpecialShowName(secondary.text) === headlineSpecialShow) {
-                secondary = { ...secondary, text: stripShowRatingClause(secondary.text) };
-            }
-            return { headline, secondary };
+            return headlines[Math.floor(rand() * headlines.length)];
         }
 
         function toggleTeaser() {
@@ -3102,7 +2890,7 @@ function getFactualPortion(text) {
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 5, 20); // TEMP TEST DATE — remember to revert!
+            const today = new Date();
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3119,38 +2907,21 @@ function getFactualPortion(text) {
 
             const fullDateSeed = `${today.getFullYear()}-${mmdd}`;
             const picked = pickOnThisDayContent(otdData, fullDateSeed);
-            if (!picked) return;
+            if (!picked || !picked.details) return;
 
-            const process = text => colorCodeRatings(hyperlinkNames(applyOnThisDayTextAdjustments(fixVsPutGrammar(fixMojibake(text)))));
-            const headlineHtml = process(picked.headline.text);
-            const secondaryHtml = picked.secondary ? process(picked.secondary.text) : null;
-            const headlinePhotoRow = buildPhotoRow(picked.headline.text);
-            const secondaryPhotoRow = picked.secondary ? buildPhotoRow(picked.secondary.text) : '';
-            const headlineBadges = buildShowBadges(picked.headline.text);
-            const secondaryBadges = picked.secondary ? buildShowBadges(picked.secondary.text) : '';
+            const details = picked.details;
+            const badges = buildShowBadgesFromDetails(details);
+            const photoRow = buildPhotoRowFromDetails(details);
+            const table = buildMatchTable(details);
             const dateLabel = formatOrdinalDate(today);
 
             container.innerHTML = `
-                <div class="otd-teaser-head" onclick="toggleTeaser()">
+                <div class="otd-teaser-head">
                     <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
-                    <div class="otd-expand-btn" title="Show more">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
-</div>
                 </div>
-                ${headlineBadges}
-                ${headlinePhotoRow}
-                <p class="otd-teaser-body">${headlineHtml}</p>
-                <div class="otd-teaser-expandable">
-                    <div class="otd-teaser-divider" style="margin-top:4px;"></div>
-                    ${secondaryHtml ? `
-                    <div class="otd-remember-block" style="margin-top:0;">
-                        <div class="otd-mini-section-label">Do You Remember When...</div>
-                        ${secondaryBadges}
-                        ${secondaryPhotoRow}
-                        <div class="otd-mini-headline">${secondaryHtml}</div>
-                    </div>` : ''}
-                    <!-- <a href="on-this-day.html" class="otd-teaser-more">Open full page for every year \u2192</a> -->
-                </div>
+                ${badges}
+                ${photoRow}
+                ${table}
             `;
             container.style.display = 'block';
         }
