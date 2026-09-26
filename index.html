@@ -1618,7 +1618,7 @@
 }
         .otd-teaser-head{
     display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:4px;flex-wrap:nowrap;gap:8px;cursor:pointer;
+    margin-bottom:6px;flex-wrap:wrap;gap:8px;cursor:pointer;
 }
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1630,39 +1630,37 @@
             .otd-teaser-date{font-size:0.78em;}
             .otd-teaser-body{font-size:0.92em;}
             .otd-mini-headline{font-size:0.92em;}
-            .otd-detail-field{font-size:0.62em;letter-spacing:0.3px;}
-            .otd-detail-value{font-size:0.82em;}
-            .otd-details-grid{column-gap:10px;}
+            .otd-detail-field{font-size:0.6em;letter-spacing:0.3px;}
+            .otd-detail-value{font-size:0.78em;}
+            .otd-detail-row-pair{gap:10px;}
         }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-show-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
-        .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.72em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:4px 13px;border-radius:20px;}
+        .otd-teaser-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
+        .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
+        .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
         .otd-show-badge.solo{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,215,0,0.04));border:1px solid #ffd700;box-shadow:0 0 10px rgba(255,215,0,0.25);}
-        .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:5px 16px;}
+        .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:4px 14px;}
         .otd-show-badge-connector{color:#a8a394;font-size:0.75em;}
 
         .otd-championship-img{height:38px;width:auto;object-fit:contain;}
         .otd-photo-title-divider{display:inline-flex;align-items:center;justify-content:center;}
 
-        .otd-details-grid{
-            display:grid;grid-template-columns:auto 1fr;
-            column-gap:16px;row-gap:0;margin-top:12px;
+        .otd-details-grid{margin-top:10px;}
+        .otd-detail-row-full,.otd-detail-row-pair{
+            border-bottom:1px solid rgba(255,255,255,0.06);padding:6px 0;
         }
+        .otd-details-grid > div:last-child{border-bottom:none;}
+        .otd-detail-row-full{display:flex;flex-direction:column;gap:2px;}
+        .otd-detail-row-pair{display:flex;gap:16px;}
+        .otd-detail-cell{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
         .otd-detail-field{
-            color:#a8a394;font-size:0.68em;font-weight:bold;text-transform:uppercase;
-            letter-spacing:0.5px;white-space:nowrap;padding:7px 0;
-            border-bottom:1px solid rgba(255,255,255,0.06);
+            color:#a8a394;font-size:0.65em;font-weight:bold;text-transform:uppercase;letter-spacing:0.4px;
         }
-        .otd-detail-value{
-            color:#fff;font-size:0.88em;line-height:1.4;padding:7px 0;
-            border-bottom:1px solid rgba(255,255,255,0.06);
-        }
-        .otd-details-grid > .otd-detail-field:nth-last-child(2),
-        .otd-details-grid > .otd-detail-value:last-child{border-bottom:none;}
+        .otd-detail-value{color:#fff;font-size:0.85em;line-height:1.4;word-break:break-word;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:2px;flex-wrap:wrap;row-gap:8px;
@@ -1675,14 +1673,15 @@
 }
 @media (min-width:600px){
     .otd-photo-img{width:75px;height:75px;}
-    .otd-detail-field{font-size:0.72em;}
-    .otd-detail-value{font-size:0.92em;}
+    .otd-detail-field{font-size:0.68em;}
+    .otd-detail-value{font-size:0.85em;}
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
-    .otd-details-grid{column-gap:20px;}
-    .otd-detail-field{font-size:0.75em;padding:9px 0;}
-    .otd-detail-value{font-size:0.95em;padding:9px 0;}
+    .otd-detail-row-pair{gap:20px;padding:7px 0;}
+    .otd-detail-row-full{padding:7px 0;}
+    .otd-detail-field{font-size:0.7em;}
+    .otd-detail-value{font-size:0.88em;}
 }
         .otd-teaser-body{
     font-size:1.2em;line-height:1.5;color:#fff;margin:0;
@@ -2833,12 +2832,13 @@
             return notes.join('; ');
         }
 
-        // Builds the factual details grid beneath the badge/photo header, as plain divs in
-        // a CSS grid — not a real <table>, since the site's global table-layout:fixed rule
-        // (built for the rankings tables) would otherwise collapse the field-label column.
-        // Deliberately omits "Show" as its own row (the badge above already covers it), and
-        // omits details.competitors in favour of the already-joined, hyperlinked Wrestlers row.
+        // Builds the factual details grid beneath the badge/photo header. Short fields
+        // (Date, Title, Match Type, Position, ratings, Stipulation, Stakes) pack two to a
+        // row for a more compact two-column layout; longer-text fields (Location, Wrestlers,
+        // Other Notes) always get their own full-width row so they don't get cramped.
+        // Deliberately omits "Show" as its own row (the badge above already covers it).
         function buildMatchTable(details) {
+            const fullWidthFields = new Set(['Location', 'Wrestlers', 'Other Notes']);
             const rows = [];
 
             if (details.date) rows.push(['Date', formatFullDate(details.date)]);
@@ -2865,10 +2865,29 @@
             const otherNotes = buildOtherNotes(details);
             if (otherNotes) rows.push(['Other Notes', otherNotes]);
 
-            const gridHtml = rows
-                .map(([field, value]) => `<div class="otd-detail-field">${field}</div><div class="otd-detail-value">${value}</div>`)
-                .join('');
-            return `<div class="otd-details-grid">${gridHtml}</div>`;
+            const cellHtml = (field, value) => `<div class="otd-detail-cell"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
+            const fullHtml = (field, value) => `<div class="otd-detail-row-full"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
+
+            const parts = [];
+            let i = 0;
+            while (i < rows.length) {
+                const [field, value] = rows[i];
+                if (fullWidthFields.has(field)) {
+                    parts.push(fullHtml(field, value));
+                    i++;
+                    continue;
+                }
+                const next = rows[i + 1];
+                if (next && !fullWidthFields.has(next[0])) {
+                    parts.push(`<div class="otd-detail-row-pair">${cellHtml(field, value)}${cellHtml(next[0], next[1])}</div>`);
+                    i += 2;
+                } else {
+                    parts.push(fullHtml(field, value));
+                    i++;
+                }
+            }
+
+            return `<div class="otd-details-grid">${parts.join('')}</div>`;
         }
 
         // Deterministic seeded random number generator, seeded by a date string. This means
@@ -2907,7 +2926,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 25); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 26); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -2935,11 +2954,13 @@
             container.innerHTML = `
                 <div class="otd-teaser-head" onclick="toggleTeaser()">
                     <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
-                    <div class="otd-expand-btn" title="Show more">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    <div class="otd-teaser-head-right">
+                        ${badges}
+                        <div class="otd-expand-btn" title="Show more">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
                     </div>
                 </div>
-                ${badges}
                 ${photoRow}
                 <div class="otd-teaser-expandable">
                     ${table}
