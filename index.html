@@ -1611,14 +1611,14 @@
     background:rgba(255,215,0,0.07);
     border:1px solid rgba(255,215,0,0.35);
     border-radius:12px;
-    padding:22px 26px;
+    padding:16px 20px;
     margin-bottom:32px;
     position:relative;
     overflow:hidden;
 }
         .otd-teaser-head{
     display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:6px;flex-wrap:wrap;gap:8px;cursor:pointer;
+    margin-bottom:2px;flex-wrap:wrap;gap:8px;cursor:pointer;
 }
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1632,7 +1632,7 @@
             .otd-mini-headline{font-size:0.92em;}
             .otd-detail-field{font-size:0.6em;letter-spacing:0.3px;}
             .otd-detail-value{font-size:0.78em;}
-            .otd-detail-row-pair{gap:10px;}
+            .otd-details-grid{column-gap:8px;}
         }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
@@ -1649,18 +1649,20 @@
         .otd-championship-img{height:38px;width:auto;object-fit:contain;}
         .otd-photo-title-divider{display:inline-flex;align-items:center;justify-content:center;}
 
-        .otd-details-grid{margin-top:10px;}
-        .otd-detail-row-full,.otd-detail-row-pair{
-            border-bottom:1px solid rgba(255,255,255,0.06);padding:6px 0;
+        .otd-details-grid{
+            display:grid;grid-template-columns:auto 1fr auto 1fr;
+            column-gap:12px;row-gap:0;margin-top:6px;
         }
-        .otd-details-grid > div:last-child{border-bottom:none;}
-        .otd-detail-row-full{display:flex;flex-direction:column;gap:2px;}
-        .otd-detail-row-pair{display:flex;gap:16px;}
-        .otd-detail-cell{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
         .otd-detail-field{
-            color:#a8a394;font-size:0.65em;font-weight:bold;text-transform:uppercase;letter-spacing:0.4px;
+            color:#a8a394;font-size:0.65em;font-weight:bold;text-transform:uppercase;
+            letter-spacing:0.4px;white-space:nowrap;padding:6px 0;align-self:start;
+            border-bottom:1px solid rgba(255,255,255,0.06);
         }
-        .otd-detail-value{color:#fff;font-size:0.85em;line-height:1.4;word-break:break-word;}
+        .otd-detail-value{
+            color:#fff;font-size:0.85em;line-height:1.4;padding:6px 0;word-break:break-word;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .otd-detail-value-full{grid-column:2 / -1;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:2px;flex-wrap:wrap;row-gap:8px;
@@ -1678,10 +1680,9 @@
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
-    .otd-detail-row-pair{gap:20px;padding:7px 0;}
-    .otd-detail-row-full{padding:7px 0;}
-    .otd-detail-field{font-size:0.7em;}
-    .otd-detail-value{font-size:0.88em;}
+    .otd-details-grid{column-gap:18px;}
+    .otd-detail-field{font-size:0.7em;padding:7px 0;}
+    .otd-detail-value{font-size:0.88em;padding:7px 0;}
 }
         .otd-teaser-body{
     font-size:1.2em;line-height:1.5;color:#fff;margin:0;
@@ -2703,12 +2704,19 @@
         // appears in details.competitors) to its wrestler-stats page. Resolves historical
         // team names to their current page via resolveCurrentName, same as before — but
         // no scanning needed now, since each competitor is already a known, exact value.
+        // Strips parenthetical text from a name for DISPLAY only (e.g. "Dark Order
+        // (Reynolds & Silver)" -> "Dark Order") — the original, unstripped name is still
+        // used for team-lookup/slug purposes, since that's likely the real registered key.
+        function stripBracketedText(name) {
+            return String(name).replace(/\s*\([^)]*\)/g, '').trim();
+        }
+
         function hyperlinkCompetitor(name) {
-            if (!teamMembersData) return name;
+            if (!teamMembersData) return stripBracketedText(name);
             const isRegisteredTeamName = !!teamMembersData.teams[name];
             const slugSource = isRegisteredTeamName ? name : resolveCurrentName(name);
             const slug = createSlug(slugSource);
-            return `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${name}</a>`;
+            return `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${stripBracketedText(name)}</a>`;
         }
 
         // Numbered/standalone majors — full "double-ring" bold gold badge, no weekly badge
@@ -2773,11 +2781,20 @@
         }
 
         // Championship belt image, shown centrally between sides for a title match —
-        // same slug convention and folder pattern as wrestler photos.
+        // same slug convention and folder pattern as wrestler photos. Shows one belt per
+        // champion for tag/trios titles (matching the real number of physical belts).
         function buildChampionshipImage(title) {
             if (!title) return '';
             const slug = createSlug(title);
             return `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${title}" onerror="this.style.display='none';">`;
+        }
+
+        function buildChampionshipImages(details) {
+            if (!details.title) return '';
+            const beltCount = details.division === 'Trios' ? 3 : (details.division === 'Tag' ? 2 : 1);
+            let html = '';
+            for (let i = 0; i < beltCount; i++) html += buildChampionshipImage(details.title);
+            return html;
         }
 
         // Builds the photo row directly from details.competitors — no scanning, no
@@ -2789,7 +2806,7 @@
 
             const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
             const divider = details.title
-                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImage(details.title)}</span>`
+                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImages(details)}</span>`
                 : `<span class="otd-photo-vs">vs</span>`;
 
             return `<div class="otd-photo-row">${sides.join(divider)}</div>`;
@@ -2826,29 +2843,34 @@
             }
 
             if (details.newTitleCompetitors && details.newTitleCompetitors.length > 0) {
-                notes.push(`New champion: ${details.newTitleCompetitors.join(', ')}`);
+                notes.push(`First title opportunity for ${details.newTitleCompetitors.join(', ')}`);
             }
 
             return notes.join('; ');
         }
 
-        // Builds the factual details grid beneath the badge/photo header. Short fields
-        // (Date, Title, Match Type, Position, ratings, Stipulation, Stakes) pack two to a
-        // row for a more compact two-column layout; longer-text fields (Location, Wrestlers,
-        // Other Notes) always get their own full-width row so they don't get cramped.
-        // Deliberately omits "Show" as its own row (the badge above already covers it).
+        // Builds the factual details grid beneath the badge/photo header, using a true
+        // 4-column CSS Grid (auto-placement) so every field-label column aligns perfectly
+        // across all rows — long-text fields (Location, Wrestlers, Other Notes) span the
+        // full remaining width via grid-column, while short fields pack naturally two per
+        // row without any manual row-pairing logic needed.
         function buildMatchTable(details) {
             const fullWidthFields = new Set(['Location', 'Wrestlers', 'Other Notes']);
             const rows = [];
 
             if (details.date) rows.push(['Date', formatFullDate(details.date)]);
-            if (details.location) rows.push(['Location', String(details.location).replace(/;\s*/g, ', ')]);
+            if (details.location) rows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
+            if (details.event) {
+                rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
+            }
             if (details.competitors && details.competitors.length > 0) {
                 rows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
             }
             if (details.title) rows.push(['Title', details.title]);
             if (details.matchType) rows.push(['Match Type', details.matchType]);
-            if (details.matchPos) rows.push(['Position', details.matchPos]);
+            if (details.matchPos === 'Opener' || details.matchPos === 'Main Event') {
+                rows.push(['Match Position', details.matchPos]);
+            }
 
             const ratingSpan = formatRatingSpan(details.rating);
             if (ratingSpan) rows.push(['Match Rating', ratingSpan]);
@@ -2865,27 +2887,10 @@
             const otherNotes = buildOtherNotes(details);
             if (otherNotes) rows.push(['Other Notes', otherNotes]);
 
-            const cellHtml = (field, value) => `<div class="otd-detail-cell"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
-            const fullHtml = (field, value) => `<div class="otd-detail-row-full"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
-
-            const parts = [];
-            let i = 0;
-            while (i < rows.length) {
-                const [field, value] = rows[i];
-                if (fullWidthFields.has(field)) {
-                    parts.push(fullHtml(field, value));
-                    i++;
-                    continue;
-                }
-                const next = rows[i + 1];
-                if (next && !fullWidthFields.has(next[0])) {
-                    parts.push(`<div class="otd-detail-row-pair">${cellHtml(field, value)}${cellHtml(next[0], next[1])}</div>`);
-                    i += 2;
-                } else {
-                    parts.push(fullHtml(field, value));
-                    i++;
-                }
-            }
+            const parts = rows.map(([field, value]) => {
+                const valueClass = fullWidthFields.has(field) ? 'otd-detail-value otd-detail-value-full' : 'otd-detail-value';
+                return `<div class="otd-detail-field">${field}</div><div class="${valueClass}">${value}</div>`;
+            });
 
             return `<div class="otd-details-grid">${parts.join('')}</div>`;
         }
@@ -2926,7 +2931,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 12); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 10, 25); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3419,7 +3424,7 @@ let visibleColumns = {
             // Load team members data (await so it's ready before rendering)
             await loadTeamMembers();
             await loadFactions();
-            //renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
+            renderOnThisDayTeaser(); // PAUSED — not ready to go live yet, uncomment when ready
             
             // Load name changes (don't block on failure)
             try {
