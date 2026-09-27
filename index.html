@@ -1616,15 +1616,30 @@
     position:relative;
     overflow:hidden;
 }
+        /* Header = one grid holding title, photos and badges.
+           Mobile/tablet: title + badges on row 1, photos directly beneath.
+           Desktop (>=1025px): all three on ONE row, photos centred between them. */
         .otd-teaser-head{
-    display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:0;flex-wrap:wrap;gap:8px;cursor:pointer;
-}
+            display:grid;
+            grid-template-columns:minmax(0,1fr) auto;
+            grid-template-areas:"title right" "photos photos";
+            align-items:center;column-gap:12px;row-gap:0;cursor:pointer;
+        }
+        .otd-teaser-head .otd-photo-row{grid-area:photos;margin:10px 0 0;}
         .otd-teaser-title{
+            grid-area:title;
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
             display:flex;align-items:center;gap:10px;min-width:0;
         }
-        .otd-teaser-date{color:#a8a394;font-size:0.95em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);white-space:nowrap;}
+        .otd-teaser-title-text{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
+        .otd-teaser-date{color:#a8a394;font-size:0.8em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);white-space:nowrap;}
+        @media (min-width:1025px){
+            .otd-teaser-head{
+                grid-template-columns:minmax(max-content,1fr) auto minmax(max-content,1fr);
+                grid-template-areas:"title photos right";
+            }
+            .otd-teaser-head .otd-photo-row{margin:0;}
+        }
         @media (max-width:480px){
             .otd-teaser-title{font-size:0.95em;gap:6px;}
             .otd-teaser-date{font-size:0.78em;}
@@ -1632,13 +1647,12 @@
             .otd-mini-headline{font-size:0.92em;}
             .otd-detail-field{font-size:0.6em;letter-spacing:0.3px;flex-basis:56px;}
             .otd-detail-value{font-size:0.78em;}
-            .otd-details-pair-grid{column-gap:8px;}
         }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-teaser-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
+        .otd-teaser-head-right{grid-area:right;justify-self:end;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
@@ -1655,12 +1669,17 @@
         }
         .otd-photo-title-divider .otd-photo-vs-label{color:#a8a394;font-size:0.75em;font-style:italic;}
 
-        .otd-details-grid{margin-top:6px;}
-        .otd-detail-row-full{
-            display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
-        }
-        .otd-details-pair-grid{
-            display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:0;
+        /* Details table: one list of identical cells. Phones = single column.
+           >=600px = two columns filled top-to-bottom (left gets the extra cell when odd),
+           with --otd-rows (set inline by buildMatchTable) = ceil(cells/2). Rows are shared
+           across both columns, so a long value on one side keeps both sides level. */
+        .otd-details-grid{display:grid;grid-template-columns:minmax(0,1fr);column-gap:28px;}
+        @media (min-width:600px){
+            .otd-details-grid{
+                grid-template-columns:repeat(2,minmax(0,1fr));
+                grid-template-rows:repeat(var(--otd-rows,1),auto);
+                grid-auto-flow:column;
+            }
         }
         .otd-detail-cell{
             display:flex;gap:8px;min-width:0;border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
@@ -1672,7 +1691,7 @@
         .otd-detail-value{color:#fff;font-size:0.8em;line-height:1.35;flex:1;min-width:0;word-break:break-word;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
-    margin-bottom:2px;flex-wrap:wrap;row-gap:8px;
+    flex-wrap:wrap;row-gap:8px;
 }
         .otd-photo-side{display:flex;gap:4px;}
         .otd-photo-vs{color:#a8a394;font-size:0.8em;font-style:italic;}
@@ -1687,7 +1706,6 @@
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
-    .otd-details-pair-grid{column-gap:20px;}
     .otd-detail-field{font-size:0.7em;flex-basis:82px;}
     .otd-detail-value{font-size:0.88em;}
 }
@@ -2865,64 +2883,47 @@
             return notes.join('; ');
         }
 
-        // Builds the factual details grid beneath the badge/photo header. Uses explicit
-        // row wrappers (not pure CSS Grid auto-placement) — mixing an explicitly-spanning
-        // full-width item with normally-placed siblings caused the browser's grid
-        // auto-placement to reorder items unpredictably. Field labels get a fixed width
-        // so they still align as a clean visual column down the page.
-        // Builds the factual details section beneath the badge/photo header, split into
-        // two completely separate blocks: full-width rows (Date, Location, Show, Wrestlers,
-        // Stakes, Other Notes — always their own row) and a dedicated pairable-only 2-column
-        // grid for short fields (Match Type, Position, ratings, Stipulation). Keeping these
-        // as two entirely separate containers — rather than one grid with some items
-        // spanning and others not — is deliberate: mixing spanning and non-spanning items
-        // in one CSS Grid is what caused the column-balance bug earlier. With nothing but
-        // plain, identically-shaped cells in the pair-grid, a true 50/50 split is guaranteed.
+        // Builds the details table as ONE ordered list of identical cells. The CSS
+        // (.otd-details-grid) lays it out as two balanced columns on wider screens —
+        // filled top-to-bottom, left column taking the extra cell when the count is odd —
+        // and a single column on phones. No spanning items, so no auto-placement surprises.
         function buildMatchTable(details) {
-            const fullRows = [];
-            const pairableRows = [];
+            // One ordered list; CSS splits it into two balanced columns (see .otd-details-grid).
+            const rows = [];
 
-            if (details.date) fullRows.push(['Date', formatFullDate(details.date)]);
-            if (details.location) fullRows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
+            if (details.date) rows.push(['Date', formatFullDate(details.date)]);
+            if (details.location) rows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
             if (details.event) {
-                fullRows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
+                rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
             }
             if (details.competitors && details.competitors.length > 0) {
-                fullRows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
+                rows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
             }
-
-            // Merge Title into Stakes — showing both separately was redundant (once the
-            // specific title name is known, a generic "Title Match" label adds nothing).
-            // Prefer the specific title name; fall back to the plain stakes value.
+            // Title merged into Stakes — prefer the specific title name, else plain stakes.
             if (details.title) {
-                fullRows.push(['Stakes', details.title]);
+                rows.push(['Stakes', details.title]);
             } else if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None') {
-                fullRows.push(['Stakes', details.stakes]);
+                rows.push(['Stakes', details.stakes]);
             }
-
-            if (details.matchType) pairableRows.push(['Match Type', details.matchType]);
+            if (details.matchType) rows.push(['Match Type', details.matchType]);
+            if (details.stipulation && details.stipulation !== 'N/A' && details.stipulation !== 'None') {
+                rows.push(['Stipulation', details.stipulation]);
+            }
             if (details.matchPos === 'Opener' || details.matchPos === 'Main Event') {
-                pairableRows.push(['Match Position', details.matchPos]);
+                rows.push(['Match Position', details.matchPos]);
             }
             const ratingSpan = formatRatingSpan(details.rating);
-            if (ratingSpan) pairableRows.push(['Match Rating', ratingSpan]);
+            if (ratingSpan) rows.push(['Match Rating', ratingSpan]);
             const showRatingSpan = formatRatingSpan(details.showRating);
-            if (showRatingSpan) pairableRows.push(['Show Rating', showRatingSpan]);
-            if (details.stipulation && details.stipulation !== 'N/A' && details.stipulation !== 'None') {
-                pairableRows.push(['Stipulation', details.stipulation]);
-            }
-
+            if (showRatingSpan) rows.push(['Show Rating', showRatingSpan]);
             const otherNotes = buildOtherNotes(details);
-            if (otherNotes) fullRows.push(['Other Notes', otherNotes]);
+            if (otherNotes) rows.push(['Other Notes', otherNotes]);
 
-            const fullHtml = fullRows
-                .map(([field, value]) => `<div class="otd-detail-row-full"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`)
+            if (rows.length === 0) return '';
+            const cells = rows
+                .map(([field, value]) => `<div class="otd-detail-cell"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`)
                 .join('');
-            const cellHtml = (field, value) => `<div class="otd-detail-cell"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
-            const pairHtml = pairableRows.map(([field, value]) => cellHtml(field, value)).join('');
-            const pairBlock = pairableRows.length > 0 ? `<div class="otd-details-pair-grid">${pairHtml}</div>` : '';
-
-            return `<div class="otd-details-grid">${fullHtml}${pairBlock}</div>`;
+            return `<div class="otd-details-grid" style="--otd-rows:${Math.ceil(rows.length / 2)};">${cells}</div>`;
         }
 
         // Deterministic seeded random number generator, seeded by a date string. This means
@@ -2988,7 +2989,14 @@
 
             container.innerHTML = `
                 <div class="otd-teaser-head" onclick="toggleTeaser()">
-                    <div class="otd-teaser-title">\ud83d\udcc5 On This Day <span class="otd-teaser-date" style="margin-left:6px;">\u2014 ${dateLabel}</span></div>
+                    <div class="otd-teaser-title">
+                        <span>\ud83d\udcc5</span>
+                        <div class="otd-teaser-title-text">
+                            <span>On This Day</span>
+                            <span class="otd-teaser-date">${dateLabel}</span>
+                        </div>
+                    </div>
+                    ${photoRow}
                     <div class="otd-teaser-head-right">
                         ${badges}
                         <div class="otd-expand-btn" title="Show more">
@@ -2996,7 +3004,6 @@
                         </div>
                     </div>
                 </div>
-                ${photoRow}
                 <div class="otd-teaser-expandable">
                     ${table}
                 </div>
