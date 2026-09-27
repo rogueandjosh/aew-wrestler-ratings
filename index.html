@@ -2780,12 +2780,29 @@
             return String(name).replace(/\s*\([^)]*\)/g, '').trim();
         }
 
-        function hyperlinkCompetitor(name) {
-            if (!teamMembersData) return stripBracketedText(name);
+        // Converts a match date ("YYYY-MM-DD") into the site's week-label format
+        // ("Aug '26 Week 5") so faction date ranges can be checked. Week = ceil(day / 7),
+        // so it can differ from the archive's own numbering by at most a week — which
+        // only matters for a match in the exact week a faction formed or split.
+        function otdWeekLabelFromDate(dateStr) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr || '');
+            if (!m) return null;
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${months[parseInt(m[2], 10) - 1]} '${m[1].slice(2)} Week ${Math.ceil(parseInt(m[3], 10) / 7)}`;
+        }
+
+        // Link text shows the faction name where one applies at the match date (same
+        // getFactionDisplayName() the rankings use); the link still goes to the team's page.
+        function hyperlinkCompetitor(name, weekLabel) {
+            let displayName = name;
+            if (weekLabel && factionsData && factionsData.factions && factionsData.factions.length) {
+                displayName = stripTrioSuffix(getFactionDisplayName(name, weekLabel));
+            }
+            if (!teamMembersData) return stripBracketedText(displayName);
             const isRegisteredTeamName = !!teamMembersData.teams[name];
             const slugSource = isRegisteredTeamName ? name : resolveCurrentName(name);
             const slug = createSlug(slugSource);
-            return `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${stripBracketedText(name)}</a>`;
+            return `<a href="wrestler-stats.html?wrestler=${slug}" class="otd-wrestler-link">${stripBracketedText(displayName)}</a>`;
         }
 
         // Numbered/standalone majors — full "double-ring" bold gold badge, no weekly badge
@@ -2957,7 +2974,7 @@
                 rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
             }
             if (details.competitors && details.competitors.length > 0) {
-                rows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
+                rows.push(['Wrestlers', details.competitors.map(c => hyperlinkCompetitor(c, otdWeekLabelFromDate(details.date))).join(' vs. ')]);
             }
             // Title merged into Stakes — prefer the specific title name, else plain stakes.
             if (details.title) {
