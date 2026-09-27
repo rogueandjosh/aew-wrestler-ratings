@@ -1617,16 +1617,18 @@
     overflow:hidden;
 }
         /* Header = one grid holding title, photos and badges.
-           Mobile/tablet: photos on row 1 (top of card), title + badges beneath.
-           Desktop (>=1025px): all three on ONE row, photos centred between them.
+           >=700px: all three on ONE row — title left, photos centred, badges right
+           (photos scale down on tablets so they fit between the two).
+           Phones (<700px): title + badges on top, photos directly beneath — there
+           isn't the width for all three side by side.
            Only the chevron toggles the card — the header itself isn't clickable. */
         .otd-teaser-head{
             display:grid;
             grid-template-columns:minmax(0,1fr) auto;
-            grid-template-areas:"photos photos" "title right";
+            grid-template-areas:"title right" "photos photos";
             align-items:center;column-gap:12px;row-gap:0;
         }
-        .otd-teaser-head .otd-photo-row{grid-area:photos;margin:0 0 10px;}
+        .otd-teaser-head .otd-photo-row{grid-area:photos;margin:10px 0 0;}
         .otd-teaser-title{
             grid-area:title;
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1634,7 +1636,8 @@
         }
         .otd-teaser-title-text{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
         .otd-teaser-date{color:#a8a394;font-size:0.8em;letter-spacing:0.3px;text-shadow:0 0 10px rgba(255,215,0,0.18);white-space:nowrap;}
-        @media (min-width:1025px){
+        .otd-teaser-year{color:#a8a394;font-size:0.68em;letter-spacing:0.5px;opacity:0.8;}
+        @media (min-width:700px){
             .otd-teaser-head{
                 grid-template-columns:minmax(max-content,1fr) auto minmax(max-content,1fr);
                 grid-template-areas:"title photos right";
@@ -1719,6 +1722,13 @@
     .otd-photo-img{width:75px;height:75px;}
     .otd-detail-field{font-size:0.68em;}
     .otd-detail-value{font-size:0.85em;}
+}
+/* Tablets in the one-row header: shrink photos/belts to fit between title and badges */
+@media (min-width:700px) and (max-width:1024px){
+    .otd-photo-row{gap:8px;}
+    .otd-photo-img{width:clamp(44px,6.2vw,64px);height:clamp(44px,6.2vw,64px);}
+    .otd-championship-img{height:clamp(24px,3.4vw,34px);padding:3px;}
+    .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-18px;}
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
@@ -3007,6 +3017,7 @@
             const photoRow = buildPhotoRowFromDetails(details);
             const table = buildMatchTable(details);
             const dateLabel = formatOrdinalDate(today);
+            const matchYear = /^\d{4}/.test(details.date || '') ? details.date.slice(0, 4) : '';
 
             container.innerHTML = `
                 <div class="otd-teaser-head">
@@ -3015,6 +3026,7 @@
                         <div class="otd-teaser-title-text">
                             <span>On This Day</span>
                             <span class="otd-teaser-date">${dateLabel}</span>
+                            ${matchYear ? `<span class="otd-teaser-year">${matchYear}</span>` : ''}
                         </div>
                     </div>
                     ${photoRow}
