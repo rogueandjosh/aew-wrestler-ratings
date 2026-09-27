@@ -1632,7 +1632,7 @@
             .otd-mini-headline{font-size:0.92em;}
             .otd-detail-field{font-size:0.6em;letter-spacing:0.3px;flex-basis:56px;}
             .otd-detail-value{font-size:0.78em;}
-            .otd-detail-row-pair{gap:8px;}
+            .otd-details-pair-grid{column-gap:8px;}
         }
         .wrestler-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .2s;}
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
@@ -1659,11 +1659,12 @@
         .otd-detail-row-full{
             display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
         }
-        .otd-detail-row-pair{
-            display:grid;grid-template-columns:1fr 1fr;gap:16px;
-            border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
+        .otd-details-pair-grid{
+            display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:0;
         }
-        .otd-detail-cell{min-width:0;display:flex;gap:8px;}
+        .otd-detail-cell{
+            display:flex;gap:8px;min-width:0;border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
+        }
         .otd-detail-field{
             color:#a8a394;font-size:0.58em;font-weight:bold;text-transform:uppercase;
             letter-spacing:0.25px;flex:0 0 64px;line-height:1.25;
@@ -1686,7 +1687,7 @@
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
-    .otd-detail-row-pair{gap:20px;}
+    .otd-details-pair-grid{column-gap:20px;}
     .otd-detail-field{font-size:0.7em;flex-basis:82px;}
     .otd-detail-value{font-size:0.88em;}
 }
@@ -2797,17 +2798,18 @@
         // Championship belt image, shown centrally between sides for a title match —
         // same slug convention and folder pattern as wrestler photos. Shows one belt per
         // champion for tag/trios titles (matching the real number of physical belts).
-        function buildChampionshipImage(title) {
+        function buildChampionshipImage(title, overlapIndex) {
             if (!title) return '';
             const slug = createSlug(title);
-            return `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${title}" onerror="this.style.display='none';">`;
+            const overlapStyle = overlapIndex > 0 ? `margin-left:-14px;position:relative;z-index:${10 - overlapIndex};` : 'position:relative;z-index:10;';
+            return `<img class="otd-championship-img" style="${overlapStyle}" src="images/championships/${slug}.png" alt="${title}" onerror="this.style.display='none';">`;
         }
 
         function buildChampionshipImages(details) {
             if (!details.title) return '';
             const beltCount = details.division === 'Trios' ? 3 : (details.division === 'Tag' ? 2 : 1);
             let html = '';
-            for (let i = 0; i < beltCount; i++) html += buildChampionshipImage(details.title);
+            for (let i = 0; i < beltCount; i++) html += buildChampionshipImage(details.title, i);
             return html;
         }
 
@@ -2868,63 +2870,59 @@
         // full-width item with normally-placed siblings caused the browser's grid
         // auto-placement to reorder items unpredictably. Field labels get a fixed width
         // so they still align as a clean visual column down the page.
+        // Builds the factual details section beneath the badge/photo header, split into
+        // two completely separate blocks: full-width rows (Date, Location, Show, Wrestlers,
+        // Stakes, Other Notes — always their own row) and a dedicated pairable-only 2-column
+        // grid for short fields (Match Type, Position, ratings, Stipulation). Keeping these
+        // as two entirely separate containers — rather than one grid with some items
+        // spanning and others not — is deliberate: mixing spanning and non-spanning items
+        // in one CSS Grid is what caused the column-balance bug earlier. With nothing but
+        // plain, identically-shaped cells in the pair-grid, a true 50/50 split is guaranteed.
         function buildMatchTable(details) {
-            const fullWidthFields = new Set(['Location', 'Wrestlers', 'Other Notes']);
-            const rows = [];
+            const fullRows = [];
+            const pairableRows = [];
 
-            if (details.date) rows.push(['Date', formatFullDate(details.date)]);
-            if (details.location) rows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
+            if (details.date) fullRows.push(['Date', formatFullDate(details.date)]);
+            if (details.location) fullRows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
             if (details.event) {
-                rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
+                fullRows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
             }
             if (details.competitors && details.competitors.length > 0) {
-                rows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
+                fullRows.push(['Wrestlers', details.competitors.map(hyperlinkCompetitor).join(' vs. ')]);
             }
-            if (details.title) rows.push(['Title', details.title]);
-            if (details.matchType) rows.push(['Match Type', details.matchType]);
+
+            // Merge Title into Stakes — showing both separately was redundant (once the
+            // specific title name is known, a generic "Title Match" label adds nothing).
+            // Prefer the specific title name; fall back to the plain stakes value.
+            if (details.title) {
+                fullRows.push(['Stakes', details.title]);
+            } else if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None') {
+                fullRows.push(['Stakes', details.stakes]);
+            }
+
+            if (details.matchType) pairableRows.push(['Match Type', details.matchType]);
             if (details.matchPos === 'Opener' || details.matchPos === 'Main Event') {
-                rows.push(['Match Position', details.matchPos]);
+                pairableRows.push(['Match Position', details.matchPos]);
             }
-
             const ratingSpan = formatRatingSpan(details.rating);
-            if (ratingSpan) rows.push(['Match Rating', ratingSpan]);
+            if (ratingSpan) pairableRows.push(['Match Rating', ratingSpan]);
             const showRatingSpan = formatRatingSpan(details.showRating);
-            if (showRatingSpan) rows.push(['Show Rating', showRatingSpan]);
-
+            if (showRatingSpan) pairableRows.push(['Show Rating', showRatingSpan]);
             if (details.stipulation && details.stipulation !== 'N/A' && details.stipulation !== 'None') {
-                rows.push(['Stipulation', details.stipulation]);
-            }
-            const stakesIsGenericTitleMatch = details.title && details.stakes && /title/i.test(details.stakes);
-            if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None' && !stakesIsGenericTitleMatch) {
-                rows.push(['Stakes', details.stakes]);
+                pairableRows.push(['Stipulation', details.stipulation]);
             }
 
             const otherNotes = buildOtherNotes(details);
-            if (otherNotes) rows.push(['Other Notes', otherNotes]);
+            if (otherNotes) fullRows.push(['Other Notes', otherNotes]);
 
+            const fullHtml = fullRows
+                .map(([field, value]) => `<div class="otd-detail-row-full"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`)
+                .join('');
             const cellHtml = (field, value) => `<div class="otd-detail-cell"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
-            const fullHtml = (field, value) => `<div class="otd-detail-row-full"><span class="otd-detail-field">${field}</span><span class="otd-detail-value">${value}</span></div>`;
+            const pairHtml = pairableRows.map(([field, value]) => cellHtml(field, value)).join('');
+            const pairBlock = pairableRows.length > 0 ? `<div class="otd-details-pair-grid">${pairHtml}</div>` : '';
 
-            const parts = [];
-            let i = 0;
-            while (i < rows.length) {
-                const [field, value] = rows[i];
-                if (fullWidthFields.has(field)) {
-                    parts.push(fullHtml(field, value));
-                    i++;
-                    continue;
-                }
-                const next = rows[i + 1];
-                if (next && !fullWidthFields.has(next[0])) {
-                    parts.push(`<div class="otd-detail-row-pair">${cellHtml(field, value)}${cellHtml(next[0], next[1])}</div>`);
-                    i += 2;
-                } else {
-                    parts.push(fullHtml(field, value));
-                    i++;
-                }
-            }
-
-            return `<div class="otd-details-grid">${parts.join('')}</div>`;
+            return `<div class="otd-details-grid">${fullHtml}${pairBlock}</div>`;
         }
 
         // Deterministic seeded random number generator, seeded by a date string. This means
@@ -2963,7 +2961,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 24); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 25); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
