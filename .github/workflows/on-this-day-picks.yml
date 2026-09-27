@@ -1,0 +1,35 @@
+name: On This Day picks
+
+on:
+  schedule:
+    - cron: '15 0 * * *'     # daily, 00:15 UTC
+  workflow_dispatch:          # adds a "Run workflow" button for manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Plan upcoming picks
+        run: node scripts/pick-on-this-day.mjs
+
+      - name: Commit picks file if changed
+        run: |
+          if [ -z "$(git status --porcelain on-this-day-picks.json)" ]; then
+            echo "No new picks."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
+          git add on-this-day-picks.json
+          git commit -m "On This Day: record picks"
+          git pull --rebase
+          git push
