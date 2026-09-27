@@ -1656,7 +1656,20 @@
         .otd-wrestler-link{color:#ffd700;text-decoration:underline;cursor:pointer;transition:all .2s;}
         .otd-wrestler-link:hover{text-shadow:0 0 8px rgba(255,215,0,0.5);}
         .wrestler-link:hover{color:#ffd700;text-decoration:underline;}
-        .otd-teaser-head-right{grid-area:right;justify-self:end;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+        .otd-teaser-head-right{grid-area:right;justify-self:end;display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+        .otd-head-badges{display:flex;flex-direction:column;align-items:center;gap:6px;}
+        /* Title badge: belts in a pill under the show badge (tag = 2, trios = 3 overlapping) */
+        .otd-title-badge{
+            display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
+            border:1px solid rgba(255,215,0,0.55);
+            background:linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.03));
+        }
+        .otd-title-badge{padding:3px 8px;}
+        .otd-title-badge .otd-belt-group .otd-championship-img{
+            height:24px;width:auto;padding:2px;border:1px solid rgba(255,215,0,0.6);
+            border-radius:5px;background:#2d2d2d;
+        }
+        .otd-title-badge .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-10px;}
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
@@ -1675,10 +1688,6 @@
         .otd-belt-group .otd-championship-img:nth-child(1){z-index:3;}
         .otd-belt-group .otd-championship-img:nth-child(2){z-index:2;}
         .otd-belt-group .otd-championship-img:nth-child(3){z-index:1;}
-        .otd-photo-title-divider{
-            display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-        }
-        .otd-photo-title-divider .otd-photo-vs-label{color:#a8a394;font-size:0.75em;font-style:italic;}
 
         /* Details table: one list of identical cells. Phones = single column.
            >=600px = two columns filled top-to-bottom (left gets the extra cell when odd),
@@ -1729,6 +1738,15 @@
     .otd-photo-img{width:clamp(44px,6.2vw,64px);height:clamp(44px,6.2vw,64px);}
     .otd-championship-img{height:clamp(24px,3.4vw,34px);padding:3px;}
     .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-18px;}
+}
+/* 7+ people: smaller photos so multi-team matches stay on one line where possible */
+.otd-photo-row.many{gap:8px;}
+.otd-photo-row.many .otd-photo-img{width:min(44px,9.5vw);height:min(44px,9.5vw);}
+@media (min-width:700px){
+    .otd-photo-row.many .otd-photo-img{width:clamp(36px,4.6vw,48px);height:clamp(36px,4.6vw,48px);}
+}
+@media (min-width:1025px){
+    .otd-photo-row.many .otd-photo-img{width:68px;height:68px;}
 }
 @media (min-width:1025px){
     .otd-photo-img{width:90px;height:90px;}
@@ -2852,8 +2870,15 @@
         function buildChampionshipImages(details) {
             if (!details.title) return '';
             const slug = createSlug(details.title);
-            const img = `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${details.title}" onerror="this.style.display='none';">`;
+            const img = `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${details.title}" onerror="var b=this.closest('.otd-title-badge');(b||this).style.display='none';">`;
             return `<span class="otd-belt-group">${img.repeat(getBeltCount(details.title))}</span>`;
+        }
+
+        // Title matches: belt image(s) in a pill badge, shown under the show badge.
+        // Hovering shows the title name. Hides itself if the belt image is missing.
+        function buildTitleBadge(details) {
+            if (!details.title) return '';
+            return `<span class="otd-title-badge" title="${details.title}">${buildChampionshipImages(details)}</span>`;
         }
 
         // Most photos the card will show. Counted in PEOPLE after teams are expanded
@@ -2872,12 +2897,13 @@
             }, 0);
             if (peopleCount > OTD_MAX_PHOTOS) return '';
 
+            // Belts now live in the title badge under the show badge (buildTitleBadge),
+            // so the divider is always a plain "vs". 7+ people get smaller photos.
             const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
-            const divider = details.title
-                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImages(details)}<span class="otd-photo-vs-label">vs</span></span>`
-                : `<span class="otd-photo-vs">vs</span>`;
+            const divider = `<span class="otd-photo-vs">vs</span>`;
+            const sizeClass = peopleCount > 6 ? ' many' : '';
 
-            return `<div class="otd-photo-row">${sides.join(divider)}</div>`;
+            return `<div class="otd-photo-row${sizeClass}">${sides.join(divider)}</div>`;
         }
 
         // Combines whichever of these genuinely apply into one readable "Other Notes"
@@ -3086,7 +3112,7 @@
                     </div>
                     ${photoRow}
                     <div class="otd-teaser-head-right">
-                        ${badges}
+                        <div class="otd-head-badges">${badges}${buildTitleBadge(details)}</div>
                         <div class="otd-expand-btn" role="button" tabindex="0" title="Show more" aria-label="Show match details" aria-expanded="false"
                              onclick="toggleTeaser()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTeaser();}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
