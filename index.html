@@ -2856,12 +2856,21 @@
             return `<span class="otd-belt-group">${img.repeat(getBeltCount(details.title))}</span>`;
         }
 
+        // Most photos the card will show. Counted in PEOPLE after teams are expanded
+        // (a trios team = 3), so it covers everything up to a 10-man tag while big
+        // gauntlets and battle royals show the card without a photo row.
+        const OTD_MAX_PHOTOS = 10;
+
         // Builds the photo row directly from details.competitors — no scanning, no
-        // guessing, since this is already the exact participant list. Skips entirely for
-        // fields beyond 12 participants (the same extreme-battle-royal safeguard as before).
+        // guessing, since this is already the exact participant list. Skips the row
+        // entirely when the total number of people exceeds OTD_MAX_PHOTOS.
         function buildPhotoRowFromDetails(details) {
             if (!details.competitors || !Array.isArray(details.competitors) || details.competitors.length === 0) return '';
-            if (details.competitors.length > 12) return '';
+            const peopleCount = details.competitors.reduce((sum, c) => {
+                const members = getTeamMemberNames(c);
+                return sum + (members ? members.length : 1);
+            }, 0);
+            if (peopleCount > OTD_MAX_PHOTOS) return '';
 
             const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
             const divider = details.title
@@ -3039,7 +3048,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 1); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 30); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
