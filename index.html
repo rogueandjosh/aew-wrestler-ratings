@@ -2969,12 +2969,58 @@
             };
         }
 
-        // Picks ONE random headline entry from the day's list — every entry in the daily
-        // export is already a genuine, real match (no secondaries, no diversity logic
-        // needed, since there's now just one flat pool of 2-4 real candidates per date).
+        // Returns a team's member list (as current names), or null if the name isn't a
+        // known team — same lookup buildCompetitorPhotos() uses, including historical
+        // team names resolved through name-changes.json.
+        function getTeamMemberNames(competitorName) {
+            if (!teamMembersData || !teamMembersData.teams) return null;
+            const teams = teamMembersData.teams;
+            let members = null;
+            if (teams[competitorName]) {
+                members = resolveTeamMembers(competitorName, teams);
+            } else {
+                const resolved = resolveCurrentName(competitorName);
+                if (resolved !== competitorName && teams[resolved]) members = resolveTeamMembers(resolved, teams);
+            }
+            return members ? members.map(m => resolveCurrentName(m)) : null;
+        }
+
+        // Returns a reason string if a match's competitor list can't be shown reliably,
+        // otherwise null. Such matches are skipped in favour of another headline:
+        //  1. A team AND one of its own members are both listed (flat list mixing team
+        //     names with individual names — every wrestler would appear twice).
+        //  2. Match type is an "N Man Tag" (always two sides) but the list doesn't have
+        //     exactly two entries, so there's no way to know who partnered whom.
+        // Normal tag/trios matches, multi-team tags, 4-ways and battle royals all pass.
+        function getCompetitorDoubt(details) {
+            const list = details.competitors || [];
+            const norm = n => resolveCurrentName(String(n)).trim().toLowerCase();
+
+            const listedNames = new Set(list.map(norm));
+            for (const entry of list) {
+                const members = getTeamMemberNames(entry);
+                if (!members) continue;
+                const overlap = members.find(m => listedNames.has(m.trim().toLowerCase()));
+                if (overlap) return `team "${entry}" and its member "${overlap}" both listed`;
+            }
+
+            if (/\bman tag\b/i.test(details.matchType || '') && list.length !== 2) {
+                return `"${details.matchType}" with ${list.length} separate entries — sides unknown`;
+            }
+            return null;
+        }
+
+        // Picks ONE headline for the day (seeded, so stable across refreshes) from the
+        // entries whose competitor lists can be shown reliably. Skipped entries are logged
+        // to the console; if every entry is skipped, no card is shown that day.
         function pickOnThisDayContent(otdData, seedStr) {
             const rand = seededRandomFromDate(seedStr);
-            const headlines = otdData.headlines || [];
+            const headlines = (otdData.headlines || []).filter(h => {
+                if (!h || !h.details) return false;
+                const doubt = getCompetitorDoubt(h.details);
+                if (doubt) console.warn(`On This Day: skipped match ${h.matchId} (${h.details.date}) — ${doubt}`);
+                return !doubt;
+            });
             if (headlines.length === 0) return null;
             return headlines[Math.floor(rand() * headlines.length)];
         }
@@ -2993,7 +3039,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 1); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 24); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
