@@ -3064,7 +3064,7 @@
 
         // Same weighting as scripts/pick-on-this-day.mjs: rating cubed, so stronger
         // matches are favoured (9.6 is about 3x as likely as 6.5). No rating counts as 6.
-        const OTD_WEIGHT_POWER = 3;
+        const OTD_WEIGHT_POWER = 5;
         function otdWeight(h) {
             const r = typeof h.details.rating === 'number' ? h.details.rating : 6;
             return Math.pow(Math.max(r, 1), OTD_WEIGHT_POWER);
