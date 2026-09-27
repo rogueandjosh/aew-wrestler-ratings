@@ -15,7 +15,7 @@ import fs from 'fs';
 
 const DAILY_DIR = 'on-this-day-daily';
 const PICKS_FILE = 'on-this-day-picks.json';
-const WEIGHT_POWER = 3;        // 9.6 vs 6.5 rating ≈ 3x as likely. Raise = favour stronger more.
+const WEIGHT_POWER = 5;        // 9.6 vs 6.5 rating ≈ 3x as likely. Raise = favour stronger more.
 const DEFAULT_RATING = 6;      // used when a match has no rating
 const DAY_OFFSETS = [-1, 0, 1, 2];
 
