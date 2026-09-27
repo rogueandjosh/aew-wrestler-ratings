@@ -1617,15 +1617,16 @@
     overflow:hidden;
 }
         /* Header = one grid holding title, photos and badges.
-           Mobile/tablet: title + badges on row 1, photos directly beneath.
-           Desktop (>=1025px): all three on ONE row, photos centred between them. */
+           Mobile/tablet: photos on row 1 (top of card), title + badges beneath.
+           Desktop (>=1025px): all three on ONE row, photos centred between them.
+           Only the chevron toggles the card — the header itself isn't clickable. */
         .otd-teaser-head{
             display:grid;
             grid-template-columns:minmax(0,1fr) auto;
-            grid-template-areas:"title right" "photos photos";
-            align-items:center;column-gap:12px;row-gap:0;cursor:pointer;
+            grid-template-areas:"photos photos" "title right";
+            align-items:center;column-gap:12px;row-gap:0;
         }
-        .otd-teaser-head .otd-photo-row{grid-area:photos;margin:10px 0 0;}
+        .otd-teaser-head .otd-photo-row{grid-area:photos;margin:0 0 10px;}
         .otd-teaser-title{
             grid-area:title;
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1664,6 +1665,13 @@
             height:34px;width:auto;object-fit:contain;padding:5px;
             border:2px solid #ffd700;border-radius:8px;background:#2d2d2d;
         }
+        /* Tag = 2 overlapping belts, Trios/six-man = 3 — same rule as championships.html */
+        .otd-belt-group{display:inline-flex;align-items:center;}
+        .otd-belt-group .otd-championship-img{position:relative;}
+        .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-14px;}
+        .otd-belt-group .otd-championship-img:nth-child(1){z-index:3;}
+        .otd-belt-group .otd-championship-img:nth-child(2){z-index:2;}
+        .otd-belt-group .otd-championship-img:nth-child(3){z-index:1;}
         .otd-photo-title-divider{
             display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
         }
@@ -1699,6 +1707,14 @@
     width:55px;height:55px;border-radius:50%;object-fit:cover;
     border:2px solid #ffd700;background:#2d2d2d;cursor:pointer;
 }
+        /* Phones: scale photos/belts with the screen so a tag match (4 photos + 2 belts)
+           stays on one row. Trios still wrap, which is unavoidable at this width. */
+        @media (max-width:599px){
+            .otd-photo-row{gap:8px;}
+            .otd-photo-img{width:min(55px,11.5vw);height:min(55px,11.5vw);}
+            .otd-championship-img{height:min(34px,7vw);padding:3px;}
+            .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-18px;}
+        }
 @media (min-width:600px){
     .otd-photo-img{width:75px;height:75px;}
     .otd-detail-field{font-size:0.68em;}
@@ -2813,22 +2829,21 @@
             return members.map(m => buildPhotoTag(m, teamLinkSlug)).join('');
         }
 
-        // Championship belt image, shown centrally between sides for a title match —
-        // same slug convention and folder pattern as wrestler photos. Shows one belt per
-        // champion for tag/trios titles (matching the real number of physical belts).
-        function buildChampionshipImage(title, overlapIndex) {
-            if (!title) return '';
-            const slug = createSlug(title);
-            const overlapStyle = overlapIndex > 0 ? `margin-left:-14px;position:relative;z-index:${10 - overlapIndex};` : 'position:relative;z-index:10;';
-            return `<img class="otd-championship-img" style="${overlapStyle}" src="images/championships/${slug}.png" alt="${title}" onerror="this.style.display='none';">`;
+        // Championship belt image(s), shown centrally between sides for a title match.
+        // One belt per champion: tag titles show 2 overlapping, trios/six-man show 3.
+        // Detection is by title name — the same rule championships.html uses.
+        function getBeltCount(title) {
+            const t = title.toLowerCase();
+            if (t.includes('trios') || t.includes('six-man') || t.includes('six man')) return 3;
+            if (t.includes('tag')) return 2;
+            return 1;
         }
 
         function buildChampionshipImages(details) {
             if (!details.title) return '';
-            const beltCount = details.division === 'Trios' ? 3 : (details.division === 'Tag' ? 2 : 1);
-            let html = '';
-            for (let i = 0; i < beltCount; i++) html += buildChampionshipImage(details.title, i);
-            return html;
+            const slug = createSlug(details.title);
+            const img = `<img class="otd-championship-img" src="images/championships/${slug}.png" alt="${details.title}" onerror="this.style.display='none';">`;
+            return `<span class="otd-belt-group">${img.repeat(getBeltCount(details.title))}</span>`;
         }
 
         // Builds the photo row directly from details.competitors — no scanning, no
@@ -2955,7 +2970,13 @@
         }
 
         function toggleTeaser() {
-            document.getElementById('teaserCard').classList.toggle('expanded');
+            const card = document.getElementById('teaserCard');
+            const expanded = card.classList.toggle('expanded');
+            const btn = card.querySelector('.otd-expand-btn');
+            if (btn) {
+                btn.setAttribute('aria-expanded', expanded);
+                btn.title = expanded ? 'Show less' : 'Show more';
+            }
         }
 
         async function renderOnThisDayTeaser() {
@@ -2988,7 +3009,7 @@
             const dateLabel = formatOrdinalDate(today);
 
             container.innerHTML = `
-                <div class="otd-teaser-head" onclick="toggleTeaser()">
+                <div class="otd-teaser-head">
                     <div class="otd-teaser-title">
                         <span>\ud83d\udcc5</span>
                         <div class="otd-teaser-title-text">
@@ -2999,7 +3020,8 @@
                     ${photoRow}
                     <div class="otd-teaser-head-right">
                         ${badges}
-                        <div class="otd-expand-btn" title="Show more">
+                        <div class="otd-expand-btn" role="button" tabindex="0" title="Show more" aria-label="Show match details" aria-expanded="false"
+                             onclick="toggleTeaser()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTeaser();}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
                     </div>
