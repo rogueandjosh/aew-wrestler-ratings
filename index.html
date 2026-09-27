@@ -2728,7 +2728,7 @@
             if (!dateStr) return '';
             const parts = String(dateStr).split('-');
             if (parts.length !== 3) return dateStr;
-            const d = (parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
             if (isNaN(d)) return dateStr;
             return `${formatOrdinalDate(d)} ${d.getFullYear()}`;
         }
