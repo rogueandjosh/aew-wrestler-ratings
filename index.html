@@ -3062,11 +3062,20 @@
             return null;
         }
 
-        // Picks ONE headline for the day (seeded, so stable across refreshes) from the
-        // entries whose competitor lists can be shown reliably. Skipped entries are logged
-        // to the console; if every entry is skipped, no card is shown that day.
-        function pickOnThisDayContent(otdData, seedStr) {
-            const rand = seededRandomFromDate(seedStr);
+        // Same weighting as scripts/pick-on-this-day.mjs: rating cubed, so stronger
+        // matches are favoured (9.6 is about 3x as likely as 6.5). No rating counts as 6.
+        const OTD_WEIGHT_POWER = 3;
+        function otdWeight(h) {
+            const r = typeof h.details.rating === 'number' ? h.details.rating : 6;
+            return Math.pow(Math.max(r, 1), OTD_WEIGHT_POWER);
+        }
+
+        // Chooses the day's headline from those that pass the display check:
+        //  1. The pick recorded in on-this-day-picks.json for this date + year (made daily
+        //     by the GitHub Action, which never repeats a match from an earlier year).
+        //  2. Fallback if there's no usable recorded pick: a seeded, rating-weighted choice
+        //     that avoids matches recorded as shown in earlier years where possible.
+        function pickOnThisDayContent(otdData, seedStr, mmdd, year, picksData) {
             const headlines = (otdData.headlines || []).filter(h => {
                 if (!h || !h.details) return false;
                 const doubt = getCompetitorDoubt(h.details);
@@ -3074,7 +3083,33 @@
                 return !doubt;
             });
             if (headlines.length === 0) return null;
-            return headlines[Math.floor(rand() * headlines.length)];
+
+            const history = (picksData && picksData.picks && picksData.picks[mmdd]) || {};
+            const recordedId = history[String(year)];
+            if (recordedId !== undefined) {
+                const recorded = headlines.find(h => String(h.matchId) === String(recordedId));
+                if (recorded) return recorded;
+            }
+
+            const shownBefore = new Set(Object.entries(history)
+                .filter(([y]) => Number(y) < Number(year)).map(([, id]) => String(id)));
+            const unshown = headlines.filter(h => !shownBefore.has(String(h.matchId)));
+            const pool = unshown.length > 0 ? unshown : headlines;
+
+            const rand = seededRandomFromDate(seedStr);
+            const total = pool.reduce((sum, h) => sum + otdWeight(h), 0);
+            let x = rand() * total;
+            for (const h of pool) { x -= otdWeight(h); if (x <= 0) return h; }
+            return pool[pool.length - 1];
+        }
+
+        async function loadOnThisDayPicks() {
+            try {
+                const response = await fetch('on-this-day-picks.json', { cache: 'no-cache' });
+                return response.ok ? await response.json() : null;
+            } catch (e) {
+                return null;
+            }
         }
 
         function toggleTeaser() {
@@ -3091,7 +3126,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 5, 7); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 24); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3104,10 +3139,10 @@
                 return;
             }
 
-            await Promise.all([loadWrestlersIndex(), loadTeamMembers(), loadNameChanges()]);
+            const [, , , picksData] = await Promise.all([loadWrestlersIndex(), loadTeamMembers(), loadNameChanges(), loadOnThisDayPicks()]);
 
             const fullDateSeed = `${today.getFullYear()}-${mmdd}`;
-            const picked = pickOnThisDayContent(otdData, fullDateSeed);
+            const picked = pickOnThisDayContent(otdData, fullDateSeed, mmdd, today.getFullYear(), picksData);
             if (!picked || !picked.details) return;
 
             const details = picked.details;
