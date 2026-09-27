@@ -1618,7 +1618,7 @@
 }
         .otd-teaser-head{
     display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:2px;flex-wrap:wrap;gap:8px;cursor:pointer;
+    margin-bottom:0;flex-wrap:wrap;gap:8px;cursor:pointer;
 }
         .otd-teaser-title{
             font-family:'Amaranth',sans-serif;color:#ffd700;font-size:1.15em;
@@ -1646,21 +1646,29 @@
         .otd-show-badge.major{color:#ffd700;background:linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.05));border:2px solid #ffd700;box-shadow:0 0 0 2px rgba(255,215,0,0.25), 0 0 14px rgba(255,215,0,0.3);padding:4px 14px;}
         .otd-show-badge-connector{color:#a8a394;font-size:0.75em;}
 
-        .otd-championship-img{height:38px;width:auto;object-fit:contain;}
-        .otd-photo-title-divider{display:inline-flex;align-items:center;justify-content:center;}
+        .otd-championship-img{
+            height:34px;width:auto;object-fit:contain;padding:5px;
+            border:2px solid #ffd700;border-radius:8px;background:#2d2d2d;
+        }
+        .otd-photo-title-divider{
+            display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+        }
+        .otd-photo-title-divider .otd-photo-vs-label{color:#a8a394;font-size:0.75em;font-style:italic;}
 
-        .otd-details-grid{margin-top:6px;max-width:640px;}
-        .otd-detail-row-full,.otd-detail-row-pair{
-            display:flex;border-bottom:1px solid rgba(255,255,255,0.06);padding:6px 0;
+        .otd-details-grid{margin-top:6px;}
+        .otd-detail-row-full{
+            display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
         }
-        .otd-detail-row-pair{gap:16px;}
-        .otd-detail-row-full{gap:8px;}
-        .otd-detail-cell{flex:1;min-width:0;display:flex;gap:8px;}
+        .otd-detail-row-pair{
+            display:grid;grid-template-columns:1fr 1fr;gap:16px;
+            border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 0;
+        }
+        .otd-detail-cell{min-width:0;display:flex;gap:8px;}
         .otd-detail-field{
-            color:#a8a394;font-size:0.62em;font-weight:bold;text-transform:uppercase;
-            letter-spacing:0.3px;flex:0 0 72px;line-height:1.3;
+            color:#a8a394;font-size:0.58em;font-weight:bold;text-transform:uppercase;
+            letter-spacing:0.25px;flex:0 0 64px;line-height:1.25;
         }
-        .otd-detail-value{color:#fff;font-size:0.85em;line-height:1.4;flex:1;min-width:0;word-break:break-word;}
+        .otd-detail-value{color:#fff;font-size:0.8em;line-height:1.35;flex:1;min-width:0;word-break:break-word;}
         .otd-photo-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:2px;flex-wrap:wrap;row-gap:8px;
@@ -2812,7 +2820,7 @@
 
             const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
             const divider = details.title
-                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImages(details)}</span>`
+                ? `<span class="otd-photo-vs otd-photo-title-divider">${buildChampionshipImages(details)}<span class="otd-photo-vs-label">vs</span></span>`
                 : `<span class="otd-photo-vs">vs</span>`;
 
             return `<div class="otd-photo-row">${sides.join(divider)}</div>`;
@@ -2886,7 +2894,8 @@
             if (details.stipulation && details.stipulation !== 'N/A' && details.stipulation !== 'None') {
                 rows.push(['Stipulation', details.stipulation]);
             }
-            if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None') {
+            const stakesIsGenericTitleMatch = details.title && details.stakes && /title/i.test(details.stakes);
+            if (details.stakes && details.stakes !== 'N/A' && details.stakes !== 'None' && !stakesIsGenericTitleMatch) {
                 rows.push(['Stakes', details.stakes]);
             }
 
@@ -2954,7 +2963,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(2026, 8, 24); // TEMP TEST DATE — remember to revert!
+            const today = new Date(2026, 8, 25); // TEMP TEST DATE — remember to revert!
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
