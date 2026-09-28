@@ -1659,17 +1659,17 @@
         .otd-teaser-head-right{grid-area:right;justify-self:end;display:flex;align-items:center;gap:8px;justify-content:flex-end;}
         .otd-head-badges{display:flex;flex-direction:column;align-items:center;gap:6px;}
         /* Title badge: belts in a pill under the show badge (tag = 2, trios = 3 overlapping) */
-        .otd-title-badge{
-            display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
-            border:1px solid rgba(255,215,0,0.55);
-            background:linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.03));
+                .otd-title-badge{
+            display:inline-flex;padding:0;border-radius:20px;overflow:hidden;
+            border:1px solid rgba(255,215,0,0.7);background:#000;
         }
-        .otd-title-badge{padding:3px 8px;}
+        .otd-title-badge .otd-belt-group{display:flex;}
         .otd-title-badge .otd-belt-group .otd-championship-img{
-            height:24px;width:auto;padding:2px;border:1px solid rgba(255,215,0,0.6);
-            border-radius:5px;background:#2d2d2d;
+            height:26px;width:auto;padding:0;margin:0;border:none;border-radius:0;background:none;
         }
-        .otd-title-badge .otd-belt-group .otd-championship-img:not(:first-child){margin-left:-10px;}
+        .otd-title-badge .otd-belt-group .otd-championship-img:not(:first-child){
+            margin-left:0;border-left:1px solid rgba(255,215,0,0.45);
+        }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
