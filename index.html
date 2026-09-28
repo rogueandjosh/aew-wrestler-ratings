@@ -1665,7 +1665,23 @@
         }
         .otd-title-badge .otd-belt-group{display:flex;}
         .otd-title-badge .otd-belt-group .otd-championship-img{
-            height:26px;width:auto;padding:0;margin:0;border:none;border-radius:0;background:none;
+            height:36px;width:auto;padding:0;margin:0;border:none;border-radius:0;background:none;
+        }
+        /* Bigger show + title badges. On phones they scale down, may wrap onto two lines,
+           and the title keeps its full width so the header row never squashes it. */
+        .otd-head-badges .otd-show-badge{font-size:0.95em;padding:6px 18px;}
+        .otd-head-badges .otd-show-badge.major{padding:7px 20px;}
+        @media (max-width:699px){
+            .otd-teaser-head{grid-template-columns:max-content minmax(0,1fr);}
+            .otd-teaser-head-right{min-width:0;}
+            .otd-head-badges{min-width:0;}
+            .otd-head-badges .otd-show-badge{font-size:0.72em;padding:4px 11px;white-space:normal;text-align:center;line-height:1.25;}
+            .otd-head-badges .otd-show-badge.major{padding:5px 12px;}
+            .otd-title-badge .otd-belt-group .otd-championship-img{height:24px;}
+        }
+        @media (max-width:380px){
+            .otd-head-badges .otd-show-badge{font-size:0.66em;padding:3px 9px;}
+            .otd-title-badge .otd-belt-group .otd-championship-img{height:20px;}
         }
         .otd-title-badge .otd-belt-group .otd-championship-img:not(:first-child){
             margin-left:0;border-left:1px solid rgba(255,215,0,0.45);
