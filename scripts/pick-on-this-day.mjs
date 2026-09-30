@@ -15,7 +15,7 @@ import fs from 'fs';
 
 const DAILY_DIR = 'on-this-day-daily';
 const PICKS_FILE = 'on-this-day-picks.json';
-const WEIGHT_POWER = 5;        // 9.6 vs 6.5 rating ≈ 3x as likely. Raise = favour stronger more.
+const WEIGHT_POWER = 3;        // 9.6 vs 6.5 rating ≈ 3x as likely. Raise = favour stronger more.
 const DEFAULT_RATING = 6;      // used when a match has no rating
 const DAY_OFFSETS = [-1, 0, 1, 2];
 
@@ -61,6 +61,9 @@ function isDoubtful(details) {
     if (members && members.some(m => listed.has(m.trim().toLowerCase()))) return true;
   }
   if (/\bman tag\b/i.test(details.matchType || '') && list.length !== 2) return true;
+  // Matches with more than 10 people (battle royals etc.) are never picked
+  const people = list.reduce((n, c) => { const m = getTeamMemberNames(c); return n + (m ? m.length : 1); }, 0);
+  if (people > 10) return true;
   return false;
 }
 
