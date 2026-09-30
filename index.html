@@ -1715,15 +1715,14 @@
         .otd-teaser-title-text .otd-show-badges{margin-top:6px;}
         .otd-teaser-title-text .otd-show-badge{font-size:0.62em;padding:3px 11px;}
         .otd-teaser-title-text .otd-show-badge.major{padding:4px 12px;}
-        /* Phones: year drops to its own line and the belts/badge shrink, so the title and the
-           belt + compare column always fit side by side without overlapping */
+                /* Phones: the title column flexes and the date wraps only if it has to, so the year stays
+           on the date line whenever there's room. Compare pill sized to match the show badge. */
         @media (max-width:699px){
-            .otd-teaser-year-inline{display:block;font-size:0.85em;opacity:0.85;}
-            .otd-teaser-title-text .otd-show-badge{max-width:120px;white-space:normal;line-height:1.25;}
+            .otd-teaser-head{grid-template-columns:minmax(0,1fr) auto;}
+            .otd-teaser-date{white-space:normal;}
+            .otd-teaser-title-text .otd-show-badge{white-space:normal;line-height:1.25;}
             .otd-title-badge .otd-belt-group .otd-championship-img{height:22px;}
-        }
-        @media (max-width:380px){
-            .otd-teaser-title-text .otd-show-badge{max-width:104px;}
+            .otd-compare-pill{font-size:0.62em;padding:3px 10px;gap:5px;}
         }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
