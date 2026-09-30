@@ -1700,9 +1700,16 @@
             .otd-compare-long{display:none;}
             .otd-compare-short{display:inline;}
         }
-        @media (max-width:699px){
-            .otd-compare-pill{font-size:0.7em;padding:3px 10px;}
+                @media (max-width:699px){
+            .otd-compare-pill{font-size:0.74em;padding:4px 12px;gap:6px;}
         }
+        /* Header alignment: title, photos, badges and arrow all start at the top of the card,
+           just under the border, instead of being centred on the tallest item. */
+        .otd-teaser{padding-top:12px;}
+        .otd-teaser-head{align-items:start;}
+        .otd-teaser-title{align-items:flex-start;}
+        .otd-teaser-head-right{align-items:flex-start;}
+        .otd-head-badges{gap:8px;}
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
