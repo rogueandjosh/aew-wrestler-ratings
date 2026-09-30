@@ -1710,6 +1710,21 @@
         .otd-teaser-title{align-items:flex-start;}
         .otd-teaser-head-right{align-items:flex-start;}
         .otd-head-badges{gap:8px;}
+                /* Show badge sits under the date on the left, a little smaller than before */
+        .otd-teaser-title-text{align-items:flex-start;}
+        .otd-teaser-title-text .otd-show-badges{margin-top:6px;}
+        .otd-teaser-title-text .otd-show-badge{font-size:0.62em;padding:3px 11px;}
+        .otd-teaser-title-text .otd-show-badge.major{padding:4px 12px;}
+        /* Phones: year drops to its own line and the belts/badge shrink, so the title and the
+           belt + compare column always fit side by side without overlapping */
+        @media (max-width:699px){
+            .otd-teaser-year-inline{display:block;font-size:0.85em;opacity:0.85;}
+            .otd-teaser-title-text .otd-show-badge{max-width:120px;white-space:normal;line-height:1.25;}
+            .otd-title-badge .otd-belt-group .otd-championship-img{height:22px;}
+        }
+        @media (max-width:380px){
+            .otd-teaser-title-text .otd-show-badge{max-width:104px;}
+        }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
@@ -3232,13 +3247,13 @@
                         <span>\ud83d\udcc5</span>
                         <div class="otd-teaser-title-text">
                             <span>On This Day</span>
-                            <span class="otd-teaser-date">${dateLabel}</span>
-                            ${matchYear ? `<span class="otd-teaser-year">${matchYear}</span>` : ''}
+                            <span class="otd-teaser-date">${dateLabel}${matchYear ? `<span class="otd-teaser-year-inline"> ${matchYear}</span>` : ''}</span>
+                            ${badges}
                         </div>
                     </div>
                     ${photoRow}
                     <div class="otd-teaser-head-right">
-                        <div class="otd-head-badges">${badges}${buildTitleBadge(details)}${buildComparePill(details)}</div>
+                        <div class="otd-head-badges">${buildTitleBadge(details)}${buildComparePill(details)}</div>
                         <div class="otd-expand-btn" role="button" tabindex="0" title="Show more" aria-label="Show match details" aria-expanded="false"
                              onclick="toggleTeaser()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTeaser();}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
