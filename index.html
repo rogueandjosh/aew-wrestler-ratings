@@ -1686,6 +1686,23 @@
         .otd-title-badge .otd-belt-group .otd-championship-img:not(:first-child){
             margin-left:0;border-left:1px solid rgba(255,215,0,0.45);
         }
+                /* Compare pill under the badges: full wording on desktop, just "Compare" below 1025px */
+        .otd-compare-pill{
+            display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+            font-family:'Amaranth',sans-serif;font-size:0.78em;font-weight:bold;letter-spacing:0.3px;
+            color:#ffd700;text-decoration:none;padding:4px 12px;border-radius:20px;
+            border:1px solid rgba(255,215,0,0.45);background:rgba(255,215,0,0.06);
+            transition:background 0.2s, border-color 0.2s;
+        }
+        .otd-compare-pill:hover{background:rgba(255,215,0,0.16);border-color:#ffd700;}
+        .otd-compare-short{display:none;}
+        @media (max-width:1024px){
+            .otd-compare-long{display:none;}
+            .otd-compare-short{display:inline;}
+        }
+        @media (max-width:699px){
+            .otd-compare-pill{font-size:0.7em;padding:3px 10px;}
+        }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
@@ -2913,6 +2930,38 @@
             return `<span class="otd-title-badge" title="${details.title}">${buildChampionshipImages(details)}</span>`;
         }
 
+                // Compare link: only for a two-sided match where BOTH sides have a stats page
+        // (wrestlers/index.json) in the SAME division — wrestler vs wrestler, or team vs team.
+        // Names go through name changes first (Jungle Boy → Jack Perry). Returns null otherwise.
+        const OTD_COMPARE_DIVISIONS = { 'Men': 'mens', 'Women': 'womens', 'Men Tag': 'menstag', 'Women Tag': 'womenstag', 'Trios': 'trios' };
+        function findIndexEntry(name) {
+            if (!Array.isArray(wrestlersIndexData) || !name) return null;
+            const candidates = [name, resolveCurrentName(name)];
+            for (const n of candidates) {
+                const hit = wrestlersIndexData.find(w => w.name === n) ||
+                            wrestlersIndexData.find(w => w.slug === createSlug(n));
+                if (hit) return hit;
+            }
+            return null;
+        }
+        function getCompareLink(details) {
+            const list = details.competitors || [];
+            if (list.length !== 2) return null;
+            const [a, b] = list.map(findIndexEntry);
+            if (!a || !b || a.slug === b.slug || a.division !== b.division) return null;
+            const division = OTD_COMPARE_DIVISIONS[a.division];
+            if (!division) return null;
+            return {
+                url: `wrestler-compare.html?division=${division}&wrestlers=${encodeURIComponent(a.slug + ',' + b.slug)}`,
+                label: division === 'mens' || division === 'womens' ? 'Compare these wrestlers' : 'Compare these teams'
+            };
+        }
+        function buildComparePill(details) {
+            const c = getCompareLink(details);
+            if (!c) return '';
+            return `<a class="otd-compare-pill" href="${c.url}">🥊 <span class="otd-compare-long">${c.label}</span><span class="otd-compare-short">Compare</span></a>`;
+        }
+
         // Most photos the card will show. Counted in PEOPLE after teams are expanded
         // (a trios team = 3), so it covers everything up to a 10-man tag while big
         // gauntlets and battle royals show the card without a photo row.
@@ -2989,7 +3038,10 @@
                 rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
             }
             if (details.competitors && details.competitors.length > 0) {
+                
                 rows.push(['Wrestlers', details.competitors.map(c => hyperlinkCompetitor(c, otdWeekLabelFromDate(details.date))).join(' vs. ')]);
+                const compare = getCompareLink(details);
+                if (compare) rows.push(['Compare', `<a class="otd-wrestler-link" href="${compare.url}">🥊 ${compare.label}</a>`]);
             }
             // Title merged into Stakes — prefer the specific title name, else plain stakes.
             if (details.title) {
@@ -3179,7 +3231,7 @@
                     </div>
                     ${photoRow}
                     <div class="otd-teaser-head-right">
-                        <div class="otd-head-badges">${badges}${buildTitleBadge(details)}</div>
+                        <div class="otd-head-badges">${badges}${buildTitleBadge(details)}${buildComparePill(details)}</div>
                         <div class="otd-expand-btn" role="button" tabindex="0" title="Show more" aria-label="Show match details" aria-expanded="false"
                              onclick="toggleTeaser()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTeaser();}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
