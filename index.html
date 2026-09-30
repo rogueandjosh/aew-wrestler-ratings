@@ -1715,28 +1715,6 @@
         .otd-teaser-title-text .otd-show-badges{margin-top:6px;}
         .otd-teaser-title-text .otd-show-badge{font-size:0.62em;padding:3px 11px;}
         .otd-teaser-title-text .otd-show-badge.major{padding:4px 12px;}
-
-                // Keeps the week heading on one line: shrinks the font just enough to fit the header's
-        // width (never below 12px), and re-checks when the screen is resized or rotated.
-        function fitHeadingToOneLine() {
-            const el = document.getElementById('currentHeading');
-            if (!el) return;
-            el.style.whiteSpace = 'nowrap';
-            el.style.fontSize = '';                       // start from the normal CSS size
-            let size = parseFloat(getComputedStyle(el).fontSize);
-            while (el.scrollWidth > el.clientWidth && size > 12) {
-                size -= 0.5;
-                el.style.fontSize = size + 'px';
-            }
-            // Very narrow screens only: if it still can't fit at 12px, let it wrap normally instead
-            if (el.scrollWidth > el.clientWidth) {
-                el.style.whiteSpace = '';
-                el.style.fontSize = '';
-            }
-        }
-        window.addEventListener('resize', fitHeadingToOneLine);
-        // Re-measure once the site fonts have loaded, since they're a different width
-        if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeadingToOneLine);
         
                 /* Phones: the title column flexes and the date wraps only if it has to, so the year stays
            on the date line whenever there's room. Compare pill sized to match the show badge. */
@@ -2480,6 +2458,28 @@
                 return `${startDay} to ${endDay} ${endMonth} ${endYear}`;
             }
         }
+
+        // Keeps the week heading on one line: shrinks the font just enough to fit the header's
+        // width (never below 12px), and re-checks when the screen is resized or rotated.
+        function fitHeadingToOneLine() {
+            const el = document.getElementById('currentHeading');
+            if (!el) return;
+            el.style.whiteSpace = 'nowrap';
+            el.style.fontSize = '';                       // start from the normal CSS size
+            let size = parseFloat(getComputedStyle(el).fontSize);
+            while (el.scrollWidth > el.clientWidth && size > 12) {
+                size -= 0.5;
+                el.style.fontSize = size + 'px';
+            }
+            // Very narrow screens only: if it still can't fit at 12px, let it wrap normally instead
+            if (el.scrollWidth > el.clientWidth) {
+                el.style.whiteSpace = '';
+                el.style.fontSize = '';
+            }
+        }
+        window.addEventListener('resize', fitHeadingToOneLine);
+        // Re-measure once the site fonts have loaded, since they're a different width
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeadingToOneLine);
 
         // Update the header display with week info
         function updateHeaderDisplay(weekLabel, dateRange, statusText) {
