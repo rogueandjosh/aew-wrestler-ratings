@@ -1715,6 +1715,7 @@
         .otd-teaser-title-text .otd-show-badges{margin-top:6px;}
         .otd-teaser-title-text .otd-show-badge{font-size:0.62em;padding:3px 11px;}
         .otd-teaser-title-text .otd-show-badge.major{padding:4px 12px;}
+
         
                 /* Phones: the title column flexes and the date wraps only if it has to, so the year stays
            on the date line whenever there's room. Compare pill sized to match the show badge. */
@@ -1725,36 +1726,46 @@
             .otd-title-badge .otd-belt-group .otd-championship-img{height:22px;}
             .otd-compare-pill{font-size:0.62em;padding:3px 10px;gap:5px;}
         }
-
-                /* Phones: one compact row — title on the left, photos in the middle at the top,
-           arrow top-right with the belt and Compare stacked beneath it. */
+        /* The centred date is only used on phones */
+        .otd-head-date{display:none;}
+        /* Phones: row 1 = "📅 On This Day" left, date centred, arrow right.
+           Row 2 = the photos, centred, shrinking so up to 10 always fit on one line.
+           Show badge, belt and Compare are hidden here (Compare is still in the details). */
         @media (max-width:699px){
             .otd-teaser{padding:10px 12px 12px;}
             .otd-teaser-head{
-                grid-template-columns:auto minmax(0,1fr) auto;
-                grid-template-areas:"title photos right";
-                column-gap:8px;
+                grid-template-columns:1fr auto 1fr;
+                grid-template-areas:"title date right" "photos photos photos";
+                align-items:center;column-gap:8px;
             }
-            .otd-teaser-head .otd-photo-row{margin:0;gap:4px 5px;min-width:0;}
-            .otd-teaser-head .otd-photo-row .otd-photo-img{width:min(34px,8.8vw);height:min(34px,8.8vw);border-width:1.5px;}
-            .otd-teaser-head .otd-photo-side{flex-wrap:wrap;justify-content:center;gap:3px !important;}
-            .otd-teaser-head .otd-photo-vs{font-size:0.7em;}
-            .otd-teaser-title{gap:5px;}
+            .otd-teaser-title{justify-self:start;align-items:center;gap:5px;white-space:nowrap;}
             .otd-teaser-title > span:first-child{font-size:0.85em;}
-            .otd-teaser-title-text{max-width:108px;}
-            .otd-compare-pill{font-size:0.58em;padding:2px 8px;gap:4px;}
-            .otd-teaser-head-right{flex-direction:column;align-items:flex-end;gap:6px;}
-            .otd-teaser-head-right .otd-expand-btn{order:-1;width:28px;height:28px;}
-            .otd-head-badges{align-items:flex-end;gap:6px;}
-            /* Trios and bigger (5+ people) don't fit beside the title on a phone — they keep
-               their own row underneath, at the normal phone size */
-            .otd-teaser-head:has(.otd-photo-row.wide){
-                grid-template-columns:auto minmax(0,1fr);
-                grid-template-areas:"title right" "photos photos";
+            .otd-teaser-title .otd-teaser-date,
+            .otd-teaser-title .otd-show-badges,
+            .otd-head-badges{display:none;}
+            .otd-head-date{
+                display:block;grid-area:date;justify-self:center;text-align:center;white-space:nowrap;
+                font-family:'Amaranth',sans-serif;color:#a8a394;font-size:0.8em;letter-spacing:0.3px;
             }
-            .otd-teaser-head .otd-photo-row.wide{margin-top:8px;}
-            .otd-teaser-head .otd-photo-row.wide .otd-photo-img{width:min(40px,10vw);height:min(40px,10vw);}
-            .otd-teaser-head .otd-photo-row.wide .otd-photo-side{flex-wrap:nowrap;}
+            .otd-teaser-head-right{justify-self:end;}
+            .otd-teaser-head-right .otd-expand-btn{width:28px;height:28px;}
+            /* Photos: one line, centred; each photo shrinks (max 34px) so 10 always fit */
+            .otd-teaser-head .otd-photo-row,
+            .otd-teaser-head .otd-photo-row.wide{
+                margin:10px 0 0;flex-wrap:nowrap;justify-content:center;gap:5px;min-width:0;
+            }
+            .otd-teaser-head .otd-photo-side{flex:0 1 auto;min-width:0;flex-wrap:nowrap;gap:3px !important;}
+            .otd-teaser-head .otd-photo-side > a{flex:0 1 34px;min-width:0;display:block !important;}
+            .otd-teaser-head .otd-photo-row .otd-photo-img,
+            .otd-teaser-head .otd-photo-row.wide .otd-photo-img,
+            .otd-teaser-head .otd-photo-row.many .otd-photo-img{
+                width:100%;height:auto;aspect-ratio:1;max-width:34px;border-width:1.5px;display:block;
+            }
+            .otd-teaser-head .otd-photo-vs{flex:none;font-size:0.68em;}
+            /* Three or more sides: tighter spacing and a smaller "vs" so the photos keep their size */
+            .otd-teaser-head .otd-photo-row.multi{gap:2px;}
+            .otd-teaser-head .otd-photo-row.multi .otd-photo-vs{font-size:0.55em;}
+            .otd-teaser-title{font-size:0.9em;}
         }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
@@ -3058,7 +3069,7 @@
             // so the divider is always a plain "vs". 7+ people get smaller photos.
             const sides = details.competitors.map(c => `<div class="otd-photo-side" style="display:flex;gap:4px;">${buildCompetitorPhotos(c)}</div>`);
             const divider = `<span class="otd-photo-vs">vs</span>`;
-            const sizeClass = (peopleCount > 6 ? ' many' : '') + (peopleCount > 4 ? ' wide' : '');
+            const sizeClass = (peopleCount > 6 ? ' many' : '') + (peopleCount > 4 ? ' wide' : '') + (details.competitors.length > 2 ? ' multi' : '');
 
             return `<div class="otd-photo-row${sizeClass}">${sides.join(divider)}</div>`;
         }
@@ -3202,6 +3213,10 @@
             if (/\bman tag\b/i.test(details.matchType || '') && list.length !== 2) {
                 return `"${details.matchType}" with ${list.length} separate entries — sides unknown`;
             }
+
+            // Matches with more than 10 people (battle royals etc.) are never picked
+            const people = list.reduce((n, c) => { const m = getTeamMemberNames(c); return n + (m ? m.length : 1); }, 0);
+            if (people > 10) return `${people} competitors — more than 10`;
             return null;
         }
 
@@ -3305,6 +3320,7 @@
                             ${badges}
                         </div>
                     </div>
+                    <div class="otd-head-date">${dateLabel.replace(/(\b[A-Z][a-z]{2})[a-z]+$/, '$1')}${matchYear ? ' ' + matchYear : ''}</div>
                     ${photoRow}
                     <div class="otd-teaser-head-right">
                         <div class="otd-head-badges">${buildTitleBadge(details)}${buildComparePill(details)}</div>
