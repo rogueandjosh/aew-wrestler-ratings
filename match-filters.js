@@ -47,12 +47,18 @@ function getStakesGroup(stakes) {
 // Extends the rules used in the Best Match archive (Street Fight, Texas Death).
 // ---------------------------------------------------------------------------
 const STIPULATION_RULES = [
-    { pattern: /street fight/i,               canonical: 'Street Fight' },
-    { pattern: /texas death/i,                canonical: 'Texas Death' },
-    { pattern: /^ladder( match)?$/i,          canonical: 'Ladder' },
-    { pattern: /^(no dq|no disqualification)$/i, canonical: 'No DQ' },
-    { pattern: /^no count outs?( match)?$/i,  canonical: 'No Count Out' },
-    { pattern: /^iron man/i,                  canonical: 'Iron Man' }
+    // Order matters — first match wins.
+    { pattern: /street fight/i,                       canonical: 'Street Fight' },   // Chicago, Philly, Mid-South...
+    { pattern: /texas death/i,                        canonical: 'Texas Death' },
+    { pattern: /steel cage/i,                         canonical: 'Steel Cage' },     // Lights Out / Barbed Wire Steel Cage
+    { pattern: /barbed wire death/i,                  canonical: 'Barbed Wire Death Match' },
+    { pattern: /^ladder( match)?$/i,                  canonical: 'Ladder' },
+    { pattern: /^(the butcher )?battle royal$/i,      canonical: 'Battle Royal' },
+    { pattern: /^gauntlet( challenge)?$/i,            canonical: 'Gauntlet' },
+    { pattern: /^tables( match)?$/i,                  canonical: 'Tables' },
+    { pattern: /^(no dq|no disqualification)$/i,      canonical: 'No DQ' },
+    { pattern: /^no count outs?( match)?$/i,          canonical: 'No Count Out' },
+    { pattern: /^iron man/i,                          canonical: 'Iron Man' }
 ];
 
 function normalizeMatchStipulation(raw) {
@@ -64,22 +70,25 @@ function normalizeMatchStipulation(raw) {
     return s;
 }
 
-// Special stipulation filter values (everything else is a specific stipulation)
-const STIP_ANY = '__any__';
-const STIP_NONE = '__none__';
+// ---------------------------------------------------------------------------
+// FILTER FACETS — each facet reads one group from a match.
+// Filter state per facet: null = "All" (no filtering), otherwise a Set of
+// selected groups (an empty Set means nothing ticked = no matches).
+// Within a facet the selections are OR'd; across facets they're AND'd.
+// ---------------------------------------------------------------------------
+const MATCH_FACETS = {
+    format: m => getFormatGroup(m.matchType),
+    stakes: m => getStakesGroup(m.stakes),
+    stip:   m => normalizeMatchStipulation(m.matchStipulation)
+};
 
-// ---------------------------------------------------------------------------
-// FILTER TEST — returns true if a match passes the given filter state.
-// state = { format: '', stakes: '', stip: '' }   ('' means "All")
-// ---------------------------------------------------------------------------
-function matchPassesFilters(match, state) {
-    if (state.format && getFormatGroup(match.matchType) !== state.format) return false;
-    if (state.stakes && getStakesGroup(match.stakes) !== state.stakes) return false;
-    if (state.stip) {
-        const stip = normalizeMatchStipulation(match.matchStipulation);
-        if (state.stip === STIP_ANY) { if (stip === 'None') return false; }
-        else if (state.stip === STIP_NONE) { if (stip !== 'None') return false; }
-        else if (stip !== state.stip) return false;
+// exceptFacet: skip one facet's own selection — used for faceted counts, so
+// each section's numbers reflect the OTHER sections' choices, not its own.
+function matchPassesFilters(match, state, exceptFacet = null) {
+    for (const facet in MATCH_FACETS) {
+        if (facet === exceptFacet) continue;
+        const selected = state[facet];
+        if (selected && !selected.has(MATCH_FACETS[facet](match))) return false;
     }
     return true;
 }
