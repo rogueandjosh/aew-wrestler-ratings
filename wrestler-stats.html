@@ -614,6 +614,53 @@
             border: 2px solid #ef4444;
         }
 
+        /* "No stats page yet" — informational, so gold rather than error red */
+        .no-stats {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            color: #e0e0e0;
+        }
+
+        .no-stats h2 {
+            color: #ffd700;
+            margin-bottom: 12px;
+        }
+
+        .no-stats p {
+            max-width: 560px;
+            margin: 0 auto 10px;
+            line-height: 1.5;
+        }
+
+        .no-stats .no-stats-members {
+            margin: 16px auto;
+        }
+
+        .no-stats .no-stats-members a {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .no-stats .no-stats-note {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .no-stats .no-stats-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .no-stats .no-stats-actions .back-link {
+            margin-top: 0;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -1623,8 +1670,14 @@
                 async function loadWrestlerData(slug) {
             try {
                 const response = await fetch(`wrestlers/${slug}.json`);
+                if (response.status === 404) {
+                    // No stats file — usually a wrestler/team with only one match
+                    // (files are only created from 2 matches). Handled separately
+                    // so genuine errors below still show the red error box.
+                    return showNoStatsPage(slug);
+                }
                 if (!response.ok) {
-                    throw new Error('Wrestler not found');
+                    throw new Error(`Wrestler data unavailable (HTTP ${response.status})`);
                 }
                 wrestlerData = await response.json();
                 
@@ -3408,6 +3461,73 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         function formatDateShort(dateStr) {
             const date = new Date(dateStr);
             return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        }
+
+        // Shown when wrestlers/{slug}.json doesn't exist. Stats files are only
+        // created once a wrestler/team has 2+ matches, so links from On This Day
+        // (or elsewhere) to one-off teams land here. Teams are named from
+        // team-members.json; individuals with one match aren't listed anywhere
+        // on the site, so they get a general message.
+        async function showNoStatsPage(slug) {
+            // A listed wrestler with 2+ matches SHOULD have a file — if it's
+            // missing, that's an export problem, so show the real error.
+            try {
+                const indexResponse = await fetch('wrestlers/index.json');
+                if (indexResponse.ok) {
+                    const index = await indexResponse.json();
+                    const entry = index.find(w => w.slug === slug);
+                    if (entry && entry.totalMatches >= 2) {
+                        showError(`Stats file missing for ${entry.name} (${entry.totalMatches} matches). Please try again later.`);
+                        return;
+                    }
+                }
+            } catch (e) { /* index unavailable — carry on with the message */ }
+
+            const teams = (allTeamMembers && allTeamMembers.teams) || {};
+            const teamName = Object.keys(teams).find(name => createSlug(name) === slug);
+            const cleanName = name => name.replace(/\s*\((tag|trio)\)\s*/gi, '').trim();
+
+            let heading, intro, membersHtml = '';
+            if (teamName) {
+                const displayName = cleanName(teamName);
+                heading = displayName;
+                intro = `<strong>${displayName}</strong> have only had one match together so far.`;
+                document.getElementById('pageTitle').textContent = 'Individual Team Statistics';
+                document.title = `${displayName} - Elite Wrestler Ratings`;
+
+                // Link each member whose own stats page exists
+                const members = teams[teamName] || [];
+                if (members.length) {
+                    const links = await Promise.all(members.map(async member => {
+                        const memberSlug = createSlug(member);
+                        return (await checkTeamFileExists(memberSlug))
+                            ? `<a href="wrestler-stats.html?wrestler=${memberSlug}">${member}</a>`
+                            : member;
+                    }));
+                    const list = links.length > 1
+                        ? `${links.slice(0, -1).join(', ')} and ${links[links.length - 1]}`
+                        : links[0];
+                    membersHtml = `<p class="no-stats-members">Featuring ${list}</p>`;
+                }
+            } else {
+                heading = 'No stats page yet';
+                intro = `This wrestler or team doesn't have a stats page yet, usually because they've only had one match so far.`;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            const box = document.getElementById('error');
+            box.style.display = 'block';
+            box.innerHTML = `
+                <div class="no-stats">
+                    <h2>${heading}</h2>
+                    <p>${intro}</p>
+                    ${membersHtml}
+                    <p class="no-stats-note">Stats pages appear once a wrestler or team has had 2 or more matches. Check back after their next one!</p>
+                    <div class="no-stats-actions">
+                        <a href="wrestler-search.html" class="back-link">🔍 Search Wrestlers</a>
+                    </div>
+                </div>
+            `;
         }
 
         function showError(message) {
