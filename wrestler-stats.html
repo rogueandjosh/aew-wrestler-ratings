@@ -224,7 +224,8 @@
             color: #1a1a2e;
         }
 
-        /* Match Filters panel — styled to match the Best Match archive filters */
+        /* Match Filters panel — checkbox groups follow the Best Match archive's
+           Division filter (All + individual boxes, gold accent, two-way sync) */
         .match-filters {
             background: rgba(255, 215, 0, 0.05);
             border: 2px solid #ffd700;
@@ -232,56 +233,96 @@
             padding: 15px;
         }
 
-        .match-filters-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: flex-end;
+        .match-filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
         }
 
-        .match-filter-item {
+        .match-filter-group-title {
+            color: #ffd700;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .match-filter-options {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            flex: 1 1 160px;
+            gap: 6px;
         }
 
-        .match-filter-item label {
-            color: #ffd700;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-
-        .match-filter-item select {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #ffd700;
+        .match-filter-options label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
             color: #e0e0e0;
-            padding: 8px 10px;
-            border-radius: 5px;
             font-size: 0.9em;
-            font-family: 'Overlock', 'Arial', sans-serif;
             cursor: pointer;
+            line-height: 1.2;
         }
 
-        .match-filter-item select option {
-            background: #1a1a2e;
-            color: #e0e0e0;
+        .match-filter-options input[type="checkbox"] {
+            accent-color: #ffd700;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
-        .match-filter-item select.is-set {
-            background: rgba(255, 215, 0, 0.2);
-            color: #ffd700;
-            font-weight: bold;
-        }
-
-        .match-filter-item select:focus-visible,
-        .match-filters-reset:focus-visible {
+        .match-filter-options input[type="checkbox"]:focus-visible {
             outline: 2px solid #fff;
             outline-offset: 2px;
         }
 
+        .match-filter-options .count {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .match-filter-options label.is-zero {
+            opacity: 0.4;
+        }
+
+        .match-filter-options .shortcut {
+            padding-bottom: 6px;
+            margin-bottom: 2px;
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
+        }
+
+        .match-filter-options .stip-extra {
+            display: none;
+        }
+
+        .match-filter-options.expanded .stip-extra {
+            display: flex;
+        }
+
+        .match-filter-show-all {
+            align-self: flex-start;
+            margin-top: 4px;
+            padding: 3px 0;
+            background: none;
+            border: none;
+            color: #ffd700;
+            cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .match-filters-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
         .match-filters-reset {
-            padding: 8px 14px;
+            padding: 6px 14px;
             background: none;
             color: #ffd700;
             border: 2px solid #ffd700;
@@ -296,8 +337,13 @@
             background-color: rgba(255, 215, 0, 0.2);
         }
 
+        .match-filters-reset:focus-visible,
+        .match-filter-show-all:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
         .match-filters-summary {
-            margin-top: 12px;
             color: #ccc;
             font-size: 0.9em;
             text-align: center;
@@ -572,12 +618,9 @@
                 padding: 10px;
             }
 
-            .match-filter-item {
-                flex: 1 1 100%;
-            }
-
-            .match-filters-reset {
-                width: 100%;
+            .match-filters-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
             }
 
             .stats-grid {
@@ -778,22 +821,24 @@
             <div class="section" id="matchFiltersSection" style="display: none;">
                 <div class="section-title tt" data-tt="Narrow the match sections below by match format, stakes or stipulation. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the year filter." style="cursor: help;">🎯 Match Filters</div>
                 <div class="match-filters">
-                    <div class="match-filters-row">
-                        <div class="match-filter-item" id="formatFilterItem">
-                            <label for="formatFilter" class="tt" data-tt="Singles, tag, trios, bigger tag matches, multi-way matches, or battle royals and gauntlets.">Format</label>
-                            <select id="formatFilter"></select>
+                    <div class="match-filters-grid">
+                        <div class="match-filter-group" id="formatFilterGroup">
+                            <div class="match-filter-group-title tt" data-tt="Singles, tag, trios, bigger tag matches, multi-way matches, or battle royals and gauntlets. Tick as many as you like.">Format</div>
+                            <div class="match-filter-options" id="formatFilterOptions"></div>
                         </div>
-                        <div class="match-filter-item" id="stakesFilterItem">
-                            <label for="stakesFilter" class="tt" data-tt="What was on the line. Tournament includes the Continental Classic, Owen Hart Cup and qualifiers. Contender includes number one contender and eliminator matches.">Stakes</label>
-                            <select id="stakesFilter"></select>
+                        <div class="match-filter-group" id="stakesFilterGroup">
+                            <div class="match-filter-group-title tt" data-tt="What was on the line. Tournament includes the Continental Classic, Owen Hart Cup and qualifiers. Contender includes number one contender and eliminator matches.">Stakes</div>
+                            <div class="match-filter-options" id="stakesFilterOptions"></div>
                         </div>
-                        <div class="match-filter-item" id="stipFilterItem">
-                            <label for="stipFilter" class="tt" data-tt="Pick a specific stipulation, or any stipulation at all. Similar variants (e.g. different Street Fights) are grouped together.">Stipulation</label>
-                            <select id="stipFilter"></select>
+                        <div class="match-filter-group" id="stipFilterGroup">
+                            <div class="match-filter-group-title tt" data-tt="Similar variants are grouped together, e.g. every city's Street Fight counts as Street Fight. 'Any stipulation' ticks every stipulation at once.">Stipulation</div>
+                            <div class="match-filter-options" id="stipFilterOptions"></div>
                         </div>
+                    </div>
+                    <div class="match-filters-footer">
+                        <div class="match-filters-summary" id="matchFiltersSummary"></div>
                         <button type="button" class="match-filters-reset" id="matchFiltersReset" style="display: none;">Clear filters</button>
                     </div>
-                    <div class="match-filters-summary" id="matchFiltersSummary"></div>
                 </div>
             </div>
 
@@ -1400,7 +1445,7 @@
             }
         }
         let currentYear = 'ALL';
-        let matchFilterState = { format: '', stakes: '', stip: '' };
+        let matchFilterState = { format: null, stakes: null, stip: null };
         let ratingChart = null;
         let chartScaleFixed = false;
         let allBestMatchEntries = [];
@@ -2922,75 +2967,148 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         // ---------------------------------------------------------------
-        // MATCH FILTERS (format / stakes / stipulation)
-        // Options are built from this wrestler's own career matches, so a
-        // dropdown only lists groups they've actually had. A dropdown with
-        // only one possible value is hidden; if all three are hidden, the
-        // whole panel is hidden.
+        // MATCH FILTERS (format / stakes / stipulation) — multi-select
+        // Each section lists the groups this wrestler has had in their
+        // career (so the layout never jumps). Counts are "faceted": each
+        // section's numbers reflect the year plus the OTHER sections'
+        // choices, so ticking Trios shows how the stakes and stipulations
+        // break down within those trios matches. Options at (0) are greyed.
         // ---------------------------------------------------------------
-        const MATCH_FILTER_PARAMS = { format: 'format', stakes: 'stakes', stip: 'stip' };
+        const MATCH_FILTER_ALL = '__ALL__';
+        const MATCH_FILTER_ANY_STIP = '__ANY__';
+        const STIP_VISIBLE_DEFAULT = 6;   // stipulations shown before "Show all"
+        const matchFilterOptions = { format: [], stakes: [], stip: [] };
 
-        function buildFilterOptions(selectId, itemId, counts, orderedGroups, extraOptions = []) {
-            const select = document.getElementById(selectId);
-            const groups = orderedGroups
-                ? orderedGroups.filter(g => counts[g])
-                : Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+        function escapeAttr(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        }
 
-            const optionsHtml = [`<option value="">All</option>`]
-                .concat(extraOptions.map(o => `<option value="${o.value}">${o.label}</option>`))
-                .concat(groups.map(g => `<option value="${g.replace(/"/g, '&quot;')}">${g} (${counts[g]})</option>`));
-            select.innerHTML = optionsHtml.join('');
-
-            const usable = groups.length + extraOptions.length > 1;
-            document.getElementById(itemId).style.display = usable ? '' : 'none';
-            return usable;
+        function filterCheckbox(facet, value, labelHtml, extraClass = '') {
+            return `
+                <label class="${extraClass}" data-value="${escapeAttr(value)}">
+                    <input type="checkbox" checked data-facet="${facet}" value="${escapeAttr(value)}">
+                    <span>${labelHtml} <span class="count"></span></span>
+                </label>`;
         }
 
         function setupMatchFilters() {
             const all = wrestlerData.allMatches || [];
 
-            const formatCounts = countBy(all, m => getFormatGroup(m.matchType));
-            const stakesCounts = countBy(all, m => getStakesGroup(m.stakes));
-            const stipCounts = countBy(all, m => normalizeMatchStipulation(m.matchStipulation));
-            const stipNoneCount = stipCounts['None'] || 0;
-            delete stipCounts['None'];
-            const stipTotal = all.length - stipNoneCount;
+            // Career options, in a fixed order
+            const formatCounts = countBy(all, MATCH_FACETS.format);
+            const stakesCounts = countBy(all, MATCH_FACETS.stakes);
+            const stipCounts = countBy(all, MATCH_FACETS.stip);
+            matchFilterOptions.format = FORMAT_GROUPS.filter(g => formatCounts[g]);
+            matchFilterOptions.stakes = STAKES_GROUPS.filter(g => stakesCounts[g]);
+            const specificStips = Object.keys(stipCounts).filter(g => g !== 'None')
+                .sort((a, b) => stipCounts[b] - stipCounts[a] || a.localeCompare(b));
+            matchFilterOptions.stip = (stipCounts['None'] ? ['None'] : []).concat(specificStips);
 
-            const showFormat = buildFilterOptions('formatFilter', 'formatFilterItem', formatCounts, FORMAT_GROUPS);
-            const showStakes = buildFilterOptions('stakesFilter', 'stakesFilterItem', stakesCounts, STAKES_GROUPS);
-            const showStip = stipTotal > 0 && buildFilterOptions('stipFilter', 'stipFilterItem', stipCounts, null, [
-                { value: STIP_ANY, label: `Any stipulation (${stipTotal})` },
-                { value: STIP_NONE, label: `No stipulation (${stipNoneCount})` }
-            ]);
-            if (!showStip) document.getElementById('stipFilterItem').style.display = 'none';
+            // Format & Stakes
+            ['format', 'stakes'].forEach(facet => {
+                const options = matchFilterOptions[facet];
+                document.getElementById(`${facet}FilterOptions`).innerHTML =
+                    filterCheckbox(facet, MATCH_FILTER_ALL, '<strong>All</strong>', 'shortcut') +
+                    options.map(g => filterCheckbox(facet, g, g)).join('');
+                document.getElementById(`${facet}FilterGroup`).style.display = options.length > 1 ? '' : 'none';
+            });
 
-            document.getElementById('matchFiltersSection').style.display =
-                (showFormat || showStakes || showStip) ? '' : 'none';
+            // Stipulation: All, No stipulation, Any stipulation, then specifics
+            // (most common first; anything past the first few sits behind "Show all")
+            const stipBox = document.getElementById('stipFilterOptions');
+            let stipHtml = filterCheckbox('stip', MATCH_FILTER_ALL, '<strong>All</strong>');
+            if (stipCounts['None']) stipHtml += filterCheckbox('stip', 'None', 'No stipulation');
+            stipHtml += filterCheckbox('stip', MATCH_FILTER_ANY_STIP, 'Any stipulation', 'shortcut');
+            stipHtml += specificStips.map((g, i) =>
+                filterCheckbox('stip', g, g, i >= STIP_VISIBLE_DEFAULT ? 'stip-extra' : '')).join('');
+            if (specificStips.length > STIP_VISIBLE_DEFAULT) {
+                stipHtml += `<button type="button" class="match-filter-show-all" id="stipShowAll" aria-expanded="false">Show all (${specificStips.length})</button>`;
+            }
+            stipBox.innerHTML = stipHtml;
+            document.getElementById('stipFilterGroup').style.display = specificStips.length > 0 ? '' : 'none';
 
-            // Restore state from the URL (shareable links), ignoring any value
-            // that isn't a real option for this wrestler.
-            const params = new URLSearchParams(window.location.search);
-            [['format', 'formatFilter'], ['stakes', 'stakesFilter'], ['stip', 'stipFilter']].forEach(([key, id]) => {
-                const select = document.getElementById(id);
-                const wanted = params.get(MATCH_FILTER_PARAMS[key]);
-                const visible = select.closest('.match-filter-item').style.display !== 'none';
-                if (wanted && visible && [...select.options].some(o => o.value === wanted)) {
-                    select.value = wanted;
-                    matchFilterState[key] = wanted;
-                }
-                select.addEventListener('change', () => {
-                    matchFilterState[key] = select.value;
-                    onMatchFiltersChanged();
+            const showAllBtn = document.getElementById('stipShowAll');
+            if (showAllBtn) {
+                showAllBtn.addEventListener('click', () => {
+                    const expanded = stipBox.classList.toggle('expanded');
+                    showAllBtn.setAttribute('aria-expanded', expanded);
+                    showAllBtn.textContent = expanded ? 'Show fewer' : `Show all (${specificStips.length})`;
                 });
+            }
+
+            const anyVisible = ['format', 'stakes', 'stip']
+                .some(f => document.getElementById(`${f}FilterGroup`).style.display !== 'none');
+            document.getElementById('matchFiltersSection').style.display = anyVisible ? '' : 'none';
+
+            // Restore from URL, e.g. ?format=Singles|Trios&stakes=Title Match
+            // (an empty value means "nothing ticked" in that section)
+            const params = new URLSearchParams(window.location.search);
+            Object.keys(MATCH_FACETS).forEach(facet => {
+                const groupHidden = document.getElementById(`${facet}FilterGroup`).style.display === 'none';
+                if (groupHidden || !params.has(facet)) return;
+                const raw = params.get(facet);
+                const valid = raw === '' ? [] : raw.split('|').filter(v => matchFilterOptions[facet].includes(v));
+                if (raw !== '' && valid.length === 0) return;                      // nothing recognisable → All
+                matchFilterState[facet] = valid.length === matchFilterOptions[facet].length ? null : new Set(valid);
+            });
+            applyMatchFilterStateToCheckboxes();
+
+            document.querySelectorAll('.match-filter-options input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => onMatchFilterCheckboxChange(cb));
             });
 
             document.getElementById('matchFiltersReset').addEventListener('click', () => {
-                matchFilterState = { format: '', stakes: '', stip: '' };
-                ['formatFilter', 'stakesFilter', 'stipFilter'].forEach(id => document.getElementById(id).value = '');
+                matchFilterState = { format: null, stakes: null, stip: null };
+                applyMatchFilterStateToCheckboxes();
                 onMatchFiltersChanged();
             });
+        }
 
-            refreshMatchFilterUI();
+        // Two-way sync, same idea as the Best Match archive's Division filter:
+        // "All" ticks/unticks everything; "Any stipulation" ticks/unticks every
+        // specific stipulation (leaving "No stipulation" alone). Ticking an
+        // individual box updates All/Any to match.
+        function onMatchFilterCheckboxChange(changed) {
+            const facet = changed.dataset.facet;
+            const container = document.getElementById(`${facet}FilterOptions`);
+            const individuals = [...container.querySelectorAll('input[type="checkbox"]')]
+                .filter(cb => cb.value !== MATCH_FILTER_ALL && cb.value !== MATCH_FILTER_ANY_STIP);
+
+            if (changed.value === MATCH_FILTER_ALL) {
+                individuals.forEach(cb => { cb.checked = changed.checked; });
+            } else if (changed.value === MATCH_FILTER_ANY_STIP) {
+                individuals.filter(cb => cb.value !== 'None').forEach(cb => { cb.checked = changed.checked; });
+            }
+
+            const selected = individuals.filter(cb => cb.checked).map(cb => cb.value);
+            matchFilterState[facet] = selected.length === individuals.length ? null : new Set(selected);
+
+            syncShortcutBoxes(facet);
+            onMatchFiltersChanged();
+        }
+
+        function syncShortcutBoxes(facet) {
+            const container = document.getElementById(`${facet}FilterOptions`);
+            const individuals = [...container.querySelectorAll('input[type="checkbox"]')]
+                .filter(cb => cb.value !== MATCH_FILTER_ALL && cb.value !== MATCH_FILTER_ANY_STIP);
+            const allBox = container.querySelector(`input[value="${MATCH_FILTER_ALL}"]`);
+            if (allBox) allBox.checked = individuals.every(cb => cb.checked);
+            const anyBox = container.querySelector(`input[value="${MATCH_FILTER_ANY_STIP}"]`);
+            if (anyBox) {
+                const specifics = individuals.filter(cb => cb.value !== 'None');
+                anyBox.checked = specifics.length > 0 && specifics.every(cb => cb.checked);
+            }
+        }
+
+        function applyMatchFilterStateToCheckboxes() {
+            Object.keys(MATCH_FACETS).forEach(facet => {
+                const selected = matchFilterState[facet];
+                document.querySelectorAll(`#${facet}FilterOptions input[type="checkbox"]`).forEach(cb => {
+                    if (cb.value === MATCH_FILTER_ALL || cb.value === MATCH_FILTER_ANY_STIP) return;
+                    cb.checked = selected === null || selected.has(cb.value);
+                });
+                syncShortcutBoxes(facet);
+            });
         }
 
         function onMatchFiltersChanged() {
@@ -3003,22 +3121,41 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         // are left untouched.
         function syncFiltersToUrl() {
             const params = new URLSearchParams(window.location.search);
-            Object.entries(MATCH_FILTER_PARAMS).forEach(([key, param]) => {
-                if (matchFilterState[key]) params.set(param, matchFilterState[key]);
-                else params.delete(param);
+            Object.keys(MATCH_FACETS).forEach(facet => {
+                const selected = matchFilterState[facet];
+                if (selected === null) params.delete(facet);
+                else params.set(facet, [...selected].join('|'));
             });
             if (currentYear && currentYear !== 'ALL') params.set('year', currentYear);
             else params.delete('year');
             history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
         }
 
-        function refreshMatchFilterUI() {
-            const anySet = Object.values(matchFilterState).some(Boolean);
-            document.getElementById('matchFiltersReset').style.display = anySet ? '' : 'none';
-            ['formatFilter', 'stakesFilter', 'stipFilter'].forEach(id => {
-                const el = document.getElementById(id);
-                el.classList.toggle('is-set', !!el.value);
+        // Faceted counts: each section is counted against the year plus the
+        // other two sections' selections (never its own).
+        function refreshMatchFilterCounts() {
+            const yearMatches = getYearMatches();
+            Object.keys(MATCH_FACETS).forEach(facet => {
+                const base = yearMatches.filter(m => matchPassesFilters(m, matchFilterState, facet));
+                const counts = countBy(base, MATCH_FACETS[facet]);
+                const container = document.getElementById(`${facet}FilterOptions`);
+                container.querySelectorAll('label[data-value]').forEach(label => {
+                    const value = label.dataset.value;
+                    let n;
+                    if (value === MATCH_FILTER_ALL) n = base.length;
+                    else if (value === MATCH_FILTER_ANY_STIP) n = base.length - (counts['None'] || 0);
+                    else n = counts[value] || 0;
+                    label.querySelector('.count').textContent = `(${n})`;
+                    label.classList.toggle('is-zero', n === 0);
+                });
             });
+        }
+
+        function refreshMatchFilterUI() {
+            refreshMatchFilterCounts();
+
+            const anySet = Object.values(matchFilterState).some(v => v !== null);
+            document.getElementById('matchFiltersReset').style.display = anySet ? '' : 'none';
 
             const base = getYearMatches();
             const filtered = getFilteredMatches();
