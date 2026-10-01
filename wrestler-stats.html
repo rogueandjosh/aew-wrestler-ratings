@@ -240,19 +240,83 @@
             gap: 18px;
         }
 
-        .match-filter-group-title {
-            color: #ffd700;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        .match-filter-group {
+            position: relative;
         }
 
-        .match-filter-options {
+        .match-filter-group-title {
+            color: #ffd700;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Closed state: looks like the archive's gold-bordered selects */
+        .match-filter-toggle {
+            width: 100%;
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .match-filter-toggle .toggle-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .match-filter-toggle .toggle-arrow {
+            flex-shrink: 0;
+            font-size: 0.75em;
+            transition: transform 0.2s;
+        }
+
+        .match-filter-toggle[aria-expanded="true"] .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .match-filter-toggle.is-set {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .match-filter-toggle:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        /* Open state: checkbox list drops down over the content below */
+        .match-filter-options {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            z-index: 50;
             flex-direction: column;
             gap: 6px;
+            padding: 12px;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .match-filter-group.open .match-filter-options {
+            display: flex;
         }
 
         .match-filter-options label {
@@ -825,14 +889,17 @@
                     <div class="match-filters-grid">
                         <div class="match-filter-group" id="formatFilterGroup">
                             <div class="match-filter-group-title tt" data-tt="Singles, tag, trios, bigger tag matches, multi-way matches, or battle royals and gauntlets. Tick as many as you like.">Format</div>
+                            <button type="button" class="match-filter-toggle" id="formatFilterToggle" aria-expanded="false" aria-controls="formatFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="formatFilterOptions"></div>
                         </div>
                         <div class="match-filter-group" id="stakesFilterGroup">
                             <div class="match-filter-group-title tt" data-tt="What was on the line. Tournament includes the Continental Classic, Owen Hart Cup and qualifiers. Contender includes number one contender and eliminator matches.">Stakes</div>
+                            <button type="button" class="match-filter-toggle" id="stakesFilterToggle" aria-expanded="false" aria-controls="stakesFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="stakesFilterOptions"></div>
                         </div>
                         <div class="match-filter-group" id="stipFilterGroup">
                             <div class="match-filter-group-title tt" data-tt="Similar variants are grouped together, e.g. every city's Street Fight counts as Street Fight. 'Any stipulation' ticks every stipulation at once.">Stipulation</div>
+                            <button type="button" class="match-filter-toggle" id="stipFilterToggle" aria-expanded="false" aria-controls="stipFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="stipFilterOptions"></div>
                         </div>
                     </div>
@@ -3058,10 +3125,73 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 cb.addEventListener('change', () => onMatchFilterCheckboxChange(cb));
             });
 
+            setupMatchFilterDropdowns();
+
             document.getElementById('matchFiltersReset').addEventListener('click', () => {
                 matchFilterState = { format: null, stakes: null, stip: null };
                 applyMatchFilterStateToCheckboxes();
                 onMatchFiltersChanged();
+            });
+        }
+
+        // Each section is a dropdown: the button shows the current choice and
+        // opens the checkbox list. Only one is open at a time; clicking
+        // outside or pressing Escape closes it.
+        function setupMatchFilterDropdowns() {
+            const groups = ['format', 'stakes', 'stip'].map(f => document.getElementById(`${f}FilterGroup`));
+
+            function closeAll(except = null) {
+                groups.forEach(g => {
+                    if (g === except) return;
+                    g.classList.remove('open');
+                    g.querySelector('.match-filter-toggle').setAttribute('aria-expanded', 'false');
+                });
+            }
+
+            groups.forEach(group => {
+                const toggle = group.querySelector('.match-filter-toggle');
+                toggle.addEventListener('click', () => {
+                    const opening = !group.classList.contains('open');
+                    closeAll(group);
+                    group.classList.toggle('open', opening);
+                    toggle.setAttribute('aria-expanded', opening);
+                });
+            });
+
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.match-filter-group')) closeAll();
+            });
+            document.addEventListener('keydown', e => {
+                if (e.key !== 'Escape') return;
+                const open = groups.find(g => g.classList.contains('open'));
+                if (open) {
+                    closeAll();
+                    open.querySelector('.match-filter-toggle').focus();
+                }
+            });
+        }
+
+        // Button text: "All (97)", the ticked names if one or two, "3 selected",
+        // or "None selected".
+        function refreshMatchFilterToggles() {
+            Object.keys(MATCH_FACETS).forEach(facet => {
+                const toggle = document.getElementById(`${facet}FilterToggle`);
+                if (!toggle) return;
+                const selected = matchFilterState[facet];
+                const container = document.getElementById(`${facet}FilterOptions`);
+                let text;
+                if (selected === null) {
+                    const allCount = container.querySelector(`label[data-value="${MATCH_FILTER_ALL}"] .count`);
+                    text = `All ${allCount ? allCount.textContent : ''}`.trim();
+                } else if (selected.size === 0) {
+                    text = 'None selected';
+                } else {
+                    const names = [...selected].map(v => v === 'None' ? 'No stipulation' : v);
+                    text = names.length <= 2 ? names.join(', ') : `${names.length} selected`;
+                }
+                toggle.querySelector('.toggle-text').textContent = text;
+                toggle.title = text;
+                toggle.classList.toggle('is-set', selected !== null);
             });
         }
 
@@ -3154,6 +3284,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         function refreshMatchFilterUI() {
             refreshMatchFilterCounts();
+            refreshMatchFilterToggles();
 
             const anySet = Object.values(matchFilterState).some(v => v !== null);
             document.getElementById('matchFiltersReset').style.display = anySet ? '' : 'none';
