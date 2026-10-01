@@ -1,0 +1,96 @@
+// ============================================================================
+// SHARED: Match filter groupings
+// Used by wrestler-stats.html (Match Filters panel). Raw Cagematch values stay
+// untouched in the wrestler JSON files — all grouping happens here, so if a
+// grouping needs changing, edit this file only. No re-export required.
+//
+// Each grouping function takes a raw value and returns a group label.
+// Rules are checked top to bottom; the first match wins, so ORDER MATTERS.
+// When a new raw value appears in the data that lands in the wrong group,
+// add a rule above the one that's catching it.
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// FORMAT — grouped from matchType (e.g. "One on One", "8 Man Tag", "4 Way Tag")
+// ---------------------------------------------------------------------------
+const FORMAT_GROUPS = ['Singles', 'Tag Team', 'Trios', 'Multi-Person Tag', 'Multi-Way', 'Battle Royal & Gauntlet', 'Other'];
+
+function getFormatGroup(matchType) {
+    const t = (matchType || '').trim();
+    if (!t) return 'Other';
+    if (/gauntlet|battle royal/i.test(t)) return 'Battle Royal & Gauntlet';  // incl. Tag/Trios Battle Royal
+    if (/\bway\b|^multi/i.test(t)) return 'Multi-Way';                        // 3 Way, 4 Way Tag, Multi Trios...
+    if (/^\d+\s+(man|woman|person)\s+tag$/i.test(t)) return 'Multi-Person Tag'; // 8 Man Tag, 12 Person Tag...
+    if (/handicap/i.test(t)) return 'Multi-Person Tag';
+    if (/trios/i.test(t)) return 'Trios';                                      // Trios, Mixed Trios
+    if (/tag/i.test(t)) return 'Tag Team';                                     // Tag Team, Mixed Tag (Team)
+    if (/^one on one$/i.test(t)) return 'Singles';
+    return 'Other';
+}
+
+// ---------------------------------------------------------------------------
+// STAKES — grouped from stakes (e.g. "Title Match", "Continental Classic Final")
+// ---------------------------------------------------------------------------
+const STAKES_GROUPS = ['Title Match', 'Contender & Eliminator', 'Tournament', 'Other Stakes', 'No Stakes'];
+
+function getStakesGroup(stakes) {
+    const s = (stakes || '').trim();
+    if (!s || /^none$/i.test(s)) return 'No Stakes';
+    if (/title match|^title vs|vs title$/i.test(s)) return 'Title Match';      // incl. Title vs Career / Hair
+    if (/contender|eliminator|future title shot|number one entry|advantage/i.test(s)) return 'Contender & Eliminator';
+    if (/tournament|classic|continental cup|qualifying|best of 7|diamond ring|face of the revolution/i.test(s)) return 'Tournament';
+    return 'Other Stakes';                                                       // Cash, Hair vs Hair, Authority Position...
+}
+
+// ---------------------------------------------------------------------------
+// STIPULATION — individual stipulations, with similar variants merged.
+// Extends the rules used in the Best Match archive (Street Fight, Texas Death).
+// ---------------------------------------------------------------------------
+const STIPULATION_RULES = [
+    { pattern: /street fight/i,               canonical: 'Street Fight' },
+    { pattern: /texas death/i,                canonical: 'Texas Death' },
+    { pattern: /^ladder( match)?$/i,          canonical: 'Ladder' },
+    { pattern: /^(no dq|no disqualification)$/i, canonical: 'No DQ' },
+    { pattern: /^no count outs?( match)?$/i,  canonical: 'No Count Out' },
+    { pattern: /^iron man/i,                  canonical: 'Iron Man' }
+];
+
+function normalizeMatchStipulation(raw) {
+    const s = (raw || '').trim();
+    if (!s || /^none$/i.test(s)) return 'None';
+    for (const rule of STIPULATION_RULES) {
+        if (rule.pattern.test(s)) return rule.canonical;
+    }
+    return s;
+}
+
+// Special stipulation filter values (everything else is a specific stipulation)
+const STIP_ANY = '__any__';
+const STIP_NONE = '__none__';
+
+// ---------------------------------------------------------------------------
+// FILTER TEST — returns true if a match passes the given filter state.
+// state = { format: '', stakes: '', stip: '' }   ('' means "All")
+// ---------------------------------------------------------------------------
+function matchPassesFilters(match, state) {
+    if (state.format && getFormatGroup(match.matchType) !== state.format) return false;
+    if (state.stakes && getStakesGroup(match.stakes) !== state.stakes) return false;
+    if (state.stip) {
+        const stip = normalizeMatchStipulation(match.matchStipulation);
+        if (state.stip === STIP_ANY) { if (stip === 'None') return false; }
+        else if (state.stip === STIP_NONE) { if (stip !== 'None') return false; }
+        else if (stip !== state.stip) return false;
+    }
+    return true;
+}
+
+// Count how many of a wrestler's matches fall in each group — used to build
+// dropdowns that only show options this wrestler actually has.
+function countBy(matches, groupFn) {
+    const counts = {};
+    matches.forEach(m => {
+        const g = groupFn(m);
+        counts[g] = (counts[g] || 0) + 1;
+    });
+    return counts;
+}
