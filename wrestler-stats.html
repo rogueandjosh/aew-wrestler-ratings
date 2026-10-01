@@ -18,6 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wrestler Stats - Elite Wrestler Ratings</title>
     <script src="best-match-shared.js"></script>
+    <script src="match-filters.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css">
@@ -221,6 +222,95 @@
         .year-btn.active {
             background-color: #ffd700;
             color: #1a1a2e;
+        }
+
+        /* Match Filters panel — styled to match the Best Match archive filters */
+        .match-filters {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .match-filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .match-filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1 1 160px;
+        }
+
+        .match-filter-item label {
+            color: #ffd700;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .match-filter-item select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            color: #e0e0e0;
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            cursor: pointer;
+        }
+
+        .match-filter-item select option {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        .match-filter-item select.is-set {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .match-filter-item select:focus-visible,
+        .match-filters-reset:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        .match-filters-reset {
+            padding: 8px 14px;
+            background: none;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.85em;
+        }
+
+        .match-filters-reset:hover {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .match-filters-summary {
+            margin-top: 12px;
+            color: #ccc;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .match-filters-summary strong {
+            color: #ffd700;
+        }
+
+        .match-filters-empty {
+            color: #999;
+            font-style: italic;
+            padding: 10px 0;
         }
 
         .stats-grid {
@@ -478,6 +568,18 @@
                 font-size: 0.78em;
             }
 
+            .match-filters {
+                padding: 10px;
+            }
+
+            .match-filter-item {
+                flex: 1 1 100%;
+            }
+
+            .match-filters-reset {
+                width: 100%;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
@@ -669,6 +771,29 @@
                 </div>
                 <div class="chart-box">
                     <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Match Filters (apply to the match sections below, not the rating stats above) -->
+            <div class="section" id="matchFiltersSection" style="display: none;">
+                <div class="section-title tt" data-tt="Narrow the match sections below by match format, stakes or stipulation. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the year filter." style="cursor: help;">🎯 Match Filters</div>
+                <div class="match-filters">
+                    <div class="match-filters-row">
+                        <div class="match-filter-item" id="formatFilterItem">
+                            <label for="formatFilter" class="tt" data-tt="Singles, tag, trios, bigger tag matches, multi-way matches, or battle royals and gauntlets.">Format</label>
+                            <select id="formatFilter"></select>
+                        </div>
+                        <div class="match-filter-item" id="stakesFilterItem">
+                            <label for="stakesFilter" class="tt" data-tt="What was on the line. Tournament includes the Continental Classic, Owen Hart Cup and qualifiers. Contender includes number one contender and eliminator matches.">Stakes</label>
+                            <select id="stakesFilter"></select>
+                        </div>
+                        <div class="match-filter-item" id="stipFilterItem">
+                            <label for="stipFilter" class="tt" data-tt="Pick a specific stipulation, or any stipulation at all. Similar variants (e.g. different Street Fights) are grouped together.">Stipulation</label>
+                            <select id="stipFilter"></select>
+                        </div>
+                        <button type="button" class="match-filters-reset" id="matchFiltersReset" style="display: none;">Clear filters</button>
+                    </div>
+                    <div class="match-filters-summary" id="matchFiltersSummary"></div>
                 </div>
             </div>
 
@@ -1275,6 +1400,7 @@
             }
         }
         let currentYear = 'ALL';
+        let matchFilterState = { format: '', stakes: '', stip: '' };
         let ratingChart = null;
         let chartScaleFixed = false;
         let allBestMatchEntries = [];
@@ -1647,8 +1773,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             computeBestMatchCredits();
 
-            updateAllSections();
             setupYearButtons();
+            setupMatchFilters();
+            updateAllSections();
             displayTeamAffiliations();
             displayTeamMembers(); // Show team members for tag/trio teams
         }
@@ -2101,16 +2228,22 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         function setupYearButtons() {
             const buttons = document.querySelectorAll('.year-btn');
+            const urlYear = new URLSearchParams(window.location.search).get('year');
             buttons.forEach(btn => {
                 const year = btn.dataset.year;
                 if (year !== 'ALL' && !wrestlerData.statsByYear[year]) {
                     btn.style.display = 'none';
+                } else if (urlYear && year === urlYear) {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentYear = year;
                 }
 
                 btn.addEventListener('click', () => {
                     buttons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentYear = year;
+                    syncFiltersToUrl();
                     updateAllSections();
                 });
             });
@@ -2118,10 +2251,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         function updateAllSections() {
             updateStatsGrid();
-            updateDistributionBars();
-            updateRecentMatches();
-            updateTopBottomMatches();
             updateRatingChart();
+            updateMatchSections();
         }
 
         function updateStatsGrid() {
@@ -2774,11 +2905,152 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
     });
 } // ← This closes the function
 
-        function getFilteredMatches() {
+        // Matches for the selected year only (ignores match filters) — the
+        // baseline the match filter summary counts against.
+        function getYearMatches() {
             if (currentYear === 'ALL') {
                 return wrestlerData.allMatches;
             }
             return wrestlerData.allMatches.filter(m => m.year === parseInt(currentYear));
+        }
+
+        // Year filter + match filters. Every match-based section (distribution,
+        // recent matches, best & worst) reads from this, so new filters only
+        // need adding to matchPassesFilters() in match-filters.js.
+        function getFilteredMatches() {
+            return getYearMatches().filter(m => matchPassesFilters(m, matchFilterState));
+        }
+
+        // ---------------------------------------------------------------
+        // MATCH FILTERS (format / stakes / stipulation)
+        // Options are built from this wrestler's own career matches, so a
+        // dropdown only lists groups they've actually had. A dropdown with
+        // only one possible value is hidden; if all three are hidden, the
+        // whole panel is hidden.
+        // ---------------------------------------------------------------
+        const MATCH_FILTER_PARAMS = { format: 'format', stakes: 'stakes', stip: 'stip' };
+
+        function buildFilterOptions(selectId, itemId, counts, orderedGroups, extraOptions = []) {
+            const select = document.getElementById(selectId);
+            const groups = orderedGroups
+                ? orderedGroups.filter(g => counts[g])
+                : Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+
+            const optionsHtml = [`<option value="">All</option>`]
+                .concat(extraOptions.map(o => `<option value="${o.value}">${o.label}</option>`))
+                .concat(groups.map(g => `<option value="${g.replace(/"/g, '&quot;')}">${g} (${counts[g]})</option>`));
+            select.innerHTML = optionsHtml.join('');
+
+            const usable = groups.length + extraOptions.length > 1;
+            document.getElementById(itemId).style.display = usable ? '' : 'none';
+            return usable;
+        }
+
+        function setupMatchFilters() {
+            const all = wrestlerData.allMatches || [];
+
+            const formatCounts = countBy(all, m => getFormatGroup(m.matchType));
+            const stakesCounts = countBy(all, m => getStakesGroup(m.stakes));
+            const stipCounts = countBy(all, m => normalizeMatchStipulation(m.matchStipulation));
+            const stipNoneCount = stipCounts['None'] || 0;
+            delete stipCounts['None'];
+            const stipTotal = all.length - stipNoneCount;
+
+            const showFormat = buildFilterOptions('formatFilter', 'formatFilterItem', formatCounts, FORMAT_GROUPS);
+            const showStakes = buildFilterOptions('stakesFilter', 'stakesFilterItem', stakesCounts, STAKES_GROUPS);
+            const showStip = stipTotal > 0 && buildFilterOptions('stipFilter', 'stipFilterItem', stipCounts, null, [
+                { value: STIP_ANY, label: `Any stipulation (${stipTotal})` },
+                { value: STIP_NONE, label: `No stipulation (${stipNoneCount})` }
+            ]);
+            if (!showStip) document.getElementById('stipFilterItem').style.display = 'none';
+
+            document.getElementById('matchFiltersSection').style.display =
+                (showFormat || showStakes || showStip) ? '' : 'none';
+
+            // Restore state from the URL (shareable links), ignoring any value
+            // that isn't a real option for this wrestler.
+            const params = new URLSearchParams(window.location.search);
+            [['format', 'formatFilter'], ['stakes', 'stakesFilter'], ['stip', 'stipFilter']].forEach(([key, id]) => {
+                const select = document.getElementById(id);
+                const wanted = params.get(MATCH_FILTER_PARAMS[key]);
+                const visible = select.closest('.match-filter-item').style.display !== 'none';
+                if (wanted && visible && [...select.options].some(o => o.value === wanted)) {
+                    select.value = wanted;
+                    matchFilterState[key] = wanted;
+                }
+                select.addEventListener('change', () => {
+                    matchFilterState[key] = select.value;
+                    onMatchFiltersChanged();
+                });
+            });
+
+            document.getElementById('matchFiltersReset').addEventListener('click', () => {
+                matchFilterState = { format: '', stakes: '', stip: '' };
+                ['formatFilter', 'stakesFilter', 'stipFilter'].forEach(id => document.getElementById(id).value = '');
+                onMatchFiltersChanged();
+            });
+
+            refreshMatchFilterUI();
+        }
+
+        function onMatchFiltersChanged() {
+            syncFiltersToUrl();
+            updateMatchSections();
+        }
+
+        // Keep ?format=&stakes=&stip=&year= in the address bar so a filtered
+        // view can be copied and shared. Other params (wrestler, returnWeek...)
+        // are left untouched.
+        function syncFiltersToUrl() {
+            const params = new URLSearchParams(window.location.search);
+            Object.entries(MATCH_FILTER_PARAMS).forEach(([key, param]) => {
+                if (matchFilterState[key]) params.set(param, matchFilterState[key]);
+                else params.delete(param);
+            });
+            if (currentYear && currentYear !== 'ALL') params.set('year', currentYear);
+            else params.delete('year');
+            history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
+        }
+
+        function refreshMatchFilterUI() {
+            const anySet = Object.values(matchFilterState).some(Boolean);
+            document.getElementById('matchFiltersReset').style.display = anySet ? '' : 'none';
+            ['formatFilter', 'stakesFilter', 'stipFilter'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.toggle('is-set', !!el.value);
+            });
+
+            const base = getYearMatches();
+            const filtered = getFilteredMatches();
+            const yearText = currentYear === 'ALL' ? '' : ` in ${currentYear}`;
+            const summary = document.getElementById('matchFiltersSummary');
+
+            if (filtered.length === 0) {
+                summary.innerHTML = `No matches${yearText} with these filters.`;
+                return;
+            }
+            const avg = filtered.reduce((sum, m) => sum + m.rating, 0) / filtered.length;
+            const best = Math.max(...filtered.map(m => m.rating));
+            const countText = anySet
+                ? `<strong>${filtered.length}</strong> of ${base.length} matches${yearText}`
+                : `<strong>${filtered.length}</strong> matches${yearText}`;
+            summary.innerHTML = `${countText}, averaging <strong>${avg.toFixed(2)}</strong> (best ${best.toFixed(2)})`;
+        }
+
+        // Re-render only the sections the match filters affect.
+        function updateMatchSections() {
+            updateDistributionBars();
+            updateRecentMatches();
+            updateTopBottomMatches();
+            refreshMatchFilterUI();
+            showMatchFilterEmptyStates();
+        }
+
+        function showMatchFilterEmptyStates() {
+            if (getFilteredMatches().length > 0) return;
+            const msg = `<div class="match-filters-empty">No matches with the current filters.</div>`;
+            ['distributionBars', 'recentMatchesList', 'topMatchesTable', 'bottomMatchesTable']
+                .forEach(id => document.getElementById(id).innerHTML = msg);
         }
 
         function getYearEndRating(year) {
