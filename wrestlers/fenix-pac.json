@@ -1,10 +1,12 @@
 {
   "name": "Fenix & PAC",
+  "slug": "fenix-pac",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 110.34637474205545,
   "currentRank": 4,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 110.54755131330965,
   "peakRatingWeek": "Apr '21 Week 3",
   "peakRank": 4,
@@ -46,25 +48,37 @@
   },
   "bestMatches": [
     {
-      "date": "2021-04-13",
+      "id": 447,
+      "date": "2021-04-14",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "PAC",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.65,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-02-02",
+      "id": 383,
+      "date": "2021-02-03",
       "year": 2021,
       "event": "Beach Break '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Karl Anderson",
         "Luke Gallows",
@@ -73,32 +87,53 @@
         "Rey Fenix",
         "Jon Moxley"
       ],
+      "partners": [
+        "Jon Moxley"
+      ],
+      "versus": [
+        "Karl Anderson",
+        "Luke Gallows",
+        "Kenny Omega"
+      ],
       "rating": 8.26,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-11-24",
+      "id": 333,
+      "date": "2020-11-25",
       "year": 2020,
       "event": "Thanksgiving Eve '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "The Butcher",
         "The Blade",
         "PAC",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 7.06,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -131,11 +166,43 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [],
+      "versus": [
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Sydal",
+        "Mike Sydal",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Cezar Bononi",
+        "Peter Avalon",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -240,25 +307,37 @@
   ],
   "allMatches": [
     {
-      "date": "2020-11-24",
+      "id": 333,
+      "date": "2020-11-25",
       "year": 2020,
       "event": "Thanksgiving Eve '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "The Butcher",
         "The Blade",
         "PAC",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 7.06,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-02-02",
+      "id": 383,
+      "date": "2021-02-03",
       "year": 2021,
       "event": "Beach Break '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Karl Anderson",
         "Luke Gallows",
@@ -267,16 +346,28 @@
         "Rey Fenix",
         "Jon Moxley"
       ],
+      "partners": [
+        "Jon Moxley"
+      ],
+      "versus": [
+        "Karl Anderson",
+        "Luke Gallows",
+        "Kenny Omega"
+      ],
       "rating": 8.26,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -309,28 +400,68 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [],
+      "versus": [
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Sydal",
+        "Mike Sydal",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Cezar Bononi",
+        "Peter Avalon",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-13",
+      "id": 447,
+      "date": "2021-04-14",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "PAC",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.65,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
