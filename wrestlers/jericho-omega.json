@@ -1,10 +1,12 @@
 {
   "name": "Jericho & Omega",
+  "slug": "jericho-omega",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 105.78376398995745,
   "currentRank": 8,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 105.97066476483664,
   "peakRatingWeek": "Oct '23 Week 2",
   "peakRank": 8,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-09-30",
+      "id": 1605,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Konosuke Takeshita",
         "Sammy Guevara",
@@ -50,43 +55,69 @@
         "Chris Jericho",
         "Kota Ibushi"
       ],
+      "partners": [
+        "Konosuke Takeshita",
+        "Sammy Guevara",
+        "Chris Jericho",
+        "Kota Ibushi"
+      ],
+      "versus": [],
       "rating": 7.68,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-03",
+      "id": 1610,
+      "date": "2023-10-04",
       "year": 2023,
       "event": "Anniversary Show '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Konosuke Takeshita",
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Konosuke Takeshita",
+        "Kyle Fletcher"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-29",
+      "id": 1596,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -128,25 +159,37 @@
   ],
   "allMatches": [
     {
-      "date": "2023-09-29",
+      "id": 1596,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-30",
+      "id": 1605,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Konosuke Takeshita",
         "Sammy Guevara",
@@ -155,28 +198,44 @@
         "Chris Jericho",
         "Kota Ibushi"
       ],
+      "partners": [
+        "Konosuke Takeshita",
+        "Sammy Guevara",
+        "Chris Jericho",
+        "Kota Ibushi"
+      ],
+      "versus": [],
       "rating": 7.68,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-03",
+      "id": 1610,
+      "date": "2023-10-04",
       "year": 2023,
       "event": "Anniversary Show '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Konosuke Takeshita",
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Konosuke Takeshita",
+        "Kyle Fletcher"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
