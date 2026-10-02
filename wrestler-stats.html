@@ -371,6 +371,52 @@
             font-weight: bold;
         }
 
+        .match-filter-options .show-row {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .match-filter-options .show-row label {
+            flex: 1;
+        }
+
+        .match-filter-options .show-children {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .match-filter-options .show-children[hidden] {
+            display: none;
+        }
+
+        .match-filter-options .show-expand,
+        .match-filter-options .show-expand-spacer {
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .match-filter-options .show-expand {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #ffd700;
+            cursor: pointer;
+            font-size: 0.8em;
+            line-height: 1;
+            transition: transform 0.15s;
+        }
+
+        .match-filter-options .show-expand[aria-expanded="true"] {
+            transform: rotate(90deg);
+        }
+
+        .match-filter-options .show-expand:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
         .match-filter-options .type-heading {
             color: #ffd700;
             margin-top: 4px;
@@ -3229,6 +3275,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
             renderShowFilter();
             document.getElementById('showFilterOptions').addEventListener('change', onShowCheckboxChange);
+            document.getElementById('showFilterOptions').addEventListener('click', onShowExpandClick);
 
             setupMatchFilterDropdowns();
 
@@ -3400,16 +3447,46 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             return node.children ? node.children.flatMap(showLeafKeys) : [node.key];
         }
 
-        function renderShowNode(node, depth, extraClass = '') {
+        // Groups like All In / London start collapsed behind a ▸ arrow; their
+        // checkbox still ticks/unticks everything inside without opening them.
+        // Show-type headings (when several types are picked) always stay open.
+        const showExpanded = new Set();   // which groups are open (kept across re-renders)
+
+        function renderShowNode(node, depth, extraClass = '', path = '') {
             const keys = showLeafKeys(node);
-            const classes = [`lvl-${depth}`, node.children ? 'show-group' : '', extraClass].filter(Boolean).join(' ');
+            const id = path ? `${path} › ${node.label}` : node.label;
+            const collapsible = !!node.children && extraClass !== 'type-heading';
+            const open = !collapsible || showExpanded.has(id);
+            const labelClasses = [node.children ? 'show-group' : '', extraClass].filter(Boolean).join(' ');
+            const arrow = collapsible
+                ? `<button type="button" class="show-expand" aria-expanded="${open}" aria-label="Show ${escapeAttr(node.label)} breakdown" data-group="${escapeAttr(id)}">▸</button>`
+                : `<span class="show-expand-spacer"></span>`;
             let html = `
-                <label class="${classes}" data-keys="${escapeAttr(keys.join('|'))}"${node.children ? '' : ` data-full="${escapeAttr(node.full)}"`}>
-                    <input type="checkbox" data-facet="show">
-                    <span>${escapeAttr(node.label)} <span class="count"></span></span>
-                </label>`;
-            if (node.children) node.children.forEach(child => { html += renderShowNode(child, depth + 1); });
+                <div class="show-row lvl-${depth}">
+                    ${arrow}
+                    <label class="${labelClasses}" data-keys="${escapeAttr(keys.join('|'))}"${node.children ? '' : ` data-full="${escapeAttr(node.full)}"`}>
+                        <input type="checkbox" data-facet="show">
+                        <span>${escapeAttr(node.label)} <span class="count"></span></span>
+                    </label>
+                </div>`;
+            if (node.children) {
+                html += `<div class="show-children"${open ? '' : ' hidden'}>` +
+                    // (type headings aren't part of the path, so a group stays open when types are added/removed)
+                    node.children.map(child => renderShowNode(child, depth + 1, '', extraClass === 'type-heading' ? '' : id)).join('') +
+                    `</div>`;
+            }
             return html;
+        }
+
+        function onShowExpandClick(e) {
+            const btn = e.target.closest('.show-expand');
+            if (!btn) return;
+            const children = btn.closest('.show-row').nextElementSibling;
+            const opening = children.hidden;
+            children.hidden = !opening;
+            btn.setAttribute('aria-expanded', opening);
+            if (opening) showExpanded.add(btn.dataset.group);
+            else showExpanded.delete(btn.dataset.group);
         }
 
         function renderShowFilter() {
@@ -3435,10 +3512,13 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             }
 
             let html = `
-                <label class="lvl-0 shortcut" data-keys="${escapeAttr(leaves.join('|'))}">
-                    <input type="checkbox" data-facet="show">
-                    <span><strong>All</strong> <span class="count"></span></span>
-                </label>`;
+                <div class="show-row lvl-0 shortcut">
+                    <span class="show-expand-spacer"></span>
+                    <label data-keys="${escapeAttr(leaves.join('|'))}">
+                        <input type="checkbox" data-facet="show">
+                        <span><strong>All</strong> <span class="count"></span></span>
+                    </label>
+                </div>`;
             const multiType = tree.length > 1;
             tree.forEach(t => {
                 if (multiType) html += renderShowNode(t, 0, 'type-heading');
