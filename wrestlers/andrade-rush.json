@@ -1,10 +1,12 @@
 {
   "name": "Andrade & Rush",
+  "slug": "andrade-rush",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 105.61426332354625,
   "currentRank": 8,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 105.77232895984925,
   "peakRatingWeek": "Aug '22 Week 3",
   "peakRank": 4,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-08-16",
+      "id": 997,
+      "date": "2022-08-17",
       "year": 2022,
       "event": "House of the Dragon '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -50,27 +55,45 @@
         "Rush",
         "Dragon Lee"
       ],
+      "partners": [
+        "Dragon Lee"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 8.17,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-08-09",
+      "id": 989,
+      "date": "2022-08-10",
       "year": 2022,
       "event": "Quake by the Lake '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Andrade El Idolo",
         "Rush",
         "Penta Oscuro",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Penta Oscuro",
+        "Rey Fenix"
+      ],
       "rating": 7.32,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -112,25 +135,37 @@
   ],
   "allMatches": [
     {
-      "date": "2022-08-09",
+      "id": 989,
+      "date": "2022-08-10",
       "year": 2022,
       "event": "Quake by the Lake '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Andrade El Idolo",
         "Rush",
         "Penta Oscuro",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Penta Oscuro",
+        "Rey Fenix"
+      ],
       "rating": 7.32,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-08-16",
+      "id": 997,
+      "date": "2022-08-17",
       "year": 2022,
       "event": "House of the Dragon '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -139,12 +174,20 @@
         "Rush",
         "Dragon Lee"
       ],
+      "partners": [
+        "Dragon Lee"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 8.17,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     }
-  ],
-  "isTeam": true
+  ]
 }
