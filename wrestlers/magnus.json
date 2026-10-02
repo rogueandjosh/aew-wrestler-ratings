@@ -1,10 +1,12 @@
 {
   "name": "Magnus",
+  "slug": "magnus",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.31581309628096,
   "currentRank": 53,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 100.76295506854721,
   "peakRatingWeek": "May '25 Week 4",
   "peakRank": 51,
@@ -53,9 +55,12 @@
   },
   "bestMatches": [
     {
-      "date": "2025-05-21",
+      "id": 2704,
+      "date": "2025-05-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mascara Dorada",
         "Mistico",
@@ -63,16 +68,29 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [
+        "Rugido",
+        "Volador Jr."
+      ],
+      "versus": [
+        "Mascara Dorada",
+        "Mistico",
+        "Templario"
+      ],
       "rating": 7.05,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-06-04",
+      "id": 2083,
+      "date": "2024-06-05",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Claudio Castagnoli",
@@ -82,29 +100,51 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Danielson",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Esfinge",
+        "Rugido",
+        "Volador Jr."
+      ],
       "rating": 6.51,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2026-01-23",
+      "id": 3109,
+      "date": "2026-01-24",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Andrade El Idolo"
       ],
+      "partners": [],
+      "versus": [
+        "Andrade El Idolo"
+      ],
       "rating": 5.3,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-03-02",
+      "id": 1900,
+      "date": "2024-03-03",
       "year": 2024,
       "event": "Revolution '24",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Wardlow",
         "Brian Cage",
@@ -114,11 +154,22 @@
         "Lance Archer",
         "Powerhouse Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow",
+        "Brian Cage",
+        "Chris Jericho",
+        "Dante Martin",
+        "Hook",
+        "Lance Archer",
+        "Powerhouse Hobbs"
+      ],
       "rating": 4.74,
-      "division": "None",
       "matchType": "8 Way",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -230,9 +281,12 @@
   ],
   "allMatches": [
     {
-      "date": "2024-03-02",
+      "id": 1900,
+      "date": "2024-03-03",
       "year": 2024,
       "event": "Revolution '24",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Wardlow",
         "Brian Cage",
@@ -242,16 +296,30 @@
         "Lance Archer",
         "Powerhouse Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow",
+        "Brian Cage",
+        "Chris Jericho",
+        "Dante Martin",
+        "Hook",
+        "Lance Archer",
+        "Powerhouse Hobbs"
+      ],
       "rating": 4.74,
-      "division": "None",
       "matchType": "8 Way",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-06-04",
+      "id": 2083,
+      "date": "2024-06-05",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Claudio Castagnoli",
@@ -261,16 +329,30 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Danielson",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Esfinge",
+        "Rugido",
+        "Volador Jr."
+      ],
       "rating": 6.51,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-05-21",
+      "id": 2704,
+      "date": "2025-05-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mascara Dorada",
         "Mistico",
@@ -278,25 +360,42 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [
+        "Rugido",
+        "Volador Jr."
+      ],
+      "versus": [
+        "Mascara Dorada",
+        "Mistico",
+        "Templario"
+      ],
       "rating": 7.05,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2026-01-23",
+      "id": 3109,
+      "date": "2026-01-24",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Andrade El Idolo"
       ],
+      "partners": [],
+      "versus": [
+        "Andrade El Idolo"
+      ],
       "rating": 5.3,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
