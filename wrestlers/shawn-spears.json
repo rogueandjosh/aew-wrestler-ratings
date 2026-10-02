@@ -1,10 +1,12 @@
 {
   "name": "Shawn Spears",
+  "slug": "shawn-spears",
   "division": "Men",
   "formerNames": [],
   "currentRating": 99.82350193788518,
   "currentRank": 64,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 104.77614504409246,
   "peakRatingWeek": "Aug '21 Week 3",
   "peakRank": 21,
@@ -67,9 +69,12 @@
   },
   "bestMatches": [
     {
-      "date": "2021-05-04",
+      "id": 466,
+      "date": "2021-05-05",
       "year": 2021,
       "event": "Blood and Guts '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -81,16 +86,32 @@
         "Sammy Guevara",
         "Jake Hager"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "MJF",
+        "Wardlow",
+        "Ortiz",
+        "Santana",
+        "Chris Jericho",
+        "Sammy Guevara",
+        "Jake Hager"
+      ],
       "rating": 7.47,
-      "division": "Blood And Guts",
       "matchType": "10 Man Tag",
       "matchStipulation": "Blood And Guts",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-05-29",
+      "id": 486,
+      "date": "2021-05-30",
       "year": 2021,
       "event": "Double or Nothing '21",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Chris Jericho",
         "Jake Hager",
@@ -102,29 +123,53 @@
         "MJF",
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho",
+        "Jake Hager",
+        "Ortiz",
+        "Santana",
+        "Sammy Guevara",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "MJF",
+        "Wardlow"
+      ],
       "rating": 7.32,
-      "division": "Stadium Stampede",
       "matchType": "10 Man Tag",
       "matchStipulation": "Stadium Stampede",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-08-17",
+      "id": 544,
+      "date": "2021-08-18",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Sammy Guevara"
       ],
+      "partners": [],
+      "versus": [
+        "Sammy Guevara"
+      ],
       "rating": 7.16,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-07-12",
+      "id": 14,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "MJF",
         "Sammy Guevara",
@@ -132,68 +177,113 @@
         "Jimmy Havoc",
         "Joey Janela"
       ],
+      "partners": [
+        "MJF",
+        "Sammy Guevara"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Jimmy Havoc",
+        "Joey Janela"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-05-24",
+      "id": 878,
+      "date": "2022-05-25",
       "year": 2022,
       "event": "3 Year Anniversary",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow"
+      ],
       "rating": 6.63,
-      "division": "Steel Cage",
       "matchType": "One on One",
       "matchStipulation": "Steel Cage",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-08-30",
+      "id": 26,
+      "date": "2019-08-31",
       "year": 2019,
       "event": "All Out '19",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
+        "Cody"
+      ],
+      "partners": [],
+      "versus": [
         "Cody"
       ],
       "rating": 6.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-04-07",
+      "id": 161,
+      "date": "2020-04-08",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody"
       ],
+      "partners": [],
+      "versus": [
+        "Cody"
+      ],
       "rating": 6.47,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-07-20",
+      "id": 522,
+      "date": "2021-07-21",
       "year": 2021,
       "event": "Fyter Fest - Night 2 '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-12-01",
+      "id": 334,
+      "date": "2020-12-02",
       "year": 2020,
       "event": "Winter is Coming '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "MJF",
         "Orange Cassidy",
@@ -215,29 +305,60 @@
         "Serpentico",
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "MJF",
+        "Orange Cassidy",
+        "Adam Page",
+        "Alex Reynolds",
+        "Isiah Kassidy",
+        "Joey Janela",
+        "John Silver",
+        "Jungle Boy",
+        "Kip Sabian",
+        "Lee Johnson",
+        "Luther",
+        "Marq Quen",
+        "Matt Hardy",
+        "Matt Sydal",
+        "Miro",
+        "Sammy Guevara",
+        "Scorpio Sky",
+        "Serpentico",
+        "Wardlow"
+      ],
       "rating": 6.33,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-09-14",
+      "id": 581,
+      "date": "2021-09-15",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin"
+      ],
       "rating": 6.22,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Aug '19",
       "rating": 100.37367404214368,
       "rank": 24,
@@ -834,9 +955,12 @@
   ],
   "allMatches": [
     {
-      "date": "2019-07-12",
+      "id": 14,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "MJF",
         "Sammy Guevara",
@@ -844,98 +968,165 @@
         "Jimmy Havoc",
         "Joey Janela"
       ],
+      "partners": [
+        "MJF",
+        "Sammy Guevara"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Jimmy Havoc",
+        "Joey Janela"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-08-30",
+      "id": 26,
+      "date": "2019-08-31",
       "year": 2019,
       "event": "All Out '19",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Cody"
       ],
+      "partners": [],
+      "versus": [
+        "Cody"
+      ],
       "rating": 6.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-10-08",
+      "id": 36,
+      "date": "2019-10-09",
       "year": 2019,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 6.16,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-11-08",
+      "id": 59,
+      "date": "2019-11-09",
       "year": 2019,
       "event": "Full Gear '19",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Joey Janela"
       ],
+      "partners": [],
+      "versus": [
+        "Joey Janela"
+      ],
       "rating": 4.51,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-12-10",
+      "id": 84,
+      "date": "2019-12-11",
       "year": 2019,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Kenny Omega",
         "Kip Sabian"
       ],
+      "partners": [
+        "Kip Sabian"
+      ],
+      "versus": [
+        "Adam Page",
+        "Kenny Omega"
+      ],
       "rating": 5.79,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-03-31",
+      "id": 158,
+      "date": "2020-04-01",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Sammy Guevara",
         "Cody",
         "Darby Allin"
       ],
+      "partners": [
+        "Sammy Guevara"
+      ],
+      "versus": [
+        "Cody",
+        "Darby Allin"
+      ],
       "rating": 5.85,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-04-07",
+      "id": 161,
+      "date": "2020-04-08",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody"
       ],
+      "partners": [],
+      "versus": [
+        "Cody"
+      ],
       "rating": 6.47,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-09-04",
+      "id": 261,
+      "date": "2020-09-05",
       "year": 2020,
       "event": "All Out '20",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Lance Archer",
         "Billy Gunn",
@@ -958,42 +1149,85 @@
         "Trent",
         "Will Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Lance Archer",
+        "Billy Gunn",
+        "Brian Cage",
+        "Christopher Daniels",
+        "Chuck Taylor",
+        "Darby Allin",
+        "Eddie Kingston",
+        "Frankie Kazarian",
+        "Jake Hager",
+        "Matt Sydal",
+        "Ortiz",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Ricky Starks",
+        "Santana",
+        "Sonny Kiss",
+        "The Butcher",
+        "The Blade",
+        "Trent",
+        "Will Hobbs"
+      ],
       "rating": 4.61,
-      "division": "Casino Battle Royale",
       "matchType": "Multi Man",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-09-15",
+      "id": 279,
+      "date": "2020-09-16",
       "year": 2020,
       "event": "Late Night Dynamite '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Sydal"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Sydal"
+      ],
       "rating": 6.15,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-11-10",
+      "id": 321,
+      "date": "2020-11-11",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Scorpio Sky"
       ],
+      "partners": [],
+      "versus": [
+        "Scorpio Sky"
+      ],
       "rating": 5.53,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-12-01",
+      "id": 334,
+      "date": "2020-12-02",
       "year": 2020,
       "event": "Winter is Coming '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "MJF",
         "Orange Cassidy",
@@ -1015,16 +1249,42 @@
         "Serpentico",
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "MJF",
+        "Orange Cassidy",
+        "Adam Page",
+        "Alex Reynolds",
+        "Isiah Kassidy",
+        "Joey Janela",
+        "John Silver",
+        "Jungle Boy",
+        "Kip Sabian",
+        "Lee Johnson",
+        "Luther",
+        "Marq Quen",
+        "Matt Hardy",
+        "Matt Sydal",
+        "Miro",
+        "Sammy Guevara",
+        "Scorpio Sky",
+        "Serpentico",
+        "Wardlow"
+      ],
       "rating": 6.33,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-03-23",
+      "id": 433,
+      "date": "2021-03-24",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1032,16 +1292,29 @@
         "Griff Garrison",
         "Dante Martin"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Brian Pillman Jr.",
+        "Griff Garrison",
+        "Dante Martin"
+      ],
       "rating": 5.05,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-05-04",
+      "id": 466,
+      "date": "2021-05-05",
       "year": 2021,
       "event": "Blood and Guts '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1053,16 +1326,32 @@
         "Sammy Guevara",
         "Jake Hager"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "MJF",
+        "Wardlow",
+        "Ortiz",
+        "Santana",
+        "Chris Jericho",
+        "Sammy Guevara",
+        "Jake Hager"
+      ],
       "rating": 7.47,
-      "division": "Blood And Guts",
       "matchType": "10 Man Tag",
       "matchStipulation": "Blood And Guts",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-05-29",
+      "id": 486,
+      "date": "2021-05-30",
       "year": 2021,
       "event": "Double or Nothing '21",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Chris Jericho",
         "Jake Hager",
@@ -1074,68 +1363,116 @@
         "MJF",
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho",
+        "Jake Hager",
+        "Ortiz",
+        "Santana",
+        "Sammy Guevara",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "MJF",
+        "Wardlow"
+      ],
       "rating": 7.32,
-      "division": "Stadium Stampede",
       "matchType": "10 Man Tag",
       "matchStipulation": "Stadium Stampede",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-07-20",
+      "id": 522,
+      "date": "2021-07-21",
       "year": 2021,
       "event": "Fyter Fest - Night 2 '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-08-17",
+      "id": 544,
+      "date": "2021-08-18",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Sammy Guevara"
       ],
+      "partners": [],
+      "versus": [
+        "Sammy Guevara"
+      ],
       "rating": 7.16,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-14",
+      "id": 581,
+      "date": "2021-09-15",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin"
+      ],
       "rating": 6.22,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-24",
+      "id": 878,
+      "date": "2022-05-25",
       "year": 2022,
       "event": "3 Year Anniversary",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow"
+      ],
       "rating": 6.63,
-      "division": "Steel Cage",
       "matchType": "One on One",
       "matchStipulation": "Steel Cage",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-10-13",
+      "id": 1074,
+      "date": "2022-10-14",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1143,53 +1480,89 @@
         "Toa Liona",
         "Brian Cage"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona",
+        "Brian Cage"
+      ],
       "rating": 6.02,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-04-13",
+      "id": 1302,
+      "date": "2023-04-14",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 5.96,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-04-27",
+      "id": 1316,
+      "date": "2023-04-28",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay White",
         "Juice Robinson",
         "Ricky Starks"
       ],
+      "partners": [
+        "Ricky Starks"
+      ],
+      "versus": [
+        "Jay White",
+        "Juice Robinson"
+      ],
       "rating": 6.14,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-07-14",
+      "id": 1446,
+      "date": "2023-07-15",
       "year": 2023,
       "event": "Battle of the Belts 7",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
         "Luchasaurus"
       ],
+      "partners": [],
+      "versus": [
+        "Luchasaurus"
+      ],
       "rating": 4.63,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     }
-  ],
-  "isTeam": false
+  ]
 }
