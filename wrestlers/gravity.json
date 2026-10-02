@@ -1,10 +1,12 @@
 {
   "name": "Gravity",
+  "slug": "gravity",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.07844986560657,
   "currentRank": 50,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 101.09961110837237,
   "peakRatingWeek": "Aug '23 Week 4",
   "peakRank": 56,
@@ -39,22 +41,33 @@
   },
   "bestMatches": [
     {
-      "date": "2023-08-24",
+      "id": 1510,
+      "date": "2023-08-25",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "QT Marshall"
       ],
+      "partners": [],
+      "versus": [
+        "QT Marshall"
+      ],
       "rating": 6.18,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-06",
+      "id": 1616,
+      "date": "2023-10-07",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -62,29 +75,50 @@
         "Angelico",
         "Metalik"
       ],
+      "partners": [
+        "Angelico",
+        "Metalik"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.77,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-25",
+      "id": 1457,
+      "date": "2023-07-26",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "PAC"
       ],
+      "partners": [],
+      "versus": [
+        "PAC"
+      ],
       "rating": 5.61,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-08",
+      "id": 1555,
+      "date": "2023-09-09",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -92,26 +126,47 @@
         "Aero Star",
         "Dios Del Inframundo"
       ],
+      "partners": [
+        "Aero Star",
+        "Dios Del Inframundo"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-24",
+      "id": 1711,
+      "date": "2023-11-25",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Buddy Matthews",
         "Malakai Black",
         "Komander"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 5.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -230,35 +285,54 @@
   ],
   "allMatches": [
     {
-      "date": "2023-07-25",
+      "id": 1457,
+      "date": "2023-07-26",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "PAC"
       ],
+      "partners": [],
+      "versus": [
+        "PAC"
+      ],
       "rating": 5.61,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-24",
+      "id": 1510,
+      "date": "2023-08-25",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "QT Marshall"
       ],
+      "partners": [],
+      "versus": [
+        "QT Marshall"
+      ],
       "rating": 6.18,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-08",
+      "id": 1555,
+      "date": "2023-09-09",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -266,16 +340,29 @@
         "Aero Star",
         "Dios Del Inframundo"
       ],
+      "partners": [
+        "Aero Star",
+        "Dios Del Inframundo"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-06",
+      "id": 1616,
+      "date": "2023-10-07",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -283,27 +370,47 @@
         "Angelico",
         "Metalik"
       ],
+      "partners": [
+        "Angelico",
+        "Metalik"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.77,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-24",
+      "id": 1711,
+      "date": "2023-11-25",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Buddy Matthews",
         "Malakai Black",
         "Komander"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 5.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
