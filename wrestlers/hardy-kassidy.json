@@ -1,10 +1,12 @@
 {
   "name": "Hardy & Kassidy",
+  "slug": "hardy-kassidy",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 100.27388048678745,
   "currentRank": 19,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 101.19211608804778,
   "peakRatingWeek": "Mar '22 Week 1",
   "peakRank": 16,
@@ -53,9 +55,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-03-04",
+      "id": 781,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -64,43 +69,70 @@
         "Matt Hardy",
         "Andrade El Idolo"
       ],
+      "partners": [
+        "Andrade El Idolo"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Sting",
+        "Sammy Guevara"
+      ],
       "rating": 7.23,
-      "division": "Tornado Tag",
       "matchType": "Trios",
       "matchStipulation": "Tornado Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-02",
+      "id": 414,
+      "date": "2021-03-03",
       "year": 2021,
       "event": "The Crossroads",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "John Silver",
         "Isiah Kassidy",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page",
+        "John Silver"
+      ],
       "rating": 5.68,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-29",
+      "id": 1414,
+      "date": "2023-06-30",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Johnny TV",
         "QT Marshall",
         "Isiah Kassidy",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Johnny TV",
+        "QT Marshall"
+      ],
       "rating": 5.35,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -177,25 +209,37 @@
   ],
   "allMatches": [
     {
-      "date": "2021-03-02",
+      "id": 414,
+      "date": "2021-03-03",
       "year": 2021,
       "event": "The Crossroads",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "John Silver",
         "Isiah Kassidy",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page",
+        "John Silver"
+      ],
       "rating": 5.68,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-03-04",
+      "id": 781,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -204,28 +248,45 @@
         "Matt Hardy",
         "Andrade El Idolo"
       ],
+      "partners": [
+        "Andrade El Idolo"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Sting",
+        "Sammy Guevara"
+      ],
       "rating": 7.23,
-      "division": "Tornado Tag",
       "matchType": "Trios",
       "matchStipulation": "Tornado Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-29",
+      "id": 1414,
+      "date": "2023-06-30",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Johnny TV",
         "QT Marshall",
         "Isiah Kassidy",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Johnny TV",
+        "QT Marshall"
+      ],
       "rating": 5.35,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
