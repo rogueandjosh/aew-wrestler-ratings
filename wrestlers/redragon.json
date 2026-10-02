@@ -1,10 +1,12 @@
 {
   "name": "reDRagon",
+  "slug": "redragon",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 110.51627654830185,
   "currentRank": 7,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 111.39449086152355,
   "peakRatingWeek": "Apr '22 Week 3",
   "peakRank": 4,
@@ -46,9 +48,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-03-04",
+      "id": 775,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
@@ -57,16 +62,27 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.58,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-31",
+      "id": 901,
+      "date": "2022-06-01",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -79,32 +95,56 @@
         "Darby Allin",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Hikuleo",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Christian Cage",
+        "Darby Allin",
+        "Matt Hardy"
+      ],
       "rating": 7.62,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-12",
+      "id": 826,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
         "Bobby Fish",
         "Kyle O'Reilly"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 7.45,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-15",
+      "id": 790,
+      "date": "2022-03-16",
       "year": 2022,
       "event": "St Patrick Day's Slam '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -113,16 +153,28 @@
         "Luchasaurus",
         "Adam Page"
       ],
+      "partners": [
+        "Adam Cole"
+      ],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Adam Page"
+      ],
       "rating": 7.4,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-12-28",
+      "id": 703,
+      "date": "2021-12-29",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Bobby Fish",
@@ -131,16 +183,29 @@
         "Trent Beretta",
         "Orange Cassidy"
       ],
+      "partners": [
+        "Adam Cole",
+        "Kyle O'Reilly"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy"
+      ],
       "rating": 7.22,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-03-01",
+      "id": 770,
+      "date": "2022-03-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -149,16 +214,28 @@
         "John Silver",
         "Adam Page"
       ],
+      "partners": [
+        "Adam Cole"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Adam Page"
+      ],
       "rating": 6.75,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-02-22",
+      "id": 759,
+      "date": "2022-02-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -181,32 +258,66 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Parker",
+        "Matt Lee",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Ortiz",
+        "Santana",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 6.35,
-      "division": "Battle Royal",
       "matchType": "10 Way Tag",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-03-24",
+      "id": 805,
+      "date": "2022-03-25",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
         "Alan Angels",
         "Ten"
       ],
+      "partners": [],
+      "versus": [
+        "Alan Angels",
+        "Ten"
+      ],
       "rating": 5.4,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-26",
+      "id": 848,
+      "date": "2022-04-27",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -219,11 +330,23 @@
         "Griff Garrison",
         "Dante Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Adam Cole",
+        "Brock Anderson",
+        "Lee Johnson",
+        "Brian Pillman Jr.",
+        "Griff Garrison",
+        "Dante Martin"
+      ],
       "rating": 4.8,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -363,9 +486,12 @@
   ],
   "allMatches": [
     {
-      "date": "2021-12-28",
+      "id": 703,
+      "date": "2021-12-29",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Bobby Fish",
@@ -374,16 +500,29 @@
         "Trent Beretta",
         "Orange Cassidy"
       ],
+      "partners": [
+        "Adam Cole",
+        "Kyle O'Reilly"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy"
+      ],
       "rating": 7.22,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-02-22",
+      "id": 759,
+      "date": "2022-02-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -406,16 +545,41 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Parker",
+        "Matt Lee",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Ortiz",
+        "Santana",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 6.35,
-      "division": "Battle Royal",
       "matchType": "10 Way Tag",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-03-01",
+      "id": 770,
+      "date": "2022-03-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -424,16 +588,28 @@
         "John Silver",
         "Adam Page"
       ],
+      "partners": [
+        "Adam Cole"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Adam Page"
+      ],
       "rating": 6.75,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-03-04",
+      "id": 775,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
@@ -442,16 +618,27 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.58,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-15",
+      "id": 790,
+      "date": "2022-03-16",
       "year": 2022,
       "event": "St Patrick Day's Slam '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -460,48 +647,78 @@
         "Luchasaurus",
         "Adam Page"
       ],
+      "partners": [
+        "Adam Cole"
+      ],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Adam Page"
+      ],
       "rating": 7.4,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-03-24",
+      "id": 805,
+      "date": "2022-03-25",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
         "Alan Angels",
         "Ten"
       ],
+      "partners": [],
+      "versus": [
+        "Alan Angels",
+        "Ten"
+      ],
       "rating": 5.4,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-12",
+      "id": 826,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
         "Bobby Fish",
         "Kyle O'Reilly"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 7.45,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-26",
+      "id": 848,
+      "date": "2022-04-27",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -514,16 +731,31 @@
         "Griff Garrison",
         "Dante Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Adam Cole",
+        "Brock Anderson",
+        "Lee Johnson",
+        "Brian Pillman Jr.",
+        "Griff Garrison",
+        "Dante Martin"
+      ],
       "rating": 4.8,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-31",
+      "id": 901,
+      "date": "2022-06-01",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -536,12 +768,23 @@
         "Darby Allin",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Hikuleo",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Christian Cage",
+        "Darby Allin",
+        "Matt Hardy"
+      ],
       "rating": 7.62,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
