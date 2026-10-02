@@ -1,10 +1,12 @@
 {
   "name": "Jeff Cobb",
+  "slug": "jeff-cobb",
   "division": "Men",
   "formerNames": [],
   "currentRating": 98.63581523676845,
   "currentRank": 81,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 103.89254143131453,
   "peakRatingWeek": "Jun '23 Week 3",
   "peakRank": 50,
@@ -60,22 +62,33 @@
   },
   "bestMatches": [
     {
-      "date": "2023-03-28",
+      "id": 1278,
+      "date": "2023-03-29",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kenny Omega"
       ],
+      "partners": [],
+      "versus": [
+        "Kenny Omega"
+      ],
       "rating": 7.73,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-06-25",
+      "id": 930,
+      "date": "2022-06-26",
       "year": 2022,
       "event": "Forbidden Door '22",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -83,16 +96,29 @@
         "Trent Beretta",
         "Great-O-Khan"
       ],
+      "partners": [
+        "Great-O-Khan"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
       "rating": 7.56,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-15",
+      "id": 1381,
+      "date": "2023-06-16",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -100,31 +126,55 @@
         "Trent Beretta",
         "Rocky Romero"
       ],
+      "partners": [
+        "Kyle Fletcher",
+        "Mark Davis"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-05-14",
+      "id": 2032,
+      "date": "2024-05-15",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Claudio Castagnoli",
         "Kyle Fletcher"
       ],
+      "partners": [
+        "Kyle Fletcher"
+      ],
+      "versus": [
+        "Bryan Danielson",
+        "Claudio Castagnoli"
+      ],
       "rating": 6.92,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-06-22",
+      "id": 1393,
+      "date": "2023-06-23",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Will Ospreay",
@@ -134,42 +184,73 @@
         "Rocky Romero",
         "YOH"
       ],
+      "partners": [
+        "Kyle Fletcher",
+        "Will Ospreay"
+      ],
+      "versus": [
+        "Swerve Strickland",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero",
+        "YOH"
+      ],
       "rating": 6.89,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-02-18",
+      "id": 128,
+      "date": "2020-02-19",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-06-23",
+      "id": 928,
+      "date": "2022-06-24",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler"
+      ],
       "rating": 6.85,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-06-29",
+      "id": 2133,
+      "date": "2024-06-30",
       "year": 2024,
       "event": "Forbidden Door '24",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Hook",
         "Katsuyori Shibata",
@@ -177,11 +258,21 @@
         "Big Bill",
         "Chris Jericho"
       ],
+      "partners": [
+        "Big Bill",
+        "Chris Jericho"
+      ],
+      "versus": [
+        "Hook",
+        "Katsuyori Shibata",
+        "Samoa Joe"
+      ],
       "rating": 5.32,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -370,35 +461,54 @@
   ],
   "allMatches": [
     {
-      "date": "2020-02-18",
+      "id": 128,
+      "date": "2020-02-19",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-06-23",
+      "id": 928,
+      "date": "2022-06-24",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler"
+      ],
       "rating": 6.85,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-06-25",
+      "id": 930,
+      "date": "2022-06-26",
       "year": 2022,
       "event": "Forbidden Door '22",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -406,29 +516,50 @@
         "Trent Beretta",
         "Great-O-Khan"
       ],
+      "partners": [
+        "Great-O-Khan"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
       "rating": 7.56,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-03-28",
+      "id": 1278,
+      "date": "2023-03-29",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kenny Omega"
       ],
+      "partners": [],
+      "versus": [
+        "Kenny Omega"
+      ],
       "rating": 7.73,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-15",
+      "id": 1381,
+      "date": "2023-06-16",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -436,16 +567,29 @@
         "Trent Beretta",
         "Rocky Romero"
       ],
+      "partners": [
+        "Kyle Fletcher",
+        "Mark Davis"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-06-22",
+      "id": 1393,
+      "date": "2023-06-23",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Will Ospreay",
@@ -455,31 +599,57 @@
         "Rocky Romero",
         "YOH"
       ],
+      "partners": [
+        "Kyle Fletcher",
+        "Will Ospreay"
+      ],
+      "versus": [
+        "Swerve Strickland",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero",
+        "YOH"
+      ],
       "rating": 6.89,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-05-14",
+      "id": 2032,
+      "date": "2024-05-15",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Claudio Castagnoli",
         "Kyle Fletcher"
       ],
+      "partners": [
+        "Kyle Fletcher"
+      ],
+      "versus": [
+        "Bryan Danielson",
+        "Claudio Castagnoli"
+      ],
       "rating": 6.92,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-06-29",
+      "id": 2133,
+      "date": "2024-06-30",
       "year": 2024,
       "event": "Forbidden Door '24",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Hook",
         "Katsuyori Shibata",
@@ -487,12 +657,21 @@
         "Big Bill",
         "Chris Jericho"
       ],
+      "partners": [
+        "Big Bill",
+        "Chris Jericho"
+      ],
+      "versus": [
+        "Hook",
+        "Katsuyori Shibata",
+        "Samoa Joe"
+      ],
       "rating": 5.32,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
