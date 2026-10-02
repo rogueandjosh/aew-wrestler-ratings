@@ -1,10 +1,12 @@
 {
   "name": "Templario",
+  "slug": "templario",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.62924136802775,
   "currentRank": 52,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 101.507072314724,
   "peakRatingWeek": "Jun '25 Week 2",
   "peakRank": 45,
@@ -39,24 +41,38 @@
   },
   "bestMatches": [
     {
-      "date": "2025-06-03",
+      "id": 2730,
+      "date": "2025-06-04",
       "year": 2025,
       "event": "Fyter Fest '25 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Atlantis Jr."
       ],
+      "partners": [
+        "Atlantis Jr."
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.11,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-05-21",
+      "id": 2704,
+      "date": "2025-05-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mascara Dorada",
         "Mistico",
@@ -64,16 +80,29 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [
+        "Mascara Dorada",
+        "Mistico"
+      ],
+      "versus": [
+        "Magnus",
+        "Rugido",
+        "Volador Jr."
+      ],
       "rating": 7.05,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-06-17",
+      "id": 2743,
+      "date": "2025-06-18",
       "year": 2025,
       "event": "Grand Slam: Mexico '25",
+      "show": "Grand Slam: Mexico",
+      "showType": "TV Special",
       "opponents": [
         "Adam Cole",
         "Atlantis",
@@ -89,26 +118,54 @@
         "Lance Archer",
         "Volador Jr."
       ],
+      "partners": [],
+      "versus": [
+        "Adam Cole",
+        "Atlantis",
+        "Atlantis Jr.",
+        "Bandido",
+        "Brody King",
+        "Daniel Garcia",
+        "Dax Harwood",
+        "Hechicero",
+        "Josh Alexander",
+        "Konosuke Takeshita",
+        "Kyle Fletcher",
+        "Lance Archer",
+        "Volador Jr."
+      ],
       "rating": 6.77,
-      "division": "None",
       "matchType": "14 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-06-26",
+      "id": 2762,
+      "date": "2025-06-27",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Hechicero",
         "Rocky Romero"
       ],
+      "partners": [
+        "Brody King"
+      ],
+      "versus": [
+        "Hechicero",
+        "Rocky Romero"
+      ],
       "rating": 6.34,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -171,9 +228,12 @@
   ],
   "allMatches": [
     {
-      "date": "2025-05-21",
+      "id": 2704,
+      "date": "2025-05-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mascara Dorada",
         "Mistico",
@@ -181,31 +241,55 @@
         "Rugido",
         "Volador Jr."
       ],
+      "partners": [
+        "Mascara Dorada",
+        "Mistico"
+      ],
+      "versus": [
+        "Magnus",
+        "Rugido",
+        "Volador Jr."
+      ],
       "rating": 7.05,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-06-03",
+      "id": 2730,
+      "date": "2025-06-04",
       "year": 2025,
       "event": "Fyter Fest '25 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Atlantis Jr."
       ],
+      "partners": [
+        "Atlantis Jr."
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.11,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-06-17",
+      "id": 2743,
+      "date": "2025-06-18",
       "year": 2025,
       "event": "Grand Slam: Mexico '25",
+      "show": "Grand Slam: Mexico",
+      "showType": "TV Special",
       "opponents": [
         "Adam Cole",
         "Atlantis",
@@ -221,27 +305,54 @@
         "Lance Archer",
         "Volador Jr."
       ],
+      "partners": [],
+      "versus": [
+        "Adam Cole",
+        "Atlantis",
+        "Atlantis Jr.",
+        "Bandido",
+        "Brody King",
+        "Daniel Garcia",
+        "Dax Harwood",
+        "Hechicero",
+        "Josh Alexander",
+        "Konosuke Takeshita",
+        "Kyle Fletcher",
+        "Lance Archer",
+        "Volador Jr."
+      ],
       "rating": 6.77,
-      "division": "None",
       "matchType": "14 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-06-26",
+      "id": 2762,
+      "date": "2025-06-27",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Hechicero",
         "Rocky Romero"
       ],
+      "partners": [
+        "Brody King"
+      ],
+      "versus": [
+        "Hechicero",
+        "Rocky Romero"
+      ],
       "rating": 6.34,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
