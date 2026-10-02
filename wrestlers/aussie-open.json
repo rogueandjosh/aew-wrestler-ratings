@@ -1,10 +1,12 @@
 {
   "name": "Aussie Open",
+  "slug": "aussie-open",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 110.57880547186146,
   "currentRank": 5,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 111.21995598107905,
   "peakRatingWeek": "Oct '23 Week 1",
   "peakRank": 6,
@@ -39,41 +41,62 @@
   },
   "bestMatches": [
     {
-      "date": "2023-02-23",
+      "id": 1237,
+      "date": "2023-02-24",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.81,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-30",
+      "id": 1606,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.37,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-29",
+      "id": 1597,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -84,32 +107,54 @@
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [],
+      "versus": [
+        "Big Bill",
+        "Ricky Starks",
+        "Bryan Danielson",
+        "Wheeler Yuta",
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.31,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-01",
+      "id": 1472,
+      "date": "2023-08-02",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "El Hijo del Vikingo",
         "Komander"
       ],
+      "partners": [],
+      "versus": [
+        "El Hijo del Vikingo",
+        "Komander"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-15",
+      "id": 1381,
+      "date": "2023-06-16",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -118,64 +163,103 @@
         "Trent Beretta",
         "Rocky Romero"
       ],
+      "partners": [
+        "Jeff Cobb"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-05",
+      "id": 1547,
+      "date": "2023-09-06",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Sammy Guevara",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho",
+        "Sammy Guevara"
+      ],
       "rating": 6.82,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-04-13",
+      "id": 1300,
+      "date": "2023-04-14",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
       "rating": 6.72,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-01",
+      "id": 1533,
+      "date": "2023-09-02",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Komander",
         "Nick Wayne"
       ],
+      "partners": [],
+      "versus": [
+        "Komander",
+        "Nick Wayne"
+      ],
       "rating": 6.62,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-03-02",
+      "id": 1244,
+      "date": "2023-03-03",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "Wheeler Yuta",
@@ -186,27 +270,46 @@
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Alex Reynolds",
+        "John Silver",
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 6.48,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-08-17",
+      "id": 1499,
+      "date": "2023-08-18",
       "year": 2023,
       "event": "Fight For the Fallen '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Isiah Kassidy",
         "Ethan Page"
       ],
+      "partners": [],
+      "versus": [
+        "Isiah Kassidy",
+        "Ethan Page"
+      ],
       "rating": 6.08,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -416,9 +519,12 @@
   ],
   "allMatches": [
     {
-      "date": "2023-02-21",
+      "id": 1235,
+      "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Jeff Jarrett",
@@ -441,32 +547,66 @@
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Jay Lethal",
+        "Jeff Jarrett",
+        "Ariya Daivari",
+        "Tony Nese",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelo Parker",
+        "Matt Menard",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 5.39,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-23",
+      "id": 1237,
+      "date": "2023-02-24",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.81,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-02-28",
+      "id": 1243,
+      "date": "2023-03-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Danhausen",
         "Orange Cassidy",
@@ -489,16 +629,41 @@
         "The Butcher",
         "The Blade"
       ],
+      "partners": [],
+      "versus": [
+        "Danhausen",
+        "Orange Cassidy",
+        "Dante Martin",
+        "Darius Martin",
+        "Angelo Parker",
+        "Matt Menard",
+        "Alex Reynolds",
+        "John Silver",
+        "Matt Taven",
+        "Mike Bennett",
+        "Preston Vance",
+        "Rush",
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 3.23,
-      "division": "Casino Battle Royale",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-03-02",
+      "id": 1244,
+      "date": "2023-03-03",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "Wheeler Yuta",
@@ -509,32 +674,54 @@
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Alex Reynolds",
+        "John Silver",
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 6.48,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-04-13",
+      "id": 1300,
+      "date": "2023-04-14",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
       "rating": 6.72,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-06-15",
+      "id": 1381,
+      "date": "2023-06-16",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -543,64 +730,103 @@
         "Trent Beretta",
         "Rocky Romero"
       ],
+      "partners": [
+        "Jeff Cobb"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Rocky Romero"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-08-01",
+      "id": 1472,
+      "date": "2023-08-02",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "El Hijo del Vikingo",
         "Komander"
       ],
+      "partners": [],
+      "versus": [
+        "El Hijo del Vikingo",
+        "Komander"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-17",
+      "id": 1499,
+      "date": "2023-08-18",
       "year": 2023,
       "event": "Fight For the Fallen '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Isiah Kassidy",
         "Ethan Page"
       ],
+      "partners": [],
+      "versus": [
+        "Isiah Kassidy",
+        "Ethan Page"
+      ],
       "rating": 6.08,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-22",
+      "id": 1508,
+      "date": "2023-08-23",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Jeff Hardy",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Hardy",
+        "Matt Hardy"
+      ],
       "rating": 5.43,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-31",
+      "id": 1529,
+      "date": "2023-09-01",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Alex Reynolds",
         "John Silver",
@@ -623,48 +849,91 @@
         "The Butcher",
         "The Blade"
       ],
+      "partners": [],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Truth Magnum",
+        "Turbo Floyd",
+        "Dutch",
+        "Vincent",
+        "Peter Avalon",
+        "Ryan Nemeth",
+        "Jeff Hardy",
+        "Matt Hardy",
+        "Action Andretti",
+        "Darius Martin",
+        "Bishop Kaun",
+        "Toa Liona",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 5.08,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-01",
+      "id": 1533,
+      "date": "2023-09-02",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
         "Komander",
         "Nick Wayne"
       ],
+      "partners": [],
+      "versus": [
+        "Komander",
+        "Nick Wayne"
+      ],
       "rating": 6.62,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-05",
+      "id": 1547,
+      "date": "2023-09-06",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Sammy Guevara",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Chris Jericho",
+        "Sammy Guevara"
+      ],
       "rating": 6.82,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-29",
+      "id": 1597,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle Fletcher",
         "Mark Davis",
@@ -675,28 +944,46 @@
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [],
+      "versus": [
+        "Big Bill",
+        "Ricky Starks",
+        "Bryan Danielson",
+        "Wheeler Yuta",
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.31,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-09-30",
+      "id": 1606,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Kyle Fletcher",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.37,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
