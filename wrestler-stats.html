@@ -19,7 +19,7 @@
     <title>Wrestler Stats - Elite Wrestler Ratings</title>
     <script src="best-match-shared.js?v=2"></script>
     <!-- Bump ?v= whenever match-filters.js changes, so browsers/Cloudflare fetch the new copy -->
-    <script src="match-filters.js?v=2"></script>
+    <script src="match-filters.js?v=3"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css">
@@ -236,7 +236,7 @@
 
         .match-filters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 18px;
         }
 
@@ -931,7 +931,7 @@
 
             <!-- Match Filters (apply to the match sections below, not the rating stats above) -->
             <div class="section" id="matchFiltersSection" style="display: none;">
-                <div class="section-title tt" data-tt="Narrow the match sections below by match format, stakes or stipulation. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the year filter." style="cursor: help;">🎯 Match Filters</div>
+                <div class="section-title tt" data-tt="Narrow the match sections below by format, stakes, stipulation, show type or card position. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the year filter." style="cursor: help;">🎯 Match Filters</div>
                 <div class="match-filters">
                     <div class="match-filters-grid">
                         <div class="match-filter-group" id="formatFilterGroup">
@@ -948,6 +948,16 @@
                             <div class="match-filter-group-title tt" data-tt="Similar variants are grouped together, e.g. every city's Street Fight counts as Street Fight. 'Any stipulation' ticks every stipulation at once.">Stipulation</div>
                             <button type="button" class="match-filter-toggle" id="stipFilterToggle" aria-expanded="false" aria-controls="stipFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="stipFilterOptions"></div>
+                        </div>
+                        <div class="match-filter-group" id="showTypeFilterGroup">
+                            <div class="match-filter-group-title tt" data-tt="The kind of show the match was on: Pay Per View, Weekly TV (Dynamite, Collision, Rampage), TV specials like Grand Slam, Battle of the Belts, or YouTube specials.">Show Type</div>
+                            <button type="button" class="match-filter-toggle" id="showTypeFilterToggle" aria-expanded="false" aria-controls="showTypeFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="showTypeFilterOptions"></div>
+                        </div>
+                        <div class="match-filter-group" id="cardPosFilterGroup">
+                            <div class="match-filter-group-title tt" data-tt="Where the match sat on the card: the Main Event, the Opener, or anywhere in between (Mid-card).">Card Position</div>
+                            <button type="button" class="match-filter-toggle" id="cardPosFilterToggle" aria-expanded="false" aria-controls="cardPosFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="cardPosFilterOptions"></div>
                         </div>
                     </div>
                     <div class="match-filters-footer">
@@ -1560,7 +1570,7 @@
             }
         }
         let currentYear = 'ALL';
-        let matchFilterState = { format: null, stakes: null, stip: null };
+        let matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null };
         let ratingChart = null;
         let chartScaleFixed = false;
         let allBestMatchEntries = [];
@@ -3098,7 +3108,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         const MATCH_FILTER_ALL = '__ALL__';
         const MATCH_FILTER_ANY_STIP = '__ANY__';
         const STIP_VISIBLE_DEFAULT = 6;   // stipulations shown before "Show all"
-        const matchFilterOptions = { format: [], stakes: [], stip: [] };
+        const matchFilterOptions = { format: [], stakes: [], stip: [], showType: [], cardPos: [] };
 
         function escapeAttr(str) {
             return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -3116,17 +3126,19 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const all = wrestlerData.allMatches || [];
 
             // Career options, in a fixed order
-            const formatCounts = countBy(all, MATCH_FACETS.format);
-            const stakesCounts = countBy(all, MATCH_FACETS.stakes);
             const stipCounts = countBy(all, MATCH_FACETS.stip);
-            matchFilterOptions.format = FORMAT_GROUPS.filter(g => formatCounts[g]);
-            matchFilterOptions.stakes = STAKES_GROUPS.filter(g => stakesCounts[g]);
             const specificStips = Object.keys(stipCounts).filter(g => g !== 'None')
                 .sort((a, b) => stipCounts[b] - stipCounts[a] || a.localeCompare(b));
             matchFilterOptions.stip = (stipCounts['None'] ? ['None'] : []).concat(specificStips);
 
-            // Format & Stakes
-            ['format', 'stakes'].forEach(facet => {
+            // Format, Stakes, Show Type, Card Position: groups in their fixed
+            // order, plus any unexpected new value at the end. A section with
+            // only one option (e.g. a file without show type yet) hides itself.
+            Object.keys(SIMPLE_FACET_GROUPS).forEach(facet => {
+                const counts = countBy(all, MATCH_FACETS[facet]);
+                const ordered = SIMPLE_FACET_GROUPS[facet];
+                matchFilterOptions[facet] = ordered.filter(g => counts[g])
+                    .concat(Object.keys(counts).filter(g => !ordered.includes(g)).sort());
                 const options = matchFilterOptions[facet];
                 document.getElementById(`${facet}FilterOptions`).innerHTML =
                     filterCheckbox(facet, MATCH_FILTER_ALL, '<strong>All</strong>', 'shortcut') +
@@ -3157,7 +3169,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 });
             }
 
-            const anyVisible = ['format', 'stakes', 'stip']
+            const anyVisible = Object.keys(MATCH_FACETS)
                 .some(f => document.getElementById(`${f}FilterGroup`).style.display !== 'none');
             document.getElementById('matchFiltersSection').style.display = anyVisible ? '' : 'none';
 
@@ -3181,7 +3193,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             setupMatchFilterDropdowns();
 
             document.getElementById('matchFiltersReset').addEventListener('click', () => {
-                matchFilterState = { format: null, stakes: null, stip: null };
+                matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null };
                 applyMatchFilterStateToCheckboxes();
                 onMatchFiltersChanged();
             });
@@ -3191,7 +3203,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         // opens the checkbox list. Only one is open at a time; clicking
         // outside or pressing Escape closes it.
         function setupMatchFilterDropdowns() {
-            const groups = ['format', 'stakes', 'stip'].map(f => document.getElementById(`${f}FilterGroup`));
+            const groups = Object.keys(MATCH_FACETS).map(f => document.getElementById(`${f}FilterGroup`));
 
             function closeAll(except = null) {
                 groups.forEach(g => {
