@@ -1,10 +1,12 @@
 {
   "name": "CM Punk",
+  "slug": "cm-punk",
   "division": "Men",
   "formerNames": [],
   "currentRating": 119.37975101242772,
   "currentRank": 17,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 135.2966848211239,
   "peakRatingWeek": "Mar '22 Week 1",
   "peakRank": 3,
@@ -53,76 +55,122 @@
   },
   "bestMatches": [
     {
-      "date": "2022-03-04",
+      "id": 778,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
+        "MJF"
+      ],
+      "partners": [],
+      "versus": [
         "MJF"
       ],
       "rating": 9,
-      "division": "Dog Collar",
       "matchType": "One on One",
       "matchStipulation": "Dog Collar",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-02-01",
+      "id": 741,
+      "date": "2022-02-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "MJF"
       ],
+      "partners": [],
+      "versus": [
+        "MJF"
+      ],
       "rating": 8.61,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-11-12",
+      "id": 655,
+      "date": "2021-11-13",
       "year": 2021,
       "event": "Full Gear '21",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Eddie Kingston"
       ],
+      "partners": [],
+      "versus": [
+        "Eddie Kingston"
+      ],
       "rating": 8.48,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-09-03",
+      "id": 1022,
+      "date": "2022-09-04",
       "year": 2022,
       "event": "All Out '22",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 8.23,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-02-08",
+      "id": 746,
+      "date": "2022-02-09",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [
+        "Jon Moxley"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 8.21,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-21",
+      "id": 696,
+      "date": "2021-12-22",
       "year": 2021,
       "event": "Holiday Bash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -130,29 +178,50 @@
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [
+        "Darby Allin",
+        "Sting"
+      ],
+      "versus": [
+        "MJF",
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.93,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-05-28",
+      "id": 898,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Adam Page"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page"
+      ],
       "rating": 7.93,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-23",
+      "id": 1399,
+      "date": "2023-06-24",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay White",
         "Juice Robinson",
@@ -162,37 +231,65 @@
         "Dax Harwood",
         "Ricky Starks"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Jay White",
+        "Juice Robinson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ricky Starks"
+      ],
       "rating": 7.91,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-09-04",
+      "id": 569,
+      "date": "2021-09-05",
       "year": 2021,
       "event": "All Out '21",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-22",
+      "id": 798,
+      "date": "2022-03-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Dax Harwood"
       ],
+      "partners": [],
+      "versus": [
+        "Dax Harwood"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
@@ -626,113 +723,180 @@
   ],
   "allMatches": [
     {
-      "date": "2021-09-04",
+      "id": 569,
+      "date": "2021-09-05",
       "year": 2021,
       "event": "All Out '21",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-23",
+      "id": 591,
+      "date": "2021-09-24",
       "year": 2021,
       "event": "Grand Slam - Night 2 '21",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Powerhouse Hobbs"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-10-07",
+      "id": 609,
+      "date": "2021-10-08",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Daniel Garcia"
       ],
+      "partners": [],
+      "versus": [
+        "Daniel Garcia"
+      ],
       "rating": 7.75,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-10-14",
+      "id": 612,
+      "date": "2021-10-15",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Sydal"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Sydal"
+      ],
       "rating": 7.42,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-10-26",
+      "id": 627,
+      "date": "2021-10-27",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish"
       ],
+      "partners": [],
+      "versus": [
+        "Bobby Fish"
+      ],
       "rating": 6.73,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-11-12",
+      "id": 655,
+      "date": "2021-11-13",
       "year": 2021,
       "event": "Full Gear '21",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Eddie Kingston"
       ],
+      "partners": [],
+      "versus": [
+        "Eddie Kingston"
+      ],
       "rating": 8.48,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-11-23",
+      "id": 666,
+      "date": "2021-11-24",
       "year": 2021,
       "event": "Thanksgiving Eve '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "QT Marshall"
       ],
+      "partners": [],
+      "versus": [
+        "QT Marshall"
+      ],
       "rating": 4.9,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-11-30",
+      "id": 674,
+      "date": "2021-12-01",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Lee Moriarty"
+      ],
       "rating": 6.49,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-21",
+      "id": 696,
+      "date": "2021-12-22",
       "year": 2021,
       "event": "Holiday Bash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -740,178 +904,295 @@
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [
+        "Darby Allin",
+        "Sting"
+      ],
+      "versus": [
+        "MJF",
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.93,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-01-11",
+      "id": 717,
+      "date": "2022-01-12",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow"
+      ],
       "rating": 5.79,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-02-01",
+      "id": 741,
+      "date": "2022-02-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "MJF"
       ],
+      "partners": [],
+      "versus": [
+        "MJF"
+      ],
       "rating": 8.61,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-02-08",
+      "id": 746,
+      "date": "2022-02-09",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [
+        "Jon Moxley"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 8.21,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-04",
+      "id": 778,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "MJF"
       ],
+      "partners": [],
+      "versus": [
+        "MJF"
+      ],
       "rating": 9,
-      "division": "Dog Collar",
       "matchType": "One on One",
       "matchStipulation": "Dog Collar",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-22",
+      "id": 798,
+      "date": "2022-03-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Dax Harwood"
       ],
+      "partners": [],
+      "versus": [
+        "Dax Harwood"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-03-29",
+      "id": 807,
+      "date": "2022-03-30",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Max Caster"
       ],
+      "partners": [],
+      "versus": [
+        "Max Caster"
+      ],
       "rating": 5.57,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-04-12",
+      "id": 825,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Penta Oscuro"
       ],
+      "partners": [],
+      "versus": [
+        "Penta Oscuro"
+      ],
       "rating": 7.09,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-04-19",
+      "id": 836,
+      "date": "2022-04-20",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Dustin Rhodes"
       ],
+      "partners": [],
+      "versus": [
+        "Dustin Rhodes"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-05-10",
+      "id": 863,
+      "date": "2022-05-11",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "John Silver"
       ],
+      "partners": [],
+      "versus": [
+        "John Silver"
+      ],
       "rating": 6.08,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-28",
+      "id": 898,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Adam Page"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page"
+      ],
       "rating": 7.93,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-05-31",
+      "id": 899,
+      "date": "2022-06-01",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Max Caster"
+      ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
         "Austin Gunn",
         "Colten Gunn",
         "Max Caster"
       ],
       "rating": 5.97,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-09-03",
+      "id": 1022,
+      "date": "2022-09-04",
       "year": 2022,
       "event": "All Out '22",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 8.23,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-16",
+      "id": 1387,
+      "date": "2023-06-17",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -919,16 +1200,29 @@
         "Juice Robinson",
         "Samoa Joe"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Jay White",
+        "Juice Robinson",
+        "Samoa Joe"
+      ],
       "rating": 7.74,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-23",
+      "id": 1399,
+      "date": "2023-06-24",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay White",
         "Juice Robinson",
@@ -938,83 +1232,141 @@
         "Dax Harwood",
         "Ricky Starks"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Jay White",
+        "Juice Robinson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ricky Starks"
+      ],
       "rating": 7.91,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-23",
+      "id": 1401,
+      "date": "2023-06-24",
       "year": 2023,
       "event": "Forbidden Door '23",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Satoshi Kojima"
       ],
+      "partners": [],
+      "versus": [
+        "Satoshi Kojima"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Owen Hart Tournament Match"
+      "stakes": "Owen Hart Tournament Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-07",
+      "id": 1432,
+      "date": "2023-07-08",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Samoa Joe"
       ],
+      "partners": [],
+      "versus": [
+        "Samoa Joe"
+      ],
       "rating": 7.61,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-07-14",
+      "id": 1443,
+      "date": "2023-07-15",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Ricky Starks"
+      ],
       "rating": 6.79,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Owen Hart Tournament Final"
+      "stakes": "Owen Hart Tournament Final",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-07-21",
+      "id": 1455,
+      "date": "2023-07-22",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Christian Cage",
         "Ricky Starks",
         "Darby Allin"
       ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
+        "Christian Cage",
+        "Ricky Starks"
+      ],
       "rating": 7.39,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-04",
+      "id": 1481,
+      "date": "2023-08-05",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Ricky Starks"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-11",
+      "id": 1492,
+      "date": "2023-08-12",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Buddy Matthews",
@@ -1022,16 +1374,29 @@
         "Cash Wheeler",
         "Dax Harwood"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-25",
+      "id": 1515,
+      "date": "2023-08-26",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -1041,25 +1406,43 @@
         "Jay White",
         "Luchasaurus"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Sting",
+        "Hook",
+        "Brian Cage",
+        "Swerve Strickland",
+        "Jay White",
+        "Luchasaurus"
+      ],
       "rating": 6.39,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-26",
+      "id": 1516,
+      "date": "2023-08-27",
       "year": 2023,
       "event": "All In: London '23",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Samoa Joe"
       ],
+      "partners": [],
+      "versus": [
+        "Samoa Joe"
+      ],
       "rating": 7.75,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
