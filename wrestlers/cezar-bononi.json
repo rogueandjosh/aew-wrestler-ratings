@@ -1,10 +1,12 @@
 {
   "name": "Cezar Bononi",
+  "slug": "cezar-bononi",
   "division": "Men",
   "formerNames": [],
   "currentRating": 98.33303810104333,
   "currentRank": 63,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 99.12668948604671,
   "peakRatingWeek": "Mar '21 Week 4",
   "peakRank": 54,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -73,31 +78,79 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [
+        "Peter Avalon"
+      ],
+      "versus": [
+        "PAC",
+        "Rey Fenix",
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Sydal",
+        "Mike Sydal",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-02-09",
+      "id": 385,
+      "date": "2021-02-10",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody Rhodes",
         "Lee Johnson",
         "Peter Avalon"
       ],
+      "partners": [
+        "Peter Avalon"
+      ],
+      "versus": [
+        "Cody Rhodes",
+        "Lee Johnson"
+      ],
       "rating": 4.44,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-24",
+      "id": 552,
+      "date": "2021-08-25",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Eddie Kingston",
@@ -105,24 +158,42 @@
         "JD Drake",
         "Ryan Nemeth"
       ],
+      "partners": [
+        "JD Drake",
+        "Ryan Nemeth"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Eddie Kingston",
+        "Jon Moxley"
+      ],
       "rating": 4.35,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-30",
+      "id": 439,
+      "date": "2021-03-31",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 4.2,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -227,24 +298,38 @@
   ],
   "allMatches": [
     {
-      "date": "2021-02-09",
+      "id": 385,
+      "date": "2021-02-10",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody Rhodes",
         "Lee Johnson",
         "Peter Avalon"
       ],
+      "partners": [
+        "Peter Avalon"
+      ],
+      "versus": [
+        "Cody Rhodes",
+        "Lee Johnson"
+      ],
       "rating": 4.44,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -276,29 +361,74 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [
+        "Peter Avalon"
+      ],
+      "versus": [
+        "PAC",
+        "Rey Fenix",
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Matt Sydal",
+        "Mike Sydal",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-30",
+      "id": 439,
+      "date": "2021-03-31",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
       "rating": 4.2,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-24",
+      "id": 552,
+      "date": "2021-08-25",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Eddie Kingston",
@@ -306,12 +436,21 @@
         "JD Drake",
         "Ryan Nemeth"
       ],
+      "partners": [
+        "JD Drake",
+        "Ryan Nemeth"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Eddie Kingston",
+        "Jon Moxley"
+      ],
       "rating": 4.35,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
