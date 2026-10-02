@@ -1,5 +1,6 @@
 {
   "name": "Luchasaurus",
+  "slug": "luchasaurus",
   "division": "Men",
   "formerNames": [
     "Killswitch"
@@ -7,11 +8,12 @@
   "currentRating": 103.90511875566082,
   "currentRank": 35,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 117.54290909238398,
   "peakRatingWeek": "Nov '22 Week 3",
   "peakRank": 18,
   "totalMatches": 77,
-  "totalWeeks": 167,
+  "totalWeeks": 199,
   "firstAppearance": "Aug '19",
   "lastAppearance": "Jan '26 Week 3",
   "weeksInTop10": 0,
@@ -83,9 +85,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-03-04",
+      "id": 775,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Bobby Fish",
@@ -93,96 +98,165 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Bobby Fish",
+        "Kyle O'Reilly",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.58,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-06-14",
+      "id": 919,
+      "date": "2022-06-15",
       "year": 2022,
       "event": "Road Rager '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.49,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-08-24",
+      "id": 2237,
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Adam Page",
         "Jeff Jarrett",
         "Kazuchika Okada",
         "Kyle O'Reilly",
-        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Orange Cassidy",
+        "Ricochet"
+      ],
+      "partners": [],
+      "versus": [
+        "Christian Cage",
+        "Adam Page",
+        "Jeff Jarrett",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
         "Mark Briscoe",
         "Nigel McGuinness",
         "Orange Cassidy",
         "Ricochet"
       ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-10-17",
+      "id": 2946,
+      "date": "2025-10-18",
       "year": 2025,
       "event": "WrestleDream '25",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Jack Perry",
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Jack Perry"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-11-17",
+      "id": 1114,
+      "date": "2022-11-18",
       "year": 2022,
       "event": "Full Gear '22",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 8.28,
-      "division": "Steel Cage",
       "matchType": "One on One",
       "matchStipulation": "Steel Cage",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-08-26",
+      "id": 554,
+      "date": "2021-08-27",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Rey Fenix",
         "Penta El Zero M",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Rey Fenix",
+        "Penta El Zero M"
+      ],
       "rating": 8.12,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-05-28",
+      "id": 897,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Keith Lee",
@@ -190,16 +264,29 @@
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland",
+        "Powerhouse Hobbs",
+        "Ricky Starks"
+      ],
       "rating": 7.89,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-10-05",
+      "id": 605,
+      "date": "2021-10-06",
       "year": 2021,
       "event": "Anniversary '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Kenny Omega",
@@ -209,16 +296,31 @@
         "Jungle Boy",
         "Bryan Danielson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Kenny Omega",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Bryan Danielson"
+      ],
       "rating": 7.88,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-11-12",
+      "id": 652,
+      "date": "2021-11-13",
       "year": 2021,
       "event": "Full Gear '21",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Jungle Boy",
@@ -226,31 +328,52 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.87,
-      "division": "Falls Count Anywhere",
       "matchType": "Trios",
       "matchStipulation": "Falls Count Anywhere",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-17",
+      "id": 545,
+      "date": "2021-08-18",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Aug '19",
       "rating": 101.33162685204462,
       "rank": 20,
@@ -1321,6 +1444,230 @@
       "division": "Men"
     },
     {
+      "date": "2024-01-31",
+      "week": "Feb '24 Week 1",
+      "rating": 104.44963374251705,
+      "rank": 35,
+      "division": "Men"
+    },
+    {
+      "date": "2024-02-07",
+      "week": "Feb '24 Week 2",
+      "rating": 104.33789814271177,
+      "rank": 37,
+      "division": "Men"
+    },
+    {
+      "date": "2024-02-14",
+      "week": "Feb '24 Week 3",
+      "rating": 104.25855493303051,
+      "rank": 40,
+      "division": "Men"
+    },
+    {
+      "date": "2024-02-21",
+      "week": "Feb '24 Week 4",
+      "rating": 104.25882167416762,
+      "rank": 41,
+      "division": "Men"
+    },
+    {
+      "date": "2024-02-29",
+      "week": "Mar '24 Week 1",
+      "rating": 103.37039863922664,
+      "rank": 43,
+      "division": "Men"
+    },
+    {
+      "date": "2024-03-07",
+      "week": "Mar '24 Week 2",
+      "rating": 103.29534667923978,
+      "rank": 42,
+      "division": "Men"
+    },
+    {
+      "date": "2024-03-14",
+      "week": "Mar '24 Week 3",
+      "rating": 103.08196586627487,
+      "rank": 40,
+      "division": "Men"
+    },
+    {
+      "date": "2024-03-21",
+      "week": "Mar '24 Week 4",
+      "rating": 102.97802380705633,
+      "rank": 39,
+      "division": "Men"
+    },
+    {
+      "date": "2024-03-28",
+      "week": "Mar '24 Week 5",
+      "rating": 102.80696844620455,
+      "rank": 41,
+      "division": "Men"
+    },
+    {
+      "date": "2024-05-31",
+      "week": "Jun '24 Week 1",
+      "rating": 100.83664448505976,
+      "rank": 48,
+      "division": "Men"
+    },
+    {
+      "date": "2024-06-07",
+      "week": "Jun '24 Week 2",
+      "rating": 100.829791862539,
+      "rank": 50,
+      "division": "Men"
+    },
+    {
+      "date": "2024-06-14",
+      "week": "Jun '24 Week 3",
+      "rating": 100.83328356965524,
+      "rank": 47,
+      "division": "Men"
+    },
+    {
+      "date": "2024-06-21",
+      "week": "Jun '24 Week 4",
+      "rating": 100.81161000331514,
+      "rank": 51,
+      "division": "Men"
+    },
+    {
+      "date": "2024-06-28",
+      "week": "Jun '24 Week 5",
+      "rating": 100.81481394914027,
+      "rank": 49,
+      "division": "Men"
+    },
+    {
+      "date": "2024-07-14",
+      "week": "Jul '24 Week 3",
+      "rating": 101.16600506019472,
+      "rank": 45,
+      "division": "Men"
+    },
+    {
+      "date": "2024-07-21",
+      "week": "Jul '24 Week 4",
+      "rating": 101.19417089256481,
+      "rank": 49,
+      "division": "Men"
+    },
+    {
+      "date": "2024-07-31",
+      "week": "Aug '24 Week 1",
+      "rating": 101.15795361436538,
+      "rank": 47,
+      "division": "Men"
+    },
+    {
+      "date": "2024-08-07",
+      "week": "Aug '24 Week 2",
+      "rating": 101.10897355825566,
+      "rank": 49,
+      "division": "Men"
+    },
+    {
+      "date": "2024-08-14",
+      "week": "Aug '24 Week 3",
+      "rating": 101.06065021195222,
+      "rank": 50,
+      "division": "Men"
+    },
+    {
+      "date": "2024-08-21",
+      "week": "Aug '24 Week 4",
+      "rating": 104.86771331853771,
+      "rank": 28,
+      "division": "Men"
+    },
+    {
+      "date": "2024-08-31",
+      "week": "Sep '24 Week 1",
+      "rating": 104.9671135295097,
+      "rank": 33,
+      "division": "Men"
+    },
+    {
+      "date": "2024-09-07",
+      "week": "Sep '24 Week 2",
+      "rating": 104.73165065448829,
+      "rank": 34,
+      "division": "Men"
+    },
+    {
+      "date": "2024-09-14",
+      "week": "Sep '24 Week 3",
+      "rating": 104.68728251471438,
+      "rank": 34,
+      "division": "Men"
+    },
+    {
+      "date": "2024-09-21",
+      "week": "Sep '24 Week 4",
+      "rating": 104.81422052309165,
+      "rank": 34,
+      "division": "Men"
+    },
+    {
+      "date": "2025-08-21",
+      "week": "Aug '25 Week 4",
+      "rating": 100.94074917551362,
+      "rank": 58,
+      "division": "Men"
+    },
+    {
+      "date": "2025-08-28",
+      "week": "Aug '25 Week 5",
+      "rating": 100.9110364716161,
+      "rank": 57,
+      "division": "Men"
+    },
+    {
+      "date": "2025-08-31",
+      "week": "Sep '25 Week 1",
+      "rating": 100.88942723241792,
+      "rank": 53,
+      "division": "Men"
+    },
+    {
+      "date": "2025-09-07",
+      "week": "Sep '25 Week 2",
+      "rating": 100.84566500581282,
+      "rank": 54,
+      "division": "Men"
+    },
+    {
+      "date": "2025-09-14",
+      "week": "Sep '25 Week 3",
+      "rating": 100.07788307752226,
+      "rank": 57,
+      "division": "Men"
+    },
+    {
+      "date": "2025-09-21",
+      "week": "Sep '25 Week 4",
+      "rating": 100.08169419230317,
+      "rank": 52,
+      "division": "Men"
+    },
+    {
+      "date": "2025-09-30",
+      "week": "Oct '25 Week 1",
+      "rating": 100.0695099379096,
+      "rank": 53,
+      "division": "Men"
+    },
+    {
+      "date": "2025-10-07",
+      "week": "Oct '25 Week 2",
+      "rating": 100.07221350531246,
+      "rank": 56,
+      "division": "Men"
+    },
+    {
       "date": "2025-10-14",
       "week": "Oct '25 Week 3",
       "rating": 105.99638413791698,
@@ -1421,9 +1768,12 @@
   ],
   "allMatches": [
     {
-      "date": "2019-07-12",
+      "id": 16,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "Evil Uno",
         "Stu Grayson",
@@ -1431,16 +1781,29 @@
         "Angelico",
         "Jack Evans"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Evil Uno",
+        "Stu Grayson",
+        "Angelico",
+        "Jack Evans"
+      ],
       "rating": 7.1,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-08-30",
+      "id": 21,
+      "date": "2019-08-31",
       "year": 2019,
       "event": "All Out '19",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Christopher Daniels",
         "Frankie Kazarian",
@@ -1448,29 +1811,50 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "Scorpio Sky"
+      ],
       "rating": 7,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-12-10",
+      "id": 85,
+      "date": "2019-12-11",
       "year": 2019,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Sammy Guevara"
       ],
+      "partners": [],
+      "versus": [
+        "Sammy Guevara"
+      ],
       "rating": 5.33,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-01-07",
+      "id": 101,
+      "date": "2020-01-08",
       "year": 2020,
       "event": "1 Year Anniversary '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Marko Stunt",
@@ -1478,16 +1862,29 @@
         "Trent",
         "Orange Cassidy"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent",
+        "Orange Cassidy"
+      ],
       "rating": 5.78,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-01-21",
+      "id": 109,
+      "date": "2020-01-22",
       "year": 2020,
       "event": "Bash at the Beach '20 - Night 2",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Ortiz",
         "Santana",
@@ -1495,16 +1892,29 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Ortiz",
+        "Santana",
+        "Chris Jericho"
+      ],
       "rating": 6.41,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-02-18",
+      "id": 126,
+      "date": "2020-02-19",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -1526,16 +1936,43 @@
         "Jack Evans",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Chuck Taylor",
+        "Trent",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Ortiz",
+        "Santana",
+        "Frankie Kazarian",
+        "Scorpio Sky",
+        "CIMA",
+        "T-Hawk",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelico",
+        "Jack Evans"
+      ],
       "rating": 6.95,
-      "division": "Battle Royal",
       "matchType": "10 Way Tag",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-02-25",
+      "id": 132,
+      "date": "2020-02-26",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Marko Stunt",
@@ -1543,16 +1980,29 @@
         "Santana",
         "Sammy Guevara"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Ortiz",
+        "Santana",
+        "Sammy Guevara"
+      ],
       "rating": 6.38,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-03-10",
+      "id": 147,
+      "date": "2020-03-11",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "MJF",
         "The Butcher",
@@ -1560,46 +2010,81 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "MJF",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 6.55,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-03-17",
+      "id": 152,
+      "date": "2020-03-18",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "The Butcher",
         "The Blade"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 5.33,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-05-12",
+      "id": 177,
+      "date": "2020-05-13",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent"
+      ],
       "rating": 6.16,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-05-22",
+      "id": 185,
+      "date": "2020-05-23",
       "year": 2020,
       "event": "Double or Nothing '20",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Brian Cage",
         "Colt Cabana",
@@ -1610,16 +2095,31 @@
         "Orange Cassidy",
         "Scorpio Sky"
       ],
+      "partners": [],
+      "versus": [
+        "Brian Cage",
+        "Colt Cabana",
+        "Darby Allin",
+        "Frankie Kazarian",
+        "Kip Sabian",
+        "Joey Janela",
+        "Orange Cassidy",
+        "Scorpio Sky"
+      ],
       "rating": 5.35,
-      "division": "Ladder",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Ladder",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-05-26",
+      "id": 195,
+      "date": "2020-05-27",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Billy Gunn",
@@ -1634,44 +2134,82 @@
         "Sonny Kiss",
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Billy Gunn",
+        "Brandon Cutler",
+        "Christopher Daniels",
+        "Colt Cabana",
+        "Luther",
+        "Marko Stunt",
+        "MJF",
+        "Orange Cassidy",
+        "Peter Avalon",
+        "Sonny Kiss",
+        "Wardlow"
+      ],
       "rating": 5.97,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-06-23",
+      "id": 210,
+      "date": "2020-06-24",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow"
+      ],
       "rating": 6.51,
-      "division": "Lumberjack",
       "matchType": "One on One",
       "matchStipulation": "Lumberjack",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-06-30",
+      "id": 214,
+      "date": "2020-07-01",
       "year": 2020,
       "event": "Fyter Fest '20 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "MJF",
         "Wardlow"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "MJF",
+        "Wardlow"
+      ],
       "rating": 7.63,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-07-14",
+      "id": 226,
+      "date": "2020-07-15",
       "year": 2020,
       "event": "Fight for the Fallen '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kenny Omega",
         "Matt Jackson",
@@ -1679,31 +2217,55 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Kenny Omega",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.61,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-07-21",
+      "id": 233,
+      "date": "2020-07-22",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Jake Hager",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Chris Jericho",
+        "Jake Hager"
+      ],
       "rating": 6.58,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2020-07-28",
+      "id": 234,
+      "date": "2020-07-29",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent",
@@ -1715,31 +2277,59 @@
         "Ortiz",
         "Santana"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent",
+        "Orange Cassidy",
+        "Chris Jericho",
+        "Sammy Guevara",
+        "Jake Hager",
+        "Ortiz",
+        "Santana"
+      ],
       "rating": 5.14,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-08-11",
+      "id": 245,
+      "date": "2020-08-12",
       "year": 2020,
       "event": "Tag Team Appreciation Night '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Kenny Omega",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Page",
+        "Kenny Omega"
+      ],
       "rating": 6.82,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-08-21",
+      "id": 248,
+      "date": "2020-08-22",
       "year": 2020,
       "event": "Satuday Night Dynamite '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Dustin Rhodes",
@@ -1749,16 +2339,31 @@
         "Pentagon Jr.",
         "Rey Fenix"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Dustin Rhodes",
+        "QT Marshall",
+        "The Butcher",
+        "The Blade",
+        "Pentagon Jr.",
+        "Rey Fenix"
+      ],
       "rating": 5.72,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-09-01",
+      "id": 256,
+      "date": "2020-09-02",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -1768,61 +2373,109 @@
         "Christopher Daniels",
         "Frankie Kazarian"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian"
+      ],
       "rating": 6.66,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-09-04",
+      "id": 260,
+      "date": "2020-09-05",
       "year": 2020,
       "event": "All Out '20",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.51,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-09-08",
+      "id": 268,
+      "date": "2020-09-09",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Rey Fenix",
         "Penta El Zero M"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Rey Fenix",
+        "Penta El Zero M"
+      ],
       "rating": 6.7,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-09-15",
+      "id": 272,
+      "date": "2020-09-16",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.49,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-12-22",
+      "id": 350,
+      "date": "2020-12-23",
       "year": 2020,
       "event": "Holiday Bash '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Marko Stunt",
@@ -1830,16 +2483,29 @@
         "Ten",
         "Colt Cabana"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Five",
+        "Ten",
+        "Colt Cabana"
+      ],
       "rating": 6.06,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-02-02",
+      "id": 380,
+      "date": "2021-02-03",
       "year": 2021,
       "event": "Beach Break '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "MJF",
@@ -1861,16 +2527,43 @@
         "Ortiz",
         "Santana"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Chris Jericho",
+        "MJF",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Alex Reynolds",
+        "John Silver",
+        "Dante Martin",
+        "Darius Martin",
+        "Anthony Bowens",
+        "Max Caster",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Evil Uno",
+        "Stu Grayson",
+        "Jake Hager",
+        "Sammy Guevara",
+        "Ortiz",
+        "Santana"
+      ],
       "rating": 6,
-      "division": "None",
       "matchType": "10 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-03-02",
+      "id": 411,
+      "date": "2021-03-03",
       "year": 2021,
       "event": "The Crossroads",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1878,16 +2571,29 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Tully Blanchard"
+      ],
       "rating": 6.58,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -1919,16 +2625,53 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "PAC",
+        "Rey Fenix",
+        "Bear Boulder",
+        "Bear Bronson",
+        "Matt Sydal",
+        "Mike Sydal",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Cezar Bononi",
+        "Peter Avalon",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-16",
+      "id": 428,
+      "date": "2021-03-17",
       "year": 2021,
       "event": "St Patrick Day's Slam '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Marq Quen",
@@ -1940,31 +2683,59 @@
         "Jungle Boy",
         "Marko Stunt"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Marko Stunt"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Matt Hardy",
+        "The Butcher",
+        "The Blade",
+        "Bear Boulder",
+        "Bear Bronson"
+      ],
       "rating": 4.46,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-06",
+      "id": 443,
+      "date": "2021-04-07",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Bear Boulder",
         "Bear Bronson"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Bear Boulder",
+        "Bear Bronson"
+      ],
       "rating": 5.02,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-05-04",
+      "id": 465,
+      "date": "2021-05-05",
       "year": 2021,
       "event": "Blood and Guts '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Christopher Daniels",
         "Frankie Kazarian",
@@ -1974,61 +2745,109 @@
         "Anthony Bowens",
         "Max Caster"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "Brian Pillman Jr.",
+        "Griff Garrison",
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.51,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-17",
+      "id": 545,
+      "date": "2021-08-18",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.83,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-19",
+      "id": 548,
+      "date": "2021-08-20",
       "year": 2021,
       "event": "The First Dance",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Isiah Kassidy",
         "Marq Quen"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 6.85,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-08-26",
+      "id": 554,
+      "date": "2021-08-27",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Rey Fenix",
         "Penta El Zero M",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Rey Fenix",
+        "Penta El Zero M"
+      ],
       "rating": 8.12,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-08-31",
+      "id": 560,
+      "date": "2021-09-01",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Doc Gallows",
         "Karl Anderson",
@@ -2038,16 +2857,31 @@
         "Rey Fenix",
         "Penta El Zero M"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Doc Gallows",
+        "Karl Anderson",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Rey Fenix",
+        "Penta El Zero M"
+      ],
       "rating": 6.88,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-09-23",
+      "id": 592,
+      "date": "2021-09-24",
       "year": 2021,
       "event": "Grand Slam - Night 2 '21",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -2055,16 +2889,29 @@
         "Jungle Boy",
         "Christian Cage"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Christian Cage"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Adam Cole"
+      ],
       "rating": 7.48,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-10-05",
+      "id": 605,
+      "date": "2021-10-06",
       "year": 2021,
       "event": "Anniversary '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Kenny Omega",
@@ -2074,16 +2921,31 @@
         "Jungle Boy",
         "Bryan Danielson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Kenny Omega",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Bryan Danielson"
+      ],
       "rating": 7.88,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-11-12",
+      "id": 652,
+      "date": "2021-11-13",
       "year": 2021,
       "event": "Full Gear '21",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Jungle Boy",
@@ -2091,31 +2953,55 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.87,
-      "division": "Falls Count Anywhere",
       "matchType": "Trios",
       "matchStipulation": "Falls Count Anywhere",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-11-18",
+      "id": 665,
+      "date": "2021-11-19",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Adam Cole",
         "Bobby Fish"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Bobby Fish"
+      ],
       "rating": 6.95,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-12-07",
+      "id": 681,
+      "date": "2021-12-08",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Brian Pillman Jr.",
@@ -2125,16 +3011,31 @@
         "Anthony Bowens",
         "Max Caster"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Brian Pillman Jr.",
+        "Griff Garrison",
+        "Jeff Parker",
+        "Matt Lee",
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.36,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-28",
+      "id": 700,
+      "date": "2021-12-29",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Hardy",
         "Isiah Kassidy",
@@ -2146,76 +3047,137 @@
         "Rey Fenix",
         "Penta El Zero M"
       ],
+      "partners": [
+        "Christian Cage",
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Hardy",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Rey Fenix",
+        "Penta El Zero M"
+      ],
       "rating": 6.47,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-01-04",
+      "id": 710,
+      "date": "2022-01-05",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Penta El Zero M",
         "Rey Fenix"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Penta El Zero M",
+        "Rey Fenix"
+      ],
       "rating": 7.31,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-01-13",
+      "id": 724,
+      "date": "2022-01-14",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Alex Reynolds",
         "John Silver"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver"
+      ],
       "rating": 7.41,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-01-25",
+      "id": 737,
+      "date": "2022-01-26",
       "year": 2022,
       "event": "Beach Break '21 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Isiah Kassidy",
         "Marq Quen"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 6.76,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-02-10",
+      "id": 750,
+      "date": "2022-02-11",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Austin Gunn",
         "Colten Gunn"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn"
+      ],
       "rating": 6.57,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-03-04",
+      "id": 775,
+      "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Bobby Fish",
@@ -2223,31 +3185,55 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Bobby Fish",
+        "Kyle O'Reilly",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.58,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-08",
+      "id": 784,
+      "date": "2022-03-09",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Anthony Bowens",
         "Max Caster"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 6.23,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-15",
+      "id": 790,
+      "date": "2022-03-16",
       "year": 2022,
       "event": "St Patrick Day's Slam '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -2255,31 +3241,55 @@
         "Jungle Boy",
         "Adam Page"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Adam Page"
+      ],
+      "versus": [
+        "Bobby Fish",
+        "Kyle O'Reilly",
+        "Adam Cole"
+      ],
       "rating": 7.4,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-04-12",
+      "id": 826,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Bobby Fish",
         "Kyle O'Reilly"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Bobby Fish",
+        "Kyle O'Reilly"
+      ],
       "rating": 7.45,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-28",
+      "id": 897,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Keith Lee",
@@ -2287,16 +3297,29 @@
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland",
+        "Powerhouse Hobbs",
+        "Ricky Starks"
+      ],
       "rating": 7.89,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-31",
+      "id": 901,
+      "date": "2022-06-01",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bobby Fish",
         "Kyle O'Reilly",
@@ -2308,110 +3331,187 @@
         "Darby Allin",
         "Matt Hardy"
       ],
+      "partners": [
+        "Jungle Boy",
+        "Christian Cage"
+      ],
+      "versus": [
+        "Bobby Fish",
+        "Kyle O'Reilly",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Hikuleo",
+        "Darby Allin",
+        "Matt Hardy"
+      ],
       "rating": 7.62,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-06-14",
+      "id": 919,
+      "date": "2022-06-15",
       "year": 2022,
       "event": "Road Rager '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Jungle Boy"
       ],
+      "partners": [
+        "Jungle Boy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.49,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-10-11",
+      "id": 1067,
+      "date": "2022-10-12",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 7.46,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-11-01",
+      "id": 1093,
+      "date": "2022-11-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy",
+        "Rey Fenix"
+      ],
       "rating": 6.54,
-      "division": "None",
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-11-17",
+      "id": 1114,
+      "date": "2022-11-18",
       "year": 2022,
       "event": "Full Gear '22",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 8.28,
-      "division": "Steel Cage",
       "matchType": "One on One",
       "matchStipulation": "Steel Cage",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-06-16",
+      "id": 1384,
+      "date": "2023-06-17",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Wardlow"
       ],
+      "partners": [],
+      "versus": [
+        "Wardlow"
+      ],
       "rating": 5.15,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-07-14",
+      "id": 1446,
+      "date": "2023-07-15",
       "year": 2023,
       "event": "Battle of the Belts 7",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
         "Shawn Spears"
       ],
+      "partners": [],
+      "versus": [
+        "Shawn Spears"
+      ],
       "rating": 4.63,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-11",
+      "id": 1491,
+      "date": "2023-08-12",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brock Anderson"
       ],
+      "partners": [],
+      "versus": [
+        "Brock Anderson"
+      ],
       "rating": 3.09,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-25",
+      "id": 1515,
+      "date": "2023-08-26",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -2421,71 +3521,121 @@
         "Swerve Strickland",
         "Jay White"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Sting",
+        "CM Punk",
+        "Hook",
+        "Brian Cage",
+        "Swerve Strickland",
+        "Jay White"
+      ],
       "rating": 6.39,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-09-02",
+      "id": 1538,
+      "date": "2023-09-03",
       "year": 2023,
       "event": "All Out '23",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-21",
+      "id": 1577,
+      "date": "2023-09-22",
       "year": 2023,
       "event": "Grand Slam '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
         "Christian Cage"
       ],
+      "partners": [
+        "Christian Cage"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Sting"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-22",
+      "id": 1583,
+      "date": "2023-09-23",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Christian Cage",
         "Darby Allin"
       ],
+      "partners": [],
+      "versus": [
+        "Christian Cage",
+        "Darby Allin"
+      ],
       "rating": 7.44,
-      "division": "None",
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-10-09",
+      "id": 1624,
+      "date": "2023-10-10",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Copeland"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Copeland"
+      ],
       "rating": 6.76,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-11-17",
+      "id": 1694,
+      "date": "2023-11-18",
       "year": 2023,
       "event": "Full Gear '23",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -2493,37 +3643,72 @@
         "Christian Cage",
         "Nick Wayne"
       ],
+      "partners": [
+        "Christian Cage",
+        "Nick Wayne"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Sting",
+        "Adam Copeland"
+      ],
       "rating": 6.65,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-02-02",
+      "id": 1856,
+      "date": "2024-02-03",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Daniel Garcia",
         "Christian Cage",
-        "Killswitch",
         "Nick Wayne"
       ],
+      "partners": [
+        "Christian Cage",
+        "Nick Wayne"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Daniel Garcia"
+      ],
       "rating": 7.63,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-03-01",
+      "id": 1897,
+      "date": "2024-03-02",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Christian Cage",
-        "Killswitch",
+        "Brian Cage",
+        "Roderick Strong",
+        "Orange Cassidy",
+        "Trent Beretta",
+        "Daniel Garcia",
+        "Hook"
+      ],
+      "partners": [
+        "Christian Cage"
+      ],
+      "versus": [
         "Brian Cage",
         "Roderick Strong",
         "Orange Cassidy",
@@ -2532,53 +3717,75 @@
         "Hook"
       ],
       "rating": 6.37,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-05-28",
+      "id": 2069,
+      "date": "2024-05-29",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
-        "Swerve Strickland",
-        "Killswitch"
+        "Swerve Strickland"
+      ],
+      "partners": [],
+      "versus": [
+        "Swerve Strickland"
       ],
       "rating": 6.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-07-19",
+      "id": 2169,
+      "date": "2024-07-20",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Christian Cage",
-        "Killswitch",
         "Nick Wayne",
         "Austin Gunn",
         "Colten Gunn",
         "Juice Robinson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Nick Wayne"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 6.56,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-08-24",
+      "id": 2233,
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Claudio Castagnoli",
         "Wheeler Yuta",
         "PAC",
         "Christian Cage",
-        "Killswitch",
         "Nick Wayne",
         "Brody King",
         "Buddy Matthews",
@@ -2587,70 +3794,124 @@
         "Colten Gunn",
         "Juice Robinson"
       ],
+      "partners": [
+        "Christian Cage",
+        "Nick Wayne"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "PAC",
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 7.1,
-      "division": "Ladder",
       "matchType": "4 Way Trios",
       "matchStipulation": "Ladder",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-24",
+      "id": 2237,
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Adam Page",
         "Jeff Jarrett",
         "Kazuchika Okada",
         "Kyle O'Reilly",
-        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Orange Cassidy",
+        "Ricochet"
+      ],
+      "partners": [],
+      "versus": [
+        "Christian Cage",
+        "Adam Page",
+        "Jeff Jarrett",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
         "Mark Briscoe",
         "Nigel McGuinness",
         "Orange Cassidy",
         "Ricochet"
       ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-23",
+      "id": 2849,
+      "date": "2025-08-24",
       "year": 2025,
       "event": "Forbidden Door '25",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Adam Copeland",
         "Christian Cage",
-        "Killswitch",
         "Kip Sabian"
       ],
+      "partners": [
+        "Kip Sabian"
+      ],
+      "versus": [
+        "Adam Copeland",
+        "Christian Cage"
+      ],
       "rating": 6.23,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-09-16",
+      "id": 2892,
+      "date": "2025-09-17",
       "year": 2025,
       "event": "Sep to Remember '25 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kevin Knight",
         "Mike Bailey",
-        "Killswitch",
         "Kip Sabian"
       ],
+      "partners": [
+        "Kip Sabian"
+      ],
+      "versus": [
+        "Kevin Knight",
+        "Mike Bailey"
+      ],
       "rating": 5.71,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-10-14",
+      "id": 2938,
+      "date": "2025-10-15",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jack Perry",
         "Kenny Omega",
@@ -2658,50 +3919,89 @@
         "Josh Alexander",
         "Mark Davis"
       ],
+      "partners": [
+        "Jack Perry",
+        "Kenny Omega"
+      ],
+      "versus": [
+        "Hechicero",
+        "Josh Alexander",
+        "Mark Davis"
+      ],
       "rating": 7.34,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-10-17",
+      "id": 2946,
+      "date": "2025-10-18",
       "year": 2025,
       "event": "WrestleDream '25",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Jack Perry",
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Jack Perry"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-10-24",
+      "id": 2962,
+      "date": "2025-10-25",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kevin Knight",
         "Mike Bailey",
         "Jack Perry",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
+      "partners": [
+        "Jack Perry"
+      ],
+      "versus": [
+        "Kevin Knight",
+        "Mike Bailey",
         "Cash Wheeler",
         "Dax Harwood",
         "Matt Jackson",
         "Nick Jackson"
       ],
       "rating": 7.71,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-10-28",
+      "id": 2964,
+      "date": "2025-10-29",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -2711,16 +4011,31 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [
+        "Jack Perry"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Kevin Knight",
+        "Mike Bailey",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.75,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-11-21",
+      "id": 3006,
+      "date": "2025-11-22",
       "year": 2025,
       "event": "Full Gear '25",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Josh Alexander",
         "Matt Jackson",
@@ -2728,16 +4043,29 @@
         "Jack Perry",
         "Kenny Omega"
       ],
+      "partners": [
+        "Jack Perry",
+        "Kenny Omega"
+      ],
+      "versus": [
+        "Josh Alexander",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.14,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-12-16",
+      "id": 3043,
+      "date": "2025-12-17",
       "year": 2025,
       "event": "Holiday Bash '25 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bandido",
         "Ricochet",
@@ -2751,12 +4079,26 @@
         "Shelton Benjamin",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bandido",
+        "Ricochet",
+        "Ace Austin",
+        "Anthony Bowens",
+        "Bishop Kaun",
+        "Brody King",
+        "Josh Alexander",
+        "Mark Davis",
+        "Max Caster",
+        "Shelton Benjamin",
+        "Toa Liona"
+      ],
       "rating": 4.61,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Main Event"
     }
-  ],
-  "isTeam": false
+  ]
 }
