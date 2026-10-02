@@ -1,10 +1,12 @@
 {
   "name": "The Murder Machines",
+  "slug": "the-murder-machines",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 100.55456695905828,
   "currentRank": 10,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 100.55456695905828,
   "peakRatingWeek": "Apr '25 Week 4",
   "peakRank": 10,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2025-03-04",
+      "id": 2575,
+      "date": "2025-03-05",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Mark Briscoe",
@@ -52,16 +57,29 @@
         "Lance Archer",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Powerhouse Hobbs",
+        "Mark Briscoe",
+        "Orange Cassidy",
+        "Will Ospreay",
+        "Bryan Keith",
+        "Mark Davis"
+      ],
       "rating": 7.3,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-03-21",
+      "id": 2609,
+      "date": "2025-03-22",
       "year": 2025,
       "event": "Slam Dunk Saturday '25",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brian Cage",
         "Lance Archer",
@@ -70,27 +88,45 @@
         "Powerhouse Hobbs",
         "Rocky Romero"
       ],
+      "partners": [
+        "Konosuke Takeshita"
+      ],
+      "versus": [
+        "Mark Briscoe",
+        "Powerhouse Hobbs",
+        "Rocky Romero"
+      ],
       "rating": 6.38,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-02-25",
+      "id": 2566,
+      "date": "2025-02-26",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Truth Magnum",
         "Turbo Floyd",
         "Brian Cage",
         "Lance Archer"
       ],
+      "partners": [],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd"
+      ],
       "rating": 4.42,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -146,25 +182,37 @@
   ],
   "allMatches": [
     {
-      "date": "2025-02-25",
+      "id": 2566,
+      "date": "2025-02-26",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Truth Magnum",
         "Turbo Floyd",
         "Brian Cage",
         "Lance Archer"
       ],
+      "partners": [],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd"
+      ],
       "rating": 4.42,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-03-04",
+      "id": 2575,
+      "date": "2025-03-05",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Mark Briscoe",
@@ -175,16 +223,29 @@
         "Lance Archer",
         "Mark Davis"
       ],
+      "partners": [],
+      "versus": [
+        "Powerhouse Hobbs",
+        "Mark Briscoe",
+        "Orange Cassidy",
+        "Will Ospreay",
+        "Bryan Keith",
+        "Mark Davis"
+      ],
       "rating": 7.3,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-03-21",
+      "id": 2609,
+      "date": "2025-03-22",
       "year": 2025,
       "event": "Slam Dunk Saturday '25",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brian Cage",
         "Lance Archer",
@@ -193,12 +254,20 @@
         "Powerhouse Hobbs",
         "Rocky Romero"
       ],
+      "partners": [
+        "Konosuke Takeshita"
+      ],
+      "versus": [
+        "Mark Briscoe",
+        "Powerhouse Hobbs",
+        "Rocky Romero"
+      ],
       "rating": 6.38,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     }
-  ],
-  "isTeam": true
+  ]
 }
