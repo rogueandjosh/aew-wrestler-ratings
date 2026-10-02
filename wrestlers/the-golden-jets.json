@@ -1,5 +1,6 @@
 {
   "name": "The Golden Jets",
+  "slug": "the-golden-jets",
   "division": "Men Tag",
   "formerNames": [
     "Jericho & Omega"
@@ -7,15 +8,16 @@
   "currentRating": 101.97346280850253,
   "currentRank": 12,
   "isActive": true,
-  "peakRating": 101.97346280850253,
-  "peakRatingWeek": "Dec '23 Week 3",
-  "peakRank": 12,
+  "isTeam": true,
+  "peakRating": 105.97066476483664,
+  "peakRatingWeek": "Oct '23 Week 2",
+  "peakRank": 8,
   "totalMatches": 6,
-  "totalWeeks": 7,
-  "firstAppearance": "Nov '23 Week 1",
+  "totalWeeks": 12,
+  "firstAppearance": "Oct '23 Week 1",
   "lastAppearance": "Dec '23 Week 3",
-  "weeksInTop10": 0,
-  "weeksInTop20": 7,
+  "weeksInTop10": 4,
+  "weeksInTop20": 12,
   "statsByYear": {
     "2023": {
       "totalMatches": 6,
@@ -41,9 +43,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-09-30",
+      "id": 1605,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Konosuke Takeshita",
         "Sammy Guevara",
@@ -52,16 +57,27 @@
         "Chris Jericho",
         "Kota Ibushi"
       ],
+      "partners": [
+        "Konosuke Takeshita",
+        "Sammy Guevara",
+        "Chris Jericho",
+        "Kota Ibushi"
+      ],
+      "versus": [],
       "rating": 7.68,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-14",
+      "id": 1685,
+      "date": "2023-11-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
@@ -72,78 +88,160 @@
         "Kyle Fletcher",
         "Brian Cage"
       ],
+      "partners": [
+        "Chris Jericho"
+      ],
+      "versus": [
+        "Paul Wight",
+        "Konosuke Takeshita",
+        "Powerhouse Hobbs",
+        "Kyle Fletcher",
+        "Brian Cage"
+      ],
       "rating": 7.36,
-      "division": "Street Fight",
       "matchType": "8 Man Tag",
       "matchStipulation": "Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-10-03",
+      "id": 1610,
+      "date": "2023-10-04",
       "year": 2023,
       "event": "Anniversary Show '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Konosuke Takeshita",
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Konosuke Takeshita",
+        "Kyle Fletcher"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-17",
+      "id": 1700,
+      "date": "2023-11-18",
       "year": 2023,
       "event": "Full Gear '23",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.22,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-29",
+      "id": 1596,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-31",
+      "id": 1657,
+      "date": "2023-11-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Angelo Parker",
         "Matt Menard"
       ],
+      "partners": [],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard"
+      ],
       "rating": 4.66,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
+    {
+      "date": "2023-09-30",
+      "week": "Oct '23 Week 1",
+      "rating": 103.69464718937148,
+      "rank": 12,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-10-07",
+      "week": "Oct '23 Week 2",
+      "rating": 105.97066476483664,
+      "rank": 8,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-10-14",
+      "week": "Oct '23 Week 3",
+      "rating": 105.90126307503266,
+      "rank": 8,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-10-21",
+      "week": "Oct '23 Week 4",
+      "rating": 105.87928458670228,
+      "rank": 8,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-10-28",
+      "week": "Oct '23 Week 5",
+      "rating": 105.78376398995745,
+      "rank": 8,
+      "division": "Men Tag"
+    },
     {
       "date": "2023-10-31",
       "week": "Nov '23 Week 1",
@@ -196,25 +294,37 @@
   ],
   "allMatches": [
     {
-      "date": "2023-09-29",
+      "id": 1596,
+      "date": "2023-09-30",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 6.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-30",
+      "id": 1605,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Konosuke Takeshita",
         "Sammy Guevara",
@@ -223,48 +333,77 @@
         "Chris Jericho",
         "Kota Ibushi"
       ],
+      "partners": [
+        "Konosuke Takeshita",
+        "Sammy Guevara",
+        "Chris Jericho",
+        "Kota Ibushi"
+      ],
+      "versus": [],
       "rating": 7.68,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-03",
+      "id": 1610,
+      "date": "2023-10-04",
       "year": 2023,
       "event": "Anniversary Show '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Konosuke Takeshita",
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Konosuke Takeshita",
+        "Kyle Fletcher"
+      ],
       "rating": 7.28,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-31",
+      "id": 1657,
+      "date": "2023-11-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Angelo Parker",
         "Matt Menard"
       ],
+      "partners": [],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard"
+      ],
       "rating": 4.66,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-14",
+      "id": 1685,
+      "date": "2023-11-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
@@ -275,28 +414,47 @@
         "Kyle Fletcher",
         "Brian Cage"
       ],
+      "partners": [
+        "Chris Jericho"
+      ],
+      "versus": [
+        "Paul Wight",
+        "Konosuke Takeshita",
+        "Powerhouse Hobbs",
+        "Kyle Fletcher",
+        "Brian Cage"
+      ],
       "rating": 7.36,
-      "division": "Street Fight",
       "matchType": "8 Man Tag",
       "matchStipulation": "Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-11-17",
+      "id": 1700,
+      "date": "2023-11-18",
       "year": 2023,
       "event": "Full Gear '23",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Chris Jericho",
         "Kenny Omega",
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.22,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
