@@ -1,5 +1,6 @@
 {
   "name": "The Bunny",
+  "slug": "the-bunny",
   "division": "Women",
   "formerNames": [
     "Allie"
@@ -7,15 +8,16 @@
   "currentRating": 99.36147097679371,
   "currentRank": 15,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 103.58609445065758,
   "peakRatingWeek": "Jan '22 Week 1",
   "peakRank": 8,
   "totalMatches": 21,
-  "totalWeeks": 68,
-  "firstAppearance": "Apr '21 Week 1",
+  "totalWeeks": 73,
+  "firstAppearance": "Aug '20 Week 4",
   "lastAppearance": "Oct '23 Week 2",
-  "weeksInTop10": 47,
-  "weeksInTop20": 68,
+  "weeksInTop10": 52,
+  "weeksInTop20": 73,
   "statsByYear": {
     "2019": {
       "totalMatches": 1,
@@ -69,50 +71,79 @@
   },
   "bestMatches": [
     {
-      "date": "2021-12-30",
+      "id": 705,
+      "date": "2021-12-31",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anna Jay",
         "Tay Conti",
         "Penelope Ford"
       ],
+      "partners": [],
+      "versus": [
+        "Anna Jay",
+        "Tay Conti",
+        "Penelope Ford"
+      ],
       "rating": 7.65,
-      "division": "Street Fight",
       "matchType": "Tag Team",
       "matchStipulation": "Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-08",
+      "id": 1145,
+      "date": "2022-12-09",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Hikaru Shida"
       ],
+      "partners": [],
+      "versus": [
+        "Hikaru Shida"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-06",
+      "id": 445,
+      "date": "2021-04-07",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Tay Conti"
       ],
+      "partners": [],
+      "versus": [
+        "Tay Conti"
+      ],
       "rating": 5.63,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-07",
+      "id": 1551,
+      "date": "2023-09-08",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Britt Baker",
         "Hikaru Shida",
@@ -120,16 +151,28 @@
         "Anna Jay",
         "Taya Valkyrie"
       ],
+      "partners": [],
+      "versus": [
+        "Britt Baker",
+        "Hikaru Shida",
+        "Skye Blue",
+        "Anna Jay",
+        "Taya Valkyrie"
+      ],
       "rating": 5.54,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-09",
+      "id": 686,
+      "date": "2021-12-10",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Nyla Rose",
         "Penelope Ford",
@@ -137,29 +180,49 @@
         "Tay Conti",
         "Ruby Soho"
       ],
+      "partners": [],
+      "versus": [
+        "Nyla Rose",
+        "Penelope Ford",
+        "Anna Jay",
+        "Tay Conti",
+        "Ruby Soho"
+      ],
       "rating": 5.51,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-10-14",
+      "id": 613,
+      "date": "2021-10-15",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Ruby Soho"
       ],
+      "partners": [],
+      "versus": [
+        "Ruby Soho"
+      ],
       "rating": 5.38,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-04",
+      "id": 567,
+      "date": "2021-09-05",
       "year": 2021,
       "event": "All Out '21",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Ruby Soho",
         "Abadon",
@@ -182,16 +245,43 @@
         "Tay Conti",
         "Thunder Rosa"
       ],
+      "partners": [],
+      "versus": [
+        "Ruby Soho",
+        "Abadon",
+        "Anna Jay",
+        "Big Swole",
+        "Diamante",
+        "Emi Sakura",
+        "Hikaru Shida",
+        "Jade Cargill",
+        "Jamie Hayter",
+        "Kiera Hogan",
+        "KiLynn King",
+        "Leyla Hirsch",
+        "Nyla Rose",
+        "Penelope Ford",
+        "Rebel",
+        "Red Velvet",
+        "Riho",
+        "Skye Blue",
+        "Tay Conti",
+        "Thunder Rosa"
+      ],
       "rating": 5.35,
-      "division": "Casino Battle Royale",
       "matchType": "Multi Woman Gauntlet",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-01-13",
+      "id": 723,
+      "date": "2022-01-14",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Nyla Rose",
         "Penelope Ford",
@@ -199,40 +289,100 @@
         "Leyla Hirsch",
         "Red Velvet"
       ],
+      "partners": [],
+      "versus": [
+        "Nyla Rose",
+        "Penelope Ford",
+        "Kris Statlander",
+        "Leyla Hirsch",
+        "Red Velvet"
+      ],
       "rating": 5.35,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-06-25",
+      "id": 505,
+      "date": "2021-06-26",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kris Statlander"
       ],
+      "partners": [],
+      "versus": [
+        "Kris Statlander"
+      ],
       "rating": 5.22,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-29",
+      "id": 811,
+      "date": "2022-03-30",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Toni Storm"
       ],
+      "partners": [],
+      "versus": [
+        "Toni Storm"
+      ],
       "rating": 5.09,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Women's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
+    {
+      "date": "2020-08-21",
+      "week": "Aug '20 Week 4",
+      "rating": 96.52757100052345,
+      "rank": 4,
+      "division": "Women"
+    },
+    {
+      "date": "2020-08-28",
+      "week": "Aug '20 Week 5",
+      "rating": 96.55703358032369,
+      "rank": 4,
+      "division": "Women"
+    },
+    {
+      "date": "2020-08-31",
+      "week": "Sep '20 Week 1",
+      "rating": 96.70539410485432,
+      "rank": 5,
+      "division": "Women"
+    },
+    {
+      "date": "2020-09-07",
+      "week": "Sep '20 Week 2",
+      "rating": 96.74716908955719,
+      "rank": 6,
+      "division": "Women"
+    },
+    {
+      "date": "2020-09-14",
+      "week": "Sep '20 Week 3",
+      "rating": 96.84234779679137,
+      "rank": 6,
+      "division": "Women"
+    },
     {
       "date": "2021-03-31",
       "week": "Apr '21 Week 1",
@@ -712,121 +862,192 @@
   ],
   "allMatches": [
     {
-      "date": "2019-07-12",
+      "id": 15,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
-        "Brandi Rhodes",
-        "Allie"
+        "Brandi Rhodes"
+      ],
+      "partners": [],
+      "versus": [
+        "Brandi Rhodes"
       ],
       "rating": 2.04,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-08-21",
+      "id": 250,
+      "date": "2020-08-22",
       "year": 2020,
       "event": "Satuday Night Dynamite '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Diamante",
         "Ivelisse",
-        "Allie",
+        "Brandi Rhodes"
+      ],
+      "partners": [],
+      "versus": [
+        "Diamante",
+        "Ivelisse",
         "Brandi Rhodes"
       ],
       "rating": 4.07,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Final"
+      "stakes": "Tournament Final",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-30",
+      "id": 441,
+      "date": "2021-03-31",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Nyla Rose",
         "Hikaru Shida",
         "Tay Conti"
       ],
+      "partners": [],
+      "versus": [
+        "Nyla Rose",
+        "Hikaru Shida",
+        "Tay Conti"
+      ],
       "rating": 5.05,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-06",
+      "id": 445,
+      "date": "2021-04-07",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Tay Conti"
       ],
+      "partners": [],
+      "versus": [
+        "Tay Conti"
+      ],
       "rating": 5.63,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-06-03",
+      "id": 490,
+      "date": "2021-06-04",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Red Velvet"
       ],
+      "partners": [],
+      "versus": [
+        "Red Velvet"
+      ],
       "rating": 4.77,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-06-25",
+      "id": 505,
+      "date": "2021-06-26",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kris Statlander"
       ],
+      "partners": [],
+      "versus": [
+        "Kris Statlander"
+      ],
       "rating": 5.22,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-07-06",
+      "id": 515,
+      "date": "2021-07-07",
       "year": 2021,
       "event": "Road Rager '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kris Statlander",
         "Orange Cassidy",
         "The Blade"
       ],
+      "partners": [],
+      "versus": [
+        "Kris Statlander",
+        "Orange Cassidy",
+        "The Blade"
+      ],
       "rating": 5.03,
-      "division": "None",
       "matchType": "Mixed Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-03",
+      "id": 535,
+      "date": "2021-08-04",
       "year": 2021,
       "event": "Homecoming '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Leyla Hirsch"
       ],
+      "partners": [],
+      "versus": [
+        "Leyla Hirsch"
+      ],
       "rating": 4.69,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-04",
+      "id": 567,
+      "date": "2021-09-05",
       "year": 2021,
       "event": "All Out '21",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Ruby Soho",
         "Abadon",
@@ -849,58 +1070,119 @@
         "Tay Conti",
         "Thunder Rosa"
       ],
+      "partners": [],
+      "versus": [
+        "Ruby Soho",
+        "Abadon",
+        "Anna Jay",
+        "Big Swole",
+        "Diamante",
+        "Emi Sakura",
+        "Hikaru Shida",
+        "Jade Cargill",
+        "Jamie Hayter",
+        "Kiera Hogan",
+        "KiLynn King",
+        "Leyla Hirsch",
+        "Nyla Rose",
+        "Penelope Ford",
+        "Rebel",
+        "Red Velvet",
+        "Riho",
+        "Skye Blue",
+        "Tay Conti",
+        "Thunder Rosa"
+      ],
       "rating": 5.35,
-      "division": "Casino Battle Royale",
       "matchType": "Multi Woman Gauntlet",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-16",
+      "id": 584,
+      "date": "2021-09-17",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anna Jay"
       ],
+      "partners": [],
+      "versus": [
+        "Anna Jay"
+      ],
       "rating": 4.21,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-09-28",
+      "id": 600,
+      "date": "2021-09-29",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anna Jay",
         "Tay Conti",
         "Penelope Ford"
       ],
+      "partners": [],
+      "versus": [
+        "Anna Jay",
+        "Tay Conti",
+        "Penelope Ford"
+      ],
       "rating": 4.18,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-10-14",
+      "id": 613,
+      "date": "2021-10-15",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Ruby Soho"
       ],
+      "partners": [],
+      "versus": [
+        "Ruby Soho"
+      ],
       "rating": 5.38,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-09",
+      "id": 686,
+      "date": "2021-12-10",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Nyla Rose",
+        "Penelope Ford",
+        "Anna Jay",
+        "Tay Conti",
+        "Ruby Soho"
+      ],
+      "partners": [],
+      "versus": [
         "Nyla Rose",
         "Penelope Ford",
         "Anna Jay",
@@ -908,30 +1190,44 @@
         "Ruby Soho"
       ],
       "rating": 5.51,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-12-30",
+      "id": 705,
+      "date": "2021-12-31",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anna Jay",
         "Tay Conti",
         "Penelope Ford"
       ],
+      "partners": [],
+      "versus": [
+        "Anna Jay",
+        "Tay Conti",
+        "Penelope Ford"
+      ],
       "rating": 7.65,
-      "division": "Street Fight",
       "matchType": "Tag Team",
       "matchStipulation": "Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-01-13",
+      "id": 723,
+      "date": "2022-01-14",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Nyla Rose",
         "Penelope Ford",
@@ -939,81 +1235,133 @@
         "Leyla Hirsch",
         "Red Velvet"
       ],
+      "partners": [],
+      "versus": [
+        "Nyla Rose",
+        "Penelope Ford",
+        "Kris Statlander",
+        "Leyla Hirsch",
+        "Red Velvet"
+      ],
       "rating": 5.35,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-02-22",
+      "id": 762,
+      "date": "2022-02-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jade Cargill"
       ],
+      "partners": [],
+      "versus": [
+        "Jade Cargill"
+      ],
       "rating": 3.54,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-29",
+      "id": 811,
+      "date": "2022-03-30",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Toni Storm"
       ],
+      "partners": [],
+      "versus": [
+        "Toni Storm"
+      ],
       "rating": 5.09,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-08",
+      "id": 1145,
+      "date": "2022-12-09",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Hikaru Shida"
       ],
+      "partners": [],
+      "versus": [
+        "Hikaru Shida"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-07",
+      "id": 1216,
+      "date": "2023-02-08",
       "year": 2023,
       "event": "Championship Fight Night '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jamie Hayter"
       ],
+      "partners": [],
+      "versus": [
+        "Jamie Hayter"
+      ],
       "rating": 4.42,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-15",
+      "id": 1496,
+      "date": "2023-08-16",
       "year": 2023,
       "event": "Fight For the Fallen '23 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Britt Baker"
       ],
+      "partners": [],
+      "versus": [
+        "Britt Baker"
+      ],
       "rating": 3.97,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Women's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-07",
+      "id": 1551,
+      "date": "2023-09-08",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Britt Baker",
         "Hikaru Shida",
@@ -1021,12 +1369,20 @@
         "Anna Jay",
         "Taya Valkyrie"
       ],
+      "partners": [],
+      "versus": [
+        "Britt Baker",
+        "Hikaru Shida",
+        "Skye Blue",
+        "Anna Jay",
+        "Taya Valkyrie"
+      ],
       "rating": 5.54,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
