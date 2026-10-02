@@ -1,10 +1,12 @@
 {
   "name": "Bill & Cage",
+  "slug": "bill-cage",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 106.4991592902297,
   "currentRank": 10,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 107.11084245007413,
   "peakRatingWeek": "Aug '23 Week 1",
   "peakRank": 12,
@@ -39,57 +41,87 @@
   },
   "bestMatches": [
     {
-      "date": "2023-07-06",
+      "id": 1428,
+      "date": "2023-07-07",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Brian Cage",
         "Matt Sydal",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Sydal",
+        "Trent Beretta"
+      ],
       "rating": 7.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-04",
+      "id": 1477,
+      "date": "2023-08-05",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Big Bill",
         "Brian Cage"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.4,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-07-11",
+      "id": 1435,
+      "date": "2023-07-12",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "MJF",
         "Big Bill",
         "Brian Cage"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Cole",
+        "MJF"
+      ],
       "rating": 6.9,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-27",
+      "id": 1461,
+      "date": "2023-07-28",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Brian Cage",
@@ -108,11 +140,29 @@
         "The Butcher",
         "The Blade"
       ],
+      "partners": [],
+      "versus": [
+        "Christopher Daniels",
+        "Matt Sydal",
+        "Ethan Page",
+        "Isiah Kassidy",
+        "Jay Lethal",
+        "Satnam Singh",
+        "Luther",
+        "Serpentico",
+        "Angelo Parker",
+        "Matt Menard",
+        "Jeff Hardy",
+        "Matt Hardy",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 4.65,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
@@ -175,41 +225,62 @@
   ],
   "allMatches": [
     {
-      "date": "2023-07-06",
+      "id": 1428,
+      "date": "2023-07-07",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Brian Cage",
         "Matt Sydal",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Sydal",
+        "Trent Beretta"
+      ],
       "rating": 7.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-07-11",
+      "id": 1435,
+      "date": "2023-07-12",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "MJF",
         "Big Bill",
         "Brian Cage"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Cole",
+        "MJF"
+      ],
       "rating": 6.9,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-27",
+      "id": 1461,
+      "date": "2023-07-28",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Brian Cage",
@@ -228,28 +299,54 @@
         "The Butcher",
         "The Blade"
       ],
+      "partners": [],
+      "versus": [
+        "Christopher Daniels",
+        "Matt Sydal",
+        "Ethan Page",
+        "Isiah Kassidy",
+        "Jay Lethal",
+        "Satnam Singh",
+        "Luther",
+        "Serpentico",
+        "Angelo Parker",
+        "Matt Menard",
+        "Jeff Hardy",
+        "Matt Hardy",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 4.65,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-08-04",
+      "id": 1477,
+      "date": "2023-08-05",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Big Bill",
         "Brian Cage"
       ],
+      "partners": [],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 7.4,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
