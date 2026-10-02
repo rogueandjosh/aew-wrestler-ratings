@@ -1,10 +1,12 @@
 {
   "name": "Ariya Daivari",
+  "slug": "ariya-daivari",
   "division": "Men",
   "formerNames": [],
   "currentRating": 99.82677513624373,
   "currentRank": 50,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 100.93575155710244,
   "peakRatingWeek": "Aug '24 Week 4",
   "peakRank": 50,
@@ -67,9 +69,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-05-27",
+      "id": 1351,
+      "date": "2023-05-28",
       "year": 2023,
       "event": "Double or Nothing '23",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Orange Cassidy",
         "Bandido",
@@ -92,31 +97,69 @@
         "Tony Nese",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy",
+        "Bandido",
+        "Big Bill",
+        "Brian Cage",
+        "Chuck Taylor",
+        "Dustin Rhodes",
+        "Jay White",
+        "Juice Robinson",
+        "Keith Lee",
+        "Kip Sabian",
+        "Komander",
+        "Lee Moriarty",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Ricky Starks",
+        "Swerve Strickland",
+        "The Butcher",
+        "The Blade",
+        "Tony Nese",
+        "Trent Beretta"
+      ],
       "rating": 7.12,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-02",
+      "id": 2191,
+      "date": "2024-08-03",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hologram",
         "Mistico",
         "Tony Nese"
       ],
+      "partners": [
+        "Tony Nese"
+      ],
+      "versus": [
+        "Hologram",
+        "Mistico"
+      ],
       "rating": 6.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-09-11",
+      "id": 2280,
+      "date": "2024-09-12",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -124,16 +167,29 @@
         "Tony Nese",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Tony Nese",
+        "The Beast Mortos"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Hologram"
+      ],
       "rating": 6.5,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-08-18",
+      "id": 1000,
+      "date": "2022-08-19",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -141,29 +197,50 @@
         "Parker Boudreaux",
         "Slim J"
       ],
+      "partners": [
+        "Parker Boudreaux",
+        "Slim J"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy"
+      ],
       "rating": 6.49,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2021-11-11",
+      "id": 647,
+      "date": "2021-11-12",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-07-26",
+      "id": 2178,
+      "date": "2024-07-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -171,16 +248,29 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Tomohiro Ishii"
+      ],
       "rating": 6.31,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-22",
+      "id": 1158,
+      "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -206,29 +296,68 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "AR Fox",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Dralistico",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Angelico",
+        "Luther",
+        "Serpentico"
+      ],
       "rating": 6.24,
-      "division": "Casino Battle Royale",
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-08-11",
+      "id": 994,
+      "date": "2022-08-12",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy"
+      ],
       "rating": 5.73,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-06-21",
+      "id": 2113,
+      "date": "2024-06-22",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Katsuyori Shibata",
@@ -236,24 +365,42 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Hook",
+        "Katsuyori Shibata",
+        "Samoa Joe"
+      ],
       "rating": 5.71,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-23",
+      "id": 2231,
+      "date": "2024-08-24",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Jarrett"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Jarrett"
+      ],
       "rating": 5.69,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -722,35 +869,54 @@
   ],
   "allMatches": [
     {
-      "date": "2021-11-11",
+      "id": 647,
+      "date": "2021-11-12",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-08-11",
+      "id": 994,
+      "date": "2022-08-12",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy"
+      ],
       "rating": 5.73,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-08-18",
+      "id": 1000,
+      "date": "2022-08-19",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -758,16 +924,29 @@
         "Parker Boudreaux",
         "Slim J"
       ],
+      "partners": [
+        "Parker Boudreaux",
+        "Slim J"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy"
+      ],
       "rating": 6.49,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-09-22",
+      "id": 1046,
+      "date": "2022-09-23",
       "year": 2022,
       "event": "Grand Slam '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Brian Cage",
@@ -794,16 +973,47 @@
         "The Butcher",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page",
+        "Brian Cage",
+        "Chuck Taylor",
+        "Cole Karter",
+        "Dalton Castle",
+        "Danhausen",
+        "Daniel Garcia",
+        "Dante Martin",
+        "Evil Uno",
+        "Isiah Kassidy",
+        "Jake Hager",
+        "Jay Lethal",
+        "John Silver",
+        "Lance Archer",
+        "Lee Moriarty",
+        "Marq Quen",
+        "Matt Hardy",
+        "Penta El Zero M",
+        "QT Marshall",
+        "Rush",
+        "Ten",
+        "The Blade",
+        "The Butcher",
+        "Trent Beretta"
+      ],
       "rating": 5.14,
-      "division": "Battle Royal",
       "matchType": "Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-22",
+      "id": 1158,
+      "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -829,16 +1039,47 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "AR Fox",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Dralistico",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Angelico",
+        "Luther",
+        "Serpentico"
+      ],
       "rating": 6.24,
-      "division": "Casino Battle Royale",
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-02-21",
+      "id": 1235,
+      "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Jeff Jarrett",
@@ -860,16 +1101,43 @@
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [
+        "Tony Nese"
+      ],
+      "versus": [
+        "Jay Lethal",
+        "Jeff Jarrett",
+        "Kyle Fletcher",
+        "Mark Davis",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelo Parker",
+        "Matt Menard",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 5.39,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-04-20",
+      "id": 1309,
+      "date": "2023-04-21",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -879,16 +1147,31 @@
         "Tony Nese",
         "Slim J"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Jay Lethal",
+        "Jeff Jarrett",
+        "Slim J"
+      ],
       "rating": 5.31,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-02",
+      "id": 1321,
+      "date": "2023-05-03",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
@@ -908,16 +1191,41 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster",
+        "Billy Gunn",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "El Hijo del Vikingo",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Aaron Solow",
+        "Powerhouse Hobbs",
+        "QT Marshall",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno"
+      ],
       "rating": 4.63,
-      "division": "Tres de Mayo Battle Royal",
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Tres de Mayo Battle Royal",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-18",
+      "id": 1341,
+      "date": "2023-05-19",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
@@ -925,16 +1233,29 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster",
+        "Billy Gunn"
+      ],
       "rating": 5.08,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-27",
+      "id": 1351,
+      "date": "2023-05-28",
       "year": 2023,
       "event": "Double or Nothing '23",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Orange Cassidy",
         "Bandido",
@@ -957,16 +1278,43 @@
         "Tony Nese",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy",
+        "Bandido",
+        "Big Bill",
+        "Brian Cage",
+        "Chuck Taylor",
+        "Dustin Rhodes",
+        "Jay White",
+        "Juice Robinson",
+        "Keith Lee",
+        "Kip Sabian",
+        "Komander",
+        "Lee Moriarty",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Ricky Starks",
+        "Swerve Strickland",
+        "The Butcher",
+        "The Blade",
+        "Tony Nese",
+        "Trent Beretta"
+      ],
       "rating": 7.12,
-      "division": "Battle Royal",
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-06-21",
+      "id": 2113,
+      "date": "2024-06-22",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Katsuyori Shibata",
@@ -974,16 +1322,29 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Hook",
+        "Katsuyori Shibata",
+        "Samoa Joe"
+      ],
       "rating": 5.71,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-07-26",
+      "id": 2178,
+      "date": "2024-07-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -991,44 +1352,76 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Tomohiro Ishii"
+      ],
       "rating": 6.31,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-02",
+      "id": 2191,
+      "date": "2024-08-03",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hologram",
         "Mistico",
         "Tony Nese"
       ],
+      "partners": [
+        "Tony Nese"
+      ],
+      "versus": [
+        "Hologram",
+        "Mistico"
+      ],
       "rating": 6.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-23",
+      "id": 2231,
+      "date": "2024-08-24",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Jarrett"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Jarrett"
+      ],
       "rating": 5.69,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-11",
+      "id": 2280,
+      "date": "2024-09-12",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -1036,16 +1429,29 @@
         "Tony Nese",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Tony Nese",
+        "The Beast Mortos"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Hologram"
+      ],
       "rating": 6.5,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-21",
+      "id": 2293,
+      "date": "2024-09-22",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -1053,31 +1459,55 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Hologram"
+      ],
       "rating": 5.64,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-10-04",
+      "id": 2319,
+      "date": "2024-10-05",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Orange Cassidy",
         "Tony Nese"
       ],
+      "partners": [
+        "Tony Nese"
+      ],
+      "versus": [
+        "Kyle O'Reilly",
+        "Orange Cassidy"
+      ],
       "rating": 5.63,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-10-18",
+      "id": 2347,
+      "date": "2024-10-19",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Quen",
         "Zay",
@@ -1085,29 +1515,50 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Quen",
+        "Zay",
+        "Daniel Garcia"
+      ],
       "rating": 5.28,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-11-14",
+      "id": 2399,
+      "date": "2024-11-15",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe"
       ],
+      "partners": [],
+      "versus": [
+        "Mark Briscoe"
+      ],
       "rating": 4.92,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-12-13",
+      "id": 2460,
+      "date": "2024-12-14",
       "year": 2024,
       "event": "Winter is Coming '24 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Truth Magnum",
         "Turbo Floyd",
@@ -1119,27 +1570,51 @@
         "Mansoor",
         "Mason Madden"
       ],
+      "partners": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd",
+        "Daniel Garcia",
+        "Komander",
+        "Orange Cassidy",
+        "Mansoor",
+        "Mason Madden"
+      ],
       "rating": 5.28,
-      "division": "None",
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-03-07",
+      "id": 2582,
+      "date": "2025-03-08",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Truth Magnum",
         "Turbo Floyd",
         "Tony Nese"
       ],
+      "partners": [
+        "Tony Nese"
+      ],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd"
+      ],
       "rating": 4.39,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
