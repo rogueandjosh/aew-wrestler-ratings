@@ -1,10 +1,12 @@
 {
   "name": "Bill & Moriarty",
+  "slug": "bill-moriarty",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 102.94000559973598,
   "currentRank": 15,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 104.03822185875674,
   "peakRatingWeek": "May '23 Week 3",
   "peakRank": 6,
@@ -39,25 +41,37 @@
   },
   "bestMatches": [
     {
-      "date": "2023-05-16",
+      "id": 1335,
+      "date": "2023-05-17",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Orange Cassidy",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Orange Cassidy"
+      ],
       "rating": 6.98,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-05-04",
+      "id": 1326,
+      "date": "2023-05-05",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Hardy",
         "Matt Hardy",
@@ -68,16 +82,29 @@
         "Ethan Page",
         "Stokely Hathaway"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Hardy",
+        "Matt Hardy",
+        "Hook",
+        "Isiah Kassidy",
+        "Ethan Page",
+        "Stokely Hathaway"
+      ],
       "rating": 6.43,
-      "division": "The Firm Deletion",
       "matchType": "8 Man Tag",
       "matchStipulation": "The Firm Deletion",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-08",
+      "id": 1373,
+      "date": "2023-06-09",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Penta El Zero M",
         "Rey Fenix",
@@ -86,59 +113,95 @@
         "Lee Moriarty",
         "Ethan Page"
       ],
+      "partners": [
+        "Ethan Page"
+      ],
+      "versus": [
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Bandido"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-01-10",
+      "id": 1181,
+      "date": "2023-01-11",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Jack Perry",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Hook",
+        "Jack Perry"
+      ],
       "rating": 6.14,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-21",
+      "id": 1234,
+      "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.31,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-25",
+      "id": 1350,
+      "date": "2023-05-26",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Lee Moriarty",
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
       "rating": 5.22,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     }
   ],
   "ratingHistory": [
@@ -250,41 +313,62 @@
   ],
   "allMatches": [
     {
-      "date": "2023-01-10",
+      "id": 1181,
+      "date": "2023-01-11",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Jack Perry",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Hook",
+        "Jack Perry"
+      ],
       "rating": 6.14,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-21",
+      "id": 1234,
+      "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.31,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-04",
+      "id": 1326,
+      "date": "2023-05-05",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Hardy",
         "Matt Hardy",
@@ -295,48 +379,79 @@
         "Ethan Page",
         "Stokely Hathaway"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Hardy",
+        "Matt Hardy",
+        "Hook",
+        "Isiah Kassidy",
+        "Ethan Page",
+        "Stokely Hathaway"
+      ],
       "rating": 6.43,
-      "division": "The Firm Deletion",
       "matchType": "8 Man Tag",
       "matchStipulation": "The Firm Deletion",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-05-16",
+      "id": 1335,
+      "date": "2023-05-17",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Orange Cassidy",
         "Big Bill",
         "Lee Moriarty"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Orange Cassidy"
+      ],
       "rating": 6.98,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-05-25",
+      "id": 1350,
+      "date": "2023-05-26",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Lee Moriarty",
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
       "rating": 5.22,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-06-08",
+      "id": 1373,
+      "date": "2023-06-09",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Penta El Zero M",
         "Rey Fenix",
@@ -345,12 +460,20 @@
         "Lee Moriarty",
         "Ethan Page"
       ],
+      "partners": [
+        "Ethan Page"
+      ],
+      "versus": [
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Bandido"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
