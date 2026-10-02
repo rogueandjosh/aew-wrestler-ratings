@@ -1,10 +1,12 @@
 {
   "name": "Hobbs & Starks",
+  "slug": "hobbs-starks",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 114.21726872277196,
   "currentRank": 3,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 114.92819805417693,
   "peakRatingWeek": "Jul '22 Week 3",
   "peakRank": 6,
@@ -46,9 +48,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-07-12",
+      "id": 956,
+      "date": "2022-07-13",
       "year": 2022,
       "event": "Fyter Fest '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Keith Lee",
         "Swerve Strickland",
@@ -57,16 +62,27 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.64,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-05-28",
+      "id": 897,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
@@ -75,43 +91,69 @@
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Keith Lee",
+        "Swerve Strickland"
+      ],
       "rating": 7.89,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-12",
+      "id": 828,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Ricky Starks",
         "Keith Lee",
         "Swerve Strickland"
       ],
+      "partners": [],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland"
+      ],
       "rating": 7.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-12-01",
+      "id": 337,
+      "date": "2020-12-02",
       "year": 2020,
       "event": "Winter is Coming '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody Rhodes",
         "Darby Allin",
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Cody Rhodes",
+        "Darby Allin"
+      ],
       "rating": 5.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -223,41 +265,62 @@
   ],
   "allMatches": [
     {
-      "date": "2020-12-01",
+      "id": 337,
+      "date": "2020-12-02",
       "year": 2020,
       "event": "Winter is Coming '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody Rhodes",
         "Darby Allin",
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Cody Rhodes",
+        "Darby Allin"
+      ],
       "rating": 5.86,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-12",
+      "id": 828,
+      "date": "2022-04-13",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Ricky Starks",
         "Keith Lee",
         "Swerve Strickland"
       ],
+      "partners": [],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland"
+      ],
       "rating": 7.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-05-28",
+      "id": 897,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
@@ -266,16 +329,27 @@
         "Powerhouse Hobbs",
         "Ricky Starks"
       ],
+      "partners": [],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Keith Lee",
+        "Swerve Strickland"
+      ],
       "rating": 7.89,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-07-12",
+      "id": 956,
+      "date": "2022-07-13",
       "year": 2022,
       "event": "Fyter Fest '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Keith Lee",
         "Swerve Strickland",
@@ -284,12 +358,19 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Keith Lee",
+        "Swerve Strickland",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 8.64,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     }
-  ],
-  "isTeam": true
+  ]
 }
