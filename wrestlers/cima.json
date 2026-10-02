@@ -1,10 +1,12 @@
 {
   "name": "CIMA",
+  "slug": "cima",
   "division": "Men",
   "formerNames": [],
   "currentRating": 106.13297197858583,
   "currentRank": 15,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 107.71469824567214,
   "peakRatingWeek": "Jul '19",
   "peakRank": 8,
@@ -46,22 +48,33 @@
   },
   "bestMatches": [
     {
-      "date": "2019-07-12",
+      "id": 19,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "Kenny Omega"
       ],
+      "partners": [],
+      "versus": [
+        "Kenny Omega"
+      ],
       "rating": 8.3,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-05-24",
+      "id": 1,
+      "date": "2019-05-25",
       "year": 2019,
       "event": "Double or Nothing '19",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Christopher Daniels",
         "Frankie Kazarian",
@@ -69,16 +82,29 @@
         "El Lindaman",
         "T-Hawk"
       ],
+      "partners": [
+        "El Lindaman",
+        "T-Hawk"
+      ],
+      "versus": [
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "Scorpio Sky"
+      ],
       "rating": 7.44,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-02-18",
+      "id": 126,
+      "date": "2020-02-19",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -100,43 +126,75 @@
         "Jungle Boy",
         "Luchasaurus"
       ],
+      "partners": [
+        "T-Hawk"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Chuck Taylor",
+        "Trent",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Ortiz",
+        "Santana",
+        "Frankie Kazarian",
+        "Scorpio Sky",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelico",
+        "Jack Evans",
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 6.95,
-      "division": "Battle Royal",
       "matchType": "10 Way Tag",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-06-28",
+      "id": 8,
+      "date": "2019-06-29",
       "year": 2019,
       "event": "Fyter Fest '19",
+      "show": "Fyter Fest",
+      "showType": "Pay Per View",
       "opponents": [
         "Christopher Daniels"
       ],
+      "partners": [],
+      "versus": [
+        "Christopher Daniels"
+      ],
       "rating": 5.79,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Jun '19",
       "rating": 101.54759800914591,
       "rank": 7,
       "division": "Men"
     },
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Jul '19",
       "rating": 107.71469824567214,
       "rank": 8,
       "division": "Men"
     },
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Aug '19",
       "rating": 107.60905566595527,
       "rank": 9,
@@ -201,9 +259,12 @@
   ],
   "allMatches": [
     {
-      "date": "2019-05-24",
+      "id": 1,
+      "date": "2019-05-25",
       "year": 2019,
       "event": "Double or Nothing '19",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Christopher Daniels",
         "Frankie Kazarian",
@@ -211,42 +272,71 @@
         "El Lindaman",
         "T-Hawk"
       ],
+      "partners": [
+        "El Lindaman",
+        "T-Hawk"
+      ],
+      "versus": [
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "Scorpio Sky"
+      ],
       "rating": 7.44,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-06-28",
+      "id": 8,
+      "date": "2019-06-29",
       "year": 2019,
       "event": "Fyter Fest '19",
+      "show": "Fyter Fest",
+      "showType": "Pay Per View",
       "opponents": [
         "Christopher Daniels"
       ],
+      "partners": [],
+      "versus": [
+        "Christopher Daniels"
+      ],
       "rating": 5.79,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2019-07-12",
+      "id": 19,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "Kenny Omega"
       ],
+      "partners": [],
+      "versus": [
+        "Kenny Omega"
+      ],
       "rating": 8.3,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-02-18",
+      "id": 126,
+      "date": "2020-02-19",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -268,12 +358,35 @@
         "Jungle Boy",
         "Luchasaurus"
       ],
+      "partners": [
+        "T-Hawk"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Chuck Taylor",
+        "Trent",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Ortiz",
+        "Santana",
+        "Frankie Kazarian",
+        "Scorpio Sky",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelico",
+        "Jack Evans",
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 6.95,
-      "division": "Battle Royal",
       "matchType": "10 Way Tag",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
