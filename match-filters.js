@@ -71,15 +71,51 @@ function normalizeMatchStipulation(raw) {
 }
 
 // ---------------------------------------------------------------------------
+// SHOW TYPE — from showType (Column E). Kept as-is; older files without the
+// field (or blank values) fall under 'Not Recorded'.
+// ---------------------------------------------------------------------------
+const SHOW_TYPE_GROUPS = ['Pay Per View', 'TV Special', 'Quarterly TV Show', 'YouTube Special', 'Weekly TV', 'Not Recorded'];
+
+function getShowTypeGroup(showType) {
+    const s = (showType || '').trim();
+    return s || 'Not Recorded';
+}
+
+// ---------------------------------------------------------------------------
+// CARD POSITION — from matchPos (Column O). 'Other' is shown as 'Mid-card'.
+// ---------------------------------------------------------------------------
+const CARD_POSITION_GROUPS = ['Main Event', 'Mid-card', 'Opener', 'Not Recorded'];
+
+function getCardPositionGroup(matchPos) {
+    const s = (matchPos || '').trim();
+    if (!s) return 'Not Recorded';
+    if (/^main event$/i.test(s)) return 'Main Event';
+    if (/^opener$/i.test(s)) return 'Opener';
+    if (/^other$/i.test(s)) return 'Mid-card';
+    return s;   // any new value appears under its own name
+}
+
+// ---------------------------------------------------------------------------
 // FILTER FACETS — each facet reads one group from a match.
 // Filter state per facet: null = "All" (no filtering), otherwise a Set of
 // selected groups (an empty Set means nothing ticked = no matches).
 // Within a facet the selections are OR'd; across facets they're AND'd.
 // ---------------------------------------------------------------------------
 const MATCH_FACETS = {
-    format: m => getFormatGroup(m.matchType),
-    stakes: m => getStakesGroup(m.stakes),
-    stip:   m => normalizeMatchStipulation(m.matchStipulation)
+    format:   m => getFormatGroup(m.matchType),
+    stakes:   m => getStakesGroup(m.stakes),
+    stip:     m => normalizeMatchStipulation(m.matchStipulation),
+    showType: m => getShowTypeGroup(m.showType),
+    cardPos:  m => getCardPositionGroup(m.matchPos)
+};
+
+// Simple facets: a fixed list of groups, shown as All + one box each.
+// (Stipulation is built separately because of its Any/None shortcuts.)
+const SIMPLE_FACET_GROUPS = {
+    format: FORMAT_GROUPS,
+    stakes: STAKES_GROUPS,
+    showType: SHOW_TYPE_GROUPS,
+    cardPos: CARD_POSITION_GROUPS
 };
 
 // exceptFacet: skip one facet's own selection — used for faceted counts, so
