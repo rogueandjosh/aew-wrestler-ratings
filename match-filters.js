@@ -82,16 +82,16 @@ function getShowTypeGroup(showType) {
 }
 
 // ---------------------------------------------------------------------------
-// CARD POSITION — from matchPos (Column O). 'Other' is shown as 'Mid-card'.
+// CARD POSITION — from matchPos (Column O). Values shown as they are in the sheet.
 // ---------------------------------------------------------------------------
-const CARD_POSITION_GROUPS = ['Main Event', 'Mid-card', 'Opener', 'Not Recorded'];
+const CARD_POSITION_GROUPS = ['Main Event', 'Other', 'Opener', 'Not Recorded'];
 
 function getCardPositionGroup(matchPos) {
     const s = (matchPos || '').trim();
     if (!s) return 'Not Recorded';
     if (/^main event$/i.test(s)) return 'Main Event';
     if (/^opener$/i.test(s)) return 'Opener';
-    if (/^other$/i.test(s)) return 'Mid-card';
+    if (/^other$/i.test(s)) return 'Other';
     return s;   // any new value appears under its own name
 }
 
