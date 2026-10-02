@@ -96,6 +96,29 @@ function getCardPositionGroup(matchPos) {
 }
 
 // ---------------------------------------------------------------------------
+// SHOW — the individual show (Column C: Dynamite, Revolution, All In: London...)
+// Shows named "Family: Place" (All In: London, Grand Slam: Mexico) are split
+// into yearly editions, built from the show name + match year — NOT the event
+// name, which isn't consistent (e.g. "All In London '26" has no colon).
+// ---------------------------------------------------------------------------
+function getShowKey(match) {
+    const show = (match.show || '').trim();
+    if (!show) return 'Not Recorded';
+    if (getShowFamily(show) && match.year) return `${show} '${String(match.year).slice(-2)}`;
+    return show;
+}
+
+// Weekly TV brands are listed in this order in the Show filter
+const WEEKLY_TV_ORDER = ['Dynamite', 'Collision', 'Rampage'];
+
+// "All In: London" → { family: 'All In', place: 'London' }; otherwise null
+function getShowFamily(show) {
+    const i = (show || '').indexOf(':');
+    if (i <= 0) return null;
+    return { family: show.slice(0, i).trim(), place: show.slice(i + 1).trim() };
+}
+
+// ---------------------------------------------------------------------------
 // FILTER FACETS — each facet reads one group from a match.
 // Filter state per facet: null = "All" (no filtering), otherwise a Set of
 // selected groups (an empty Set means nothing ticked = no matches).
@@ -126,6 +149,10 @@ function matchPassesFilters(match, state, exceptFacet = null) {
         const selected = state[facet];
         if (selected && !selected.has(MATCH_FACETS[facet](match))) return false;
     }
+    // Show filter works the other way round: it stores the shows that have
+    // been UNticked (null = none), so a newly chosen show type arrives with
+    // all its shows ticked.
+    if (exceptFacet !== 'show' && state.showExcluded && state.showExcluded.has(getShowKey(match))) return false;
     return true;
 }
 
