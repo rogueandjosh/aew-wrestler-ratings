@@ -1,10 +1,12 @@
 {
   "name": "Rob Van Dam",
+  "slug": "rob-van-dam",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.99504690089934,
   "currentRank": 45,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 103.29039849272563,
   "peakRatingWeek": "Feb '24 Week 1",
   "peakRank": 37,
@@ -46,35 +48,54 @@
   },
   "bestMatches": [
     {
-      "date": "2024-01-30",
+      "id": 1848,
+      "date": "2024-01-31",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Swerve Strickland"
       ],
+      "partners": [],
+      "versus": [
+        "Swerve Strickland"
+      ],
       "rating": 7.29,
-      "division": "Hardcore",
       "matchType": "One on One",
       "matchStipulation": "Hardcore",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-08-08",
+      "id": 1483,
+      "date": "2023-08-09",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 6.82,
-      "division": "FTW Rules",
       "matchType": "One on One",
       "matchStipulation": "FTW Rules",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-02-20",
+      "id": 1881,
+      "date": "2024-02-21",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brian Cage",
         "Swerve Strickland",
@@ -82,56 +103,98 @@
         "Hook",
         "Adam Page"
       ],
+      "partners": [
+        "Hook",
+        "Adam Page"
+      ],
+      "versus": [
+        "Brian Cage",
+        "Swerve Strickland",
+        "Samoa Joe"
+      ],
       "rating": 6.73,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-09-22",
+      "id": 1584,
+      "date": "2023-09-23",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Angelo Parker",
         "Matt Menard"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard"
+      ],
       "rating": 5.65,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-24",
+      "id": 1644,
+      "date": "2023-10-25",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Alex Reynolds",
         "John Silver"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver"
+      ],
       "rating": 5.37,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-04-19",
+      "id": 1984,
+      "date": "2024-04-20",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Komander",
         "Lee Johnson"
       ],
+      "partners": [],
+      "versus": [
+        "Isiah Kassidy",
+        "Komander",
+        "Lee Johnson"
+      ],
       "rating": 5.19,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
@@ -299,65 +362,106 @@
   ],
   "allMatches": [
     {
-      "date": "2023-08-08",
+      "id": 1483,
+      "date": "2023-08-09",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jack Perry"
       ],
+      "partners": [],
+      "versus": [
+        "Jack Perry"
+      ],
       "rating": 6.82,
-      "division": "FTW Rules",
       "matchType": "One on One",
       "matchStipulation": "FTW Rules",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-22",
+      "id": 1584,
+      "date": "2023-09-23",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Angelo Parker",
         "Matt Menard"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard"
+      ],
       "rating": 5.65,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-24",
+      "id": 1644,
+      "date": "2023-10-25",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Alex Reynolds",
         "John Silver"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver"
+      ],
       "rating": 5.37,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-01-30",
+      "id": 1848,
+      "date": "2024-01-31",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Swerve Strickland"
       ],
+      "partners": [],
+      "versus": [
+        "Swerve Strickland"
+      ],
       "rating": 7.29,
-      "division": "Hardcore",
       "matchType": "One on One",
       "matchStipulation": "Hardcore",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-02-20",
+      "id": 1881,
+      "date": "2024-02-21",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brian Cage",
         "Swerve Strickland",
@@ -365,27 +469,46 @@
         "Hook",
         "Adam Page"
       ],
+      "partners": [
+        "Hook",
+        "Adam Page"
+      ],
+      "versus": [
+        "Brian Cage",
+        "Swerve Strickland",
+        "Samoa Joe"
+      ],
       "rating": 6.73,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-04-19",
+      "id": 1984,
+      "date": "2024-04-20",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Komander",
         "Lee Johnson"
       ],
+      "partners": [],
+      "versus": [
+        "Isiah Kassidy",
+        "Komander",
+        "Lee Johnson"
+      ],
       "rating": 5.19,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
