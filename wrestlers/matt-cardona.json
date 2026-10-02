@@ -1,10 +1,12 @@
 {
   "name": "Matt Cardona",
+  "slug": "matt-cardona",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.42851420014219,
   "currentRank": 44,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 104.46077922228334,
   "peakRatingWeek": "Mar '24 Week 5",
   "peakRank": 33,
@@ -46,50 +48,80 @@
   },
   "bestMatches": [
     {
-      "date": "2024-03-29",
+      "id": 1948,
+      "date": "2024-03-30",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Copeland"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Copeland"
+      ],
       "rating": 7.54,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-08-04",
+      "id": 241,
+      "date": "2020-08-05",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody",
         "Alex Reynolds",
         "John Silver"
       ],
+      "partners": [
+        "Cody"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver"
+      ],
       "rating": 5.57,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-12-12",
+      "id": 2454,
+      "date": "2024-12-13",
       "year": 2024,
       "event": "Winter is Coming '24 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Keith"
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Keith"
+      ],
       "rating": 5.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2020-09-04",
+      "id": 264,
+      "date": "2020-09-05",
       "year": 2020,
       "event": "All Out '20",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Dustin Rhodes",
         "QT Marshall",
@@ -99,11 +131,22 @@
         "Brodie Lee",
         "Colt Cabana"
       ],
+      "partners": [],
+      "versus": [
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Scorpio Sky",
+        "Evil Uno",
+        "Stu Grayson",
+        "Brodie Lee",
+        "Colt Cabana"
+      ],
       "rating": 5.45,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -215,24 +258,38 @@
   ],
   "allMatches": [
     {
-      "date": "2020-08-04",
+      "id": 241,
+      "date": "2020-08-05",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody",
         "Alex Reynolds",
         "John Silver"
       ],
+      "partners": [
+        "Cody"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver"
+      ],
       "rating": 5.57,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2020-09-04",
+      "id": 264,
+      "date": "2020-09-05",
       "year": 2020,
       "event": "All Out '20",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
         "Dustin Rhodes",
         "QT Marshall",
@@ -242,38 +299,64 @@
         "Brodie Lee",
         "Colt Cabana"
       ],
+      "partners": [],
+      "versus": [
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Scorpio Sky",
+        "Evil Uno",
+        "Stu Grayson",
+        "Brodie Lee",
+        "Colt Cabana"
+      ],
       "rating": 5.45,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-03-29",
+      "id": 1948,
+      "date": "2024-03-30",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Copeland"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Copeland"
+      ],
       "rating": 7.54,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-12-12",
+      "id": 2454,
+      "date": "2024-12-13",
       "year": 2024,
       "event": "Winter is Coming '24 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Keith"
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Keith"
+      ],
       "rating": 5.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
