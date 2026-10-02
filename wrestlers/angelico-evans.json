@@ -1,10 +1,12 @@
 {
   "name": "Angelico & Evans",
+  "slug": "angelico-evans",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 103.25512184054674,
   "currentRank": 3,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 103.39979973159727,
   "peakRatingWeek": "Jul '19",
   "peakRank": 3,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2019-07-12",
+      "id": 16,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "Evil Uno",
         "Stu Grayson",
@@ -50,39 +55,56 @@
         "Angelico",
         "Jack Evans"
       ],
+      "partners": [],
+      "versus": [
+        "Evil Uno",
+        "Stu Grayson",
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 7.1,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-05-24",
+      "id": 3,
+      "date": "2019-05-25",
       "year": 2019,
       "event": "Double or Nothing '19",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Chuck Taylor",
         "Trent",
         "Angelico",
         "Jack Evans"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent"
+      ],
       "rating": 6.99,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Jul '19",
       "rating": 103.39979973159727,
       "rank": 3,
       "division": "Men Tag"
     },
     {
-      "date": "2026-04-17",
+      "date": "2026-10-02",
       "week": "Aug '19",
       "rating": 103.34389119636622,
       "rank": 3,
@@ -112,25 +134,37 @@
   ],
   "allMatches": [
     {
-      "date": "2019-05-24",
+      "id": 3,
+      "date": "2019-05-25",
       "year": 2019,
       "event": "Double or Nothing '19",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Chuck Taylor",
         "Trent",
         "Angelico",
         "Jack Evans"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Trent"
+      ],
       "rating": 6.99,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2019-07-12",
+      "id": 16,
+      "date": "2019-07-13",
       "year": 2019,
       "event": "Fight for the Fallen '19",
+      "show": "Fight for the Fallen",
+      "showType": "Pay Per View",
       "opponents": [
         "Evil Uno",
         "Stu Grayson",
@@ -139,12 +173,19 @@
         "Angelico",
         "Jack Evans"
       ],
+      "partners": [],
+      "versus": [
+        "Evil Uno",
+        "Stu Grayson",
+        "Jungle Boy",
+        "Luchasaurus"
+      ],
       "rating": 7.1,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
