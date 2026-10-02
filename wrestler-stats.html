@@ -19,7 +19,7 @@
     <title>Wrestler Stats - Elite Wrestler Ratings</title>
     <script src="best-match-shared.js?v=2"></script>
     <!-- Bump ?v= whenever match-filters.js changes, so browsers/Cloudflare fetch the new copy -->
-    <script src="match-filters.js?v=4"></script>
+    <script src="match-filters.js?v=5"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css">
@@ -236,7 +236,7 @@
 
         .match-filters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 18px;
         }
 
@@ -353,6 +353,27 @@
             padding-bottom: 6px;
             margin-bottom: 2px;
             border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
+        }
+
+        /* The Show list holds longer names, so it opens wider than its button,
+           extending to the left so it stays on screen */
+        #showFilterOptions {
+            left: auto;
+            min-width: 280px;
+        }
+
+        /* Show filter tree: type headings → families (All In) → places → years */
+        .match-filter-options .lvl-1 { padding-left: 20px; }
+        .match-filter-options .lvl-2 { padding-left: 40px; }
+        .match-filter-options .lvl-3 { padding-left: 60px; }
+
+        .match-filter-options .show-group > span {
+            font-weight: bold;
+        }
+
+        .match-filter-options .type-heading {
+            color: #ffd700;
+            margin-top: 4px;
         }
 
         .match-filter-options .stip-extra {
@@ -735,6 +756,11 @@
                 gap: 14px;
             }
 
+            #showFilterOptions {
+                left: 0;
+                min-width: 0;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
@@ -953,6 +979,11 @@
                             <div class="match-filter-group-title tt" data-tt="The kind of show the match was on: Pay Per View, Weekly TV (Dynamite, Collision, Rampage), TV specials like Grand Slam, Battle of the Belts, or YouTube specials.">Show Type</div>
                             <button type="button" class="match-filter-toggle" id="showTypeFilterToggle" aria-expanded="false" aria-controls="showTypeFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="showTypeFilterOptions"></div>
+                        </div>
+                        <div class="match-filter-group" id="showFilterGroup" style="display: none;">
+                            <div class="match-filter-group-title tt" data-tt="Appears once you narrow Show Type. Lists the shows within the types you've picked, all ticked to start. Untick any you want to leave out.">Show</div>
+                            <button type="button" class="match-filter-toggle" id="showFilterToggle" aria-expanded="false" aria-controls="showFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="showFilterOptions"></div>
                         </div>
                         <div class="match-filter-group" id="cardPosFilterGroup">
                             <div class="match-filter-group-title tt" data-tt="Where the match sat on the card: the Main Event, the Opener, or anywhere in between (Other).">Card Position</div>
@@ -1570,7 +1601,7 @@
             }
         }
         let currentYear = 'ALL';
-        let matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null };
+        let matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null, showExcluded: null };
         let ratingChart = null;
         let chartScaleFixed = false;
         let allBestMatchEntries = [];
@@ -3190,11 +3221,21 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 cb.addEventListener('change', () => onMatchFilterCheckboxChange(cb));
             });
 
+            // Show filter: restore unticked shows (?showEx=Rampage|...), then
+            // build its list from the restored Show Type choice. Its boxes are
+            // rebuilt whenever Show Type changes, so it listens on the container.
+            if (params.get('showEx')) {
+                matchFilterState.showExcluded = new Set(params.get('showEx').split('|').filter(Boolean));
+            }
+            renderShowFilter();
+            document.getElementById('showFilterOptions').addEventListener('change', onShowCheckboxChange);
+
             setupMatchFilterDropdowns();
 
             document.getElementById('matchFiltersReset').addEventListener('click', () => {
-                matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null };
+                matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null, showExcluded: null };
                 applyMatchFilterStateToCheckboxes();
+                renderShowFilter();
                 onMatchFiltersChanged();
             });
         }
@@ -3203,7 +3244,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         // opens the checkbox list. Only one is open at a time; clicking
         // outside or pressing Escape closes it.
         function setupMatchFilterDropdowns() {
-            const groups = Object.keys(MATCH_FACETS).map(f => document.getElementById(`${f}FilterGroup`));
+            const groups = Object.keys(MATCH_FACETS).concat('show').map(f => document.getElementById(`${f}FilterGroup`));
 
             function closeAll(except = null) {
                 groups.forEach(g => {
@@ -3280,7 +3321,183 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             matchFilterState[facet] = selected.length === individuals.length ? null : new Set(selected);
 
             syncShortcutBoxes(facet);
+            if (facet === 'showType') renderShowFilter();
             onMatchFiltersChanged();
+        }
+
+        // ---------------------------------------------------------------
+        // SHOW FILTER (depends on Show Type)
+        // Hidden while Show Type is "All". Once types are picked, lists their
+        // shows — all ticked to start. Shows named "Family: Place" are nested
+        // (All In → London → '23 '24 '26, Texas '25); a level with only one
+        // entry collapses into it. Order: Weekly TV as Dynamite → Collision → Rampage, everything else
+        // by the calendar month the show usually runs (worked out from match
+        // dates, so new PPVs slot in automatically). State is the set of
+        // UNticked shows, so a newly picked type arrives fully ticked, and
+        // unticking a type forgets the choices inside it.
+        // ---------------------------------------------------------------
+        function buildShowTree() {
+            const types = matchFilterState.showType;
+            if (!types) return [];
+            const all = wrestlerData.allMatches || [];
+            const usualMonth = months => Number(Object.keys(months).sort((a, b) => months[b] - months[a] || a - b)[0] || 13);
+            const yy = y => `'${String(y).slice(-2)}`;
+
+            return matchFilterOptions.showType.filter(t => types.has(t)).map(type => {
+                // Tally each show within this type
+                const shows = {};
+                all.filter(m => getShowTypeGroup(m.showType) === type).forEach(m => {
+                    const name = (m.show || '').trim() || 'Not Recorded';
+                    const sh = shows[name] = shows[name] || { name, count: 0, months: {}, years: new Set() };
+                    sh.count++;
+                    if (m.date) { const mo = Number(m.date.slice(5, 7)); sh.months[mo] = (sh.months[mo] || 0) + 1; }
+                    if (m.year) sh.years.add(m.year);
+                });
+
+                // Plain shows become entries; "Family: Place" shows merge into a family
+                const entries = {};
+                Object.values(shows).forEach(sh => {
+                    const fam = getShowFamily(sh.name);
+                    if (fam && sh.years.size) {
+                        const f = entries['F:' + fam.family] = entries['F:' + fam.family] ||
+                            { label: fam.family, sep: ': ', children: [], count: 0, months: {} };
+                        f.count += sh.count;
+                        Object.entries(sh.months).forEach(([mo, n]) => { f.months[mo] = (f.months[mo] || 0) + n; });
+                        const years = [...sh.years].sort();
+                        f.children.push({
+                            label: fam.place, sep: ' ', firstYear: years[0],
+                            children: years.map(y => ({ key: `${sh.name} ${yy(y)}`, full: `${sh.name} ${yy(y)}`, label: yy(y) }))
+                        });
+                    } else {
+                        entries['S:' + sh.name] = { key: sh.name, full: sh.name, label: sh.name, count: sh.count, months: sh.months };
+                    }
+                });
+                Object.values(entries).forEach(e => e.children && e.children.sort((a, b) => a.firstYear - b.firstYear));
+
+                // Weekly TV: fixed brand order (any new brand goes after, by size).
+                // Everything else: calendar order of when the show usually runs.
+                const brandRank = label => { const i = WEEKLY_TV_ORDER.indexOf(label); return i === -1 ? 99 : i; };
+                const list = Object.values(entries).sort((a, b) => type === 'Weekly TV'
+                    ? brandRank(a.label) - brandRank(b.label) || b.count - a.count
+                    : usualMonth(a.months) - usualMonth(b.months) || a.label.localeCompare(b.label));
+                return { label: type, children: list.map(collapseShowNode) };
+            });
+        }
+
+        // A group with a single child becomes that child, with labels joined
+        // ("Texas" + "'25" → "Texas '25"; "All In" + "London '24" → "All In: London '24")
+        function collapseShowNode(node) {
+            if (!node.children) return node;
+            node.children = node.children.map(collapseShowNode);
+            if (node.children.length === 1) {
+                const child = node.children[0];
+                return { ...child, label: `${node.label}${node.sep || ' '}${child.label}` };
+            }
+            return node;
+        }
+
+        function showLeafKeys(node) {
+            return node.children ? node.children.flatMap(showLeafKeys) : [node.key];
+        }
+
+        function renderShowNode(node, depth, extraClass = '') {
+            const keys = showLeafKeys(node);
+            const classes = [`lvl-${depth}`, node.children ? 'show-group' : '', extraClass].filter(Boolean).join(' ');
+            let html = `
+                <label class="${classes}" data-keys="${escapeAttr(keys.join('|'))}"${node.children ? '' : ` data-full="${escapeAttr(node.full)}"`}>
+                    <input type="checkbox" data-facet="show">
+                    <span>${escapeAttr(node.label)} <span class="count"></span></span>
+                </label>`;
+            if (node.children) node.children.forEach(child => { html += renderShowNode(child, depth + 1); });
+            return html;
+        }
+
+        function renderShowFilter() {
+            const group = document.getElementById('showFilterGroup');
+            const box = document.getElementById('showFilterOptions');
+            const tree = buildShowTree();
+            const leaves = tree.flatMap(showLeafKeys);
+
+            // Nothing to choose between (Show Type = All, or only one show) → hide
+            if (leaves.length < 2) {
+                group.style.display = 'none';
+                group.classList.remove('open');
+                group.querySelector('.match-filter-toggle').setAttribute('aria-expanded', 'false');
+                box.innerHTML = '';
+                matchFilterState.showExcluded = null;
+                return;
+            }
+
+            // Forget unticked shows that are no longer listed
+            if (matchFilterState.showExcluded) {
+                const kept = [...matchFilterState.showExcluded].filter(k => leaves.includes(k));
+                matchFilterState.showExcluded = kept.length ? new Set(kept) : null;
+            }
+
+            let html = `
+                <label class="lvl-0 shortcut" data-keys="${escapeAttr(leaves.join('|'))}">
+                    <input type="checkbox" data-facet="show">
+                    <span><strong>All</strong> <span class="count"></span></span>
+                </label>`;
+            const multiType = tree.length > 1;
+            tree.forEach(t => {
+                if (multiType) html += renderShowNode(t, 0, 'type-heading');
+                else t.children.forEach(child => { html += renderShowNode(child, 0); });
+            });
+            box.innerHTML = html;
+            group.style.display = '';
+            syncShowCheckboxes();
+        }
+
+        function syncShowCheckboxes() {
+            const excluded = matchFilterState.showExcluded || new Set();
+            document.querySelectorAll('#showFilterOptions label[data-keys]').forEach(label => {
+                const keys = label.dataset.keys.split('|');
+                const ticked = keys.filter(k => !excluded.has(k)).length;
+                const cb = label.querySelector('input');
+                cb.checked = ticked === keys.length;
+                cb.indeterminate = ticked > 0 && ticked < keys.length;
+            });
+        }
+
+        // Every box in the Show list (All, a type, All In, London, a single show)
+        // simply ticks or unticks all the shows underneath it.
+        function onShowCheckboxChange(e) {
+            const cb = e.target;
+            if (!cb.matches('input[type="checkbox"]')) return;
+            const keys = cb.closest('label').dataset.keys.split('|');
+            const excluded = new Set(matchFilterState.showExcluded || []);
+            keys.forEach(k => cb.checked ? excluded.delete(k) : excluded.add(k));
+            matchFilterState.showExcluded = excluded.size ? excluded : null;
+            syncShowCheckboxes();
+            onMatchFiltersChanged();
+        }
+
+        function refreshShowFilterCountsAndToggle() {
+            const box = document.getElementById('showFilterOptions');
+            if (!box.children.length) return;
+            const base = getYearMatches().filter(m => matchPassesFilters(m, matchFilterState, 'show'));
+            const counts = countBy(base, getShowKey);
+            box.querySelectorAll('label[data-keys]').forEach(label => {
+                const n = label.dataset.keys.split('|').reduce((sum, k) => sum + (counts[k] || 0), 0);
+                label.querySelector('.count').textContent = `(${n})`;
+                label.classList.toggle('is-zero', n === 0);
+            });
+
+            const excluded = matchFilterState.showExcluded;
+            const toggle = document.getElementById('showFilterToggle');
+            let text;
+            if (!excluded) {
+                text = `All (${base.length})`;
+            } else {
+                const chosen = [...box.querySelectorAll('label[data-full]')]
+                    .filter(l => !excluded.has(l.dataset.keys)).map(l => l.dataset.full);
+                text = chosen.length === 0 ? 'None selected'
+                    : chosen.length <= 2 ? chosen.join(', ') : `${chosen.length} selected`;
+            }
+            toggle.querySelector('.toggle-text').textContent = text;
+            toggle.title = text;
+            toggle.classList.toggle('is-set', !!excluded);
         }
 
         function syncShortcutBoxes(facet) {
@@ -3322,6 +3539,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 if (selected === null) params.delete(facet);
                 else params.set(facet, [...selected].join('|'));
             });
+            if (matchFilterState.showExcluded) params.set('showEx', [...matchFilterState.showExcluded].join('|'));
+            else params.delete('showEx');
             if (currentYear && currentYear !== 'ALL') params.set('year', currentYear);
             else params.delete('year');
             history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
@@ -3350,6 +3569,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         function refreshMatchFilterUI() {
             refreshMatchFilterCounts();
             refreshMatchFilterToggles();
+            refreshShowFilterCountsAndToggle();
 
             const anySet = Object.values(matchFilterState).some(v => v !== null);
             document.getElementById('matchFiltersReset').style.display = anySet ? '' : 'none';
