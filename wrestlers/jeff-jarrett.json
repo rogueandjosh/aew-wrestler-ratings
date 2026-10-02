@@ -1,10 +1,12 @@
 {
   "name": "Jeff Jarrett",
+  "slug": "jeff-jarrett",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.64604696076347,
   "currentRank": 46,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 109.99300684541035,
   "peakRatingWeek": "Sep '24 Week 1",
   "peakRank": 23,
@@ -60,9 +62,12 @@
   },
   "bestMatches": [
     {
-      "date": "2024-08-24",
+      "id": 2237,
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Adam Page",
@@ -74,57 +79,100 @@
         "Orange Cassidy",
         "Ricochet"
       ],
+      "partners": [],
+      "versus": [
+        "Christian Cage",
+        "Adam Page",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
+        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Orange Cassidy",
+        "Ricochet"
+      ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-06",
+      "id": 2200,
+      "date": "2024-08-07",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson"
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Danielson"
+      ],
       "rating": 7.6,
-      "division": "Anything Goes",
       "matchType": "One on One",
       "matchStipulation": "Anything Goes",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-07-02",
+      "id": 2141,
+      "date": "2024-07-03",
       "year": 2024,
       "event": "Beach Break '24 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page"
+      ],
       "rating": 7.59,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Owen Hart Tournament Final"
+      "stakes": "Owen Hart Tournament Final",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-01-05",
+      "id": 1177,
+      "date": "2023-01-06",
       "year": 2023,
       "event": "Battle of the Belts 5",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 7.33,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-03-08",
+      "id": 1918,
+      "date": "2024-03-09",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Buddy Matthews",
@@ -132,16 +180,29 @@
         "Jay Lethal",
         "Mark Briscoe"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 6.84,
-      "division": "Atlanta Street Fight",
       "matchType": "Trios",
       "matchStipulation": "Atlanta Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-07-25",
+      "id": 2173,
+      "date": "2024-07-26",
       "year": 2024,
       "event": "Royal Rampage '24",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Brandon Cutler",
@@ -161,16 +222,40 @@
         "The Butcher",
         "Tomohiro Ishii"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Brandon Cutler",
+        "Brody King",
+        "Claudio Castagnoli",
+        "Jay Lethal",
+        "Kip Sabian",
+        "Kyle O'Reilly",
+        "Lio Rush",
+        "Matt Menard",
+        "Matt Taven",
+        "Mike Bennett",
+        "Nick Wayne",
+        "Orange Cassidy",
+        "Roderick Strong",
+        "The Beast Mortos",
+        "The Butcher",
+        "Tomohiro Ishii"
+      ],
       "rating": 6.74,
-      "division": "Royal Rampage",
       "matchType": "Multi Man",
       "matchStipulation": "Royal Rampage",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-01-07",
+      "id": 2502,
+      "date": "2025-01-08",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Adam Cole",
@@ -183,31 +268,59 @@
         "Roderick Strong",
         "Wheeler Yuta"
       ],
+      "partners": [],
+      "versus": [
+        "Powerhouse Hobbs",
+        "Adam Cole",
+        "Adam Page",
+        "Daniel Garcia",
+        "Jay White",
+        "Kyle O'Reilly",
+        "Lance Archer",
+        "Ricochet",
+        "Roderick Strong",
+        "Wheeler Yuta"
+      ],
       "rating": 6.72,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-01-03",
+      "id": 1170,
+      "date": "2023-01-04",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 6.56,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-20",
+      "id": 1450,
+      "date": "2023-07-21",
       "year": 2023,
       "event": "Royal Rampage '23",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Angelo Parker",
@@ -229,16 +342,42 @@
         "The Blade",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Angelo Parker",
+        "Big Bill",
+        "Bishop Kaun",
+        "Brian Cage",
+        "Ethan Page",
+        "Isiah Kassidy",
+        "Jake Hager",
+        "Jay Lethal",
+        "Komander",
+        "Matt Hardy",
+        "Matt Menard",
+        "Matt Sydal",
+        "Minoru Suzuki",
+        "Nick Wayne",
+        "Swerve Strickland",
+        "The Butcher",
+        "The Blade",
+        "Toa Liona"
+      ],
       "rating": 6.51,
-      "division": "Royal Rampage",
       "matchType": "Battle Royal",
       "matchStipulation": "Royal Rampage",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-08-01",
+      "id": 1471,
+      "date": "2023-08-02",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -246,11 +385,21 @@
         "Jay Lethal",
         "Satnam Singh"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 6.5,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -880,84 +1029,142 @@
   ],
   "allMatches": [
     {
-      "date": "2022-11-17",
+      "id": 1120,
+      "date": "2022-11-18",
       "year": 2022,
       "event": "Full Gear '22",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Sting",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Sting"
+      ],
       "rating": 6.41,
-      "division": "No DQ",
       "matchType": "Tag Team",
       "matchStipulation": "No DQ",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-01",
+      "id": 1137,
+      "date": "2022-12-02",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Isiah Kassidy",
         "Marq Quen"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 4.95,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-12-22",
+      "id": 1160,
+      "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Anthony Bowens",
         "Billy Gunn"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Billy Gunn"
+      ],
       "rating": 5.55,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2023-01-03",
+      "id": 1170,
+      "date": "2023-01-04",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Jay Lethal"
+      ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
       ],
       "rating": 6.56,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-01-05",
+      "id": 1177,
+      "date": "2023-01-06",
       "year": 2023,
       "event": "Battle of the Belts 5",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 7.33,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-01-26",
+      "id": 1204,
+      "date": "2023-01-27",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Satnam Singh",
@@ -965,16 +1172,29 @@
         "Trent Beretta",
         "Danhausen"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Danhausen"
+      ],
       "rating": 5.61,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-14",
+      "id": 1224,
+      "date": "2023-02-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
@@ -984,16 +1204,31 @@
         "Satnam Singh",
         "Sonjay Dutt"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster",
+        "Billy Gunn",
+        "Orange Cassidy",
+        "Sonjay Dutt"
+      ],
       "rating": 4.19,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-02-21",
+      "id": 1235,
+      "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Ariya Daivari",
@@ -1015,16 +1250,43 @@
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Ariya Daivari",
+        "Tony Nese",
+        "Kyle Fletcher",
+        "Mark Davis",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Angelo Parker",
+        "Matt Menard",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 5.39,
-      "division": "Battle Royal",
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Battle Royal",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-03-04",
+      "id": 1253,
+      "date": "2023-03-05",
       "year": 2023,
       "event": "Revolution '23",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -1034,29 +1296,52 @@
         "Danhausen",
         "Orange Cassidy"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Anthony Bowens",
+        "Max Caster",
+        "Danhausen",
+        "Orange Cassidy"
+      ],
       "rating": 6.03,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-03-14",
+      "id": 1264,
+      "date": "2023-03-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy"
       ],
+      "partners": [],
+      "versus": [
+        "Orange Cassidy"
+      ],
       "rating": 6.42,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-04-20",
+      "id": 1309,
+      "date": "2023-04-21",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1066,44 +1351,78 @@
         "Ariya Daivari",
         "Slim J"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Josh Woods",
+        "Tony Nese",
+        "Ariya Daivari",
+        "Slim J"
+      ],
       "rating": 5.31,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-04-25",
+      "id": 1312,
+      "date": "2023-04-26",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Dax Harwood"
       ],
+      "partners": [],
+      "versus": [
+        "Dax Harwood"
+      ],
       "rating": 5.56,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-05-27",
+      "id": 1353,
+      "date": "2023-05-28",
       "year": 2023,
       "event": "Double or Nothing '23",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 6.36,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-15",
+      "id": 1382,
+      "date": "2023-06-16",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Aubrey Edwards",
         "Mark Briscoe",
@@ -1111,44 +1430,76 @@
         "Jay Lethal",
         "Karen Jarrett"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Aubrey Edwards",
+        "Mark Briscoe",
+        "Papa Briscoe",
+        "Karen Jarrett"
+      ],
       "rating": 3.64,
-      "division": "None",
       "matchType": "Mixed Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-06-20",
+      "id": 1389,
+      "date": "2023-06-21",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe"
       ],
+      "partners": [],
+      "versus": [
+        "Mark Briscoe"
+      ],
       "rating": 5.6,
-      "division": "Concession Stand Brawl",
       "matchType": "One on One",
       "matchStipulation": "Concession Stand Brawl",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-06",
+      "id": 1427,
+      "date": "2023-07-07",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Daniel Garcia",
         "Sammy Guevara",
         "Matt Hardy"
       ],
+      "partners": [
+        "Matt Hardy"
+      ],
+      "versus": [
+        "Daniel Garcia",
+        "Sammy Guevara"
+      ],
       "rating": 5.32,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-07-20",
+      "id": 1450,
+      "date": "2023-07-21",
       "year": 2023,
       "event": "Royal Rampage '23",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Angelo Parker",
@@ -1170,16 +1521,42 @@
         "The Blade",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Angelo Parker",
+        "Big Bill",
+        "Bishop Kaun",
+        "Brian Cage",
+        "Ethan Page",
+        "Isiah Kassidy",
+        "Jake Hager",
+        "Jay Lethal",
+        "Komander",
+        "Matt Hardy",
+        "Matt Menard",
+        "Matt Sydal",
+        "Minoru Suzuki",
+        "Nick Wayne",
+        "Swerve Strickland",
+        "The Butcher",
+        "The Blade",
+        "Toa Liona"
+      ],
       "rating": 6.51,
-      "division": "Royal Rampage",
       "matchType": "Battle Royal",
       "matchStipulation": "Royal Rampage",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-08-01",
+      "id": 1471,
+      "date": "2023-08-02",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -1187,29 +1564,50 @@
         "Jay Lethal",
         "Satnam Singh"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 6.5,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-15",
+      "id": 1495,
+      "date": "2023-08-16",
       "year": 2023,
       "event": "Fight For the Fallen '23 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Jeff Hardy"
+      ],
       "rating": 2.21,
-      "division": "Texas Chainsaw Massacre Death Match",
       "matchType": "One on One",
       "matchStipulation": "Texas Chainsaw Massacre Death Match",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-14",
+      "id": 1564,
+      "date": "2023-09-15",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jeff Hardy",
         "Matt Hardy",
@@ -1219,42 +1617,73 @@
         "The Blade",
         "Jay Lethal"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Jeff Hardy",
+        "Matt Hardy",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "The Butcher",
+        "The Blade"
+      ],
       "rating": 5.32,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-09-26",
+      "id": 1587,
+      "date": "2023-09-27",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Rey Fenix"
+      ],
       "rating": 4.9,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-10-20",
+      "id": 1637,
+      "date": "2023-10-21",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Eddie Kingston"
       ],
+      "partners": [],
+      "versus": [
+        "Eddie Kingston"
+      ],
       "rating": 6.36,
-      "division": "Memphis Street Fight",
       "matchType": "One on One",
       "matchStipulation": "Memphis Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-02-15",
+      "id": 1877,
+      "date": "2024-02-16",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
@@ -1268,16 +1697,35 @@
         "Jay Lethal",
         "Satnam Singh"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster",
+        "Billy Gunn",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Jay White",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno"
+      ],
       "rating": 5.02,
-      "division": "None",
       "matchType": "12 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-03-08",
+      "id": 1918,
+      "date": "2024-03-09",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Buddy Matthews",
@@ -1285,16 +1733,29 @@
         "Jay Lethal",
         "Mark Briscoe"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 6.84,
-      "division": "Atlanta Street Fight",
       "matchType": "Trios",
       "matchStipulation": "Atlanta Street Fight",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-05-24",
+      "id": 2058,
+      "date": "2024-05-25",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -1302,29 +1763,50 @@
         "Jay Lethal",
         "Satnam Singh"
       ],
+      "partners": [
+        "Jay Lethal",
+        "Satnam Singh"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Bryan Danielson"
+      ],
       "rating": 6.12,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-07-02",
+      "id": 2141,
+      "date": "2024-07-03",
       "year": 2024,
       "event": "Beach Break '24 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page"
+      ],
       "rating": 7.59,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Owen Hart Tournament Final"
+      "stakes": "Owen Hart Tournament Final",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-07-25",
+      "id": 2173,
+      "date": "2024-07-26",
       "year": 2024,
       "event": "Royal Rampage '24",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Brandon Cutler",
@@ -1344,42 +1826,82 @@
         "The Butcher",
         "Tomohiro Ishii"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Brandon Cutler",
+        "Brody King",
+        "Claudio Castagnoli",
+        "Jay Lethal",
+        "Kip Sabian",
+        "Kyle O'Reilly",
+        "Lio Rush",
+        "Matt Menard",
+        "Matt Taven",
+        "Mike Bennett",
+        "Nick Wayne",
+        "Orange Cassidy",
+        "Roderick Strong",
+        "The Beast Mortos",
+        "The Butcher",
+        "Tomohiro Ishii"
+      ],
       "rating": 6.74,
-      "division": "Royal Rampage",
       "matchType": "Multi Man",
       "matchStipulation": "Royal Rampage",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-06",
+      "id": 2200,
+      "date": "2024-08-07",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson"
       ],
+      "partners": [],
+      "versus": [
+        "Bryan Danielson"
+      ],
       "rating": 7.6,
-      "division": "Anything Goes",
       "matchType": "One on One",
       "matchStipulation": "Anything Goes",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-08-23",
+      "id": 2231,
+      "date": "2024-08-24",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Ariya Daivari"
       ],
+      "partners": [],
+      "versus": [
+        "Ariya Daivari"
+      ],
       "rating": 5.69,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-24",
+      "id": 2237,
+      "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Christian Cage",
         "Adam Page",
@@ -1391,16 +1913,32 @@
         "Orange Cassidy",
         "Ricochet"
       ],
+      "partners": [],
+      "versus": [
+        "Christian Cage",
+        "Adam Page",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
+        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Orange Cassidy",
+        "Ricochet"
+      ],
       "rating": 8.47,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-29",
+      "id": 2245,
+      "date": "2024-08-30",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal",
         "Matt Taven",
@@ -1408,29 +1946,50 @@
         "Isiah Kassidy",
         "Marq Quen"
       ],
+      "partners": [
+        "Jay Lethal"
+      ],
+      "versus": [
+        "Matt Taven",
+        "Mike Bennett",
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 5.84,
-      "division": "None",
       "matchType": "3 Way Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-09-26",
+      "id": 2307,
+      "date": "2024-09-27",
       "year": 2024,
       "event": "Grand Slam '24 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page"
+      ],
       "rating": 6.35,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-01-07",
+      "id": 2502,
+      "date": "2025-01-08",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Adam Cole",
@@ -1443,25 +2002,46 @@
         "Roderick Strong",
         "Wheeler Yuta"
       ],
+      "partners": [],
+      "versus": [
+        "Powerhouse Hobbs",
+        "Adam Cole",
+        "Adam Page",
+        "Daniel Garcia",
+        "Jay White",
+        "Kyle O'Reilly",
+        "Lance Archer",
+        "Ricochet",
+        "Roderick Strong",
+        "Wheeler Yuta"
+      ],
       "rating": 6.72,
-      "division": "Casino Gauntlet",
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-01-28",
+      "id": 2531,
+      "date": "2025-01-29",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli"
       ],
+      "partners": [],
+      "versus": [
+        "Claudio Castagnoli"
+      ],
       "rating": 2.72,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
