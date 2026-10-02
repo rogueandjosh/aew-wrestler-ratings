@@ -1,10 +1,12 @@
 {
   "name": "Metalik",
+  "slug": "metalik",
   "division": "Men",
   "formerNames": [],
   "currentRating": 100.34230640716812,
   "currentRank": 51,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 100.35087996275165,
   "peakRatingWeek": "Jul '24 Week 1",
   "peakRank": 50,
@@ -46,24 +48,38 @@
   },
   "bestMatches": [
     {
-      "date": "2024-06-20",
+      "id": 2110,
+      "date": "2024-06-21",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Marq Quen",
         "Komander"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 6.08,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-05-23",
+      "id": 1344,
+      "date": "2023-05-24",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Buddy Matthews",
@@ -71,16 +87,29 @@
         "AR Fox",
         "Blake Christian"
       ],
+      "partners": [
+        "AR Fox",
+        "Blake Christian"
+      ],
+      "versus": [
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 5.82,
-      "division": "Open House",
       "matchType": "Trios",
       "matchStipulation": "Open House",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-06",
+      "id": 1616,
+      "date": "2023-10-07",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -88,24 +117,42 @@
         "Angelico",
         "Gravity"
       ],
+      "partners": [
+        "Angelico",
+        "Gravity"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.77,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-04",
+      "id": 1480,
+      "date": "2023-08-05",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay White"
       ],
+      "partners": [],
+      "versus": [
+        "Jay White"
+      ],
       "rating": 4.78,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -217,9 +264,12 @@
   ],
   "allMatches": [
     {
-      "date": "2023-05-23",
+      "id": 1344,
+      "date": "2023-05-24",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Buddy Matthews",
@@ -227,29 +277,50 @@
         "AR Fox",
         "Blake Christian"
       ],
+      "partners": [
+        "AR Fox",
+        "Blake Christian"
+      ],
+      "versus": [
+        "Brody King",
+        "Buddy Matthews",
+        "Malakai Black"
+      ],
       "rating": 5.82,
-      "division": "Open House",
       "matchType": "Trios",
       "matchStipulation": "Open House",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-08-04",
+      "id": 1480,
+      "date": "2023-08-05",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay White"
       ],
+      "partners": [],
+      "versus": [
+        "Jay White"
+      ],
       "rating": 4.78,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-10-06",
+      "id": 1616,
+      "date": "2023-10-07",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -257,27 +328,47 @@
         "Angelico",
         "Gravity"
       ],
+      "partners": [
+        "Angelico",
+        "Gravity"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.77,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-06-20",
+      "id": 2110,
+      "date": "2024-06-21",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Marq Quen",
         "Komander"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen"
+      ],
       "rating": 6.08,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
