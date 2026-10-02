@@ -1,10 +1,12 @@
 {
   "name": "Mike Sydal",
+  "slug": "mike-sydal",
   "division": "Men",
   "formerNames": [],
   "currentRating": 99.98927678650982,
   "currentRank": 45,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 99.98927678650982,
   "peakRatingWeek": "Sep '21 Week 2",
   "peakRank": 45,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2021-08-10",
+      "id": 536,
+      "date": "2021-08-11",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -49,16 +54,29 @@
         "Matt Sydal",
         "Dante Martin"
       ],
+      "partners": [
+        "Matt Sydal",
+        "Dante Martin"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 7.82,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -90,41 +108,97 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "PAC",
+        "Rey Fenix",
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Cezar Bononi",
+        "Peter Avalon",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-02-16",
+      "id": 396,
+      "date": "2021-02-17",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Matt Sydal"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 5.72,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-27",
+      "id": 458,
+      "date": "2021-04-28",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Matt Sydal"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 5.49,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -236,24 +310,38 @@
   ],
   "allMatches": [
     {
-      "date": "2021-02-16",
+      "id": 396,
+      "date": "2021-02-17",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Matt Sydal"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 5.72,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-03-06",
+      "id": 416,
+      "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "PAC",
         "Rey Fenix",
@@ -285,31 +373,79 @@
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "PAC",
+        "Rey Fenix",
+        "Bear Boulder",
+        "Bear Bronson",
+        "Jungle Boy",
+        "Luchasaurus",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Christopher Daniels",
+        "Frankie Kazarian",
+        "The Butcher",
+        "The Blade",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Stu Grayson",
+        "Five",
+        "Ten",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ortiz",
+        "Santana",
+        "Dustin Rhodes",
+        "QT Marshall",
+        "Cezar Bononi",
+        "Peter Avalon",
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 6.05,
-      "division": "Casino Battle Royale",
       "matchType": "15 Way Tag",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-04-27",
+      "id": 458,
+      "date": "2021-04-28",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
         "Matt Sydal"
       ],
+      "partners": [
+        "Matt Sydal"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 5.49,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-08-10",
+      "id": 536,
+      "date": "2021-08-11",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -317,12 +453,21 @@
         "Matt Sydal",
         "Dante Martin"
       ],
+      "partners": [
+        "Matt Sydal",
+        "Dante Martin"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 7.82,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": false
+  ]
 }
