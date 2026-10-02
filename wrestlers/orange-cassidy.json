@@ -10,7 +10,7 @@
   "peakRating": 135.28999974868432,
   "peakRatingWeek": "Sep '23 Week 1",
   "peakRank": 5,
-  "totalMatches": 239,
+  "totalMatches": 240,
   "totalWeeks": 305,
   "firstAppearance": "Jan '20 Week 2",
   "lastAppearance": "Sep '26 Week 4",
@@ -67,15 +67,15 @@
       "year": 2025
     },
     "2026": {
-      "totalMatches": 32,
-      "averageRating": 6.49,
-      "highestRating": 8.87,
+      "totalMatches": 33,
+      "averageRating": 6.56,
+      "highestRating": 8.9,
       "lowestRating": 5.19,
       "year": 2026
     },
     "ALL": {
-      "totalMatches": 239,
-      "averageRating": 6.52,
+      "totalMatches": 240,
+      "averageRating": 6.53,
       "highestRating": 9.16,
       "lowestRating": 3.23,
       "year": null
@@ -83,40 +83,82 @@
   },
   "matchDistribution": {
     "9.0+": 2,
-    "8.0-8.99": 13,
+    "8.0-8.99": 14,
     "7.0-7.99": 55,
     "6.0-6.99": 100,
     "Below 6.0": 69
   },
   "bestMatches": [
     {
+      "id": 1545,
       "date": "2023-09-03",
       "year": 2023,
       "event": "All Out '23",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley"
       ],
       "rating": 9.16,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 934,
       "date": "2022-06-26",
       "year": 2022,
       "event": "Forbidden Door '22",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
+        "Will Ospreay"
+      ],
+      "partners": [],
+      "versus": [
         "Will Ospreay"
       ],
       "rating": 9.04,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3542,
+      "date": "2026-09-30",
+      "year": 2026,
+      "event": "A Tribute To PAC '26",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
+      "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
+      "rating": 8.9,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
+    },
+    {
+      "id": 3374,
       "date": "2026-06-28",
       "year": 2026,
       "event": "Forbidden Door '26",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Konosuke Takeshita",
@@ -130,29 +172,71 @@
         "Kevin Knight",
         "MJF"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Konosuke Takeshita",
+        "Mark Briscoe",
+        "Andrade El Idolo",
+        "Jake Doyle",
+        "Kazuchika Okada",
+        "Kyle Fletcher",
+        "Kevin Knight",
+        "MJF"
+      ],
       "rating": 8.87,
       "matchType": "12 Man Tag",
       "matchStipulation": "Steel Cage",
-      "stakes": "Future Title Shot"
+      "stakes": "Future Title Shot",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 485,
       "date": "2021-05-30",
       "year": 2021,
       "event": "Double or Nothing '21",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
+        "Kenny Omega",
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "Kenny Omega",
         "PAC"
       ],
       "rating": 8.83,
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2984,
       "date": "2025-11-12",
       "year": 2025,
       "event": "Blood and Guts '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Darby Allin",
+        "Roderick Strong",
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Jon Moxley",
+        "PAC",
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Darby Allin",
         "Roderick Strong",
         "Kyle O'Reilly",
@@ -166,13 +250,29 @@
       "rating": 8.76,
       "matchType": "10 Man Tag",
       "matchStipulation": "Blood And Guts",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2072,
       "date": "2024-05-29",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Will Ospreay",
+        "Claudio Castagnoli",
+        "Hechicero",
+        "Jay White",
+        "Lio Rush",
+        "Mistico",
+        "PAC",
+        "Shota Umino"
+      ],
+      "partners": [],
+      "versus": [
         "Will Ospreay",
         "Claudio Castagnoli",
         "Hechicero",
@@ -185,13 +285,30 @@
       "rating": 8.75,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2237,
       "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
+        "Christian Cage",
+        "Adam Page",
+        "Jeff Jarrett",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
+        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Ricochet"
+      ],
+      "partners": [],
+      "versus": [
         "Christian Cage",
         "Adam Page",
         "Jeff Jarrett",
@@ -205,48 +322,51 @@
       "rating": 8.47,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2569,
       "date": "2025-02-26",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Konosuke Takeshita"
+      ],
+      "partners": [],
+      "versus": [
         "Konosuke Takeshita"
       ],
       "rating": 8.4,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2132,
       "date": "2024-06-30",
       "year": 2024,
       "event": "Forbidden Door '24",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
+        "Zack Sabre Jr."
+      ],
+      "partners": [],
+      "versus": [
         "Zack Sabre Jr."
       ],
       "rating": 8.34,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
-    },
-    {
-      "date": "2021-10-06",
-      "year": 2021,
-      "event": "Anniversary '21",
-      "opponents": [
-        "Adam Page",
-        "Andrade El Idolo",
-        "Jon Moxley",
-        "Lance Archer",
-        "Matt Hardy",
-        "PAC"
-      ],
-      "rating": 8.22,
-      "matchType": "Multi Man Gauntlet",
-      "matchStipulation": "Casino Ladder",
-      "stakes": "Number One Contender"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -2388,10 +2508,27 @@
   ],
   "allMatches": [
     {
+      "id": 69,
       "date": "2019-11-20",
       "year": 2019,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Page",
+        "MJF",
+        "Billy Gunn",
+        "Chuck Taylor",
+        "Jimmy Havoc",
+        "Joey Janela",
+        "Jungle Boy",
+        "Kip Sabian",
+        "Marko Stunt",
+        "Pentagon Jr.",
+        "Sonny Kiss"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Page",
         "MJF",
         "Billy Gunn",
@@ -2407,12 +2544,17 @@
       "rating": 5.48,
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 101,
       "date": "2020-01-08",
       "year": 2020,
       "event": "1 Year Anniversary '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jungle Boy",
         "Luchasaurus",
@@ -2420,52 +2562,104 @@
         "Chuck Taylor",
         "Trent"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent"
+      ],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Marko Stunt"
+      ],
       "rating": 5.78,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 140,
       "date": "2020-02-29",
       "year": 2020,
       "event": "Revolution '20",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "PAC"
       ],
       "rating": 7.82,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 168,
       "date": "2020-04-22",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jimmy Havoc"
+      ],
+      "partners": [],
+      "versus": [
         "Jimmy Havoc"
       ],
       "rating": 4.93,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 182,
       "date": "2020-05-20",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Rey Fenix"
+      ],
+      "partners": [],
+      "versus": [
         "Rey Fenix"
       ],
       "rating": 6.5,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 185,
       "date": "2020-05-23",
       "year": 2020,
       "event": "Double or Nothing '20",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
+        "Brian Cage",
+        "Colt Cabana",
+        "Darby Allin",
+        "Frankie Kazarian",
+        "Kip Sabian",
+        "Joey Janela",
+        "Luchasaurus",
+        "Scorpio Sky"
+      ],
+      "partners": [],
+      "versus": [
         "Brian Cage",
         "Colt Cabana",
         "Darby Allin",
@@ -2478,13 +2672,33 @@
       "rating": 5.35,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Ladder",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 195,
       "date": "2020-05-27",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jungle Boy",
+        "Billy Gunn",
+        "Brandon Cutler",
+        "Christopher Daniels",
+        "Colt Cabana",
+        "Luchasaurus",
+        "Luther",
+        "Marko Stunt",
+        "MJF",
+        "Peter Avalon",
+        "Sonny Kiss",
+        "Wardlow"
+      ],
+      "partners": [],
+      "versus": [
         "Jungle Boy",
         "Billy Gunn",
         "Brandon Cutler",
@@ -2501,12 +2715,17 @@
       "rating": 5.97,
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 202,
       "date": "2020-06-10",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent",
@@ -2514,27 +2733,50 @@
         "Ortiz",
         "Santana"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent"
+      ],
+      "versus": [
+        "Jake Hager",
+        "Ortiz",
+        "Santana"
+      ],
       "rating": 5.36,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 223,
       "date": "2020-07-08",
       "year": 2020,
       "event": "Fyter Fest '20 - Night 2",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Chris Jericho"
+      ],
+      "partners": [],
+      "versus": [
         "Chris Jericho"
       ],
       "rating": 7.61,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 234,
       "date": "2020-07-29",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent",
@@ -2546,100 +2788,203 @@
         "Ortiz",
         "Santana"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent"
+      ],
+      "versus": [
+        "Jungle Boy",
+        "Luchasaurus",
+        "Chris Jericho",
+        "Sammy Guevara",
+        "Jake Hager",
+        "Ortiz",
+        "Santana"
+      ],
       "rating": 5.14,
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 246,
       "date": "2020-08-12",
       "year": 2020,
       "event": "Tag Team Appreciation Night '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Chris Jericho"
+      ],
+      "partners": [],
+      "versus": [
         "Chris Jericho"
       ],
       "rating": 5.51,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 266,
       "date": "2020-09-05",
       "year": 2020,
       "event": "All Out '20",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
+        "Chris Jericho"
+      ],
+      "partners": [],
+      "versus": [
         "Chris Jericho"
       ],
       "rating": 5.87,
       "matchType": "One on One",
       "matchStipulation": "Mimosa Mayhem",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 282,
       "date": "2020-09-23",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Brodie Lee"
+      ],
+      "partners": [],
+      "versus": [
         "Brodie Lee"
       ],
       "rating": 6.58,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 295,
       "date": "2020-10-14",
       "year": 2020,
       "event": "Anniversary '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Cody"
+      ],
+      "partners": [],
+      "versus": [
         "Cody"
       ],
       "rating": 6.63,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 304,
       "date": "2020-10-28",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Cody"
+      ],
+      "partners": [],
+      "versus": [
         "Cody"
       ],
       "rating": 6.25,
       "matchType": "One on One",
       "matchStipulation": "Lumberjack",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 312,
       "date": "2020-11-07",
       "year": 2020,
       "event": "Full Gear 2020",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
+        "John Silver"
+      ],
+      "partners": [],
+      "versus": [
         "John Silver"
       ],
       "rating": 6.71,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 325,
       "date": "2020-11-18",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kip Sabian"
+      ],
+      "partners": [],
+      "versus": [
         "Kip Sabian"
       ],
       "rating": 4.89,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 334,
       "date": "2020-12-02",
       "year": 2020,
       "event": "Winter is Coming '20",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "MJF",
+        "Adam Page",
+        "Alex Reynolds",
+        "Isiah Kassidy",
+        "Joey Janela",
+        "John Silver",
+        "Jungle Boy",
+        "Kip Sabian",
+        "Lee Johnson",
+        "Luther",
+        "Marq Quen",
+        "Matt Hardy",
+        "Matt Sydal",
+        "Miro",
+        "Sammy Guevara",
+        "Scorpio Sky",
+        "Serpentico",
+        "Shawn Spears",
+        "Wardlow"
+      ],
+      "partners": [],
+      "versus": [
         "MJF",
         "Adam Page",
         "Alex Reynolds",
@@ -2663,24 +3008,38 @@
       "rating": 6.33,
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 342,
       "date": "2020-12-09",
       "year": 2020,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "MJF"
+      ],
+      "partners": [],
+      "versus": [
         "MJF"
       ],
       "rating": 6.76,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 358,
       "date": "2020-12-30",
       "year": 2020,
       "event": "A Celebration of Mr Brodie Lee's Life",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cody Rhodes",
         "Ten",
@@ -2688,31 +3047,66 @@
         "Ricky Starks",
         "Powerhouse Hobbs"
       ],
+      "partners": [
+        "Cody Rhodes",
+        "Ten"
+      ],
+      "versus": [
+        "Brian Cage",
+        "Ricky Starks",
+        "Powerhouse Hobbs"
+      ],
       "rating": 7.29,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 418,
       "date": "2021-03-07",
       "year": 2021,
       "event": "Revolution '21",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Kip Sabian",
         "Miro",
         "Chuck Taylor"
       ],
+      "partners": [
+        "Chuck Taylor"
+      ],
+      "versus": [
+        "Kip Sabian",
+        "Miro"
+      ],
       "rating": 4.38,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 442,
       "date": "2021-03-31",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
+        "Kip Sabian",
+        "Miro",
+        "Adam Page",
+        "Max Caster"
+      ],
+      "partners": [
+        "Chuck Taylor"
+      ],
+      "versus": [
         "Kip Sabian",
         "Miro",
         "Adam Page",
@@ -2721,50 +3115,89 @@
       "rating": 8.09,
       "matchType": "Tag Team",
       "matchStipulation": "Arcade Anarchy Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 459,
       "date": "2021-04-28",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Penta El Zero M"
+      ],
+      "partners": [],
+      "versus": [
         "Penta El Zero M"
       ],
       "rating": 6.59,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 469,
       "date": "2021-05-12",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "PAC"
       ],
       "rating": 4.31,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 485,
       "date": "2021-05-30",
       "year": 2021,
       "event": "Double or Nothing '21",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
+        "Kenny Omega",
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "Kenny Omega",
         "PAC"
       ],
       "rating": 8.83,
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 515,
       "date": "2021-07-07",
       "year": 2021,
       "event": "Road Rager '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kris Statlander",
+        "The Blade",
+        "The Bunny"
+      ],
+      "partners": [],
+      "versus": [
         "Kris Statlander",
         "The Blade",
         "The Bunny"
@@ -2772,24 +3205,38 @@
       "rating": 5.03,
       "matchType": "Mixed Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 525,
       "date": "2021-07-21",
       "year": 2021,
       "event": "Fyter Fest - Night 2 '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "The Blade"
+      ],
+      "partners": [],
+      "versus": [
         "The Blade"
       ],
       "rating": 5.62,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 538,
       "date": "2021-08-11",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Isiah Kassidy",
         "Marq Quen",
@@ -2797,40 +3244,90 @@
         "Chuck Taylor",
         "Wheeler Yuta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Wheeler Yuta"
+      ],
+      "versus": [
+        "Isiah Kassidy",
+        "Marq Quen",
+        "Matt Hardy"
+      ],
       "rating": 4.96,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 549,
       "date": "2021-08-25",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Matt Hardy"
+      ],
+      "partners": [],
+      "versus": [
         "Matt Hardy"
       ],
       "rating": 5.58,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 557,
       "date": "2021-09-01",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jack Evans"
+      ],
+      "partners": [],
+      "versus": [
         "Jack Evans"
       ],
       "rating": 4.19,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 599,
       "date": "2021-09-29",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Evil Uno",
+        "Stu Grayson",
+        "Alex Reynolds",
+        "John Silver",
+        "Alan Angels",
+        "Colt Cabana",
+        "Ten",
+        "Matt Hardy",
+        "Jora Johl",
+        "Isiah Kassidy",
+        "Marq Quen",
+        "The Butcher",
+        "The Blade",
+        "Angelico",
+        "Jack Evans"
+      ],
+      "partners": [],
+      "versus": [
         "Evil Uno",
         "Stu Grayson",
         "Alex Reynolds",
@@ -2850,25 +3347,48 @@
       "rating": 6.03,
       "matchType": "16 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 604,
       "date": "2021-10-01",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jack Evans"
+      ],
+      "partners": [],
+      "versus": [
         "Jack Evans"
       ],
       "rating": 4.91,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Hair vs Hair"
+      "stakes": "Hair vs Hair",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 608,
       "date": "2021-10-06",
       "year": 2021,
       "event": "Anniversary '21",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Page",
+        "Andrade El Idolo",
+        "Jon Moxley",
+        "Lance Archer",
+        "Matt Hardy",
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Page",
         "Andrade El Idolo",
         "Jon Moxley",
@@ -2879,76 +3399,132 @@
       "rating": 8.22,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Ladder",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 620,
       "date": "2021-10-22",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Powerhouse Hobbs"
+      ],
+      "partners": [],
+      "versus": [
         "Powerhouse Hobbs"
       ],
       "rating": 4.88,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 638,
       "date": "2021-11-03",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Miro"
+      ],
+      "partners": [],
+      "versus": [
         "Miro"
       ],
       "rating": 6.58,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 648,
       "date": "2021-11-12",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Matt Hardy"
+      ],
+      "partners": [],
+      "versus": [
         "Matt Hardy"
       ],
       "rating": 4.54,
       "matchType": "One on One",
       "matchStipulation": "Lumberjack",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 659,
       "date": "2021-11-17",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Tomohiro Ishii",
+        "The Butcher",
+        "The Blade"
+      ],
+      "partners": [
+        "Tomohiro Ishii"
+      ],
+      "versus": [
         "The Butcher",
         "The Blade"
       ],
       "rating": 6.58,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 670,
       "date": "2021-11-26",
       "year": 2021,
       "event": "Black Friday",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Bobby Fish",
         "Wheeler Yuta"
       ],
+      "partners": [
+        "Wheeler Yuta"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Bobby Fish"
+      ],
       "rating": 7.02,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 691,
       "date": "2021-12-17",
       "year": 2021,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -2958,27 +3534,52 @@
         "Nick Jackson",
         "Bobby Fish"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Rocky Romero",
+        "Adam Cole",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Bobby Fish"
+      ],
       "rating": 7.34,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 694,
       "date": "2021-12-22",
       "year": 2021,
       "event": "Holiday Bash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Cole"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Cole"
       ],
       "rating": 7.05,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 703,
       "date": "2021-12-29",
       "year": 2021,
       "event": "New Year's Smash '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Cole",
         "Bobby Fish",
@@ -2986,16 +3587,36 @@
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Adam Cole",
+        "Bobby Fish",
+        "Kyle O'Reilly"
+      ],
       "rating": 7.22,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 725,
       "date": "2022-01-19",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Cole",
+        "Britt Baker",
+        "Kris Statlander"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Cole",
         "Britt Baker",
         "Kris Statlander"
@@ -3003,37 +3624,68 @@
       "rating": 6.78,
       "matchType": "Mixed Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 734,
       "date": "2022-01-26",
       "year": 2022,
       "event": "Beach Break '21 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Cole"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Cole"
       ],
       "rating": 7.12,
       "matchType": "One on One",
       "matchStipulation": "Lights Out",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 766,
       "date": "2022-02-25",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Anthony Bowens"
+      ],
+      "partners": [],
+      "versus": [
         "Anthony Bowens"
       ],
       "rating": 6.27,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 776,
       "date": "2022-03-05",
       "year": 2022,
       "event": "Revolution '22",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
+        "Wardlow",
+        "Christian Cage",
+        "Keith Lee",
+        "Powerhouse Hobbs",
+        "Ricky Starks"
+      ],
+      "partners": [],
+      "versus": [
         "Wardlow",
         "Christian Cage",
         "Keith Lee",
@@ -3043,12 +3695,17 @@
       "rating": 7.4,
       "matchType": "6 Way",
       "matchStipulation": "Ladder",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 922,
       "date": "2022-06-22",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Rocky Romero",
         "Trent Beretta",
@@ -3056,63 +3713,113 @@
         "Mark Davis",
         "Will Ospreay"
       ],
+      "partners": [
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Kyle Fletcher",
+        "Mark Davis",
+        "Will Ospreay"
+      ],
       "rating": 7.82,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 934,
       "date": "2022-06-26",
       "year": 2022,
       "event": "Forbidden Door '22",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
+        "Will Ospreay"
+      ],
+      "partners": [],
+      "versus": [
         "Will Ospreay"
       ],
       "rating": 9.04,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 938,
       "date": "2022-06-29",
       "year": 2022,
       "event": "Blood and Guts '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Ethan Page"
+      ],
+      "partners": [],
+      "versus": [
         "Ethan Page"
       ],
       "rating": 6.41,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 951,
       "date": "2022-07-08",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Tony Nese"
+      ],
+      "partners": [],
+      "versus": [
         "Tony Nese"
       ],
       "rating": 7.55,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 952,
       "date": "2022-07-13",
       "year": 2022,
       "event": "Fyter Fest '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Wardlow"
+      ],
+      "partners": [],
+      "versus": [
         "Wardlow"
       ],
       "rating": 6.97,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 974,
       "date": "2022-07-29",
       "year": 2022,
       "event": "Fight for the Fallen '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -3120,39 +3827,71 @@
         "Satnam Singh",
         "Sonjay Dutt"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Jay Lethal",
+        "Satnam Singh",
+        "Sonjay Dutt"
+      ],
       "rating": 5.58,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 977,
       "date": "2022-08-03",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jay Lethal"
+      ],
+      "partners": [],
+      "versus": [
         "Jay Lethal"
       ],
       "rating": 6.59,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 994,
       "date": "2022-08-12",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Ariya Daivari"
+      ],
+      "partners": [],
+      "versus": [
         "Ariya Daivari"
       ],
       "rating": 5.73,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1000,
       "date": "2022-08-19",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -3160,15 +3899,29 @@
         "Parker Boudreaux",
         "Slim J"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Ariya Daivari",
+        "Parker Boudreaux",
+        "Slim J"
+      ],
       "rating": 6.49,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1011,
       "date": "2022-09-02",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Alex Reynolds",
         "John Silver",
@@ -3176,15 +3929,29 @@
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Adam Page"
+      ],
       "rating": 7.59,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1023,
       "date": "2022-09-07",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Penta El Zero M",
         "Rey Fenix",
@@ -3192,39 +3959,71 @@
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Penta El Zero M",
+        "Rey Fenix",
+        "PAC"
+      ],
       "rating": 7.41,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1039,
       "date": "2022-09-21",
       "year": 2022,
       "event": "Grand Slam '22 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "PAC"
       ],
       "rating": 6.41,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1071,
       "date": "2022-10-12",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "PAC"
       ],
       "rating": 7.86,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1075,
       "date": "2022-10-18",
       "year": 2022,
       "event": "Title Tuesday '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Penta El Zero M",
         "Rey Fenix",
@@ -3232,90 +4031,174 @@
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Penta El Zero M",
+        "Rey Fenix",
+        "PAC"
+      ],
       "rating": 7.36,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1081,
       "date": "2022-10-21",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Rush",
+        "Ten"
+      ],
+      "partners": [],
+      "versus": [
         "Rush",
         "Ten"
       ],
       "rating": 5.81,
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1093,
       "date": "2022-11-02",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Luchasaurus",
+        "Rey Fenix"
+      ],
+      "partners": [],
+      "versus": [
         "Luchasaurus",
         "Rey Fenix"
       ],
       "rating": 6.54,
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1095,
       "date": "2022-11-04",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Katsuyori Shibata"
+      ],
+      "partners": [],
+      "versus": [
         "Katsuyori Shibata"
       ],
       "rating": 7.64,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1105,
       "date": "2022-11-11",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Lee Johnson"
+      ],
+      "partners": [],
+      "versus": [
         "Lee Johnson"
       ],
       "rating": 5.85,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1124,
       "date": "2022-11-23",
       "year": 2022,
       "event": "Thanksgiving Eve '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jake Hager"
+      ],
+      "partners": [],
+      "versus": [
         "Jake Hager"
       ],
       "rating": 5.75,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1138,
       "date": "2022-12-02",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "QT Marshall"
+      ],
+      "partners": [],
+      "versus": [
         "QT Marshall"
       ],
       "rating": 5.5,
       "matchType": "One on One",
       "matchStipulation": "Lumberjack",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1139,
       "date": "2022-12-07",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Ricky Starks",
+        "Brian Cage",
+        "Dalton Castle",
+        "Ethan Page",
+        "Kip Sabian",
+        "Lee Moriarty",
+        "Dustin Rhodes",
+        "Jack Perry",
+        "Matt Hardy",
+        "Shawn Dean",
+        "The Butcher"
+      ],
+      "partners": [],
+      "versus": [
         "Ricky Starks",
         "Brian Cage",
         "Dalton Castle",
@@ -3331,24 +4214,38 @@
       "rating": 6.19,
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Dynamite Diamond Ring"
+      "stakes": "Dynamite Diamond Ring",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1146,
       "date": "2022-12-09",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Trent Seven"
+      ],
+      "partners": [],
+      "versus": [
         "Trent Seven"
       ],
       "rating": 6.46,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1154,
       "date": "2022-12-16",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Chuck Taylor",
         "Trent Beretta",
@@ -3364,15 +4261,37 @@
         "Rey Fenix",
         "PAC"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Dustin Rhodes",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Trent Seven",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "PAC"
+      ],
       "rating": 6.08,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1158,
       "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -3398,64 +4317,142 @@
         "Tony Nese",
         "Ariya Daivari"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "AR Fox",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Dralistico",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Angelico",
+        "Luther",
+        "Serpentico",
+        "Josh Woods",
+        "Tony Nese",
+        "Ariya Daivari"
+      ],
       "rating": 6.24,
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1166,
       "date": "2022-12-30",
       "year": 2022,
       "event": "New Year's Smash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Trent Beretta"
+      ],
+      "partners": [],
+      "versus": [
         "Trent Beretta"
       ],
       "rating": 7.3,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1179,
       "date": "2023-01-06",
       "year": 2023,
       "event": "Battle of the Belts 5",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
+        "Kip Sabian"
+      ],
+      "partners": [],
+      "versus": [
         "Kip Sabian"
       ],
       "rating": 6.79,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1188,
       "date": "2023-01-18",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jay Lethal"
+      ],
+      "partners": [],
+      "versus": [
         "Jay Lethal"
       ],
       "rating": 5.82,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1223,
       "date": "2023-02-10",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Lee Moriarty"
+      ],
+      "partners": [],
+      "versus": [
         "Lee Moriarty"
       ],
       "rating": 6.27,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1224,
       "date": "2023-02-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Anthony Bowens",
+        "Max Caster",
+        "Billy Gunn",
+        "Jay Lethal",
+        "Jeff Jarrett",
+        "Satnam Singh",
+        "Sonjay Dutt"
+      ],
+      "partners": [],
+      "versus": [
         "Anthony Bowens",
         "Max Caster",
         "Billy Gunn",
@@ -3467,38 +4464,84 @@
       "rating": 4.19,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 1233,
       "date": "2023-02-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Wheeler Yuta"
       ],
       "rating": 8.14,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1240,
       "date": "2023-03-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Big Bill"
+      ],
+      "partners": [],
+      "versus": [
         "Big Bill"
       ],
       "rating": 5.92,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1243,
       "date": "2023-03-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Danhausen",
+        "Dante Martin",
+        "Darius Martin",
+        "Kyle Fletcher",
+        "Mark Davis",
+        "Angelo Parker",
+        "Matt Menard",
+        "Alex Reynolds",
+        "John Silver",
+        "Matt Taven",
+        "Mike Bennett",
+        "Preston Vance",
+        "Rush",
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "The Butcher",
+        "The Blade"
+      ],
+      "partners": [
+        "Danhausen"
+      ],
+      "versus": [
         "Dante Martin",
         "Darius Martin",
         "Kyle Fletcher",
@@ -3521,12 +4564,17 @@
       "rating": 3.23,
       "matchType": "Tag Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1253,
       "date": "2023-03-05",
       "year": 2023,
       "event": "Revolution '23",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -3536,39 +4584,73 @@
         "Jeff Jarrett",
         "Danhausen"
       ],
+      "partners": [
+        "Danhausen"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Anthony Bowens",
+        "Max Caster",
+        "Jay Lethal",
+        "Jeff Jarrett"
+      ],
       "rating": 6.03,
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1255,
       "date": "2023-03-08",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jay Lethal"
+      ],
+      "partners": [],
+      "versus": [
         "Jay Lethal"
       ],
       "rating": 6.19,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1264,
       "date": "2023-03-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jeff Jarrett"
+      ],
+      "partners": [],
+      "versus": [
         "Jeff Jarrett"
       ],
       "rating": 6.42,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1269,
       "date": "2023-03-22",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Sting",
@@ -3576,27 +4658,50 @@
         "The Blade",
         "Kip Sabian"
       ],
+      "partners": [
+        "Darby Allin",
+        "Sting"
+      ],
+      "versus": [
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian"
+      ],
       "rating": 6.46,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1279,
       "date": "2023-03-29",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "The Butcher"
+      ],
+      "partners": [],
+      "versus": [
         "The Butcher"
       ],
       "rating": 5.57,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1285,
       "date": "2023-04-05",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Malakai Black",
@@ -3604,52 +4709,103 @@
         "Chuck Taylor",
         "Trent Beretta"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Brody King",
+        "Malakai Black",
+        "Buddy Matthews"
+      ],
       "rating": 7.06,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1293,
       "date": "2023-04-07",
       "year": 2023,
       "event": "Battle of the Belts 6",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
+        "Dralistico"
+      ],
+      "partners": [],
+      "versus": [
         "Dralistico"
       ],
       "rating": 6.41,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1297,
       "date": "2023-04-12",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Buddy Matthews"
+      ],
+      "partners": [],
+      "versus": [
         "Buddy Matthews"
       ],
       "rating": 7.75,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1311,
       "date": "2023-04-26",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Bandido"
+      ],
+      "partners": [],
+      "versus": [
         "Bandido"
       ],
       "rating": 7.37,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1319,
       "date": "2023-05-03",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Cole",
+        "Bandido",
+        "Roderick Strong",
+        "Angelo Parker",
+        "Matt Menard",
+        "Daniel Garcia",
+        "Jake Hager"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Cole",
         "Bandido",
         "Roderick Strong",
@@ -3661,51 +4817,109 @@
       "rating": 6.97,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 1328,
       "date": "2023-05-10",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Daniel Garcia"
+      ],
+      "partners": [],
+      "versus": [
         "Daniel Garcia"
       ],
       "rating": 7.59,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1335,
       "date": "2023-05-17",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Big Bill",
+        "Lee Moriarty"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Big Bill",
         "Lee Moriarty"
       ],
       "rating": 6.98,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1343,
       "date": "2023-05-24",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kyle Fletcher"
+      ],
+      "partners": [],
+      "versus": [
         "Kyle Fletcher"
       ],
       "rating": 6.79,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1351,
       "date": "2023-05-28",
       "year": 2023,
       "event": "Double or Nothing '23",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
+        "Ariya Daivari",
+        "Bandido",
+        "Big Bill",
+        "Brian Cage",
+        "Chuck Taylor",
+        "Dustin Rhodes",
+        "Jay White",
+        "Juice Robinson",
+        "Keith Lee",
+        "Kip Sabian",
+        "Komander",
+        "Lee Moriarty",
+        "Penta El Zero M",
+        "Rey Fenix",
+        "Ricky Starks",
+        "Swerve Strickland",
+        "The Butcher",
+        "The Blade",
+        "Tony Nese",
+        "Trent Beretta"
+      ],
+      "partners": [],
+      "versus": [
         "Ariya Daivari",
         "Bandido",
         "Big Bill",
@@ -3730,39 +4944,75 @@
       "rating": 7.12,
       "matchType": "Multi Man",
       "matchStipulation": "Battle Royal",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1361,
       "date": "2023-05-31",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Bishop Kaun",
         "Toa Liona"
       ],
       "rating": 7.17,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1368,
       "date": "2023-06-07",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Swerve Strickland"
+      ],
+      "partners": [],
+      "versus": [
         "Swerve Strickland"
       ],
       "rating": 8.03,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1377,
       "date": "2023-06-14",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Darby Allin",
+        "Sting",
+        "Keith Lee",
+        "Bishop Kaun",
+        "Toa Liona",
+        "Brian Cage",
+        "Swerve Strickland"
+      ],
+      "partners": [],
+      "versus": [
         "Darby Allin",
         "Sting",
         "Keith Lee",
@@ -3774,27 +5024,50 @@
       "rating": 6.69,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 1391,
       "date": "2023-06-21",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Daniel Garcia",
         "Zack Sabre Jr.",
         "Katsuyori Shibata"
       ],
+      "partners": [
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Daniel Garcia",
+        "Zack Sabre Jr."
+      ],
       "rating": 7.12,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1402,
       "date": "2023-06-24",
       "year": 2023,
       "event": "Forbidden Door '23",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
+        "Daniel Garcia",
+        "Katsuyori Shibata",
+        "Zack Sabre Jr."
+      ],
+      "partners": [],
+      "versus": [
         "Daniel Garcia",
         "Katsuyori Shibata",
         "Zack Sabre Jr."
@@ -3802,12 +5075,17 @@
       "rating": 8.2,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1410,
       "date": "2023-06-28",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "El Hijo del Vikingo",
         "Keith Lee",
@@ -3815,103 +5093,186 @@
         "Matt Menard",
         "Daniel Garcia"
       ],
+      "partners": [
+        "El Hijo del Vikingo",
+        "Keith Lee"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Daniel Garcia"
+      ],
       "rating": 6.22,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 1421,
       "date": "2023-07-05",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Keith Lee",
+        "Swerve Strickland"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Keith Lee",
         "Swerve Strickland"
       ],
       "rating": 7.58,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1434,
       "date": "2023-07-12",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Daniel Garcia",
         "Sammy Guevara",
         "Darby Allin"
       ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
+        "Daniel Garcia",
+        "Sammy Guevara"
+      ],
       "rating": 6.6,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1444,
       "date": "2023-07-15",
       "year": 2023,
       "event": "Battle of the Belts 7",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
+        "Lance Archer"
+      ],
+      "partners": [],
+      "versus": [
         "Lance Archer"
       ],
       "rating": 5.27,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1456,
       "date": "2023-07-26",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "AR Fox"
+      ],
+      "partners": [],
+      "versus": [
         "AR Fox"
       ],
       "rating": 7.34,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1487,
       "date": "2023-08-11",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Johnny TV"
+      ],
+      "partners": [],
+      "versus": [
         "Johnny TV"
       ],
       "rating": 5.33,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1493,
       "date": "2023-08-16",
       "year": 2023,
       "event": "Fight For the Fallen '23 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Wheeler Yuta"
       ],
       "rating": 6.84,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1509,
       "date": "2023-08-25",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Aaron Solo"
+      ],
+      "partners": [],
+      "versus": [
         "Aaron Solo"
       ],
       "rating": 5.12,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1512,
       "date": "2023-08-26",
       "year": 2023,
       "event": "Fyter Fest '23 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Eddie Kingston",
         "Penta El Zero M",
@@ -3919,15 +5280,29 @@
         "The Blade",
         "Kip Sabian"
       ],
+      "partners": [
+        "Eddie Kingston",
+        "Penta El Zero M"
+      ],
+      "versus": [
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian"
+      ],
       "rating": 5.21,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1519,
       "date": "2023-08-27",
       "year": 2023,
       "event": "All In: London '23",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Eddie Kingston",
         "Penta El Zero M",
@@ -3939,40 +5314,84 @@
         "Ortiz",
         "Santana"
       ],
+      "partners": [
+        "Chuck Taylor",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Eddie Kingston",
+        "Penta El Zero M",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Ortiz",
+        "Santana"
+      ],
       "rating": 8.04,
       "matchType": "10 Man Tag",
       "matchStipulation": "Stadium Stampede",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 1528,
       "date": "2023-08-30",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Penta El Zero M"
+      ],
+      "partners": [],
+      "versus": [
         "Penta El Zero M"
       ],
       "rating": 7.24,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1545,
       "date": "2023-09-03",
       "year": 2023,
       "event": "All Out '23",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley"
       ],
       "rating": 9.16,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1578,
       "date": "2023-09-22",
       "year": 2023,
       "event": "Grand Slam '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Hook",
+        "Kris Statlander",
+        "Angelo Parker",
+        "Matt Menard",
+        "Anna Jay"
+      ],
+      "partners": [],
+      "versus": [
         "Hook",
         "Kris Statlander",
         "Angelo Parker",
@@ -3982,13 +5401,24 @@
       "rating": 5.69,
       "matchType": "Mixed Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 1589,
       "date": "2023-09-27",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Austin Gunn",
+        "Matt Jackson",
+        "Penta El Zero M"
+      ],
+      "partners": [],
+      "versus": [
         "Austin Gunn",
         "Matt Jackson",
         "Penta El Zero M"
@@ -3996,12 +5426,17 @@
       "rating": 6.77,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1601,
       "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -4011,79 +5446,146 @@
         "Penta El Zero M",
         "Rey Fenix"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Penta El Zero M",
+        "Rey Fenix"
+      ],
       "rating": 6.33,
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1640,
       "date": "2023-10-21",
       "year": 2023,
       "event": "Battle of the Belts 8",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
+        "John Silver"
+      ],
+      "partners": [],
+      "versus": [
         "John Silver"
       ],
       "rating": 5.72,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1647,
       "date": "2023-10-25",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Claudio Castagnoli",
         "Kazuchika Okada"
       ],
+      "partners": [
+        "Kazuchika Okada"
+      ],
+      "versus": [
+        "Bryan Danielson",
+        "Claudio Castagnoli"
+      ],
       "rating": 7.77,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1655,
       "date": "2023-11-01",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Claudio Castagnoli"
+      ],
+      "partners": [],
+      "versus": [
         "Claudio Castagnoli"
       ],
       "rating": 7.23,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1682,
       "date": "2023-11-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "Wheeler Yuta",
         "Hook"
       ],
+      "partners": [
+        "Hook"
+      ],
+      "versus": [
+        "Jon Moxley",
+        "Wheeler Yuta"
+      ],
       "rating": 6.2,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1695,
       "date": "2023-11-18",
       "year": 2023,
       "event": "Full Gear '23",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley"
       ],
       "rating": 6.89,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1703,
       "date": "2023-11-22",
       "year": 2023,
       "event": "Thanksgiving Eve '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Katsuyori Shibata",
@@ -4091,16 +5593,40 @@
         "Matt Menard",
         "Jake Hager"
       ],
+      "partners": [
+        "Hook",
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Jake Hager"
+      ],
       "rating": 5.13,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 1721,
       "date": "2023-12-01",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Trent Beretta",
+        "Danhausen",
+        "Hook",
+        "Angelo Parker",
+        "Matt Menard",
+        "Alex Reynolds",
+        "John Silver"
+      ],
+      "partners": [],
+      "versus": [
         "Trent Beretta",
         "Danhausen",
         "Hook",
@@ -4112,24 +5638,38 @@
       "rating": 4.85,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 1734,
       "date": "2023-12-08",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Angelico"
+      ],
+      "partners": [],
+      "versus": [
         "Angelico"
       ],
       "rating": 6.09,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1747,
       "date": "2023-12-15",
       "year": 2023,
       "event": "Winter is Coming '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Marshall von Erich",
         "Ross von Erich",
@@ -4137,39 +5677,71 @@
         "Matt Menard",
         "Jake Hager"
       ],
+      "partners": [
+        "Marshall von Erich",
+        "Ross von Erich"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Jake Hager"
+      ],
       "rating": 5.49,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1751,
       "date": "2023-12-16",
       "year": 2023,
       "event": "Winter is Coming '23 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Bryan Keith"
+      ],
+      "partners": [],
+      "versus": [
         "Bryan Keith"
       ],
       "rating": 6.7,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1760,
       "date": "2023-12-22",
       "year": 2023,
       "event": "Holiday Bash '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Rocky Romero"
+      ],
+      "partners": [],
+      "versus": [
         "Rocky Romero"
       ],
       "rating": 7.15,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1774,
       "date": "2023-12-29",
       "year": 2023,
       "event": "New Year's Smash '23 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -4177,28 +5749,61 @@
         "Rocky Romero",
         "Trent Beretta"
       ],
+      "partners": [
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "Action Andretti"
+      ],
       "rating": 6.76,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1784,
       "date": "2024-01-03",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Dante Martin"
+      ],
+      "partners": [],
+      "versus": [
         "Dante Martin"
       ],
       "rating": 6.48,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1798,
       "date": "2024-01-10",
       "year": 2024,
       "event": "Homecoming '24 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Copeland",
+        "Dustin Rhodes",
+        "Preston Vance",
+        "Bishop Kaun",
+        "Toa Liona",
+        "Brian Cage",
+        "Lance Archer"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Copeland",
         "Dustin Rhodes",
         "Preston Vance",
@@ -4210,50 +5815,85 @@
       "rating": 6.2,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 1812,
       "date": "2024-01-13",
       "year": 2024,
       "event": "Battle of the Belts 9",
+      "show": "Battle of the Belts",
+      "showType": "Quarterly TV Show",
       "opponents": [
+        "Preston Vance"
+      ],
+      "partners": [],
+      "versus": [
         "Preston Vance"
       ],
       "rating": 6.22,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1814,
       "date": "2024-01-17",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Trent Beretta",
+        "Komander",
+        "Penta El Zero M"
+      ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
         "Komander",
         "Penta El Zero M"
       ],
       "rating": 6.44,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1838,
       "date": "2024-01-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Komander"
+      ],
+      "partners": [],
+      "versus": [
         "Komander"
       ],
       "rating": 6.47,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1862,
       "date": "2024-02-09",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Taven",
         "Mike Bennett",
@@ -4261,63 +5901,113 @@
         "Rocky Romero",
         "Trent Beretta"
       ],
+      "partners": [
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Matt Taven",
+        "Mike Bennett",
+        "Roderick Strong"
+      ],
       "rating": 6,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 1869,
       "date": "2024-02-10",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Tomohiro Ishii"
+      ],
+      "partners": [],
+      "versus": [
         "Tomohiro Ishii"
       ],
       "rating": 7.5,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1874,
       "date": "2024-02-14",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Matt Taven"
+      ],
+      "partners": [],
+      "versus": [
         "Matt Taven"
       ],
       "rating": 7.78,
       "matchType": "One on One",
       "matchStipulation": "Texas Death Match",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1879,
       "date": "2024-02-21",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Mike Bennett"
+      ],
+      "partners": [],
+      "versus": [
         "Mike Bennett"
       ],
       "rating": 5.48,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1891,
       "date": "2024-02-28",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Nick Wayne"
+      ],
+      "partners": [],
+      "versus": [
         "Nick Wayne"
       ],
       "rating": 5.96,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1897,
       "date": "2024-03-02",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Christian Cage",
         "Killswitch",
@@ -4327,172 +6017,325 @@
         "Daniel Garcia",
         "Hook"
       ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Christian Cage",
+        "Killswitch",
+        "Brian Cage",
+        "Roderick Strong",
+        "Daniel Garcia",
+        "Hook"
+      ],
       "rating": 6.37,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 1901,
       "date": "2024-03-03",
       "year": 2024,
       "event": "Revolution '24",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
+        "Roderick Strong"
+      ],
+      "partners": [],
+      "versus": [
         "Roderick Strong"
       ],
       "rating": 7.28,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 1911,
       "date": "2024-03-08",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Trent Beretta",
+        "The Butcher",
+        "Kip Sabian"
+      ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
         "The Butcher",
         "Kip Sabian"
       ],
       "rating": 5.14,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1924,
       "date": "2024-03-15",
       "year": 2024,
       "event": "Big Business",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Trent Beretta",
+        "Evil Uno",
+        "John Silver"
+      ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
         "Evil Uno",
         "John Silver"
       ],
       "rating": 5.8,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1937,
       "date": "2024-03-22",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Trent Beretta",
+        "Kyle Fletcher",
+        "Powerhouse Hobbs"
+      ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
         "Kyle Fletcher",
         "Powerhouse Hobbs"
       ],
       "rating": 6.76,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 1943,
       "date": "2024-03-27",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Trent Beretta",
+        "Matt Taven",
+        "Mike Bennett"
+      ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
         "Matt Taven",
         "Mike Bennett"
       ],
       "rating": 5.62,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1956,
       "date": "2024-04-03",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Matthew Jackson",
         "Nicholas Jackson",
         "Trent Beretta"
       ],
+      "partners": [
+        "Trent Beretta"
+      ],
+      "versus": [
+        "Matthew Jackson",
+        "Nicholas Jackson"
+      ],
       "rating": 6.73,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 1968,
       "date": "2024-04-12",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Alex Reynolds"
+      ],
+      "partners": [],
+      "versus": [
         "Alex Reynolds"
       ],
       "rating": 5.84,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 1982,
       "date": "2024-04-17",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Shane Taylor"
+      ],
+      "partners": [],
+      "versus": [
         "Shane Taylor"
       ],
       "rating": 5.79,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2020,
       "date": "2024-05-08",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Trent Beretta"
+      ],
+      "partners": [],
+      "versus": [
         "Trent Beretta"
       ],
       "rating": 5.92,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2042,
       "date": "2024-05-18",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Isiah Kassidy"
+      ],
+      "partners": [],
+      "versus": [
         "Isiah Kassidy"
       ],
       "rating": 5.88,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2045,
       "date": "2024-05-22",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Roderick Strong",
         "Trent Beretta",
         "Will Ospreay"
       ],
+      "partners": [
+        "Will Ospreay"
+      ],
+      "versus": [
+        "Roderick Strong",
+        "Trent Beretta"
+      ],
       "rating": 7.17,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2062,
       "date": "2024-05-26",
       "year": 2024,
       "event": "Double or Nothing '24",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
+        "Trent Beretta"
+      ],
+      "partners": [],
+      "versus": [
         "Trent Beretta"
       ],
       "rating": 5.69,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2072,
       "date": "2024-05-29",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Will Ospreay",
+        "Claudio Castagnoli",
+        "Hechicero",
+        "Jay White",
+        "Lio Rush",
+        "Mistico",
+        "PAC",
+        "Shota Umino"
+      ],
+      "partners": [],
+      "versus": [
         "Will Ospreay",
         "Claudio Castagnoli",
         "Hechicero",
@@ -4505,13 +6348,24 @@
       "rating": 8.75,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2081,
       "date": "2024-06-05",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Rey Fenix",
+        "Jay Lethal",
+        "Kyle O'Reilly"
+      ],
+      "partners": [],
+      "versus": [
         "Rey Fenix",
         "Jay Lethal",
         "Kyle O'Reilly"
@@ -4519,24 +6373,38 @@
       "rating": 6.77,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2093,
       "date": "2024-06-08",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kyle O'Reilly"
+      ],
+      "partners": [],
+      "versus": [
         "Kyle O'Reilly"
       ],
       "rating": 7.34,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2095,
       "date": "2024-06-12",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Konosuke Takeshita",
         "Kyle Fletcher",
@@ -4544,15 +6412,29 @@
         "Kyle O'Reilly",
         "Mark Briscoe"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Konosuke Takeshita",
+        "Kyle Fletcher",
+        "Roderick Strong"
+      ],
       "rating": 7.69,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2106,
       "date": "2024-06-19",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -4562,41 +6444,78 @@
         "Roderick Strong",
         "Zack Sabre Jr."
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Konosuke Takeshita",
+        "Kyle Fletcher",
+        "Roderick Strong",
+        "Zack Sabre Jr."
+      ],
       "rating": 7.63,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 2123,
       "date": "2024-06-29",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Tomohiro Ishii",
+        "Robbie Eagles",
+        "Shane Haste"
+      ],
+      "partners": [
+        "Tomohiro Ishii"
+      ],
+      "versus": [
         "Robbie Eagles",
         "Shane Haste"
       ],
       "rating": 6.08,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2132,
       "date": "2024-06-30",
       "year": 2024,
       "event": "Forbidden Door '24",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
+        "Zack Sabre Jr."
+      ],
+      "partners": [],
+      "versus": [
         "Zack Sabre Jr."
       ],
       "rating": 8.34,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2146,
       "date": "2024-07-06",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -4604,29 +6523,55 @@
         "Bronson",
         "Jacked Jameson"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Boulder",
+        "Bronson",
+        "Jacked Jameson"
+      ],
       "rating": 5.28,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2159,
       "date": "2024-07-13",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Taven",
         "Mike Bennett",
         "Kyle O'Reilly"
       ],
+      "partners": [
+        "Kyle O'Reilly"
+      ],
+      "versus": [
+        "Matt Taven",
+        "Mike Bennett"
+      ],
       "rating": 6.36,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2163,
       "date": "2024-07-19",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Tomohiro Ishii",
@@ -4634,16 +6579,50 @@
         "Mike Bennett",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Tomohiro Ishii"
+      ],
+      "versus": [
+        "Matt Taven",
+        "Mike Bennett",
+        "Roderick Strong"
+      ],
       "rating": 6.48,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2173,
       "date": "2024-07-26",
       "year": 2024,
       "event": "Royal Rampage '24",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
+        "Darby Allin",
+        "Brandon Cutler",
+        "Brody King",
+        "Claudio Castagnoli",
+        "Jay Lethal",
+        "Jeff Jarrett",
+        "Kip Sabian",
+        "Kyle O'Reilly",
+        "Lio Rush",
+        "Matt Menard",
+        "Matt Taven",
+        "Mike Bennett",
+        "Nick Wayne",
+        "Roderick Strong",
+        "The Beast Mortos",
+        "The Butcher",
+        "Tomohiro Ishii"
+      ],
+      "partners": [],
+      "versus": [
         "Darby Allin",
         "Brandon Cutler",
         "Brody King",
@@ -4665,24 +6644,38 @@
       "rating": 6.74,
       "matchType": "Multi Man",
       "matchStipulation": "Royal Rampage",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2175,
       "date": "2024-07-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Johnny TV"
+      ],
+      "partners": [],
+      "versus": [
         "Johnny TV"
       ],
       "rating": 4.79,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2186,
       "date": "2024-07-31",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Roderick Strong",
         "Rush",
@@ -4690,15 +6683,29 @@
         "Mark Briscoe",
         "Tomohiro Ishii"
       ],
+      "partners": [
+        "Mark Briscoe",
+        "Tomohiro Ishii"
+      ],
+      "versus": [
+        "Roderick Strong",
+        "Rush",
+        "The Beast Mortos"
+      ],
       "rating": 6.73,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2199,
       "date": "2024-08-07",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
@@ -4706,28 +6713,52 @@
         "Rush",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
+      "versus": [
+        "Roderick Strong",
+        "Rush",
+        "The Beast Mortos"
+      ],
       "rating": 6.84,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2211,
       "date": "2024-08-14",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "partners": [],
+      "versus": [
         "Kyle O'Reilly",
         "Roderick Strong"
       ],
       "rating": 7.46,
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2214,
       "date": "2024-08-16",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe",
         "Tomohiro Ishii",
@@ -4735,15 +6766,29 @@
         "Turbo Floyd",
         "The Butcher"
       ],
+      "partners": [
+        "Mark Briscoe",
+        "Tomohiro Ishii"
+      ],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd",
+        "The Butcher"
+      ],
       "rating": 5.86,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2228,
       "date": "2024-08-24",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -4751,16 +6796,42 @@
         "Mike Bennett",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Matt Taven",
+        "Mike Bennett",
+        "Roderick Strong"
+      ],
       "rating": 6.81,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2237,
       "date": "2024-08-25",
       "year": 2024,
       "event": "All In: London '24",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
+        "Christian Cage",
+        "Adam Page",
+        "Jeff Jarrett",
+        "Kazuchika Okada",
+        "Kyle O'Reilly",
+        "Killswitch",
+        "Mark Briscoe",
+        "Nigel McGuinness",
+        "Ricochet"
+      ],
+      "partners": [],
+      "versus": [
         "Christian Cage",
         "Adam Page",
         "Jeff Jarrett",
@@ -4774,12 +6845,17 @@
       "rating": 8.47,
       "matchType": "Multi Man Gauntlet",
       "matchStipulation": "Casino Gauntlet",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2243,
       "date": "2024-08-28",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -4789,15 +6865,31 @@
         "Chris Jericho",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Hook",
+        "Big Bill",
+        "Bryan Keith",
+        "Chris Jericho",
+        "Roderick Strong"
+      ],
       "rating": 5.97,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 2248,
       "date": "2024-08-31",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Hologram",
@@ -4805,15 +6897,29 @@
         "Lee Moriarty",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Hologram"
+      ],
+      "versus": [
+        "Johnny TV",
+        "Lee Moriarty",
+        "The Beast Mortos"
+      ],
       "rating": 7.29,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2255,
       "date": "2024-09-04",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "PAC",
@@ -4821,28 +6927,57 @@
         "Kyle O'Reilly",
         "Will Ospreay"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Will Ospreay"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "PAC",
+        "Wheeler Yuta"
+      ],
       "rating": 7.77,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2260,
       "date": "2024-09-06",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Bryan Keith"
+      ],
+      "partners": [],
+      "versus": [
         "Bryan Keith"
       ],
       "rating": 6.28,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Qualifying Match"
+      "stakes": "Qualifying Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2268,
       "date": "2024-09-07",
       "year": 2024,
       "event": "All Out '24",
+      "show": "All Out",
+      "showType": "Pay Per View",
       "opponents": [
+        "Kazuchika Okada",
+        "Konosuke Takeshita",
+        "Mark Briscoe"
+      ],
+      "partners": [],
+      "versus": [
         "Kazuchika Okada",
         "Konosuke Takeshita",
         "Mark Briscoe"
@@ -4850,12 +6985,17 @@
       "rating": 7.22,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2276,
       "date": "2024-09-11",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -4863,27 +7003,50 @@
         "John Silver",
         "Evil Uno"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno"
+      ],
       "rating": 5.81,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 2285,
       "date": "2024-09-18",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Chris Jericho"
+      ],
+      "partners": [],
+      "versus": [
         "Chris Jericho"
       ],
       "rating": 6.11,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2303,
       "date": "2024-09-27",
       "year": 2024,
       "event": "Grand Slam '24 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Big Bill",
         "Bryan Keith",
@@ -4891,57 +7054,107 @@
         "Kyle O'Reilly",
         "Mark Briscoe"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Big Bill",
+        "Bryan Keith",
+        "Chris Jericho"
+      ],
       "rating": 5.42,
       "matchType": "Trios",
       "matchStipulation": "Tornado Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2315,
       "date": "2024-10-04",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
+        "Big Bill",
+        "Bryan Keith"
+      ],
+      "partners": [
+        "Kyle O'Reilly"
+      ],
+      "versus": [
         "Big Bill",
         "Bryan Keith"
       ],
       "rating": 5.84,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2319,
       "date": "2024-10-05",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
+        "Ariya Daivari",
+        "Tony Nese"
+      ],
+      "partners": [
+        "Kyle O'Reilly"
+      ],
+      "versus": [
         "Ariya Daivari",
         "Tony Nese"
       ],
       "rating": 5.63,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 2326,
       "date": "2024-10-10",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
+        "Matt Taven",
+        "Mike Bennett"
+      ],
+      "partners": [
+        "Kyle O'Reilly"
+      ],
+      "versus": [
         "Matt Taven",
         "Mike Bennett"
       ],
       "rating": 6.56,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2340,
       "date": "2024-10-16",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Rocky Romero",
@@ -4949,68 +7162,136 @@
         "Nicholas Jackson",
         "Kazuchika Okada"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Rocky Romero"
+      ],
+      "versus": [
+        "Matthew Jackson",
+        "Nicholas Jackson",
+        "Kazuchika Okada"
+      ],
       "rating": 5.93,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2380,
       "date": "2024-11-06",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Claudio Castagnoli",
+        "PAC"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Claudio Castagnoli",
         "PAC"
       ],
       "rating": 6.65,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2410,
       "date": "2024-11-20",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Wheeler Yuta"
       ],
       "rating": 5.86,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2422,
       "date": "2024-11-23",
       "year": 2024,
       "event": "Full Gear '24",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley"
       ],
       "rating": 7.78,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2449,
       "date": "2024-12-11",
       "year": 2024,
       "event": "Winter is Coming '24 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "PAC",
         "Jay White"
       ],
+      "partners": [
+        "Jay White"
+      ],
+      "versus": [
+        "Jon Moxley",
+        "PAC"
+      ],
       "rating": 5.72,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2460,
       "date": "2024-12-14",
       "year": 2024,
       "event": "Winter is Coming '24 - Night 3",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Truth Magnum",
+        "Turbo Floyd",
+        "Daniel Garcia",
+        "Komander",
+        "Ariya Daivari",
+        "Josh Woods",
+        "Tony Nese",
+        "Mansoor",
+        "Mason Madden"
+      ],
+      "partners": [],
+      "versus": [
         "Truth Magnum",
         "Turbo Floyd",
         "Daniel Garcia",
@@ -5024,12 +7305,17 @@
       "rating": 5.28,
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2465,
       "date": "2024-12-18",
       "year": 2024,
       "event": "Holiday Bash '24 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "PAC",
@@ -5037,16 +7323,36 @@
         "Adam Page",
         "Jay White"
       ],
+      "partners": [
+        "Adam Page",
+        "Jay White"
+      ],
+      "versus": [
+        "Jon Moxley",
+        "PAC",
+        "Wheeler Yuta"
+      ],
       "rating": 6.56,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2490,
       "date": "2024-12-28",
       "year": 2024,
       "event": "Worlds End '24",
+      "show": "Worlds End",
+      "showType": "Pay Per View",
       "opponents": [
+        "Jon Moxley",
+        "Adam Page",
+        "Jay White"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley",
         "Adam Page",
         "Jay White"
@@ -5054,49 +7360,91 @@
       "rating": 6.03,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2491,
       "date": "2025-01-01",
       "year": 2025,
       "event": "Fight For The Fallen '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Page"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Page"
       ],
       "rating": 6.62,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2560,
       "date": "2025-02-19",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Roderick Strong"
+      ],
+      "partners": [],
+      "versus": [
         "Roderick Strong"
       ],
       "rating": 7.05,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2569,
       "date": "2025-02-26",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Konosuke Takeshita"
+      ],
+      "partners": [],
+      "versus": [
         "Konosuke Takeshita"
       ],
       "rating": 8.4,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2575,
       "date": "2025-03-05",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Powerhouse Hobbs",
+        "Mark Briscoe",
+        "Will Ospreay",
+        "Bryan Keith",
+        "Brian Cage",
+        "Lance Archer",
+        "Mark Davis"
+      ],
+      "partners": [],
+      "versus": [
         "Powerhouse Hobbs",
         "Mark Briscoe",
         "Will Ospreay",
@@ -5108,25 +7456,45 @@
       "rating": 7.3,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 2596,
       "date": "2025-03-12",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Hechicero"
+      ],
+      "partners": [],
+      "versus": [
         "Hechicero"
       ],
       "rating": 5.94,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Tournament Match"
+      "stakes": "Tournament Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2602,
       "date": "2025-03-19",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Mike Bailey",
+        "Ricochet",
+        "Mark Davis"
+      ],
+      "partners": [],
+      "versus": [
         "Mike Bailey",
         "Ricochet",
         "Mark Davis"
@@ -5134,12 +7502,17 @@
       "rating": 7.88,
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2906,
       "date": "2025-09-24",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hologram",
         "Mark Briscoe",
@@ -5147,27 +7520,50 @@
         "Kazuchika Okada",
         "Konosuke Takeshita"
       ],
+      "partners": [
+        "Hologram",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Hechicero",
+        "Kazuchika Okada",
+        "Konosuke Takeshita"
+      ],
       "rating": 6.91,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2915,
       "date": "2025-10-01",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kyle Fletcher"
+      ],
+      "partners": [],
+      "versus": [
         "Kyle Fletcher"
       ],
       "rating": 7.3,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 2924,
       "date": "2025-10-03",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5175,41 +7571,76 @@
         "Lance Archer",
         "Rocky Romero"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Hechicero",
+        "Lance Archer",
+        "Rocky Romero"
+      ],
       "rating": 6.07,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2930,
       "date": "2025-10-07",
       "year": 2025,
       "event": "Title Tuesday '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "PAC"
+      ],
+      "partners": [],
+      "versus": [
         "PAC"
       ],
       "rating": 6.81,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2941,
       "date": "2025-10-15",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Daniel Garcia",
         "Wheeler Yuta",
         "Kyle O'Reilly"
       ],
+      "partners": [
+        "Kyle O'Reilly"
+      ],
+      "versus": [
+        "Daniel Garcia",
+        "Wheeler Yuta"
+      ],
       "rating": 6.33,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2957,
       "date": "2025-10-22",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe",
         "Roderick Strong",
@@ -5217,42 +7648,89 @@
         "Daniel Garcia",
         "Wheeler Yuta"
       ],
+      "partners": [
+        "Mark Briscoe",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Wheeler Yuta"
+      ],
       "rating": 6.88,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 2963,
       "date": "2025-10-29",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Daniel Garcia",
+        "Wheeler Yuta"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Daniel Garcia",
         "Wheeler Yuta"
       ],
       "rating": 6.85,
       "matchType": "Tag Team",
       "matchStipulation": "Trick or Treat Match",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 2972,
       "date": "2025-11-05",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Claudio Castagnoli"
+      ],
+      "partners": [],
+      "versus": [
         "Claudio Castagnoli"
       ],
       "rating": 7.34,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Advantage Battle"
+      "stakes": "Advantage Battle",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 2984,
       "date": "2025-11-12",
       "year": 2025,
       "event": "Blood and Guts '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Darby Allin",
+        "Roderick Strong",
+        "Kyle O'Reilly",
+        "Mark Briscoe",
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Jon Moxley",
+        "PAC",
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Darby Allin",
         "Roderick Strong",
         "Kyle O'Reilly",
@@ -5266,27 +7744,58 @@
       "rating": 8.76,
       "matchType": "10 Man Tag",
       "matchStipulation": "Blood And Guts",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 2993,
       "date": "2025-11-19",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "Jon Moxley",
         "Roderick Strong"
       ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Jon Moxley"
+      ],
       "rating": 6.66,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3003,
       "date": "2025-11-22",
       "year": 2025,
       "event": "Full Gear '25",
+      "show": "Full Gear",
+      "showType": "Pay Per View",
       "opponents": [
+        "Ricochet",
+        "Bobby Lashley",
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Kevin Knight",
+        "Mark Davis",
+        "Matt Menard",
+        "Mike Bailey",
+        "Roderick Strong",
+        "Shelton Benjamin",
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Ricochet",
         "Bobby Lashley",
         "Claudio Castagnoli",
@@ -5302,73 +7811,133 @@
       "rating": 7.33,
       "matchType": "Multi Man",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3013,
       "date": "2025-11-26",
       "year": 2025,
       "event": "Thanksgiving Eve '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Claudio Castagnoli"
+      ],
+      "partners": [],
+      "versus": [
         "Claudio Castagnoli"
       ],
       "rating": 6.72,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Classic League Match"
+      "stakes": "Continental Classic League Match",
+      "division": "Men's",
+      "matchPos": "Main Event"
     },
     {
+      "id": 3024,
       "date": "2025-12-06",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Roderick Strong"
+      ],
+      "partners": [],
+      "versus": [
         "Roderick Strong"
       ],
       "rating": 6.95,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Classic League Match"
+      "stakes": "Continental Classic League Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 3044,
       "date": "2025-12-17",
       "year": 2025,
       "event": "Holiday Bash '25 - Night 1",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Mascara Dorada"
+      ],
+      "partners": [],
+      "versus": [
         "Mascara Dorada"
       ],
       "rating": 6.44,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Classic League Match"
+      "stakes": "Continental Classic League Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 3050,
       "date": "2025-12-24",
       "year": 2025,
       "event": "Dynamite On 34th Street '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Konosuke Takeshita"
+      ],
+      "partners": [],
+      "versus": [
         "Konosuke Takeshita"
       ],
       "rating": 7.76,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Classic League Match"
+      "stakes": "Continental Classic League Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 3060,
       "date": "2025-12-25",
       "year": 2025,
       "event": "Christmas Collision '25",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
         "Jon Moxley"
       ],
       "rating": 7.16,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Classic League Match"
+      "stakes": "Continental Classic League Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3067,
       "date": "2025-12-27",
       "year": 2025,
       "event": "Worlds End '25",
+      "show": "Worlds End",
+      "showType": "Pay Per View",
       "opponents": [
+        "Roderick Strong",
+        "Mark Briscoe",
+        "Toni Storm",
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Marina Shafir",
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Roderick Strong",
         "Mark Briscoe",
         "Toni Storm",
@@ -5380,13 +7949,26 @@
       "rating": 7.32,
       "matchType": "8 Person Tag",
       "matchStipulation": "Mixed Nuts Mayhem",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 3071,
       "date": "2025-12-31",
       "year": 2025,
       "event": "New Year's Smash '25",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Claudio Castagnoli",
+        "Daniel Garcia",
+        "Marina Shafir",
+        "Roderick Strong",
+        "Toni Storm"
+      ],
+      "partners": [],
+      "versus": [
         "Claudio Castagnoli",
         "Daniel Garcia",
         "Marina Shafir",
@@ -5396,27 +7978,50 @@
       "rating": 6.6,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3134,
       "date": "2026-02-11",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Roderick Strong",
+        "Clark Connors",
+        "Daniel Garcia"
+      ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
         "Clark Connors",
         "Daniel Garcia"
       ],
       "rating": 5.78,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3140,
       "date": "2026-02-14",
       "year": 2026,
       "event": "Grand Slam: Australia '26",
+      "show": "Grand Slam: Australia",
+      "showType": "TV Special",
       "opponents": [
+        "Toni Storm",
+        "Marina Shafir",
+        "Wheeler Yuta"
+      ],
+      "partners": [],
+      "versus": [
         "Toni Storm",
         "Marina Shafir",
         "Wheeler Yuta"
@@ -5424,69 +8029,128 @@
       "rating": 6.56,
       "matchType": "Mixed Tag",
       "matchStipulation": "None",
-      "stakes": "Hair vs Hair"
+      "stakes": "Hair vs Hair",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
+      "id": 3145,
       "date": "2026-02-18",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Tomohiro Ishii",
+        "Clark Connors",
+        "Gabe Kidd"
+      ],
+      "partners": [
+        "Tomohiro Ishii"
+      ],
+      "versus": [
         "Clark Connors",
         "Gabe Kidd"
       ],
       "rating": 6.13,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3155,
       "date": "2026-02-25",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Gabe Kidd"
+      ],
+      "partners": [],
+      "versus": [
         "Gabe Kidd"
       ],
       "rating": 6.41,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3165,
       "date": "2026-03-04",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
+        "Clark Connors",
+        "Gabe Kidd"
+      ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
         "Clark Connors",
         "Gabe Kidd"
       ],
       "rating": 6.72,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3176,
       "date": "2026-03-11",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "David Finlay",
         "Gabe Kidd",
         "Darby Allin"
       ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
+        "David Finlay",
+        "Gabe Kidd"
+      ],
       "rating": 6.5,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3193,
       "date": "2026-03-15",
       "year": 2026,
       "event": "Revolution '26",
+      "show": "Revolution",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Roderick Strong",
+        "Clark Connors",
+        "David Finlay",
+        "Gabe Kidd"
+      ],
+      "partners": [
+        "Darby Allin",
+        "Roderick Strong"
+      ],
+      "versus": [
         "Clark Connors",
         "David Finlay",
         "Gabe Kidd"
@@ -5494,40 +8158,69 @@
       "rating": 7.23,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3204,
       "date": "2026-03-22",
       "year": 2026,
       "event": "Slam Dunk Sunday '26",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Roderick Strong",
+        "Jay Lethal",
+        "Lee Johnson"
+      ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
         "Jay Lethal",
         "Lee Johnson"
       ],
       "rating": 6.16,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
+      "id": 3209,
       "date": "2026-03-25",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Clark Connors",
         "David Finlay",
         "Roderick Strong"
       ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Clark Connors",
+        "David Finlay"
+      ],
       "rating": 6.8,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
+      "id": 3225,
       "date": "2026-04-02",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kevin Knight",
         "Mistico",
@@ -5537,15 +8230,31 @@
         "Clark Connors",
         "David Finlay"
       ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Kevin Knight",
+        "Mistico",
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Clark Connors",
+        "David Finlay"
+      ],
       "rating": 6.79,
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 3242,
       "date": "2026-04-12",
       "year": 2026,
       "event": "Dynasty '26",
+      "show": "Dynasty",
+      "showType": "Pay Per View",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5553,15 +8262,29 @@
         "David Finlay",
         "Gabe Kidd"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Clark Connors",
+        "David Finlay",
+        "Gabe Kidd"
+      ],
       "rating": 5.54,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3249,
       "date": "2026-04-16",
       "year": 2026,
       "event": "Spring BreakThru '26 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5569,15 +8292,29 @@
         "Jay Lethal",
         "Lee Johnson"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Blake Christian",
+        "Jay Lethal",
+        "Lee Johnson"
+      ],
       "rating": 6.79,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3257,
       "date": "2026-04-25",
       "year": 2026,
       "event": "Playoff Palooza '26",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5585,28 +8322,63 @@
         "Hechicero",
         "Lance Archer"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Andrade El Idolo",
+        "Hechicero",
+        "Lance Archer"
+      ],
       "rating": 6.23,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3274,
       "date": "2026-05-06",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Dax Harwood"
+      ],
+      "partners": [],
+      "versus": [
         "Dax Harwood"
       ],
       "rating": 5.92,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Double Jeopardy"
+      "stakes": "Double Jeopardy",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3283,
       "date": "2026-05-13",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Adam Copeland",
+        "Christian Cage",
+        "Matt Jackson",
+        "Nick Jackson",
+        "Cash Wheeler",
+        "Dax Harwood",
+        "Clark Connors",
+        "David Finlay",
+        "Tommaso Ciampa"
+      ],
+      "partners": [],
+      "versus": [
         "Adam Copeland",
         "Christian Cage",
         "Matt Jackson",
@@ -5620,12 +8392,17 @@
       "rating": 7.18,
       "matchType": "10 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
+      "id": 3288,
       "date": "2026-05-16",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -5633,30 +8410,62 @@
         "Lee Moriarty",
         "Shawn Dean"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Carlie Bravo",
+        "Lee Moriarty",
+        "Shawn Dean"
+      ],
       "rating": 6.58,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Eliminator Match"
+      "stakes": "Eliminator Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3299,
       "date": "2026-05-20",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Roderick Strong"
       ],
+      "partners": [
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 6.71,
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
+      "id": 3310,
       "date": "2026-05-27",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Rush",
+        "Brian Cage",
+        "Lio Rush"
+      ],
+      "partners": [],
+      "versus": [
         "Rush",
         "Brian Cage",
         "Lio Rush"
@@ -5664,12 +8473,17 @@
       "rating": 6.22,
       "matchType": "4 Way",
       "matchStipulation": "Superstation Showcase",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3319,
       "date": "2026-05-30",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5677,15 +8491,29 @@
         "Rocky Romero",
         "Trent Beretta"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Lance Archer",
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
       "rating": 5.56,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3333,
       "date": "2026-06-06",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5693,27 +8521,50 @@
         "Rush",
         "Sammy Guevara"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Dralistico",
+        "Rush",
+        "Sammy Guevara"
+      ],
       "rating": 5.19,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3337,
       "date": "2026-06-13",
       "year": 2026,
       "event": "Summer Blockbuster '26 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
+        "Andrade El Idolo"
+      ],
+      "partners": [],
+      "versus": [
         "Andrade El Idolo"
       ],
       "rating": 6.72,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3348,
       "date": "2026-06-17",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Andrade El Idolo",
         "Jake Doyle",
@@ -5727,15 +8578,35 @@
         "Kyle O'Reilly",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Andrade El Idolo",
+        "Jake Doyle",
+        "Kazuchika Okada",
+        "Kevin Knight",
+        "Kyle Fletcher",
+        "MJF",
+        "Darby Allin",
+        "Konosuke Takeshita",
+        "Mark Briscoe"
+      ],
       "rating": 7.23,
       "matchType": "12 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
+      "id": 3361,
       "date": "2026-06-27",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5743,15 +8614,29 @@
         "Hook",
         "Katsuyori Shibata"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Anthony Bowens",
+        "Hook",
+        "Katsuyori Shibata"
+      ],
       "rating": 6.15,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3374,
       "date": "2026-06-28",
       "year": 2026,
       "event": "Forbidden Door '26",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Darby Allin",
         "Konosuke Takeshita",
@@ -5765,15 +8650,35 @@
         "Kevin Knight",
         "MJF"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Darby Allin",
+        "Konosuke Takeshita",
+        "Mark Briscoe",
+        "Andrade El Idolo",
+        "Jake Doyle",
+        "Kazuchika Okada",
+        "Kyle Fletcher",
+        "Kevin Knight",
+        "MJF"
+      ],
       "rating": 8.87,
       "matchType": "12 Man Tag",
       "matchStipulation": "Steel Cage",
-      "stakes": "Future Title Shot"
+      "stakes": "Future Title Shot",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3417,
       "date": "2026-07-25",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5781,15 +8686,29 @@
         "Turbo Floyd",
         "Dalton Castle"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd",
+        "Dalton Castle"
+      ],
       "rating": 5.63,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3434,
       "date": "2026-07-29",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bishop Kaun",
         "Ricochet",
@@ -5797,39 +8716,71 @@
         "Kyle O'Reilly",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Bishop Kaun",
+        "Ricochet",
+        "Toa Liona"
+      ],
       "rating": 6.37,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Main Event"
     },
     {
+      "id": 3449,
       "date": "2026-08-08",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Matt Sydal"
+      ],
+      "partners": [],
+      "versus": [
         "Matt Sydal"
       ],
       "rating": 6.43,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Continental Cup Match"
+      "stakes": "Continental Cup Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
+      "id": 3469,
       "date": "2026-08-22",
       "year": 2026,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "Kyle O'Reilly"
+      ],
+      "partners": [],
+      "versus": [
         "Kyle O'Reilly"
       ],
       "rating": 6.16,
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
+      "id": 3483,
       "date": "2026-08-30",
       "year": 2026,
       "event": "All In London '26",
+      "show": "All In: London",
+      "showType": "Pay Per View",
       "opponents": [
         "Swerve Strickland",
         "Austin Creed",
@@ -5852,15 +8803,44 @@
         "David Finlay",
         "Gabe Kidd"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Swerve Strickland",
+        "Austin Creed",
+        "Kofi",
+        "Adam Page",
+        "Bandido",
+        "Brody King",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Jay White",
+        "Claudio Castagnoli",
+        "PAC",
+        "Wheeler Yuta",
+        "Bishop Kaun",
+        "Ricochet",
+        "Toa Liona",
+        "Clark Connors",
+        "David Finlay",
+        "Gabe Kidd"
+      ],
       "rating": 6.47,
       "matchType": "Multi Trios",
       "matchStipulation": "Gauntlet",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3503,
       "date": "2026-09-09",
       "year": 2026,
       "event": "Rebel Heart '26",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Swerve Strickland",
         "Austin Creed",
@@ -5868,15 +8848,29 @@
         "Kyle O'Reilly",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Swerve Strickland",
+        "Austin Creed",
+        "Kofi"
+      ],
       "rating": 7.38,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
+      "id": 3513,
       "date": "2026-09-12",
       "year": 2026,
       "event": "A Tribute To The Butcher Andy Williams '26",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Roderick Strong",
@@ -5884,15 +8878,29 @@
         "Jay Lethal",
         "Lee Johnson"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Blake Christian",
+        "Jay Lethal",
+        "Lee Johnson"
+      ],
       "rating": 6.68,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
+      "id": 3517,
       "date": "2026-09-16",
       "year": 2026,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Bandido",
@@ -5900,10 +8908,42 @@
         "Kyle O'Reilly",
         "Roderick Strong"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Roderick Strong"
+      ],
+      "versus": [
+        "Adam Page",
+        "Bandido",
+        "Brody King"
+      ],
       "rating": 6.59,
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Trios",
+      "matchPos": "Other"
+    },
+    {
+      "id": 3542,
+      "date": "2026-09-30",
+      "year": 2026,
+      "event": "A Tribute To PAC '26",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
+      "opponents": [
+        "Jon Moxley"
+      ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley"
+      ],
+      "rating": 8.9,
+      "matchType": "One on One",
+      "matchStipulation": "None",
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Opener"
     }
   ]
 }
