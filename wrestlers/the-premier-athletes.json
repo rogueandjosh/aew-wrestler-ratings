@@ -1,5 +1,6 @@
 {
   "name": "The Premier Athletes",
+  "slug": "the-premier-athletes",
   "division": "Men Tag",
   "formerNames": [
     "The Varsity Athletes"
@@ -7,15 +8,16 @@
   "currentRating": 100.4834275416833,
   "currentRank": 14,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 100.51196416394261,
   "peakRatingWeek": "Aug '24 Week 2",
   "peakRank": 15,
   "totalMatches": 3,
-  "totalWeeks": 5,
-  "firstAppearance": "Aug '24 Week 2",
+  "totalWeeks": 20,
+  "firstAppearance": "Oct '22 Week 3",
   "lastAppearance": "Sep '24 Week 2",
-  "weeksInTop10": 0,
-  "weeksInTop20": 5,
+  "weeksInTop10": 1,
+  "weeksInTop20": 20,
   "statsByYear": {
     "2022": {
       "totalMatches": 2,
@@ -48,9 +50,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-12-22",
+      "id": 1158,
+      "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -77,46 +82,196 @@
         "Tony Nese",
         "Ariya Daivari"
       ],
+      "partners": [
+        "Ariya Daivari"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "AR Fox",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Dralistico",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Angelico",
+        "Luther",
+        "Serpentico"
+      ],
       "rating": 6.24,
-      "division": "Casino Battle Royale",
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-09",
+      "id": 2204,
+      "date": "2024-08-10",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Hologram",
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Hologram"
+      ],
       "rating": 5.62,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-10-20",
+      "id": 1079,
+      "date": "2022-10-21",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
+    {
+      "date": "2022-10-14",
+      "week": "Oct '22 Week 3",
+      "rating": 99.83086010761046,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-10-21",
+      "week": "Oct '22 Week 4",
+      "rating": 99.84126118244441,
+      "rank": 12,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-10-31",
+      "week": "Nov '22 Week 1",
+      "rating": 99.84430779556908,
+      "rank": 11,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-11-07",
+      "week": "Nov '22 Week 2",
+      "rating": 99.85429972115632,
+      "rank": 9,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-11-14",
+      "week": "Nov '22 Week 3",
+      "rating": 99.87412147239272,
+      "rank": 12,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-12-21",
+      "week": "Dec '22 Week 4",
+      "rating": 99.75690314068586,
+      "rank": 12,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2022-12-31",
+      "week": "Jan '23 Week 1",
+      "rating": 99.77465620293917,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-01-07",
+      "week": "Jan '23 Week 2",
+      "rating": 99.78683636888258,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-01-14",
+      "week": "Jan '23 Week 3",
+      "rating": 99.79038223088781,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-01-21",
+      "week": "Jan '23 Week 4",
+      "rating": 99.80091607878268,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-04-21",
+      "week": "Apr '23 Week 4",
+      "rating": 99.93331802061603,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-04-28",
+      "week": "Apr '23 Week 5",
+      "rating": 99.93973744385745,
+      "rank": 11,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-04-30",
+      "week": "May '23 Week 1",
+      "rating": 99.94893593023558,
+      "rank": 15,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-05-07",
+      "week": "May '23 Week 2",
+      "rating": 99.95344040207483,
+      "rank": 13,
+      "division": "Men Tag"
+    },
+    {
+      "date": "2023-05-14",
+      "week": "May '23 Week 3",
+      "rating": 99.96168294000255,
+      "rank": 12,
+      "division": "Men Tag"
+    },
     {
       "date": "2024-08-07",
       "week": "Aug '24 Week 2",
@@ -155,25 +310,37 @@
   ],
   "allMatches": [
     {
-      "date": "2022-10-20",
+      "id": 1079,
+      "date": "2022-10-21",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Anthony Bowens",
         "Max Caster",
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [],
+      "versus": [
+        "Anthony Bowens",
+        "Max Caster"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-12-22",
+      "id": 1158,
+      "date": "2022-12-23",
       "year": 2022,
       "event": "Holiday Bash '22 - Night 2",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -200,28 +367,63 @@
         "Tony Nese",
         "Ariya Daivari"
       ],
+      "partners": [
+        "Ariya Daivari"
+      ],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "AR Fox",
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta",
+        "Chuck Taylor",
+        "Trent Beretta",
+        "Orange Cassidy",
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno",
+        "Dralistico",
+        "Preston Vance",
+        "Rush",
+        "The Butcher",
+        "The Blade",
+        "Kip Sabian",
+        "Angelico",
+        "Luther",
+        "Serpentico"
+      ],
       "rating": 6.24,
-      "division": "Casino Battle Royale",
       "matchType": "Trios Battle Royal",
       "matchStipulation": "Casino Battle Royale",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-09",
+      "id": 2204,
+      "date": "2024-08-10",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Hologram",
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [],
+      "versus": [
+        "Darby Allin",
+        "Hologram"
+      ],
       "rating": 5.62,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
