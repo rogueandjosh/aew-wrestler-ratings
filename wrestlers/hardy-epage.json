@@ -1,10 +1,12 @@
 {
   "name": "Hardy & E.Page",
+  "slug": "hardy-epage",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 99.45667475817973,
   "currentRank": 15,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 99.45667475817973,
   "peakRatingWeek": "Mar '23 Week 1",
   "peakRank": 15,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-02-02",
+      "id": 1211,
+      "date": "2023-02-03",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -50,27 +55,45 @@
         "Matt Hardy",
         "Isiah Kassidy"
       ],
+      "partners": [
+        "Isiah Kassidy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 6.85,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-01-24",
+      "id": 1199,
+      "date": "2023-01-25",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Jack Perry",
         "Ethan Page",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Hook",
+        "Jack Perry"
+      ],
       "rating": 4.82,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -112,25 +135,37 @@
   ],
   "allMatches": [
     {
-      "date": "2023-01-24",
+      "id": 1199,
+      "date": "2023-01-25",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Hook",
         "Jack Perry",
         "Ethan Page",
         "Matt Hardy"
       ],
+      "partners": [],
+      "versus": [
+        "Hook",
+        "Jack Perry"
+      ],
       "rating": 4.82,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-02-02",
+      "id": 1211,
+      "date": "2023-02-03",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -139,12 +174,20 @@
         "Matt Hardy",
         "Isiah Kassidy"
       ],
+      "partners": [
+        "Isiah Kassidy"
+      ],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Kenny Omega"
+      ],
       "rating": 6.85,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
