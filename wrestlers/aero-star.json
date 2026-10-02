@@ -1,10 +1,12 @@
 {
   "name": "Aero Star",
+  "slug": "aero-star",
   "division": "Men",
   "formerNames": [],
   "currentRating": 99.93541791495261,
   "currentRank": 65,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 99.93541791495261,
   "peakRatingWeek": "Oct '23 Week 2",
   "peakRank": 65,
@@ -46,9 +48,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-09-08",
+      "id": 1555,
+      "date": "2023-09-09",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -56,26 +61,47 @@
         "Dios Del Inframundo",
         "Gravity"
       ],
+      "partners": [
+        "Dios Del Inframundo",
+        "Gravity"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2021-11-02",
+      "id": 635,
+      "date": "2021-11-03",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Samuray del Sol"
       ],
+      "partners": [
+        "Samuray del Sol"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 5.25,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -117,24 +143,38 @@
   ],
   "allMatches": [
     {
-      "date": "2021-11-02",
+      "id": 635,
+      "date": "2021-11-03",
       "year": 2021,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Cash Wheeler",
         "Dax Harwood",
         "Samuray del Sol"
       ],
+      "partners": [
+        "Samuray del Sol"
+      ],
+      "versus": [
+        "Cash Wheeler",
+        "Dax Harwood"
+      ],
       "rating": 5.25,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-09-08",
+      "id": 1555,
+      "date": "2023-09-09",
       "year": 2023,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Austin Gunn",
         "Colten Gunn",
@@ -142,12 +182,21 @@
         "Dios Del Inframundo",
         "Gravity"
       ],
+      "partners": [
+        "Dios Del Inframundo",
+        "Gravity"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Juice Robinson"
+      ],
       "rating": 5.47,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
