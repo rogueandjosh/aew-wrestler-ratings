@@ -1,10 +1,12 @@
 {
   "name": "Hiromu Takahashi",
+  "slug": "hiromu-takahashi",
   "division": "Men",
   "formerNames": [],
   "currentRating": 104.40166375322954,
   "currentRank": 38,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 104.70065664426154,
   "peakRatingWeek": "Aug '25 Week 4",
   "peakRank": 37,
@@ -46,22 +48,33 @@
   },
   "bestMatches": [
     {
-      "date": "2025-08-23",
+      "id": 2850,
+      "date": "2025-08-24",
       "year": 2025,
       "event": "Forbidden Door '25",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Kyle Fletcher"
+      ],
       "rating": 7.76,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-12",
+      "id": 2834,
+      "date": "2025-08-13",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Hologram",
@@ -71,16 +84,30 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Brody King",
+        "Hologram",
+        "Tomohiro Ishii",
+        "Josh Alexander",
+        "Kyle Fletcher",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-22",
+      "id": 2844,
+      "date": "2025-08-23",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -90,16 +117,30 @@
         "Lance Archer",
         "Rocky Romero"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "Scorpio Sky",
+        "Hechicero",
+        "Josh Alexander",
+        "Lance Archer",
+        "Rocky Romero"
+      ],
       "rating": 6.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-06-25",
+      "id": 2118,
+      "date": "2024-06-26",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Shingo Takagi",
         "Titan",
@@ -107,11 +148,21 @@
         "Jon Moxley",
         "Wheeler Yuta"
       ],
+      "partners": [
+        "Shingo Takagi",
+        "Titan"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta"
+      ],
       "rating": 6.15,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
@@ -160,9 +211,12 @@
   ],
   "allMatches": [
     {
-      "date": "2024-06-25",
+      "id": 2118,
+      "date": "2024-06-26",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Shingo Takagi",
         "Titan",
@@ -170,16 +224,29 @@
         "Jon Moxley",
         "Wheeler Yuta"
       ],
+      "partners": [
+        "Shingo Takagi",
+        "Titan"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Wheeler Yuta"
+      ],
       "rating": 6.15,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-08-12",
+      "id": 2834,
+      "date": "2025-08-13",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Hologram",
@@ -189,16 +256,30 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Brody King",
+        "Hologram",
+        "Tomohiro Ishii",
+        "Josh Alexander",
+        "Kyle Fletcher",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-22",
+      "id": 2844,
+      "date": "2025-08-23",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -208,25 +289,43 @@
         "Lance Archer",
         "Rocky Romero"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin",
+        "Scorpio Sky",
+        "Hechicero",
+        "Josh Alexander",
+        "Lance Archer",
+        "Rocky Romero"
+      ],
       "rating": 6.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-08-23",
+      "id": 2850,
+      "date": "2025-08-24",
       "year": 2025,
       "event": "Forbidden Door '25",
+      "show": "Forbidden Door",
+      "showType": "Pay Per View",
       "opponents": [
         "Kyle Fletcher"
       ],
+      "partners": [],
+      "versus": [
+        "Kyle Fletcher"
+      ],
       "rating": 7.76,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Men's",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
