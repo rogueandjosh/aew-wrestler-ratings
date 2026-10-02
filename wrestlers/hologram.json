@@ -1,10 +1,12 @@
 {
   "name": "Hologram",
+  "slug": "hologram",
   "division": "Men",
   "formerNames": [],
   "currentRating": 101.70513015450312,
   "currentRank": 43,
   "isActive": true,
+  "isTeam": false,
   "peakRating": 113.01761129827815,
   "peakRatingWeek": "Oct '24 Week 2",
   "peakRank": 19,
@@ -46,105 +48,170 @@
   },
   "bestMatches": [
     {
-      "date": "2025-03-22",
+      "id": 2612,
+      "date": "2025-03-23",
       "year": 2025,
       "event": "Slam Dunk Sunday '25",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Komander",
         "Dralistico",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Dralistico",
+        "The Beast Mortos"
+      ],
       "rating": 7.94,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2024-07-26",
+      "id": 2177,
+      "date": "2024-07-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
+        "The Beast Mortos"
+      ],
+      "partners": [],
+      "versus": [
         "The Beast Mortos"
       ],
       "rating": 7.88,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-02-21",
+      "id": 2561,
+      "date": "2025-02-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "The Beast Mortos"
+      ],
       "rating": 7.7,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-06-17",
+      "id": 2746,
+      "date": "2025-06-18",
       "year": 2025,
       "event": "Grand Slam: Mexico '25",
+      "show": "Grand Slam: Mexico",
+      "showType": "TV Special",
       "opponents": [
         "Lio Rush",
         "Mascara Dorada",
         "Ricochet"
       ],
+      "partners": [],
+      "versus": [
+        "Lio Rush",
+        "Mascara Dorada",
+        "Ricochet"
+      ],
       "rating": 7.67,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-03-07",
+      "id": 2581,
+      "date": "2025-03-08",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dralistico"
       ],
+      "partners": [],
+      "versus": [
+        "Dralistico"
+      ],
       "rating": 7.51,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-10-11",
+      "id": 2333,
+      "date": "2024-10-12",
       "year": 2024,
       "event": "WrestleDream '24",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "The Beast Mortos"
+      ],
       "rating": 7.5,
-      "division": "2 out of 3 Falls",
       "matchType": "One on One",
       "matchStipulation": "2 out of 3 Falls",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-26",
+      "id": 2306,
+      "date": "2024-09-27",
       "year": 2024,
       "event": "Grand Slam '24 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dralistico",
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "Dralistico",
+        "The Beast Mortos"
+      ],
       "rating": 7.47,
-      "division": "None",
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-12",
+      "id": 2834,
+      "date": "2025-08-13",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Tomohiro Ishii",
@@ -154,16 +221,30 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Brody King",
+        "Tomohiro Ishii",
+        "Hiromu Takahashi",
+        "Josh Alexander",
+        "Kyle Fletcher",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-30",
+      "id": 2248,
+      "date": "2024-08-31",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Orange Cassidy",
@@ -171,26 +252,46 @@
         "Lee Moriarty",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Orange Cassidy"
+      ],
+      "versus": [
+        "Johnny TV",
+        "Lee Moriarty",
+        "The Beast Mortos"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-10-04",
+      "id": 2320,
+      "date": "2024-10-05",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Action Andretti",
         "Komander",
         "Nick Wayne"
       ],
+      "partners": [],
+      "versus": [
+        "Action Andretti",
+        "Komander",
+        "Nick Wayne"
+      ],
       "rating": 7.14,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -505,65 +606,106 @@
   ],
   "allMatches": [
     {
-      "date": "2024-07-26",
+      "id": 2177,
+      "date": "2024-07-27",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "The Beast Mortos"
+      ],
       "rating": 7.88,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-02",
+      "id": 2191,
+      "date": "2024-08-03",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mistico",
         "Ariya Daivari",
         "Tony Nese"
       ],
+      "partners": [
+        "Mistico"
+      ],
+      "versus": [
+        "Ariya Daivari",
+        "Tony Nese"
+      ],
       "rating": 6.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-09",
+      "id": 2204,
+      "date": "2024-08-10",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Darby Allin",
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Darby Allin"
+      ],
+      "versus": [
+        "Josh Woods",
+        "Tony Nese"
+      ],
       "rating": 5.62,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-08-16",
+      "id": 2218,
+      "date": "2024-08-17",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Angelico"
       ],
+      "partners": [],
+      "versus": [
+        "Angelico"
+      ],
       "rating": 6.56,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-08-30",
+      "id": 2248,
+      "date": "2024-08-31",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Orange Cassidy",
@@ -571,16 +713,29 @@
         "Lee Moriarty",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Orange Cassidy"
+      ],
+      "versus": [
+        "Johnny TV",
+        "Lee Moriarty",
+        "The Beast Mortos"
+      ],
       "rating": 7.29,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-09-05",
+      "id": 2257,
+      "date": "2024-09-06",
       "year": 2024,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Dustin Rhodes",
         "Sammy Guevara",
@@ -588,16 +743,29 @@
         "John Silver",
         "Evil Uno"
       ],
+      "partners": [
+        "Dustin Rhodes",
+        "Sammy Guevara"
+      ],
+      "versus": [
+        "Alex Reynolds",
+        "John Silver",
+        "Evil Uno"
+      ],
       "rating": 5.32,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-11",
+      "id": 2280,
+      "date": "2024-09-12",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -605,16 +773,29 @@
         "Tony Nese",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Ariya Daivari",
+        "Tony Nese",
+        "The Beast Mortos"
+      ],
       "rating": 6.5,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-21",
+      "id": 2293,
+      "date": "2024-09-22",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Kyle O'Reilly",
         "Mark Briscoe",
@@ -622,112 +803,187 @@
         "Josh Woods",
         "Tony Nese"
       ],
+      "partners": [
+        "Kyle O'Reilly",
+        "Mark Briscoe"
+      ],
+      "versus": [
+        "Ariya Daivari",
+        "Josh Woods",
+        "Tony Nese"
+      ],
       "rating": 5.64,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-09-26",
+      "id": 2306,
+      "date": "2024-09-27",
       "year": 2024,
       "event": "Grand Slam '24 - Night 2",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dralistico",
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "Dralistico",
+        "The Beast Mortos"
+      ],
       "rating": 7.47,
-      "division": "None",
       "matchType": "3 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-10-04",
+      "id": 2320,
+      "date": "2024-10-05",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Action Andretti",
         "Komander",
         "Nick Wayne"
       ],
+      "partners": [],
+      "versus": [
+        "Action Andretti",
+        "Komander",
+        "Nick Wayne"
+      ],
       "rating": 7.14,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-10-07",
+      "id": 2322,
+      "date": "2024-10-08",
       "year": 2024,
       "event": "Title Tuesday '24",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Komander"
       ],
+      "partners": [],
+      "versus": [
+        "Komander"
+      ],
       "rating": 7.06,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2024-10-11",
+      "id": 2333,
+      "date": "2024-10-12",
       "year": 2024,
       "event": "WrestleDream '24",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
+        "The Beast Mortos"
+      ],
+      "partners": [],
+      "versus": [
         "The Beast Mortos"
       ],
       "rating": 7.5,
-      "division": "2 out of 3 Falls",
       "matchType": "One on One",
       "matchStipulation": "2 out of 3 Falls",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-02-21",
+      "id": 2561,
+      "date": "2025-02-22",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "The Beast Mortos"
       ],
+      "partners": [],
+      "versus": [
+        "The Beast Mortos"
+      ],
       "rating": 7.7,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-03-07",
+      "id": 2581,
+      "date": "2025-03-08",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dralistico"
       ],
+      "partners": [],
+      "versus": [
+        "Dralistico"
+      ],
       "rating": 7.51,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-03-11",
+      "id": 2593,
+      "date": "2025-03-12",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Powerhouse Hobbs",
         "Brian Cage",
         "Dralistico"
       ],
+      "partners": [
+        "Powerhouse Hobbs"
+      ],
+      "versus": [
+        "Brian Cage",
+        "Dralistico"
+      ],
       "rating": 5.61,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-03-14",
+      "id": 2599,
+      "date": "2025-03-15",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Dante Martin",
         "Darius Martin",
@@ -735,59 +991,101 @@
         "Shawn Dean",
         "Lee Moriarty"
       ],
+      "partners": [
+        "Dante Martin",
+        "Darius Martin"
+      ],
+      "versus": [
+        "Carlie Bravo",
+        "Shawn Dean",
+        "Lee Moriarty"
+      ],
       "rating": 5.17,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-03-22",
+      "id": 2612,
+      "date": "2025-03-23",
       "year": 2025,
       "event": "Slam Dunk Sunday '25",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Komander",
         "Dralistico",
         "The Beast Mortos"
       ],
+      "partners": [
+        "Komander"
+      ],
+      "versus": [
+        "Dralistico",
+        "The Beast Mortos"
+      ],
       "rating": 7.94,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-03-29",
+      "id": 2619,
+      "date": "2025-03-30",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Blake Christian"
       ],
+      "partners": [],
+      "versus": [
+        "Blake Christian"
+      ],
       "rating": 6.55,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-06-17",
+      "id": 2746,
+      "date": "2025-06-18",
       "year": 2025,
       "event": "Grand Slam: Mexico '25",
+      "show": "Grand Slam: Mexico",
+      "showType": "TV Special",
       "opponents": [
         "Lio Rush",
         "Mascara Dorada",
         "Ricochet"
       ],
+      "partners": [],
+      "versus": [
+        "Lio Rush",
+        "Mascara Dorada",
+        "Ricochet"
+      ],
       "rating": 7.67,
-      "division": "None",
       "matchType": "4 Way",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-06-20",
+      "id": 2752,
+      "date": "2025-06-21",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe",
         "Willow Nightingale",
@@ -795,16 +1093,28 @@
         "Mason Madden",
         "Taya Valkyrie"
       ],
+      "partners": [],
+      "versus": [
+        "Mark Briscoe",
+        "Willow Nightingale",
+        "Mansoor",
+        "Mason Madden",
+        "Taya Valkyrie"
+      ],
       "rating": 5.62,
-      "division": "None",
       "matchType": "Mixed Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-07-04",
+      "id": 2772,
+      "date": "2025-07-05",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe",
         "Mistico",
@@ -812,16 +1122,29 @@
         "Rocky Romero",
         "Trent Beretta"
       ],
+      "partners": [
+        "Mark Briscoe",
+        "Mistico"
+      ],
+      "versus": [
+        "Hechicero",
+        "Rocky Romero",
+        "Trent Beretta"
+      ],
       "rating": 6.57,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-07-25",
+      "id": 2810,
+      "date": "2025-07-26",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Tomohiro Ishii",
         "Truth Magnum",
@@ -831,16 +1154,31 @@
         "Carlie Bravo",
         "Shawn Dean"
       ],
+      "partners": [
+        "Tomohiro Ishii"
+      ],
+      "versus": [
+        "Truth Magnum",
+        "Turbo Floyd",
+        "Hechicero",
+        "Lance Archer",
+        "Carlie Bravo",
+        "Shawn Dean"
+      ],
       "rating": 5.9,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "Cash"
+      "stakes": "Cash",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-12",
+      "id": 2834,
+      "date": "2025-08-13",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Brody King",
         "Tomohiro Ishii",
@@ -850,29 +1188,51 @@
         "Matt Jackson",
         "Nick Jackson"
       ],
+      "partners": [],
+      "versus": [
+        "Brody King",
+        "Tomohiro Ishii",
+        "Hiromu Takahashi",
+        "Josh Alexander",
+        "Kyle Fletcher",
+        "Matt Jackson",
+        "Nick Jackson"
+      ],
       "rating": 7.43,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-08-29",
+      "id": 2865,
+      "date": "2025-08-30",
       "year": 2025,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Jay Lethal"
       ],
+      "partners": [],
+      "versus": [
+        "Jay Lethal"
+      ],
       "rating": 5.1,
-      "division": "None",
       "matchType": "One on One",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Men's",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-09-23",
+      "id": 2906,
+      "date": "2025-09-24",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Mark Briscoe",
         "Orange Cassidy",
@@ -880,12 +1240,21 @@
         "Kazuchika Okada",
         "Konosuke Takeshita"
       ],
+      "partners": [
+        "Mark Briscoe",
+        "Orange Cassidy"
+      ],
+      "versus": [
+        "Hechicero",
+        "Kazuchika Okada",
+        "Konosuke Takeshita"
+      ],
       "rating": 6.91,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": false
+  ]
 }
