@@ -1,10 +1,12 @@
 {
   "name": "Hobbs & Shibata",
+  "slug": "hobbs-shibata",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 102.035377500007,
   "currentRank": 7,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 102.0958521505872,
   "peakRatingWeek": "Dec '25 Week 2",
   "peakRank": 8,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2025-07-08",
+      "id": 2780,
+      "date": "2025-07-09",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "Jon Moxley",
@@ -52,32 +57,54 @@
         "Powerhouse Hobbs",
         "Will Ospreay"
       ],
+      "partners": [],
+      "versus": [
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Matthew Jackson",
+        "Nicholas Jackson",
+        "Adam Page",
+        "Will Ospreay"
+      ],
       "rating": 6.82,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-12-09",
+      "id": 3031,
+      "date": "2025-12-10",
       "year": 2025,
       "event": "Winter Is Coming '25 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Swerve Strickland",
         "Katsuyori Shibata",
         "Powerhouse Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page",
+        "Swerve Strickland"
+      ],
       "rating": 6.65,
-      "division": "Tornado Tag",
       "matchType": "Tag Team",
       "matchStipulation": "Tornado Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2025-07-11",
+      "id": 2786,
+      "date": "2025-07-12",
       "year": 2025,
       "event": "All In: Texas '25",
+      "show": "All In: Texas",
+      "showType": "Pay Per View",
       "opponents": [
         "Katsuyori Shibata",
         "Powerhouse Hobbs",
@@ -86,11 +113,20 @@
         "Wheeler Yuta",
         "Gabe Kidd"
       ],
+      "partners": [
+        "Samoa Joe"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Gabe Kidd"
+      ],
       "rating": 6.13,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     }
   ],
   "ratingHistory": [
@@ -167,9 +203,12 @@
   ],
   "allMatches": [
     {
-      "date": "2025-07-08",
+      "id": 2780,
+      "date": "2025-07-09",
       "year": 2025,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Claudio Castagnoli",
         "Jon Moxley",
@@ -180,16 +219,29 @@
         "Powerhouse Hobbs",
         "Will Ospreay"
       ],
+      "partners": [],
+      "versus": [
+        "Claudio Castagnoli",
+        "Jon Moxley",
+        "Matthew Jackson",
+        "Nicholas Jackson",
+        "Adam Page",
+        "Will Ospreay"
+      ],
       "rating": 6.82,
-      "division": "None",
       "matchType": "8 Man Tag",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2025-07-11",
+      "id": 2786,
+      "date": "2025-07-12",
       "year": 2025,
       "event": "All In: Texas '25",
+      "show": "All In: Texas",
+      "showType": "Pay Per View",
       "opponents": [
         "Katsuyori Shibata",
         "Powerhouse Hobbs",
@@ -198,28 +250,45 @@
         "Wheeler Yuta",
         "Gabe Kidd"
       ],
+      "partners": [
+        "Samoa Joe"
+      ],
+      "versus": [
+        "Claudio Castagnoli",
+        "Wheeler Yuta",
+        "Gabe Kidd"
+      ],
       "rating": 6.13,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "Title Match"
+      "stakes": "Title Match",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2025-12-09",
+      "id": 3031,
+      "date": "2025-12-10",
       "year": 2025,
       "event": "Winter Is Coming '25 - Night 1",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Adam Page",
         "Swerve Strickland",
         "Katsuyori Shibata",
         "Powerhouse Hobbs"
       ],
+      "partners": [],
+      "versus": [
+        "Adam Page",
+        "Swerve Strickland"
+      ],
       "rating": 6.65,
-      "division": "Tornado Tag",
       "matchType": "Tag Team",
       "matchStipulation": "Tornado Tag",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
