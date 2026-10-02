@@ -1,10 +1,12 @@
 {
   "name": "Danielson & Moxley",
+  "slug": "danielson-moxley",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 111.35604305427364,
   "currentRank": 5,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 112.18676901784296,
   "peakRatingWeek": "Jan '23 Week 2",
   "peakRank": 6,
@@ -46,9 +48,12 @@
   },
   "bestMatches": [
     {
-      "date": "2022-05-28",
+      "id": 896,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Angelo Parker",
         "Matt Menard",
@@ -61,64 +66,106 @@
         "Santana",
         "Eddie Kingston"
       ],
+      "partners": [],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Chris Jericho",
+        "Daniel Garcia",
+        "Jake Hager",
+        "Ortiz",
+        "Santana",
+        "Eddie Kingston"
+      ],
       "rating": 9.08,
-      "division": "Anarchy in the Arena",
       "matchType": "10 Man Tag",
       "matchStipulation": "Anarchy in the Arena",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-01-05",
+      "id": 1174,
+      "date": "2023-01-06",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 7.96,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-05-19",
+      "id": 877,
+      "date": "2022-05-20",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Dante Martin",
         "Matt Sydal"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Matt Sydal"
+      ],
       "rating": 7.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-03-15",
+      "id": 791,
+      "date": "2022-03-16",
       "year": 2022,
       "event": "St Patrick Day's Slam '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Chuck Taylor",
         "Wheeler Yuta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Wheeler Yuta"
+      ],
       "rating": 6.44,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-14",
+      "id": 830,
+      "date": "2022-04-15",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
@@ -127,27 +174,45 @@
         "Colten Gunn",
         "Billy Gunn"
       ],
+      "partners": [
+        "Wheeler Yuta"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Billy Gunn"
+      ],
       "rating": 6.25,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-03-22",
+      "id": 800,
+      "date": "2022-03-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [],
+      "versus": [
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 5.8,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -287,41 +352,62 @@
   ],
   "allMatches": [
     {
-      "date": "2022-03-15",
+      "id": 791,
+      "date": "2022-03-16",
       "year": 2022,
       "event": "St Patrick Day's Slam '22",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Chuck Taylor",
         "Wheeler Yuta"
       ],
+      "partners": [],
+      "versus": [
+        "Chuck Taylor",
+        "Wheeler Yuta"
+      ],
       "rating": 6.44,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-03-22",
+      "id": 800,
+      "date": "2022-03-23",
       "year": 2022,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Brian Pillman Jr.",
         "Griff Garrison"
       ],
+      "partners": [],
+      "versus": [
+        "Brian Pillman Jr.",
+        "Griff Garrison"
+      ],
       "rating": 5.8,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2022-04-14",
+      "id": 830,
+      "date": "2022-04-15",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
@@ -330,32 +416,53 @@
         "Colten Gunn",
         "Billy Gunn"
       ],
+      "partners": [
+        "Wheeler Yuta"
+      ],
+      "versus": [
+        "Austin Gunn",
+        "Colten Gunn",
+        "Billy Gunn"
+      ],
       "rating": 6.25,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Opener"
     },
     {
-      "date": "2022-05-19",
+      "id": 877,
+      "date": "2022-05-20",
       "year": 2022,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Dante Martin",
         "Matt Sydal"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Matt Sydal"
+      ],
       "rating": 7.46,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Main Event"
     },
     {
-      "date": "2022-05-28",
+      "id": 896,
+      "date": "2022-05-29",
       "year": 2022,
       "event": "Double or Nothing '22",
+      "show": "Double or Nothing",
+      "showType": "Pay Per View",
       "opponents": [
         "Angelo Parker",
         "Matt Menard",
@@ -368,28 +475,48 @@
         "Santana",
         "Eddie Kingston"
       ],
+      "partners": [],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Chris Jericho",
+        "Daniel Garcia",
+        "Jake Hager",
+        "Ortiz",
+        "Santana",
+        "Eddie Kingston"
+      ],
       "rating": 9.08,
-      "division": "Anarchy in the Arena",
       "matchType": "10 Man Tag",
       "matchStipulation": "Anarchy in the Arena",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "None",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-01-05",
+      "id": 1174,
+      "date": "2023-01-06",
       "year": 2023,
       "event": "Rampage",
+      "show": "Rampage",
+      "showType": "Weekly TV",
       "opponents": [
         "Bryan Danielson",
         "Jon Moxley",
         "Dante Martin",
         "Darius Martin"
       ],
+      "partners": [],
+      "versus": [
+        "Dante Martin",
+        "Darius Martin"
+      ],
       "rating": 7.96,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     }
-  ],
-  "isTeam": true
+  ]
 }
