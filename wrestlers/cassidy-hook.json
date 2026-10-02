@@ -1,10 +1,12 @@
 {
   "name": "Cassidy & Hook",
+  "slug": "cassidy-hook",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 100.68386708499268,
   "currentRank": 12,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 100.68386708499268,
   "peakRatingWeek": "Dec '23 Week 4",
   "peakRank": 12,
@@ -39,9 +41,12 @@
   },
   "bestMatches": [
     {
-      "date": "2023-09-30",
+      "id": 1601,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -52,32 +57,54 @@
         "Penta El Zero M",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Penta El Zero M",
+        "Rey Fenix"
+      ],
       "rating": 6.33,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-14",
+      "id": 1682,
+      "date": "2023-11-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "Wheeler Yuta",
         "Hook",
         "Orange Cassidy"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley",
+        "Wheeler Yuta"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-11-21",
+      "id": 1703,
+      "date": "2023-11-22",
       "year": 2023,
       "event": "Thanksgiving Eve '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy",
         "Hook",
@@ -86,11 +113,20 @@
         "Matt Menard",
         "Jake Hager"
       ],
+      "partners": [
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Jake Hager"
+      ],
       "rating": 5.13,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -139,9 +175,12 @@
   ],
   "allMatches": [
     {
-      "date": "2023-09-30",
+      "id": 1601,
+      "date": "2023-10-01",
       "year": 2023,
       "event": "WrestleDream '23",
+      "show": "WrestleDream",
+      "showType": "Pay Per View",
       "opponents": [
         "Matt Jackson",
         "Nick Jackson",
@@ -152,32 +191,54 @@
         "Penta El Zero M",
         "Rey Fenix"
       ],
+      "partners": [],
+      "versus": [
+        "Matt Jackson",
+        "Nick Jackson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Penta El Zero M",
+        "Rey Fenix"
+      ],
       "rating": 6.33,
-      "division": "None",
       "matchType": "4 Way Tag",
       "matchStipulation": "None",
-      "stakes": "Number One Contender"
+      "stakes": "Number One Contender",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2023-11-14",
+      "id": 1682,
+      "date": "2023-11-15",
       "year": 2023,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Jon Moxley",
         "Wheeler Yuta",
         "Hook",
         "Orange Cassidy"
       ],
+      "partners": [],
+      "versus": [
+        "Jon Moxley",
+        "Wheeler Yuta"
+      ],
       "rating": 6.2,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Opener"
     },
     {
-      "date": "2023-11-21",
+      "id": 1703,
+      "date": "2023-11-22",
       "year": 2023,
       "event": "Thanksgiving Eve '23",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Orange Cassidy",
         "Hook",
@@ -186,12 +247,20 @@
         "Matt Menard",
         "Jake Hager"
       ],
+      "partners": [
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Angelo Parker",
+        "Matt Menard",
+        "Jake Hager"
+      ],
       "rating": 5.13,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
