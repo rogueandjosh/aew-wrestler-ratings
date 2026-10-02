@@ -1,10 +1,12 @@
 {
   "name": "Lion Hook",
+  "slug": "lion-hook",
   "division": "Men Tag",
   "formerNames": [],
   "currentRating": 99.08807156429793,
   "currentRank": 12,
   "isActive": true,
+  "isTeam": true,
   "peakRating": 99.55065750992588,
   "peakRatingWeek": "Apr '24 Week 1",
   "peakRank": 16,
@@ -39,25 +41,37 @@
   },
   "bestMatches": [
     {
-      "date": "2024-04-05",
+      "id": 1959,
+      "date": "2024-04-06",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Hook",
         "Lee Moriarty",
         "Shane Taylor"
       ],
+      "partners": [],
+      "versus": [
+        "Lee Moriarty",
+        "Shane Taylor"
+      ],
       "rating": 5.15,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-04-09",
+      "id": 1965,
+      "date": "2024-04-10",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Lee Moriarty",
         "Shane Taylor",
@@ -66,27 +80,45 @@
         "Hook",
         "Katsuyori Shibata"
       ],
+      "partners": [
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Lee Moriarty",
+        "Shane Taylor",
+        "Anthony Ogogo"
+      ],
       "rating": 4.33,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-03-12",
+      "id": 1922,
+      "date": "2024-03-13",
       "year": 2024,
       "event": "Big Business",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Hook",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 4.26,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     }
   ],
   "ratingHistory": [
@@ -135,41 +167,62 @@
   ],
   "allMatches": [
     {
-      "date": "2024-03-12",
+      "id": 1922,
+      "date": "2024-03-13",
       "year": 2024,
       "event": "Big Business",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Hook",
         "Bishop Kaun",
         "Toa Liona"
       ],
+      "partners": [],
+      "versus": [
+        "Bishop Kaun",
+        "Toa Liona"
+      ],
       "rating": 4.26,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-04-05",
+      "id": 1959,
+      "date": "2024-04-06",
       "year": 2024,
       "event": "Collision",
+      "show": "Collision",
+      "showType": "Weekly TV",
       "opponents": [
         "Chris Jericho",
         "Hook",
         "Lee Moriarty",
         "Shane Taylor"
       ],
+      "partners": [],
+      "versus": [
+        "Lee Moriarty",
+        "Shane Taylor"
+      ],
       "rating": 5.15,
-      "division": "None",
       "matchType": "Tag Team",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Tag",
+      "matchPos": "Other"
     },
     {
-      "date": "2024-04-09",
+      "id": 1965,
+      "date": "2024-04-10",
       "year": 2024,
       "event": "Dynamite",
+      "show": "Dynamite",
+      "showType": "Weekly TV",
       "opponents": [
         "Lee Moriarty",
         "Shane Taylor",
@@ -178,12 +231,20 @@
         "Hook",
         "Katsuyori Shibata"
       ],
+      "partners": [
+        "Katsuyori Shibata"
+      ],
+      "versus": [
+        "Lee Moriarty",
+        "Shane Taylor",
+        "Anthony Ogogo"
+      ],
       "rating": 4.33,
-      "division": "None",
       "matchType": "Trios",
       "matchStipulation": "None",
-      "stakes": "None"
+      "stakes": "None",
+      "division": "Trios",
+      "matchPos": "Other"
     }
-  ],
-  "isTeam": true
+  ]
 }
