@@ -363,54 +363,6 @@
             color: #e0e0e0;
         }
 
-        /* Event Grid */
-        .event-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .event-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            transition: all 0.2s;
-        }
-
-        .event-card:hover {
-            border-color: #ffd700;
-            transform: translateY(-2px);
-        }
-
-        .event-card .event-name {
-            color: #ffd700;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-
-        .event-card .event-stats {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .event-card .event-stat {
-            text-align: center;
-        }
-
-        .event-card .event-stat-value {
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .event-card .event-stat-label {
-            color: #b8b8b8;
-            font-size: 0.75rem;
-        }
-
         /* Drill-down navigation (uses the site's .tab button style) */
         .scope-crumbs {
             display: flex;
@@ -439,19 +391,56 @@
             color: #777;
         }
 
-        .event-card.clickable {
-            cursor: pointer;
+        /* Clickable breakdown list (named episodes, PPV names, editions...) */
+        .scope-table th.num,
+        .scope-table td.num {
+            text-align: center;
+            width: 90px;
         }
 
-        .event-card .event-date {
+        .scope-table th.chev,
+        .scope-table td.chev {
+            width: 28px;
+            padding-left: 0;
+            padding-right: 8px;
+            text-align: right;
+        }
+
+        .scope-table td.chev {
+            color: #ffd700;
+            font-size: 1.4em;
+            line-height: 1;
+        }
+
+        .scope-row {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .scope-row:hover {
+            background: rgba(255, 215, 0, 0.08);
+        }
+
+        .scope-table td.scope-name {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .scope-date {
+            display: block;
             color: #b8b8b8;
-            font-size: 0.8rem;
-            margin: -6px 0 10px;
+            font-size: 0.8em;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .scope-table td.num {
+            font-weight: bold;
         }
 
         .more-events-toggle {
             display: block;
-            margin: -15px auto 30px;
+            margin: 16px auto 0;
             padding: 6px 14px;
             font-size: 0.85em;
         }
@@ -693,8 +682,7 @@
             .tt:not(th):not(td)::before {
                 display: none !important;
             }
-            .tab:hover,
-            .event-card:hover {
+            .tab:hover {
                 transform: none;
             }
         }
@@ -750,41 +738,22 @@
                 right: 0;
             }
 
-            /* Show types: one swipeable row */
-            .show-type-tabs {
-                flex-wrap: nowrap;
-                justify-content: flex-start;
-                overflow-x: auto;
-                gap: 8px;
-                margin: 0 -10px 10px;
-                padding: 4px 10px 10px;
-                scrollbar-width: none;
-                scroll-snap-type: x proximity;
+            /* Shows dropdown full width, Year and Division side by side underneath */
+            .filter-row > div:first-child {
+                grid-column: 1 / -1;
             }
-            .show-type-tabs::-webkit-scrollbar {
-                display: none;
-            }
-            .show-type-tabs {
-                scroll-padding-left: 10px;
-            }
-            .show-type-tabs .tab.active {
-                box-shadow: none;
-            }
-            .show-type-tabs .tab {
-                flex: 0 0 auto;
-                padding: 8px 14px;
-                font-size: 0.88em;
-                white-space: nowrap;
-                scroll-snap-align: start;
+            #showDropdownBtn {
+                width: 100%;
+                min-width: 0 !important;
+                font-size: 0.88em !important;
+                padding: 9px 10px !important;
             }
 
-            /* Multi-select / Match Types: two equal buttons */
             .view-options {
                 margin: 0 0 16px;
             }
             .view-option-btn {
-                flex: 1;
-                padding: 8px 10px;
+                padding: 7px 12px;
                 font-size: 0.82em;
             }
 
@@ -853,52 +822,32 @@
                 font-size: 0.72em;
             }
 
-            /* Cards: two per row */
             .section-title {
                 font-size: 1.1em;
-                margin-bottom: 14px;
+                margin-bottom: 12px;
                 padding-bottom: 8px;
             }
-            .event-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                margin-bottom: 22px;
+
+            /* Breakdown list: compact columns */
+            .scope-table th,
+            .scope-table td {
+                padding: 10px 6px !important;
+                font-size: 0.86em;
             }
-            .event-card {
-                padding: 10px;
-                display: flex;
-                flex-direction: column;
+            .scope-table th.num,
+            .scope-table td.num {
+                width: 52px;
             }
-            .event-card .event-stats {
-                margin-top: auto;
+            .scope-table th.chev,
+            .scope-table td.chev {
+                width: 16px;
+                padding-right: 2px !important;
             }
-            .event-grid .event-card:last-child:nth-child(odd) {
-                grid-column: span 2;
-            }
-            .event-card .event-name {
-                font-size: 0.9rem;
-                line-height: 1.2;
-                margin-bottom: 8px;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-            .event-card .event-date {
-                font-size: 0.7rem;
-                margin: -4px 0 8px;
-            }
-            .event-card .event-stats {
-                gap: 4px;
-            }
-            .event-card .event-stat-value {
-                font-size: 0.95rem;
-            }
-            .event-card .event-stat-label {
-                font-size: 0.62rem;
+            .scope-table td.chev {
+                font-size: 1.2em;
             }
             .more-events-toggle {
-                margin: -10px auto 22px;
+                margin: 12px auto 0;
             }
 
             /* Top matches and leaderboard */
@@ -968,6 +917,25 @@
         <section class="filter-section">
             <div class="filter-row" style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
                 <div>
+                    <h2 class="tt" data-tt="Choose which show types to include — select one, several, or All." style="cursor: help; margin-bottom: 10px;">Shows</h2>
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" id="showDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Shows</button>
+                        <div id="showDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
+                            <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
+                                <button type="button" onclick="setAllShowTypes(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
+                                <button type="button" onclick="setAllShowTypes(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                            </div>
+                            <div style="padding: 6px 0;">
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="weekly" checked onchange="updateShowTypes()"> Weekly TV</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="ppv" checked onchange="updateShowTypes()"> PPVs</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="tvspecial" checked onchange="updateShowTypes()"> TV Specials</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="quarterly" checked onchange="updateShowTypes()"> Quarterly</label>
+                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="youtube" checked onchange="updateShowTypes()"> YouTube Specials</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
                     <h2 class="tt" data-tt="Filter by year — select one or more years, or keep All to see all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
                     <div style="position: relative; display: inline-block;">
                         <button type="button" id="yearDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 130px; text-align: left;">All Years</button>
@@ -1005,16 +973,7 @@
 
         <!-- Tab Navigation + Content (hidden until data loads) -->
         <div id="tabsWrapper">
-        <!-- Tab Navigation -->
-        <div class="tabs show-type-tabs">
-            <button class="tab show-type-btn active tt tt-below" data-type="weekly" data-tt="Switch show type. Turn on Multi-select to combine types.">📺 Weekly TV</button>
-            <button class="tab show-type-btn tt tt-below" data-type="ppv" data-tt="Switch show type. Turn on Multi-select to combine types.">🏆 PPVs</button>
-            <button class="tab show-type-btn tt tt-below" data-type="tvspecial" data-tt="Switch show type. Turn on Multi-select to combine types.">⭐ TV Specials</button>
-            <button class="tab show-type-btn tt tt-below" data-type="quarterly" data-tt="Switch show type. Turn on Multi-select to combine types.">🥇 Quarterly</button>
-            <button class="tab show-type-btn tt tt-below" data-type="youtube" data-tt="Switch show type. Turn on Multi-select to combine types.">▶️ YouTube Specials</button>
-        </div>
         <div class="view-options">
-            <button class="tab tt view-option-btn" id="multiToggle" data-tt="Turn on to combine more than one show type.">☑️ Multi-select</button>
             <button class="tab view-option-btn" id="stipsToggle">🥊 Match Types</button>
         </div>
 
@@ -1180,9 +1139,8 @@
         let scopeMatchesAll = [];   // every match entry with its drill-down path (first step = show type)
         let scopeTree = null;       // rebuilt on every processAllData()
         let scopePath = [];         // node keys drilled into from the current starting level
-        let selectedShowTypes = new Set(['weekly']);
+        let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
         let currentView = 'shows';  // 'shows' or 'stips'
-        let multiSelect = false;    // off: show type buttons switch; on: they combine
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
@@ -1230,49 +1188,41 @@
         // TAB SWITCHING
         // ===========================================
         
-        // Show type buttons are multi-select (at least one stays on).
-        // Match Types is an on/off view: clicking it again returns to the show view.
+        // Match Types is an on/off view: clicking it again returns to the show view
         function updateViewButtons() {
-            document.querySelectorAll('.show-type-btn').forEach(btn => {
-                btn.classList.toggle('active', currentView === 'shows' && selectedShowTypes.has(btn.dataset.type));
-            });
             document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
-            document.getElementById('multiToggle').classList.toggle('active', multiSelect);
             document.getElementById('showsView').classList.toggle('active', currentView === 'shows');
             document.getElementById('stips').classList.toggle('active', currentView === 'stips');
         }
 
-        document.querySelectorAll('.show-type-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.dataset.type;
-                if (currentView === 'stips') {
-                    currentView = 'shows';
-                    if (multiSelect) selectedShowTypes.add(type);
-                    else selectedShowTypes = new Set([type]);
-                } else if (!multiSelect) {
-                    selectedShowTypes = new Set([type]);
-                } else if (selectedShowTypes.has(type)) {
-                    if (selectedShowTypes.size === 1) return;
-                    selectedShowTypes.delete(type);
-                } else {
-                    selectedShowTypes.add(type);
-                }
-                scopePath = [];
-                updateViewButtons();
-                renderScopeView();
-            });
-        });
+        // ===========================================
+        // SHOWS FILTER
+        // ===========================================
 
-        // Turning multi-select off keeps only the first selected show type
-        document.getElementById('multiToggle').addEventListener('click', () => {
-            multiSelect = !multiSelect;
-            if (!multiSelect && selectedShowTypes.size > 1) {
-                selectedShowTypes = new Set([SCOPE_TABS.find(t => selectedShowTypes.has(t))]);
-                scopePath = [];
-                renderScopeView();
-            }
+        function updateShowTypes() {
+            const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')].map(cb => cb.value);
+            selectedShowTypes = new Set(checked);
+            scopePath = [];
+            currentView = 'shows'; // choosing shows always brings you back to the show view
+            updateShowBtn();
             updateViewButtons();
-        });
+            renderScopeView();
+        }
+
+        function setAllShowTypes(val) {
+            document.querySelectorAll('#showDropdownMenu input').forEach(cb => cb.checked = val);
+            updateShowTypes();
+        }
+
+        function updateShowBtn() {
+            const btn = document.getElementById('showDropdownBtn');
+            const all = document.querySelectorAll('#showDropdownMenu input');
+            const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')];
+            if (checked.length === 0) btn.textContent = 'None';
+            else if (checked.length === all.length) btn.textContent = 'All Shows';
+            else if (checked.length === 1) btn.textContent = TAB_CONFIG[checked[0].value].label;
+            else btn.textContent = `${checked.length} Show Types`;
+        }
 
         document.getElementById('stipsToggle').addEventListener('click', () => {
             currentView = currentView === 'stips' ? 'shows' : 'stips';
@@ -1671,6 +1621,11 @@
                 .map(t => scopeTree.children.get('type:' + t))
                 .filter(Boolean);
 
+            if (typeNodes.length === 0) {
+                return { key: '', isCombined: true, label: 'No shows selected', titleName: 'Selected',
+                         children: new Map(), matches: [] };
+            }
+
             if (typeNodes.length === 1) {
                 let node = typeNodes[0];
                 if (TAB_CONFIG[node.tab].collapseSingle) {
@@ -1681,11 +1636,14 @@
                 return node;
             }
 
+            // Label: "All Shows", "Weekly TV + PPVs", or "3 Show Types"
             const selectedTabs = SCOPE_TABS.filter(t => selectedShowTypes.has(t));
+            const allSelected = selectedTabs.length === SCOPE_TABS.length;
+            const fewSelected = selectedTabs.length === 2;
             return {
                 key: '', isCombined: true,
-                label: selectedTabs.map(t => TAB_CONFIG[t].label).join(' + '),
-                titleName: selectedTabs.map(t => TAB_CONFIG[t].name).join(' + '),
+                label: allSelected ? 'All Shows' : fewSelected ? selectedTabs.map(t => TAB_CONFIG[t].label).join(' + ') : `${selectedTabs.length} Show Types`,
+                titleName: fewSelected ? selectedTabs.map(t => TAB_CONFIG[t].name).join(' + ') : '',
                 children: new Map(typeNodes.map(n => [n.key, { ...n, label: TAB_CONFIG[n.tab].label }])),
                 matches: typeNodes.flatMap(n => n.matches)
             };
@@ -1875,9 +1833,12 @@
                     <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who competed in at least one match, counted in each match's own division (teams for tag and trios matches)."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
                 </div>
 
-                <div id="scope-grid-section">
-                    <h3 class="section-title tt" id="scope-grid-title" data-tt="Select a card to filter the page to it." style="cursor: help; margin-bottom: 20px;"></h3>
-                    <div class="event-grid" id="scope-grid"></div>
+                <div class="table-container" id="scope-grid-section">
+                    <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to see its breakdown." style="cursor: help;"></h3>
+                    <table class="scope-table">
+                        <thead><tr><th>Name</th><th class="num">Matches</th><th class="num">Avg</th><th class="num">Best</th><th class="chev"></th></tr></thead>
+                        <tbody id="scope-grid"></tbody>
+                    </table>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
                 </div>
 
@@ -1933,6 +1894,7 @@
                 </div>`;
         }
 
+        // Heading for the clickable list below the summary
         function getGridTitle(node, children) {
             if (children.every(c => c.isEdition)) return 'Editions';
             if (node.isCombined) return 'Performance by Show Type';
@@ -1947,7 +1909,7 @@
             const all = node.matches;
             const unique = getUniqueMatches(all);
             const avg = getAvg(unique);
-            const scopeName = node.titleName || node.label;
+            const scopeName = node.titleName !== undefined ? node.titleName : node.label;
             const showCount = new Set(unique.map(m => `${m.show}|${m.date}`)).size;
 
             // Back button + breadcrumbs
@@ -2007,15 +1969,13 @@
                     const u = getUniqueMatches(c.matches);
                     const cAvg = getAvg(u);
                     const best = u.length ? Math.max(...u.map(m => m.rating)) : null;
-                    return `<div class="event-card clickable" data-scope-key="${esc(c.key)}">
-                        <div class="event-name">${esc(c.label)}</div>
-                        ${c.isEdition ? `<div class="event-date">${formatDate(c.date)}</div>` : ''}
-                        <div class="event-stats">
-                            <div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div>
-                            <div class="event-stat"><div class="event-stat-value ${cAvg !== null ? getRatingClass(cAvg) : ''}">${cAvg !== null ? cAvg.toFixed(2) : '--'}</div><div class="event-stat-label">Avg</div></div>
-                            <div class="event-stat"><div class="event-stat-value ${best !== null ? getRatingClass(best) : ''}">${best !== null ? best.toFixed(2) : '--'}</div><div class="event-stat-label">Best</div></div>
-                        </div>
-                    </div>`;
+                    return `<tr class="scope-row" data-scope-key="${esc(c.key)}">
+                        <td class="scope-name">${esc(c.label)}${c.isEdition ? `<span class="scope-date">${formatDate(c.date)}</span>` : ''}</td>
+                        <td class="num">${u.length}</td>
+                        <td class="num ${cAvg !== null ? getRatingClass(cAvg) : ''}">${cAvg !== null ? cAvg.toFixed(2) : '--'}</td>
+                        <td class="num ${best !== null ? getRatingClass(best) : ''}">${best !== null ? best.toFixed(2) : '--'}</td>
+                        <td class="chev">›</td>
+                    </tr>`;
                 }).join('');
             }
 
@@ -2025,7 +1985,7 @@
             const topList = isSingleShow
                 ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
                 : getTop5(all);
-            topTitle.textContent = isSingleShow ? 'All Matches' : `Top 5 ${scopeName} Matches`;
+            topTitle.textContent = isSingleShow ? 'All Matches' : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
             topTitle.setAttribute('data-tt', isSingleShow
                 ? 'Every rated match on this show, highest rated first.'
                 : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
@@ -2036,7 +1996,7 @@
             // Leaderboard: 3 matches to qualify, fewer when the selection only covers one or two shows
             const minMatches = Math.max(1, Math.min(3, showCount));
             const lbTitle = document.getElementById('scope-lb-title');
-            lbTitle.textContent = `Top ${scopeName} Performers`;
+            lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
             lbTitle.setAttribute('data-tt', `Top performers for the current selection, ranked by average match rating. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
         }
@@ -2184,8 +2144,8 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
-            const card = e.target.closest('.event-card[data-scope-key]');
-            if (card) { drillInto(card.dataset.scopeKey); return; }
+            const row = e.target.closest('.scope-row[data-scope-key]');
+            if (row) { drillInto(row.dataset.scopeKey); return; }
             const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
             if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
             if (e.target.closest('#scope-more-toggle')) {
@@ -2197,12 +2157,21 @@
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Shows dropdown toggle
+            document.getElementById('showDropdownBtn').addEventListener('click', e => {
+                e.stopPropagation();
+                const m = document.getElementById('showDropdownMenu');
+                document.getElementById('yearDropdownMenu').style.display = 'none';
+                document.getElementById('divDropdownMenu').style.display = 'none';
+                m.style.display = m.style.display === 'block' ? 'none' : 'block';
+            });
+
             // Year dropdown toggle
             document.getElementById('yearDropdownBtn').addEventListener('click', e => {
                 e.stopPropagation();
                 const m = document.getElementById('yearDropdownMenu');
-                const d = document.getElementById('divDropdownMenu');
-                d.style.display = 'none';
+                document.getElementById('divDropdownMenu').style.display = 'none';
+                document.getElementById('showDropdownMenu').style.display = 'none';
                 m.style.display = m.style.display === 'block' ? 'none' : 'block';
             });
 
@@ -2210,13 +2179,15 @@
             document.getElementById('divDropdownBtn').addEventListener('click', e => {
                 e.stopPropagation();
                 const m = document.getElementById('divDropdownMenu');
-                const y = document.getElementById('yearDropdownMenu');
-                y.style.display = 'none';
+                document.getElementById('yearDropdownMenu').style.display = 'none';
+                document.getElementById('showDropdownMenu').style.display = 'none';
                 m.style.display = m.style.display === 'block' ? 'none' : 'block';
             });
 
             // Close dropdowns on outside click
             document.addEventListener('click', e => {
+                if (!e.target.closest('#showDropdownMenu') && !e.target.closest('#showDropdownBtn'))
+                    document.getElementById('showDropdownMenu').style.display = 'none';
                 if (!e.target.closest('#yearDropdownMenu') && !e.target.closest('#yearDropdownBtn'))
                     document.getElementById('yearDropdownMenu').style.display = 'none';
                 if (!e.target.closest('#divDropdownMenu') && !e.target.closest('#divDropdownBtn'))
