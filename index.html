@@ -2114,17 +2114,16 @@
 <script type="module" data-cfasync="false">
     import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
 
-    // One comment thread (and set of reactions) per rankings week.
+    // One comment thread per rankings week.
     // The thread key comes from the week label, e.g. "Sep '26 Week 4" -> "/week/sep-26-week-4"
     const walineOptions = {
         serverURL: 'https://ewr-ratings.vercel.app',
         lang: 'en',
-        reaction: true,
+        reaction: false,
         requiredMeta: ['nick'],
         imageUploader: false,
         search: false,
         locale: {
-            reactionTitle: 'What did you think of this week?',
             placeholder: 'Share your thoughts on the rankings...'
         }
     };
