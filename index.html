@@ -2114,8 +2114,9 @@
 <script type="module" data-cfasync="false">
     import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
 
-    init({
-        el: '#waline',
+    // One comment thread (and set of reactions) per rankings week.
+    // The thread key comes from the week label, e.g. "Sep '26 Week 4" -> "/week/sep-26-week-4"
+    const walineOptions = {
         serverURL: 'https://ewr-ratings.vercel.app',
         lang: 'en',
         reaction: true,
@@ -2126,9 +2127,33 @@
             reactionTitle: 'What did you think of this week?',
             placeholder: 'Share your thoughts on the rankings...'
         }
-    });
+    };
+
+    let walineInstance = null;
+    let activeCommentsPath = null;
+
+    function weekLabelToPath(weekLabel) {
+        return '/week/' + weekLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    window.setCommentsWeek = function (weekLabel) {
+        if (!weekLabel) return;
+        const path = weekLabelToPath(weekLabel);
+        if (path === activeCommentsPath) return;
+        activeCommentsPath = path;
+
+        if (!walineInstance) {
+            walineInstance = init({ el: '#waline', path, ...walineOptions });
+        } else {
+            walineInstance.update({ path, ...walineOptions });
+        }
+    };
+
+    // If the rankings loaded before this script did, pick up the week they stored
+    if (window.pendingCommentsWeek) {
+        window.setCommentsWeek(window.pendingCommentsWeek);
+    }
 </script>
-        </section>
 
         <section class="about" id="about">
             <h2>About</h2>
@@ -2548,7 +2573,19 @@
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeadingToOneLine);
 
         // Update the header display with week info
+        // Point the comments section at the week being viewed.
+        // Waline loads as a separate module, so if it isn't ready yet, store the week for it to pick up.
+        function updateCommentsWeek(weekLabel) {
+            if (!weekLabel) return;
+            if (typeof window.setCommentsWeek === 'function') {
+                window.setCommentsWeek(weekLabel);
+            } else {
+                window.pendingCommentsWeek = weekLabel;
+            }
+        }
+
         function updateHeaderDisplay(weekLabel, dateRange, statusText) {
+            updateCommentsWeek(weekLabel);
             const heading = document.getElementById('currentHeading');
             const dateEl = document.getElementById('dateRange');
             const lastUpdatedEl = document.getElementById('lastUpdated');
@@ -4585,6 +4622,7 @@ let visibleColumns = {
 
                             // Check if this is the newest week
                             const isNewestWeek = ratingsData.currentWeek === archiveIndex.weeks[0]?.label;
+                            updateCommentsWeek(ratingsData.currentWeek);
                             const heading = document.getElementById('currentHeading');
                             if (heading && ratingsData.currentWeek) {
                                 const expandedWeek = expandMonthName(ratingsData.currentWeek);
