@@ -711,13 +711,14 @@
         <div id="tabsWrapper">
         <!-- Tab Navigation -->
         <div class="tabs">
-            <button class="tab show-type-btn active tt tt-below" data-type="weekly" data-tt="Select one or more show types to combine them.">📺 Weekly TV</button>
-            <button class="tab show-type-btn tt tt-below" data-type="ppv" data-tt="Select one or more show types to combine them.">🏆 PPVs</button>
-            <button class="tab show-type-btn tt tt-below" data-type="tvspecial" data-tt="Select one or more show types to combine them.">⭐ TV Specials</button>
-            <button class="tab show-type-btn tt tt-below" data-type="quarterly" data-tt="Select one or more show types to combine them.">🥇 Quarterly</button>
-            <button class="tab show-type-btn tt tt-below" data-type="youtube" data-tt="Select one or more show types to combine them.">▶️ YouTube Specials</button>
+            <button class="tab show-type-btn active tt tt-below" data-type="weekly" data-tt="Switch show type. Turn on Multi-select to combine types.">📺 Weekly TV</button>
+            <button class="tab show-type-btn tt tt-below" data-type="ppv" data-tt="Switch show type. Turn on Multi-select to combine types.">🏆 PPVs</button>
+            <button class="tab show-type-btn tt tt-below" data-type="tvspecial" data-tt="Switch show type. Turn on Multi-select to combine types.">⭐ TV Specials</button>
+            <button class="tab show-type-btn tt tt-below" data-type="quarterly" data-tt="Switch show type. Turn on Multi-select to combine types.">🥇 Quarterly</button>
+            <button class="tab show-type-btn tt tt-below" data-type="youtube" data-tt="Switch show type. Turn on Multi-select to combine types.">▶️ YouTube Specials</button>
         </div>
         <div style="text-align: right; margin-bottom: 20px; margin-top: -15px;">
+            <button class="tab tt" id="multiToggle" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75; margin-right: 6px;" data-tt="Turn on to combine more than one show type.">☑️ Multi-select</button>
             <button class="tab" id="stipsToggle" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75;">🥊 Match Types</button>
         </div>
 
@@ -885,6 +886,7 @@
         let scopePath = [];         // node keys drilled into from the current starting level
         let selectedShowTypes = new Set(['weekly']);
         let currentView = 'shows';  // 'shows' or 'stips'
+        let multiSelect = false;    // off: show type buttons switch; on: they combine
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
@@ -939,6 +941,7 @@
                 btn.classList.toggle('active', currentView === 'shows' && selectedShowTypes.has(btn.dataset.type));
             });
             document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
+            document.getElementById('multiToggle').classList.toggle('active', multiSelect);
             document.getElementById('showsView').classList.toggle('active', currentView === 'shows');
             document.getElementById('stips').classList.toggle('active', currentView === 'stips');
         }
@@ -948,7 +951,10 @@
                 const type = btn.dataset.type;
                 if (currentView === 'stips') {
                     currentView = 'shows';
-                    selectedShowTypes.add(type);
+                    if (multiSelect) selectedShowTypes.add(type);
+                    else selectedShowTypes = new Set([type]);
+                } else if (!multiSelect) {
+                    selectedShowTypes = new Set([type]);
                 } else if (selectedShowTypes.has(type)) {
                     if (selectedShowTypes.size === 1) return;
                     selectedShowTypes.delete(type);
@@ -959,6 +965,17 @@
                 updateViewButtons();
                 renderScopeView();
             });
+        });
+
+        // Turning multi-select off keeps only the first selected show type
+        document.getElementById('multiToggle').addEventListener('click', () => {
+            multiSelect = !multiSelect;
+            if (!multiSelect && selectedShowTypes.size > 1) {
+                selectedShowTypes = new Set([SCOPE_TABS.find(t => selectedShowTypes.has(t))]);
+                scopePath = [];
+                renderScopeView();
+            }
+            updateViewButtons();
         });
 
         document.getElementById('stipsToggle').addEventListener('click', () => {
@@ -1208,6 +1225,12 @@
         }
 
         // Filters on the match's own division, so a singles wrestler's tag matches count as tag matches
+        function isCreditedForDivision(wrestler, match) {
+            const divKey = DIVISION_BY_MATCH[match.division] || 'other';
+            if (divKey === 'other') return !wrestler.isTeam;
+            return wrestler.division === divKey;
+        }
+
         function matchesDivision(match) {
             if (selectedDivisions.size === ALL_DIVISIONS.length) return true;
             return selectedDivisions.has(DIVISION_BY_MATCH[match.division] || 'other');
@@ -1267,7 +1290,11 @@
                         stipulation: match.matchStipulation,
                         stakes: match.stakes,
                         opponents, versus, partners,
-                        isFirstEntry: isFirst // only first entry used for top 5/stats counts
+                        isFirstEntry: isFirst, // only first entry used for top 5/stats counts
+                        // Leaderboards credit whoever competes in the match's division: singles wrestlers
+                        // in Men's/Women's matches, the tag team or trio in team matches. Matches outside
+                        // the five divisions credit individual wrestlers.
+                        credited: isCreditedForDivision(wrestler, match)
                     };
 
                     // Participant index: a team entry's members are everyone in the match who isn't in its versus list
@@ -1363,6 +1390,7 @@
         function calculateWrestlerStats(matches, minMatches = 3) {
             const map = {};
             matches.forEach(m => {
+                if (!m.credited) return;
                 const name = m.wrestler;
                 const slug = m.slug;
                 if (!name) return;
@@ -1540,7 +1568,7 @@
                     <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
                     <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
                     <div class="stat-box tt" data-tt="Number of individual shows these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
-                    <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
+                    <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who competed in at least one match, counted in each match's own division (teams for tag and trios matches)."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
                 </div>
 
                 <div id="scope-grid-section">
@@ -1633,7 +1661,7 @@
             document.getElementById('scope-avg-rating').textContent = avg !== null ? avg.toFixed(2) : '--';
             document.getElementById('scope-9plus').textContent = unique.filter(m => m.rating >= 9).length;
             document.getElementById('scope-shows').textContent = showCount;
-            document.getElementById('scope-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
+            document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
 
             // Cards for the next level down
             let children = [...node.children.values()];
