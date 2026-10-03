@@ -1902,6 +1902,7 @@
 }
         .otd-remember-block{margin-top:12px;}
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 </head>
 <body>
 <div id="ttBox"></div>
@@ -2084,26 +2085,49 @@
         </div>
 
         <!-- Weekly Comments Section -->
-        <section id="weekly-comments" style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
-            <h3 style="color: #ffd700; font-size: 1.3em; margin-bottom: 6px;">💬 Comments & Questions</h3>
-            <p style="color: #b8b8b8; font-size: 0.9em; margin-bottom: 20px;">Thoughts on this week's rankings? Drop a comment below — a GitHub account is needed to post. No GitHub account? Send your questions and comments via <a href="https://www.instagram.com/elitewrestlerratings" target="_blank" style="color: #ffd700; text-decoration: none; border-bottom: 1px solid rgba(255,215,0,0.4);">Instagram</a> or email <a href="mailto:contact@elitewrestlerratings.com" style="color: #ffd700; text-decoration: none; border-bottom: 1px solid rgba(255,215,0,0.4);">contact@elitewrestlerratings.com</a> instead.</p>
-            <div class="giscus"></div>
-            <script src="https://giscus.app/client.js"
-                    data-repo="rogueandjosh/aew-wrestler-ratings"
-                    data-repo-id="R_kgDOQjnTHQ"
-                    data-category="General"
-                    data-category-id="DIC_kwDOQjnTHc4DC817"
-                    data-mapping="pathname"
-                    data-strict="0"
-                    data-reactions-enabled="1"
-                    data-emit-metadata="0"
-                    data-input-position="bottom"
-                    data-theme="dark_dimmed"
-                    data-lang="en"
-                    data-loading="lazy"
-                    crossorigin="anonymous"
-                    async>
-            </script>
+<section id="weekly-comments" style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+    <h3 style="color: #ffd700; font-size: 1.3em; margin-bottom: 6px;">💬 Comments & Questions</h3>
+    <p style="color: #b8b8b8; font-size: 0.9em; margin-bottom: 20px;">Thoughts on this week's rankings? Drop a comment below. Post as a guest with just a name, or sign up for a free account.</p>
+    <div id="waline"></div>
+</section>
+
+<style>
+    #waline {
+        --waline-theme-color: #ffd700;
+        --waline-active-color: #E6C876;
+        --waline-color: #e0e0e0;
+        --waline-bg-color: #25273B;
+        --waline-bg-color-light: #2f3248;
+        --waline-bg-color-hover: #363a52;
+        --waline-border-color: rgba(255, 215, 0, 0.25);
+        --waline-disable-bg-color: #1e2030;
+        --waline-disable-color: #777;
+        --waline-info-color: #b8b8b8;
+        --waline-info-bg-color: #2f3248;
+        --waline-light-grey: #999;
+        --waline-dark-grey: #b8b8b8;
+        --waline-code-bg-color: #1e2030;
+        --waline-bq-color: #2f3248;
+    }
+</style>
+
+<script type="module" data-cfasync="false">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+    init({
+        el: '#waline',
+        serverURL: 'https://ewr-ratings.vercel.app',
+        lang: 'en',
+        reaction: true,
+        requiredMeta: ['nick'],
+        imageUploader: false,
+        search: false,
+        locale: {
+            reactionTitle: 'What did you think of this week?',
+            placeholder: 'Share your thoughts on the rankings...'
+        }
+    });
+</script>
         </section>
 
         <section class="about" id="about">
