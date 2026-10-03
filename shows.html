@@ -411,6 +411,52 @@
             font-size: 0.75rem;
         }
 
+        /* Drill-down scopes */
+        .scope-crumbs {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: -10px 0 25px;
+        }
+
+        .scope-crumb {
+            background: none;
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: #ffd700;
+            padding: 5px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: 'Overlock', cursive;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .scope-crumb:hover {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .scope-crumb.current {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            cursor: default;
+        }
+
+        .scope-crumb-sep {
+            color: #777;
+        }
+
+        .event-card.clickable {
+            cursor: pointer;
+        }
+
+        .event-card .event-date {
+            color: #b8b8b8;
+            font-size: 0.8rem;
+            margin: -6px 0 10px;
+        }
+
         /* Stipulation List */
         .stip-list {
             display: flex;
@@ -647,7 +693,9 @@
         <div class="tabs">
             <button class="tab active" data-tab="weekly">📺 Weekly TV</button>
             <button class="tab" data-tab="ppv">🏆 PPVs</button>
-            <button class="tab" data-tab="specials">⭐ Specials</button>
+            <button class="tab" data-tab="tvspecial">⭐ TV Specials</button>
+            <button class="tab" data-tab="quarterly">🥇 Quarterly</button>
+            <button class="tab" data-tab="youtube">▶️ YouTube Specials</button>
         </div>
         <div style="text-align: right; margin-bottom: 20px; margin-top: -15px;">
             <button class="tab" data-tab="stips" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75;">🥊 Match Types</button>
@@ -660,117 +708,12 @@
             <p class="loading-progress" id="loadingProgress">0 / 0 wrestlers loaded</p>
         </div>
 
-        <!-- Weekly TV Tab -->
-        <div class="tab-content active" id="weekly">
-            <div class="stats-summary">
-                <div class="stat-box tt" data-tt="Total number of matches across Dynamite, Collision and Rampage for the selected filters.">
-                    <div class="stat-number" id="weekly-total-matches">--</div>
-                    <div class="stat-label">Total Matches</div>
-                </div>
-                <div class="stat-box tt" data-tt="Average Cagematch community rating across all weekly TV matches for the selected filters.">
-                    <div class="stat-number" id="weekly-avg-rating">--</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
-                <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community.">
-                    <div class="stat-number" id="weekly-9plus">--</div>
-                    <div class="stat-label">9+ Matches</div>
-                </div>
-                <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match.">
-                    <div class="stat-number" id="weekly-wrestlers">--</div>
-                    <div class="stat-label">Wrestlers</div>
-                </div>
-            </div>
-
-            <div class="breakdown-grid">
-                <div class="breakdown-card">
-                    <h4>Dynamite</h4>
-                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="dynamite-matches">--</span></div>
-                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="dynamite-avg">--</span></div>
-                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="dynamite-best">--</span></div>
-                </div>
-                <div class="breakdown-card">
-                    <h4>Collision</h4>
-                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="collision-matches">--</span></div>
-                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="collision-avg">--</span></div>
-                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="collision-best">--</span></div>
-                </div>
-                <div class="breakdown-card">
-                    <h4>Rampage</h4>
-                    <div class="breakdown-item"><span class="label">Total Matches</span><span class="value" id="rampage-matches">--</span></div>
-                    <div class="breakdown-item"><span class="label">Average Rating</span><span class="value" id="rampage-avg">--</span></div>
-                    <div class="breakdown-item"><span class="label">Best Rating</span><span class="value rating-excellent" id="rampage-best">--</span></div>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt tt-below" data-tt="Top performers on Dynamite, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Dynamite Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="dynamite-leaderboard"></tbody></table>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt tt-below" data-tt="Top performers on Collision, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Collision Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="collision-leaderboard"></tbody></table>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt tt-below" data-tt="Top performers on Rampage, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Rampage Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="rampage-leaderboard"></tbody></table>
-            </div>
-        </div>
-
-        <!-- PPV Tab -->
-        <div class="tab-content" id="ppv">
-            <div class="stats-summary">
-                <div class="stat-box tt" data-tt="Total number of matches across all PPV events for the selected filters."><div class="stat-number" id="ppv-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                <div class="stat-box tt" data-tt="Average Cagematch community rating across all PPV matches for the selected filters."><div class="stat-number" id="ppv-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box tt" data-tt="Number of PPV matches rated 9.0 or above out of 10."><div class="stat-number" id="ppv-9plus">--</div><div class="stat-label">9+ Matches</div></div>
-                <div class="stat-box tt" data-tt="Number of distinct PPV events included in the current filter."><div class="stat-number" id="ppv-events">--</div><div class="stat-label">PPV Events</div></div>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="The top 5 highest-rated PPV matches based on Cagematch community ratings." style="cursor: help;">Top 5 PPV Matches</h3>
-                <div class="best-match-card" id="best-ppv-match">
-                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
-                </div>
-            </div>
-
-            <h3 class="section-title tt" data-tt="Performance breakdown for each PPV event, showing match count, average rating, and best match rating." style="cursor: help; margin-bottom: 20px;">PPV Performance by Event</h3>
-            <div class="event-grid" id="ppv-grid"></div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top PPV performers ranked by average match rating. Minimum 3 PPV matches to qualify." style="cursor: help;">Top PPV Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="ppv-leaderboard"></tbody></table>
-            </div>
-        </div>
-
-        <!-- Specials Tab -->
-        <div class="tab-content" id="specials">
-            <div class="stats-summary">
-                <div class="stat-box tt" data-tt="Total number of matches across all special events for the selected filters."><div class="stat-number" id="specials-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                <div class="stat-box tt" data-tt="Average Cagematch community rating across all special event matches."><div class="stat-number" id="specials-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box tt" data-tt="Number of distinct special events included in the current filter."><div class="stat-number" id="specials-events">--</div><div class="stat-label">Special Events</div></div>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="The top 5 highest-rated special event matches based on Cagematch community ratings." style="cursor: help;">Top 5 Special Event Matches</h3>
-                <div class="best-match-card" id="best-specials-match">
-                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
-                </div>
-            </div>
-
-            <h3 class="section-title tt" data-tt="Performance breakdown for special TV events like Grand Slam, Winter Is Coming, and Blood & Guts." style="cursor: help; margin-bottom: 20px;">Special Event Performance</h3>
-            <div class="event-grid" id="specials-grid"></div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top performers on special events, ranked by average match rating. Minimum 3 matches to qualify." style="cursor: help;">Top Specials Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="specials-leaderboard"></tbody></table>
-            </div>
-        </div>
+        <!-- Show tabs (markup built by buildScopeTabMarkup) -->
+        <div class="tab-content active" id="weekly"></div>
+        <div class="tab-content" id="ppv"></div>
+        <div class="tab-content" id="tvspecial"></div>
+        <div class="tab-content" id="quarterly"></div>
+        <div class="tab-content" id="youtube"></div>
 
         <!-- Match Types Tab -->
         <div class="tab-content" id="stips">
@@ -812,9 +755,51 @@
         // CONFIGURATION
         // ===========================================
         
-        const PPV_NAMES = ['Revolution', 'Double or Nothing', 'Forbidden Door', 'All In', 'All Out', 'Full Gear', 'WrestleDream', 'Worlds End', 'Dynasty', 'All In London', 'Grand Slam Australia'];
-        const SPECIAL_NAMES = ['Winter Is Coming', 'Grand Slam', 'Blood and Guts', 'Fyter Fest', 'Fight for the Fallen', 'Battle of the Belts', 'Maximum Carnage', 'Bash at the Beach', 'Beach Break', 'Road Rager', 'Homecoming', 'New Year\'s Smash', 'Fright Night', 'Summer Blockbuster', 'Owen Hart Foundation', 'Worlds Collide', 'Holiday Bash', 'Quake by the Lake', 'Forbidden Door Fallout', 'Rampage: Big Business', 'Dynamite: New Year\'s Smash'];
-        const WEEKLY_SHOWS = { dynamite: ['Dynamite'], collision: ['Collision'], rampage: ['Rampage'] };
+        // Which tab a match belongs to comes from its showType; show names come from its show field
+        const TAB_BY_SHOWTYPE = {
+            'Weekly TV': 'weekly',
+            'Pay Per View': 'ppv',
+            'TV Special': 'tvspecial',
+            'Quarterly TV Show': 'quarterly',
+            'YouTube Special': 'youtube'
+        };
+        const WEEKLY_SHOW_ORDER = ['Dynamite', 'Collision', 'Rampage'];
+
+        // Per-tab wording. childTitles[depth] is the heading for the card grid at that drill depth
+        // (any level whose cards are individual shows uses "Editions" instead)
+        const TAB_CONFIG = {
+            weekly:    { name: 'Weekly TV', rootLabel: 'All Weekly TV',      countLabel: 'Episodes', collapseSingle: false,
+                         childTitles: ['Performance by Show', 'Named Episodes'] },
+            ppv:       { name: 'PPV', rootLabel: 'All PPVs',           countLabel: 'Events',   collapseSingle: false,
+                         childTitles: ['PPV Performance by Event', 'Performance by Location'] },
+            tvspecial: { name: 'TV Special', rootLabel: 'All TV Specials',    countLabel: 'Events',   collapseSingle: false,
+                         childTitles: ['Performance by Event'] },
+            quarterly: { name: 'Quarterly', rootLabel: 'All Quarterly Shows', countLabel: 'Events',  collapseSingle: true,
+                         childTitles: ['Performance by Event'] },
+            youtube:   { name: 'YouTube Special', rootLabel: 'All YouTube Specials', countLabel: 'Events', collapseSingle: true,
+                         childTitles: ['Performance by Event'] }
+        };
+        const SCOPE_TABS = Object.keys(TAB_CONFIG);
+
+        // Spelling fixes applied to event names before anything else uses them
+        const EVENT_NAME_FIXES = [
+            [/\bSatuday\b/g, 'Saturday']
+        ];
+
+        // Named weekly episodes that should be grouped under one name (keys are lowercase)
+        const THEME_ALIASES = {
+            '1 year anniversary': 'Anniversary',
+            'one year anniversary': 'Anniversary',
+            '3 year anniversary': 'Anniversary',
+            '5 year anniversary': 'Anniversary',
+            'anniversary show': 'Anniversary',
+            'slam dunk saturday': 'Slam Dunk',
+            'slam dunk sunday': 'Slam Dunk',
+            "a celebration of mr brodie lee's life": 'Tributes & Celebrations',
+            'a tribute to pac': 'Tributes & Celebrations',
+            'a tribute to the butcher andy williams': 'Tributes & Celebrations',
+            "chris jericho's 30th year celebration": 'Tributes & Celebrations'
+        };
 
         // ===========================================
         // STATE
@@ -862,7 +847,11 @@
         let selectedYears = new Set(); // empty = all years
         let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']); // all by default
         let availableYears = [];
-        let showStats = { weekly: { dynamite: [], collision: [], rampage: [] }, ppv: {}, specials: {}, stipulations: {} };
+        let showStats = { stipulations: {} };
+        let scopeMatches = {};   // tab -> [{ ...matchData, path: [{ key, label, date, isEdition }] }]
+        let scopeTrees = {};     // tab -> root node, rebuilt on every processAllData()
+        let scopePath = {};      // tab -> [node keys] the user has drilled into
+        SCOPE_TABS.forEach(t => { scopeMatches[t] = []; scopePath[t] = []; });
 
         // ===========================================
         // NAVIGATION
@@ -996,13 +985,78 @@
         // HELPERS
         // ===========================================
         
-        function categorizeEvent(eventName) {
-            for (const ppv of PPV_NAMES) if (eventName.includes(ppv)) return { type: 'ppv', name: ppv };
-            for (const special of SPECIAL_NAMES) if (eventName.includes(special)) return { type: 'special', name: special };
-            for (const [show, keywords] of Object.entries(WEEKLY_SHOWS)) for (const keyword of keywords) if (eventName.includes(keyword)) return { type: 'weekly', name: show };
-            return { type: 'other', name: eventName };
+        function esc(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
-        
+
+        function fixEventName(eventName) {
+            let fixed = eventName || '';
+            EVENT_NAME_FIXES.forEach(([pattern, replacement]) => { fixed = fixed.replace(pattern, replacement); });
+            return fixed;
+        }
+
+        // "Blood and Guts '21" -> "Blood and Guts", "Fyter Fest '20 - Night 2" -> "Fyter Fest"
+        function getThemeName(eventName) {
+            const base = eventName
+                .replace(/\s*-?\s*Night\s*\d+.*$/i, '')
+                .replace(/\s*'\d{2}\s*$/, '')
+                .replace(/\s+(19|20)\d{2}\s*$/, '')
+                .trim();
+            return THEME_ALIASES[base.toLowerCase()] || base;
+        }
+
+        function formatDate(isoDate) {
+            if (!isoDate) return '';
+            const [y, m, d] = isoDate.split('-').map(Number);
+            return `${d}.${m}.${y}`;
+        }
+
+        // Returns { tab, path } for a match, or null if it has no usable show data.
+        // Each path step is a drill-down level; the last step is always the individual show (edition)
+        // except for regular weekly episodes, which only count at the show level.
+        function getScopePath(match, eventName) {
+            const tab = TAB_BY_SHOWTYPE[match.showType];
+            const show = match.show;
+            if (!tab || !show) return null;
+
+            const edition = {
+                key: `ed:${eventName.toLowerCase()}|${match.date || ''}`,
+                label: eventName,
+                date: match.date || '',
+                isEdition: true
+            };
+
+            if (tab === 'weekly') {
+                if (!WEEKLY_SHOW_ORDER.includes(show)) return null;
+                const showStep = { key: show.toLowerCase(), label: show };
+                if (eventName.toLowerCase() === show.toLowerCase()) return { tab, path: [showStep] };
+                const theme = getThemeName(eventName);
+                return { tab, path: [showStep, { key: 'theme:' + theme.toLowerCase(), label: theme }, edition] };
+            }
+
+            if (tab === 'ppv') {
+                const group = show.startsWith('All In') ? 'All In' : show;
+                const groupStep = { key: group.toLowerCase(), label: group };
+                if (group !== show) return { tab, path: [groupStep, { key: show.toLowerCase(), label: show }, edition] };
+                return { tab, path: [groupStep, edition] };
+            }
+
+            return { tab, path: [{ key: show.toLowerCase(), label: show }, edition] };
+        }
+
+        // In team-style matches where the export couldn't split partners from opponents,
+        // "versus" holds everyone else in the match, so don't present that list as opponents
+        function getVersusText(m) {
+            const isTeamStyle = /tag|trios/i.test(m.matchType || '');
+            const partnersKnown = m.partners && m.partners.length > 0;
+            if (isTeamStyle && !partnersKnown) {
+                const others = (m.opponents || []).length;
+                return others ? ` + ${others} others` : '';
+            }
+            const list = (m.versus && m.versus.length) ? m.versus : m.opponents;
+            return list && list.length ? ' vs ' + list.join(', ') : '';
+        }
+
         function getRatingClass(rating) {
             if (rating >= 9) return 'rating-excellent';
             if (rating >= 8) return 'rating-great';
@@ -1018,9 +1072,8 @@
         function dedupeMatches(matches) {
             const seen = new Set();
             return matches.filter(m => {
-                const key = `${(m.event || '').toLowerCase()}__${m.date || ''}__${(m.rating || 0).toFixed(2)}__${(m.matchType || '').toLowerCase()}`;
-                if (seen.has(key)) return false;
-                seen.add(key);
+                if (seen.has(m.matchKey)) return false;
+                seen.add(m.matchKey);
                 return true;
             });
         }
@@ -1053,12 +1106,8 @@
         // ===========================================
         
         function resetShowStats() {
-            showStats = { 
-                weekly: { dynamite: [], collision: [], rampage: [] }, 
-                ppv: {}, 
-                specials: {}, 
-                stipulations: {} 
-            };
+            showStats = { stipulations: {} };
+            SCOPE_TABS.forEach(t => { scopeMatches[t] = []; });
         }
 
         function processAllData() {
@@ -1073,54 +1122,85 @@
                     if (!matchesYear(match)) return;
 
                     const normWrestler = normaliseName(wrestler.name);
-                    const normOpponents = (match.opponents || []).map(n => normaliseName(n));
+                    const eventName = fixEventName(match.event);
 
-                    // Dedup key: event + date + rating is sufficient to uniquely identify a match
-                    // Adding participant names causes issues with name variants and multi-person matches
-                    const matchKey = `${(match.event || '').toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}__${(match.matchType || '').toLowerCase()}`;
+                    // Match ID is unique per match; the composite key is only a fallback for files without IDs
+                    const matchKey = match.id != null
+                        ? `id:${match.id}`
+                        : `${eventName.toLowerCase()}__${match.date || ''}__${(match.rating || 0).toFixed(2)}__${(match.matchType || '').toLowerCase()}`;
 
                     // Per-wrestler credit key — prevent same wrestler being credited twice for same match
                     const participantKey = `${normWrestler.toLowerCase()}__${matchKey}`;
                     if (seenParticipantMatches.has(participantKey)) return;
                     seenParticipantMatches.add(participantKey);
 
-                    const category = categorizeEvent(match.event);
-                    const matchData = { 
-                        wrestler: normWrestler,
-                        slug: wrestler.slug || createSlug(normWrestler), 
-                        rating: match.rating, 
-                        event: match.event, 
-                        date: match.date, 
-                        matchType: match.matchType, 
-                        stipulation: match.matchStipulation, 
-                        stakes: match.stakes, 
-                        opponents: normOpponents,
-                        isFirstEntry: !seenMatches.has(matchKey) // only first entry used for top 5/stats counts
-                    };
-
-                    // Track whether this is the canonical first entry for this match
                     const isFirst = !seenMatches.has(matchKey);
                     if (isFirst) seenMatches.add(matchKey);
 
-                    // For leaderboards: store per-wrestler entry (so all participants get credited)
-                    if (category.type === 'weekly') {
-                        showStats.weekly[category.name].push(matchData);
-                    } else if (category.type === 'ppv') {
-                        if (!showStats.ppv[category.name]) showStats.ppv[category.name] = [];
-                        showStats.ppv[category.name].push(matchData);
-                    } else if (category.type === 'special') {
-                        if (!showStats.specials[category.name]) showStats.specials[category.name] = [];
-                        showStats.specials[category.name].push(matchData);
-                    }
+                    const matchData = {
+                        matchKey,
+                        wrestler: normWrestler,
+                        slug: wrestler.slug || createSlug(normWrestler),
+                        rating: match.rating,
+                        event: eventName,
+                        show: match.show,
+                        date: match.date,
+                        matchType: match.matchType,
+                        stipulation: match.matchStipulation,
+                        stakes: match.stakes,
+                        opponents: (match.opponents || []).map(n => normaliseName(n)),
+                        versus: (match.versus || []).map(n => normaliseName(n)),
+                        partners: (match.partners || []).map(n => normaliseName(n)),
+                        isFirstEntry: isFirst // only first entry used for top 5/stats counts
+                    };
+
+                    const scope = getScopePath(match, eventName);
+                    if (scope) scopeMatches[scope.tab].push({ ...matchData, path: scope.path });
+
                     if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
                         if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
                         showStats.stipulations[match.matchStipulation].push(matchData);
                     }
                 });
             });
+
+            SCOPE_TABS.forEach(t => { scopeTrees[t] = buildScopeTree(t); });
         }
-        
-        function calculateWrestlerStats(matches) {
+
+        // Builds a node tree for one tab. Every match is added to each node along its path,
+        // so any node's .matches holds everything inside it.
+        function buildScopeTree(tab) {
+            let root = { key: '', label: TAB_CONFIG[tab].rootLabel, titleName: TAB_CONFIG[tab].name, children: new Map(), matches: [], labelCounts: {} };
+            scopeMatches[tab].forEach(m => {
+                let node = root;
+                node.matches.push(m);
+                m.path.forEach(step => {
+                    if (!node.children.has(step.key)) {
+                        node.children.set(step.key, { key: step.key, label: step.label, date: step.date, isEdition: !!step.isEdition, children: new Map(), matches: [], labelCounts: {} });
+                    }
+                    node = node.children.get(step.key);
+                    node.matches.push(m);
+                    if (step.date && step.date < (node.date || '9999')) node.date = step.date;
+                    // Several spellings/casings can share a key; display the most used one
+                    node.labelCounts[step.label] = (node.labelCounts[step.label] || 0) + (m.isFirstEntry ? 1 : 0);
+                });
+            });
+            finaliseLabels(root);
+            if (TAB_CONFIG[tab].collapseSingle) {
+                while (root.children.size === 1 && ![...root.children.values()][0].isEdition) {
+                    root = [...root.children.values()][0];
+                }
+            }
+            return root;
+        }
+
+        function finaliseLabels(node) {
+            const variants = Object.entries(node.labelCounts);
+            if (variants.length) node.label = variants.sort((a, b) => b[1] - a[1])[0][0];
+            node.children.forEach(finaliseLabels);
+        }
+
+        function calculateWrestlerStats(matches, minMatches = 3) {
             const map = {};
             matches.forEach(m => {
                 const name = m.wrestler;
@@ -1133,7 +1213,7 @@
             });
             return Object.values(map)
                 .map(w => ({ ...w, avg: w.totalRating / w.matches }))
-                .filter(w => w.matches >= 3)
+                .filter(w => w.matches >= minMatches)
                 .sort((a, b) => b.avg - a.avg);
         }
 
@@ -1152,86 +1232,156 @@
             `).join('') || '<tr><td colspan="5" style="text-align: center; color: #888;">No data available</td></tr>';
         }
         
-        function renderWeeklyTab() {
-            const all = [...showStats.weekly.dynamite, ...showStats.weekly.collision, ...showStats.weekly.rampage];
-            const unique = getUniqueMatches(all);
-            document.getElementById('weekly-total-matches').textContent = unique.length;
-            document.getElementById('weekly-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
-            document.getElementById('weekly-9plus').textContent = unique.filter(m => m.rating >= 9).length;
-            document.getElementById('weekly-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
-            
-            ['dynamite', 'collision', 'rampage'].forEach(show => {
-                const matches = showStats.weekly[show];
-                const uniqueShow = getUniqueMatches(matches);
-                document.getElementById(`${show}-matches`).textContent = uniqueShow.length;
-                document.getElementById(`${show}-avg`).textContent = uniqueShow.length > 0 ? (uniqueShow.reduce((s, m) => s + m.rating, 0) / uniqueShow.length).toFixed(2) : '--';
-                document.getElementById(`${show}-best`).textContent = uniqueShow.length > 0 ? Math.max(...uniqueShow.map(m => m.rating)).toFixed(2) : '--';
-            });
-            
-            renderLeaderboard('dynamite-leaderboard', calculateWrestlerStats(showStats.weekly.dynamite));
-            renderLeaderboard('collision-leaderboard', calculateWrestlerStats(showStats.weekly.collision));
-            renderLeaderboard('rampage-leaderboard', calculateWrestlerStats(showStats.weekly.rampage));
-        }
-        
-        function renderPPVTab() {
-            const all = Object.values(showStats.ppv).flat();
-            const unique = getUniqueMatches(all);
-            document.getElementById('ppv-total-matches').textContent = unique.length;
-            document.getElementById('ppv-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
-            document.getElementById('ppv-9plus').textContent = unique.filter(m => m.rating >= 9).length;
-            document.getElementById('ppv-events').textContent = Object.keys(showStats.ppv).length;
-            
-            if (unique.length > 0) {
-                const top5 = getTop5(all);
-                document.getElementById('best-ppv-match').innerHTML = top5.map((m, i) => `
-                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
-                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
-                        <div>
-                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
-                            <div style="color:#aaa;font-size:0.82em;">${m.event}${m.matchType ? ' · ' + m.matchType : ''}</div>
-                        </div>
-                    </div>`).join('');
-            }
-            
-            document.getElementById('ppv-grid').innerHTML = Object.entries(showStats.ppv).sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length).map(([name, matches]) => {
-                const u = getUniqueMatches(matches);
-                const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
-                const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
-                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
-            }).join('');
-            
-            renderLeaderboard('ppv-leaderboard', calculateWrestlerStats(all));
-        }
-        
-        function renderSpecialsTab() {
-            const all = Object.values(showStats.specials).flat();
-            const unique = getUniqueMatches(all);
-            document.getElementById('specials-total-matches').textContent = unique.length;
-            document.getElementById('specials-avg-rating').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
-            document.getElementById('specials-events').textContent = Object.keys(showStats.specials).length;
+        function buildScopeTabMarkup() {
+            SCOPE_TABS.forEach(tab => {
+                document.getElementById(tab).innerHTML = `
+                    <div class="scope-crumbs" id="${tab}-crumbs"></div>
+                    <div class="stats-summary">
+                        <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="${tab}-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                        <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="${tab}-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                        <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="${tab}-9plus">--</div><div class="stat-label">9+ Matches</div></div>
+                        <div class="stat-box tt" data-tt="Number of individual shows these matches come from."><div class="stat-number" id="${tab}-shows">--</div><div class="stat-label">${TAB_CONFIG[tab].countLabel}</div></div>
+                        <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match."><div class="stat-number" id="${tab}-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
+                    </div>
 
-            if (unique.length > 0) {
-                const top5 = getTop5(all);
-                document.getElementById('best-specials-match').innerHTML = top5.map((m, i) => `
-                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
-                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
-                        <div>
-                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
-                            <div style="color:#aaa;font-size:0.82em;">${m.event}${m.matchType ? ' · ' + m.matchType : ''}</div>
-                        </div>
-                    </div>`).join('');
-            }
-            
-            document.getElementById('specials-grid').innerHTML = Object.entries(showStats.specials).sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length).map(([name, matches]) => {
-                const u = getUniqueMatches(matches);
-                const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
-                const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
-                return `<div class="event-card"><div class="event-name">${name}</div><div class="event-stats"><div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="event-stat-label">Avg</div></div><div class="event-stat"><div class="event-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="event-stat-label">Best</div></div></div></div>`;
-            }).join('');
-            
-            renderLeaderboard('specials-leaderboard', calculateWrestlerStats(all));
+                    <div id="${tab}-grid-section">
+                        <h3 class="section-title tt" id="${tab}-grid-title" data-tt="Select a card to filter the whole tab to it." style="cursor: help; margin-bottom: 20px;"></h3>
+                        <div class="event-grid" id="${tab}-grid"></div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3 class="section-title tt" id="${tab}-top-title" style="cursor: help;"></h3>
+                        <div class="best-match-card" id="${tab}-top-matches"></div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3 class="section-title tt tt-below" id="${tab}-lb-title" style="cursor: help;"></h3>
+                        <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                        <tbody id="${tab}-leaderboard"></tbody></table>
+                    </div>`;
+            });
         }
-        
+
+        // Walks the saved path; if a filter change removed a level, stop at the deepest one that still exists
+        function resolveScopeNodes(tab) {
+            const nodes = [scopeTrees[tab]];
+            const validKeys = [];
+            for (const key of scopePath[tab]) {
+                const next = nodes[nodes.length - 1].children.get(key);
+                if (!next) break;
+                nodes.push(next);
+                validKeys.push(key);
+            }
+            scopePath[tab] = validKeys;
+            return nodes;
+        }
+
+        function drillInto(tab, key) {
+            scopePath[tab].push(key);
+            renderScopeTab(tab);
+        }
+
+        function drillTo(tab, depth) {
+            scopePath[tab] = scopePath[tab].slice(0, depth);
+            renderScopeTab(tab);
+        }
+
+        function getAvg(list) {
+            return list.length ? list.reduce((sum, m) => sum + m.rating, 0) / list.length : null;
+        }
+
+        function matchRowHTML(m, isLast) {
+            return `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.08)'}">
+                    <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
+                    <div>
+                        <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(m.wrestler)}${esc(getVersusText(m))}</div>
+                        <div style="color:#aaa;font-size:0.82em;">${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
+                    </div>
+                </div>`;
+        }
+
+        function renderScopeTab(tab) {
+            const nodes = resolveScopeNodes(tab);
+            const node = nodes[nodes.length - 1];
+            const depth = nodes.length - 1;
+            const all = node.matches;
+            const unique = getUniqueMatches(all);
+            const avg = getAvg(unique);
+            const scopeName = node.titleName || node.label;
+            const showCount = new Set(unique.map(m => `${m.show}|${m.date}`)).size;
+
+            // Breadcrumbs
+            document.getElementById(`${tab}-crumbs`).innerHTML = nodes.map((n, i) => {
+                const isCurrent = i === nodes.length - 1;
+                const sep = i > 0 ? '<span class="scope-crumb-sep">›</span>' : '';
+                return `${sep}<button class="scope-crumb${isCurrent ? ' current' : ''}" ${isCurrent ? 'disabled' : `data-scope-tab="${tab}" data-scope-depth="${i}"`}>${esc(n.label)}</button>`;
+            }).join('');
+
+            // Summary
+            document.getElementById(`${tab}-total-matches`).textContent = unique.length;
+            document.getElementById(`${tab}-avg-rating`).textContent = avg !== null ? avg.toFixed(2) : '--';
+            document.getElementById(`${tab}-9plus`).textContent = unique.filter(m => m.rating >= 9).length;
+            document.getElementById(`${tab}-shows`).textContent = showCount;
+            document.getElementById(`${tab}-wrestlers`).textContent = new Set(all.map(m => m.wrestler)).size;
+
+            // Cards for the next level down
+            const children = [...node.children.values()];
+            const gridSection = document.getElementById(`${tab}-grid-section`);
+            if (children.length === 0) {
+                gridSection.style.display = 'none';
+            } else {
+                gridSection.style.display = '';
+                const editionLevel = children.every(c => c.isEdition);
+                const titles = TAB_CONFIG[tab].childTitles;
+                document.getElementById(`${tab}-grid-title`).textContent = editionLevel ? 'Editions' : (titles[Math.min(depth, titles.length - 1)]);
+
+                if (editionLevel) {
+                    children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+                } else if (tab === 'weekly' && depth === 0) {
+                    children.sort((a, b) => WEEKLY_SHOW_ORDER.indexOf(a.label) - WEEKLY_SHOW_ORDER.indexOf(b.label));
+                } else {
+                    children.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
+                }
+
+                document.getElementById(`${tab}-grid`).innerHTML = children.map(c => {
+                    const u = getUniqueMatches(c.matches);
+                    const cAvg = getAvg(u);
+                    const best = u.length ? Math.max(...u.map(m => m.rating)) : null;
+                    return `<div class="event-card clickable" data-scope-tab="${tab}" data-scope-key="${esc(c.key)}">
+                        <div class="event-name">${esc(c.label)}</div>
+                        ${c.isEdition ? `<div class="event-date">${formatDate(c.date)}</div>` : ''}
+                        <div class="event-stats">
+                            <div class="event-stat"><div class="event-stat-value">${u.length}</div><div class="event-stat-label">Matches</div></div>
+                            <div class="event-stat"><div class="event-stat-value ${cAvg !== null ? getRatingClass(cAvg) : ''}">${cAvg !== null ? cAvg.toFixed(2) : '--'}</div><div class="event-stat-label">Avg</div></div>
+                            <div class="event-stat"><div class="event-stat-value ${best !== null ? getRatingClass(best) : ''}">${best !== null ? best.toFixed(2) : '--'}</div><div class="event-stat-label">Best</div></div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Top matches: top 5 normally, every match once you're on a single show
+            const isSingleShow = node.isEdition;
+            const topTitle = document.getElementById(`${tab}-top-title`);
+            const topList = isSingleShow
+                ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
+                : getTop5(all);
+            topTitle.textContent = isSingleShow ? 'All Matches' : `Top 5 ${scopeName} Matches`;
+            topTitle.setAttribute('data-tt', isSingleShow
+                ? 'Every rated match on this show, highest rated first.'
+                : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
+            document.getElementById(`${tab}-top-matches`).innerHTML = topList.length
+                ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1)).join('')
+                : '<div style="text-align:center;color:#888;padding:10px 0;">No matches for the selected filters</div>';
+
+            // Leaderboard: 3 matches to qualify, fewer when the selection only covers one or two shows
+            const minMatches = Math.max(1, Math.min(3, showCount));
+            const lbTitle = document.getElementById(`${tab}-lb-title`);
+            lbTitle.textContent = `Top ${scopeName} Performers`;
+            lbTitle.setAttribute('data-tt', `Top performers for the current selection, ranked by average match rating. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
+            renderLeaderboard(`${tab}-leaderboard`, calculateWrestlerStats(all, minMatches));
+        }
+
         function renderStipsTab() {
             const all = Object.values(showStats.stipulations).flat();
             const unique = getUniqueMatches(all);
@@ -1245,8 +1395,8 @@
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
                         <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                         <div>
-                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''}</div>
-                            <div style="color:#aaa;font-size:0.82em;">${m.stipulation} · ${m.event}</div>
+                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(m.wrestler)}${esc(getVersusText(m))}</div>
+                            <div style="color:#aaa;font-size:0.82em;">${esc(m.stipulation)} · ${esc(m.event)}</div>
                         </div>
                     </div>`).join('');
             }
@@ -1260,7 +1410,7 @@
                     const top5 = getTop5(matches).map(m => `
                         <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06);">
                             <span style="font-weight:bold;min-width:38px;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</span>
-                            <span style="color:#ddd;font-size:0.88em;">${m.wrestler}${m.opponents ? ' vs ' + m.opponents.join(', ') : ''} <span style="color:#777;">· ${m.event}</span></span>
+                            <span style="color:#ddd;font-size:0.88em;">${esc(m.wrestler)}${esc(getVersusText(m))} <span style="color:#777;">· ${esc(m.event)}</span></span>
                         </div>`).join('');
                     const id = `stip-${name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')}`;
                     return `
@@ -1288,9 +1438,7 @@
         }
 
         function renderAllTabs() {
-            renderWeeklyTab();
-            renderPPVTab();
-            renderSpecialsTab();
+            SCOPE_TABS.forEach(renderScopeTab);
             renderStipsTab();
         }
 
@@ -1367,6 +1515,16 @@
         // INITIALIZATION
         // ===========================================
         
+        buildScopeTabMarkup();
+
+        // Card and breadcrumb clicks for the show tabs
+        document.addEventListener('click', e => {
+            const card = e.target.closest('.event-card[data-scope-key]');
+            if (card) { drillInto(card.dataset.scopeTab, card.dataset.scopeKey); return; }
+            const crumb = e.target.closest('.scope-crumb[data-scope-depth]');
+            if (crumb) drillTo(crumb.dataset.scopeTab, Number(crumb.dataset.scopeDepth));
+        });
+
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
 
         document.addEventListener('DOMContentLoaded', () => {
