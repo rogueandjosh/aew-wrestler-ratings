@@ -438,6 +438,35 @@
             font-weight: bold;
         }
 
+        .scope-subgroups {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .scope-subgroups:empty {
+            display: none;
+        }
+
+        .scope-subgroups-label {
+            color: #b8b8b8;
+            font-size: 0.9em;
+            margin-right: 4px;
+        }
+
+        .scope-sub-btn {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .scope-sub-count {
+            opacity: 0.7;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
         .more-events-toggle {
             display: block;
             margin: 16px auto 0;
@@ -1851,6 +1880,7 @@
 
                 <div class="table-container" id="scope-grid-section">
                     <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to see its breakdown." style="cursor: help;"></h3>
+                    <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
                         <thead><tr><th>Name</th><th class="num">Matches</th><th class="num">Avg</th><th class="num">Best</th><th class="chev"></th></tr></thead>
                         <tbody id="scope-grid"></tbody>
@@ -1877,13 +1907,24 @@
             const nodes = [base];
             const validKeys = [];
             for (const key of scopePaths[currentView]) {
-                const next = nodes[nodes.length - 1].children.get(key);
+                const current = nodes[nodes.length - 1];
+                // In Match Types a group lists all its stipulations, including those inside subgroups
+                const next = current.children.get(key) || (currentView === 'stips' ? getLeaves(current).get(key) : null);
                 if (!next) break;
                 nodes.push(next);
                 validKeys.push(key);
             }
             scopePaths[currentView] = validKeys;
             return nodes;
+        }
+
+        // All stipulations (leaf nodes) inside a node, however deep
+        function getLeaves(node, out = new Map()) {
+            node.children.forEach(c => {
+                if (c.isLeaf) out.set(c.key, c);
+                else getLeaves(c, out);
+            });
+            return out;
         }
 
         function drillInto(key) {
@@ -1952,8 +1993,21 @@
             document.getElementById('scope-shows').textContent = showCount;
             document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
 
-            // Cards for the next level down
+            // Rows for the next level down. In a Match Types group, every stipulation is listed straight away
+            // and any subgroups appear as "Break down by" buttons above the list.
             let children = [...node.children.values()];
+            const subgroupsEl = document.getElementById('scope-subgroups');
+            subgroupsEl.innerHTML = '';
+            if (isStips && !node.isStipRoot) {
+                const subgroups = children.filter(c => !c.isLeaf);
+                if (subgroups.length) {
+                    subgroups.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
+                    subgroupsEl.innerHTML = '<span class="scope-subgroups-label">Break down by:</span>' + subgroups.map(sg =>
+                        `<button class="tab scope-sub-btn" data-scope-key="${esc(sg.key)}">${esc(sg.label)} <span class="scope-sub-count">${getUniqueMatches(sg.matches).length}</span></button>`
+                    ).join('');
+                    children = [...getLeaves(node).values()];
+                }
+            }
             const gridSection = document.getElementById('scope-grid-section');
             const moreToggle = document.getElementById('scope-more-toggle');
             moreToggle.style.display = 'none';
@@ -2107,7 +2161,7 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
-            const row = e.target.closest('.scope-row[data-scope-key]');
+            const row = e.target.closest('.scope-row[data-scope-key], .scope-sub-btn[data-scope-key]');
             if (row) { drillInto(row.dataset.scopeKey); return; }
             const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
             if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
