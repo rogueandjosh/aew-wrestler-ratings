@@ -411,36 +411,28 @@
             font-size: 0.75rem;
         }
 
-        /* Drill-down scopes */
+        /* Drill-down navigation (uses the site's .tab button style) */
         .scope-crumbs {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             margin: -10px 0 25px;
         }
 
-        .scope-crumb {
-            background: none;
-            border: 1px solid rgba(255, 215, 0, 0.45);
-            color: #ffd700;
-            padding: 5px 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            font-family: 'Overlock', cursive;
+        .scope-crumbs .tab {
+            padding: 6px 14px;
             font-size: 0.9em;
-            font-weight: bold;
         }
 
-        .scope-crumb:hover {
-            background: rgba(255, 215, 0, 0.15);
-        }
-
-        .scope-crumb.current {
-            background: rgba(255, 215, 0, 0.15);
-            border-color: #ffd700;
+        .scope-crumbs .tab.active {
             cursor: default;
+            transform: none;
+        }
+
+        .scope-crumbs .scope-back {
+            margin-right: 10px;
         }
 
         .scope-crumb-sep {
@@ -455,6 +447,33 @@
             color: #b8b8b8;
             font-size: 0.8rem;
             margin: -6px 0 10px;
+        }
+
+        .more-events-toggle {
+            display: block;
+            margin: -15px auto 30px;
+            padding: 6px 14px;
+            font-size: 0.85em;
+        }
+
+        /* Leaderboard photos (same tier-ring logic as index.html) */
+        .wrestler-image {
+            padding: 6px;
+            text-align: center;
+            width: 80px;
+        }
+
+        .wrestler-image img {
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2d2d2d;
+        }
+
+        @media (max-width: 600px) {
+            .wrestler-image { width: 52px; padding: 4px 2px; }
+            .wrestler-image > a > img, .wrestler-image > a > span > img { width: 42px !important; height: 42px !important; }
+            .wrestler-image div a img { width: 24px !important; height: 24px !important; border-width: 1px !important; }
+            .wrestler-image div:has(a:nth-child(3)) a img { width: 17px !important; height: 17px !important; }
         }
 
         /* Stipulation List */
@@ -680,6 +699,7 @@
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="menstag" checked onchange="updateDivisions()"> Men's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womenstag" checked onchange="updateDivisions()"> Women's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
+                                <label class="tt" data-tt="Matches outside the five ranked divisions, such as multi-person and mixed tags." style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="other" checked onchange="updateDivisions()"> Other</label>
                             </div>
                         </div>
                     </div>
@@ -691,14 +711,14 @@
         <div id="tabsWrapper">
         <!-- Tab Navigation -->
         <div class="tabs">
-            <button class="tab active" data-tab="weekly">📺 Weekly TV</button>
-            <button class="tab" data-tab="ppv">🏆 PPVs</button>
-            <button class="tab" data-tab="tvspecial">⭐ TV Specials</button>
-            <button class="tab" data-tab="quarterly">🥇 Quarterly</button>
-            <button class="tab" data-tab="youtube">▶️ YouTube Specials</button>
+            <button class="tab show-type-btn active tt tt-below" data-type="weekly" data-tt="Select one or more show types to combine them.">📺 Weekly TV</button>
+            <button class="tab show-type-btn tt tt-below" data-type="ppv" data-tt="Select one or more show types to combine them.">🏆 PPVs</button>
+            <button class="tab show-type-btn tt tt-below" data-type="tvspecial" data-tt="Select one or more show types to combine them.">⭐ TV Specials</button>
+            <button class="tab show-type-btn tt tt-below" data-type="quarterly" data-tt="Select one or more show types to combine them.">🥇 Quarterly</button>
+            <button class="tab show-type-btn tt tt-below" data-type="youtube" data-tt="Select one or more show types to combine them.">▶️ YouTube Specials</button>
         </div>
         <div style="text-align: right; margin-bottom: 20px; margin-top: -15px;">
-            <button class="tab" data-tab="stips" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75;">🥊 Match Types</button>
+            <button class="tab" id="stipsToggle" style="font-size: 0.85em; padding: 8px 16px; opacity: 0.75;">🥊 Match Types</button>
         </div>
 
         <!-- Loading State -->
@@ -708,12 +728,8 @@
             <p class="loading-progress" id="loadingProgress">0 / 0 wrestlers loaded</p>
         </div>
 
-        <!-- Show tabs (markup built by buildScopeTabMarkup) -->
-        <div class="tab-content active" id="weekly"></div>
-        <div class="tab-content" id="ppv"></div>
-        <div class="tab-content" id="tvspecial"></div>
-        <div class="tab-content" id="quarterly"></div>
-        <div class="tab-content" id="youtube"></div>
+        <!-- Show types view (markup built by buildScopeViewMarkup) -->
+        <div class="tab-content active" id="showsView"></div>
 
         <!-- Match Types Tab -->
         <div class="tab-content" id="stips">
@@ -735,7 +751,7 @@
 
             <div class="table-container">
                 <h3 class="section-title tt" data-tt="Top stipulation match performers ranked by average rating. Minimum 3 stipulation matches to qualify." style="cursor: help;">Top Stipulation Match Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                <table><thead><tr><th style="width: 50px;">#</th><th></th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
                 <tbody id="stip-leaderboard"></tbody></table>
             </div>
         </div><!-- end stips tab -->
@@ -768,22 +784,30 @@
         // Per-tab wording. childTitles[depth] is the heading for the card grid at that drill depth
         // (any level whose cards are individual shows uses "Editions" instead)
         const TAB_CONFIG = {
-            weekly:    { name: 'Weekly TV', rootLabel: 'All Weekly TV',      countLabel: 'Episodes', collapseSingle: false,
+            weekly:    { label: 'Weekly TV', name: 'Weekly TV', rootLabel: 'All Weekly TV',      countLabel: 'Episodes', collapseSingle: false,
                          childTitles: ['Performance by Show', 'Named Episodes'] },
-            ppv:       { name: 'PPV', rootLabel: 'All PPVs',           countLabel: 'Events',   collapseSingle: false,
+            ppv:       { label: 'PPVs', name: 'PPV', rootLabel: 'All PPVs',           countLabel: 'Events',   collapseSingle: false,
                          childTitles: ['PPV Performance by Event', 'Performance by Location'] },
-            tvspecial: { name: 'TV Special', rootLabel: 'All TV Specials',    countLabel: 'Events',   collapseSingle: false,
+            tvspecial: { label: 'TV Specials', name: 'TV Special', rootLabel: 'All TV Specials',    countLabel: 'Events',   collapseSingle: false,
                          childTitles: ['Performance by Event'] },
-            quarterly: { name: 'Quarterly', rootLabel: 'All Quarterly Shows', countLabel: 'Events',  collapseSingle: true,
+            quarterly: { label: 'Quarterly', name: 'Quarterly', rootLabel: 'All Quarterly Shows', countLabel: 'Events',  collapseSingle: true,
                          childTitles: ['Performance by Event'] },
-            youtube:   { name: 'YouTube Special', rootLabel: 'All YouTube Specials', countLabel: 'Events', collapseSingle: true,
+            youtube:   { label: 'YouTube Specials', name: 'YouTube Special', rootLabel: 'All YouTube Specials', countLabel: 'Events', collapseSingle: true,
                          childTitles: ['Performance by Event'] }
         };
         const SCOPE_TABS = Object.keys(TAB_CONFIG);
 
+        // PPV events hidden from the PPV card grid until "Show more events" is clicked
+        const PPV_HIDDEN_BY_DEFAULT = ['Fyter Fest', 'Fight for the Fallen'];
+
+        // Match "division" field -> division filter value (anything else counts as "other")
+        const DIVISION_BY_MATCH = { "Men's": 'mens', "Women's": 'womens', 'Tag': 'menstag', "Women's Tag": 'womenstag', 'Trios': 'trios' };
+        const ALL_DIVISIONS = ['mens', 'womens', 'menstag', 'womenstag', 'trios', 'other'];
+
         // Spelling fixes applied to event names before anything else uses them
         const EVENT_NAME_FIXES = [
-            [/\bSatuday\b/g, 'Saturday']
+            [/\bSatuday\b/g, 'Saturday'],
+            [/^All In London\b/, 'All In: London']
         ];
 
         // Named weekly episodes that should be grouped under one name (keys are lowercase)
@@ -805,7 +829,8 @@
         // STATE
         // ===========================================
         
-        let nameChanges = {}; // oldName -> currentName mapping
+        let nameChanges = {};    // lowercase oldName -> { newName, matchId }
+        let nameChangeList = []; // raw changes, for team member lookups
 
         async function loadNameChanges() {
             try {
@@ -815,8 +840,9 @@
                     // Build bidirectional map: every name variant → canonical (latest) name
                     // Follow the full chain to find the final name
                     const rawMap = {};
-                    (data.changes || []).forEach(c => {
-                        if (c.oldName && c.newName) rawMap[c.oldName.toLowerCase()] = c.newName;
+                    nameChangeList = (data.changes || []).filter(c => c.oldName && c.newName);
+                    nameChangeList.forEach(c => {
+                        rawMap[c.oldName.toLowerCase()] = { newName: c.newName, matchId: c.matchId || 0 };
                     });
 
                     // Store raw map for chain following
@@ -825,33 +851,44 @@
             } catch(e) {}
         }
 
+        // Follows name changes to the current name. Some names change and later change back
+        // (e.g. Matt Jackson -> Matthew Jackson -> Matt Jackson); when the chain loops,
+        // the most recent change in the loop decides the current name.
         function normaliseName(name) {
-            // Follow chain to final name, prevent infinite loops
             let current = name;
+            const steps = [];
             const visited = new Set();
             while (true) {
                 const key = current.toLowerCase();
-                if (visited.has(key)) break;
+                if (visited.has(key)) {
+                    const loopStart = steps.findIndex(st => st.from === key);
+                    const loop = steps.slice(loopStart);
+                    return loop.reduce((latest, st) => st.matchId > latest.matchId ? st : latest).newName;
+                }
                 visited.add(key);
                 const next = nameChanges[key];
-                if (!next) break;
-                current = next;
+                if (!next) return current;
+                steps.push({ from: key, newName: next.newName, matchId: next.matchId });
+                current = next.newName;
             }
-            return current;
         }
 
-        // Returns the canonical name for any name variant
         function getCanonicalName(name) {
             return normaliseName(name);
         }
         let selectedYears = new Set(); // empty = all years
-        let selectedDivisions = new Set(['mens', 'womens', 'menstag', 'womenstag', 'trios']); // all by default
+        let selectedDivisions = new Set(ALL_DIVISIONS); // all by default
         let availableYears = [];
         let showStats = { stipulations: {} };
-        let scopeMatches = {};   // tab -> [{ ...matchData, path: [{ key, label, date, isEdition }] }]
-        let scopeTrees = {};     // tab -> root node, rebuilt on every processAllData()
-        let scopePath = {};      // tab -> [node keys] the user has drilled into
-        SCOPE_TABS.forEach(t => { scopeMatches[t] = []; scopePath[t] = []; });
+        let scopeMatchesAll = [];   // every match entry with its drill-down path (first step = show type)
+        let scopeTree = null;       // rebuilt on every processAllData()
+        let scopePath = [];         // node keys drilled into from the current starting level
+        let selectedShowTypes = new Set(['weekly']);
+        let currentView = 'shows';  // 'shows' or 'stips'
+        let showAllPpvEvents = false;
+        let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
+        let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
+        let teamMembersData = { teams: {} };
 
         // ===========================================
         // NAVIGATION
@@ -895,13 +932,38 @@
         // TAB SWITCHING
         // ===========================================
         
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(tab.dataset.tab).classList.add('active');
+        // Show type buttons are multi-select (at least one stays on).
+        // Match Types is an on/off view: clicking it again returns to the show view.
+        function updateViewButtons() {
+            document.querySelectorAll('.show-type-btn').forEach(btn => {
+                btn.classList.toggle('active', currentView === 'shows' && selectedShowTypes.has(btn.dataset.type));
             });
+            document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
+            document.getElementById('showsView').classList.toggle('active', currentView === 'shows');
+            document.getElementById('stips').classList.toggle('active', currentView === 'stips');
+        }
+
+        document.querySelectorAll('.show-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                if (currentView === 'stips') {
+                    currentView = 'shows';
+                    selectedShowTypes.add(type);
+                } else if (selectedShowTypes.has(type)) {
+                    if (selectedShowTypes.size === 1) return;
+                    selectedShowTypes.delete(type);
+                } else {
+                    selectedShowTypes.add(type);
+                }
+                scopePath = [];
+                updateViewButtons();
+                renderScopeView();
+            });
+        });
+
+        document.getElementById('stipsToggle').addEventListener('click', () => {
+            currentView = currentView === 'stips' ? 'shows' : 'stips';
+            updateViewButtons();
         });
 
         // ===========================================
@@ -972,7 +1034,7 @@
             const btn = document.getElementById('divDropdownBtn');
             const all = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]');
             const checked = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]:checked');
-            const labels = { mens: "Men's", womens: "Women's", menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios" };
+            const labels = { mens: "Men's", womens: "Women's", menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios", other: "Other" };
             if (checked.length === 0) btn.textContent = 'None';
             else if (checked.length === all.length) btn.textContent = 'All Divisions';
             else if (checked.length === 1) btn.textContent = labels[[...checked][0].value] || [...checked][0].value;
@@ -1044,17 +1106,66 @@
             return { tab, path: [{ key: show.toLowerCase(), label: show }, edition] };
         }
 
-        // In team-style matches where the export couldn't split partners from opponents,
-        // "versus" holds everyone else in the match, so don't present that list as opponents
-        function getVersusText(m) {
+        // Two-sided team match types, where leftover opponents can be joined with "&"
+        const TWO_SIDED_TEAM_TYPES = /^(tag team|trios|mixed tag( team)?|mixed trios|\d+ (man|woman|person) tag)$/i;
+
+        // Team entries in the same match are grouped by their member set (a tag team's entry in a
+        // trios match covers its whole trio). Each group is labelled with the name that best fits it:
+        // a team whose known member count matches the group, otherwise the first name plus any extra members.
+        function getMatchTeams(entries) {
+            const groups = new Map();
+            entries.filter(e => e.isTeam && e.members.size > 0).forEach(t => {
+                const key = [...t.members].sort().join('|');
+                if (!groups.has(key)) groups.set(key, { members: t.members, versus: t.versus, names: [] });
+                groups.get(key).names.push(t.name);
+            });
+            return [...groups.values()].map(g => {
+                const scored = g.names.map(n => ({ name: n, known: findTeamMembersArray(n) }));
+                const pick = scored.find(x => x.known && x.known.length === g.members.size) || scored[0];
+                let label = pick.name;
+                if (pick.known && pick.known.length < g.members.size) {
+                    const knownSet = new Set(pick.known.map(normaliseName));
+                    const extras = [...g.members].filter(x => !knownSet.has(x));
+                    if (extras.length) label = `${pick.name} & ${extras.join(' & ')}`;
+                }
+                return { ...g, label };
+            });
+        }
+
+        // Builds "Team A vs Team B" for team matches using the team entries in the same match.
+        // Falls back to individual names when no team entry covers a side.
+        function getMatchupText(m) {
+            const entries = matchIndex.get(m.matchKey) || [];
+            const teams = getMatchTeams(entries);
             const isTeamStyle = /tag|trios/i.test(m.matchType || '');
-            const partnersKnown = m.partners && m.partners.length > 0;
-            if (isTeamStyle && !partnersKnown) {
-                const others = (m.opponents || []).length;
-                return others ? ` + ${others} others` : '';
+            const twoSided = TWO_SIDED_TEAM_TYPES.test(m.matchType || '');
+
+            let side = null;
+            if (m.isTeam) side = teams.find(t => t.names.includes(m.wrestler));
+            else if (isTeamStyle) side = teams.filter(t => t.members.has(m.wrestler)).sort((a, b) => b.members.size - a.members.size)[0];
+
+            if (side) {
+                // Opposing teams are those made up entirely of this side's opponents;
+                // drop any that sit inside a bigger opposing team
+                let opposing = teams.filter(t => t !== side && [...t.members].every(x => side.versus.has(x)));
+                opposing = opposing.filter(t => !opposing.some(o => o !== t && o.members.size > t.members.size && [...t.members].every(x => o.members.has(x))));
+                const covered = new Set(opposing.flatMap(t => [...t.members]));
+                const leftovers = [...side.versus].filter(x => !covered.has(x));
+                const sides = opposing.map(t => t.label);
+                if (leftovers.length) sides.push(leftovers.join(opposing.length === 0 && twoSided ? ' & ' : ', '));
+                return sides.length ? `${side.label} vs ${sides.join(' vs ')}` : side.label;
+            }
+
+            if (isTeamStyle) {
+                const partnersKnown = m.partners && m.partners.length > 0;
+                if (!partnersKnown) {
+                    const others = (m.opponents || []).length;
+                    return others ? `${m.wrestler} + ${others} others` : m.wrestler;
+                }
+                if (twoSided) return `${[m.wrestler, ...m.partners].join(' & ')} vs ${(m.versus || []).join(' & ')}`;
             }
             const list = (m.versus && m.versus.length) ? m.versus : m.opponents;
-            return list && list.length ? ' vs ' + list.join(', ') : '';
+            return list && list.length ? `${m.wrestler} vs ${list.join(', ')}` : m.wrestler;
         }
 
         function getRatingClass(rating) {
@@ -1096,9 +1207,10 @@
             return selectedYears.has(matchYear);
         }
 
-        function matchesDivision(wrestlerDiv) {
-            if (selectedDivisions.size === 5) return true;
-            return selectedDivisions.has(wrestlerDiv);
+        // Filters on the match's own division, so a singles wrestler's tag matches count as tag matches
+        function matchesDivision(match) {
+            if (selectedDivisions.size === ALL_DIVISIONS.length) return true;
+            return selectedDivisions.has(DIVISION_BY_MATCH[match.division] || 'other');
         }
 
         // ===========================================
@@ -1107,7 +1219,8 @@
         
         function resetShowStats() {
             showStats = { stipulations: {} };
-            SCOPE_TABS.forEach(t => { scopeMatches[t] = []; });
+            scopeMatchesAll = [];
+            matchIndex = new Map();
         }
 
         function processAllData() {
@@ -1117,11 +1230,11 @@
 
             allWrestlerData.forEach(wrestler => {
                 if (!wrestler.allMatches) return;
-                if (!matchesDivision(wrestler.division)) return;
+                const normWrestler = normaliseName(wrestler.name);
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
+                    if (!matchesDivision(match)) return;
 
-                    const normWrestler = normaliseName(wrestler.name);
                     const eventName = fixEventName(match.event);
 
                     // Match ID is unique per match; the composite key is only a fallback for files without IDs
@@ -1137,9 +1250,14 @@
                     const isFirst = !seenMatches.has(matchKey);
                     if (isFirst) seenMatches.add(matchKey);
 
+                    const opponents = (match.opponents || []).map(n => normaliseName(n));
+                    const versus = (match.versus || []).map(n => normaliseName(n));
+                    const partners = (match.partners || []).map(n => normaliseName(n));
+
                     const matchData = {
                         matchKey,
                         wrestler: normWrestler,
+                        isTeam: !!wrestler.isTeam,
                         slug: wrestler.slug || createSlug(normWrestler),
                         rating: match.rating,
                         event: eventName,
@@ -1148,14 +1266,25 @@
                         matchType: match.matchType,
                         stipulation: match.matchStipulation,
                         stakes: match.stakes,
-                        opponents: (match.opponents || []).map(n => normaliseName(n)),
-                        versus: (match.versus || []).map(n => normaliseName(n)),
-                        partners: (match.partners || []).map(n => normaliseName(n)),
+                        opponents, versus, partners,
                         isFirstEntry: isFirst // only first entry used for top 5/stats counts
                     };
 
+                    // Participant index: a team entry's members are everyone in the match who isn't in its versus list
+                    if (!matchIndex.has(matchKey)) matchIndex.set(matchKey, []);
+                    const versusSet = new Set(versus);
+                    matchIndex.get(matchKey).push({
+                        name: normWrestler,
+                        isTeam: !!wrestler.isTeam,
+                        members: wrestler.isTeam ? new Set(opponents.filter(n => !versusSet.has(n))) : new Set([normWrestler]),
+                        versus: versusSet
+                    });
+
                     const scope = getScopePath(match, eventName);
-                    if (scope) scopeMatches[scope.tab].push({ ...matchData, path: scope.path });
+                    if (scope) {
+                        const typeStep = { key: 'type:' + scope.tab, label: TAB_CONFIG[scope.tab].label, tab: scope.tab };
+                        scopeMatchesAll.push({ ...matchData, tab: scope.tab, path: [typeStep, ...scope.path] });
+                    }
 
                     if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
                         if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
@@ -1164,19 +1293,23 @@
                 });
             });
 
-            SCOPE_TABS.forEach(t => { scopeTrees[t] = buildScopeTree(t); });
+            scopeTree = buildScopeTree();
         }
 
-        // Builds a node tree for one tab. Every match is added to each node along its path,
-        // so any node's .matches holds everything inside it.
-        function buildScopeTree(tab) {
-            let root = { key: '', label: TAB_CONFIG[tab].rootLabel, titleName: TAB_CONFIG[tab].name, children: new Map(), matches: [], labelCounts: {} };
-            scopeMatches[tab].forEach(m => {
+        // Builds one node tree: root -> show type -> show -> ... -> edition.
+        // Every match is added to each node along its path, so any node's .matches holds everything inside it.
+        // Each node records its show type (tab) and its level below the show type node (type node = 0).
+        function buildScopeTree() {
+            const root = { key: '', label: '', children: new Map(), matches: [], labelCounts: {} };
+            scopeMatchesAll.forEach(m => {
                 let node = root;
                 node.matches.push(m);
-                m.path.forEach(step => {
+                m.path.forEach((step, i) => {
                     if (!node.children.has(step.key)) {
-                        node.children.set(step.key, { key: step.key, label: step.label, date: step.date, isEdition: !!step.isEdition, children: new Map(), matches: [], labelCounts: {} });
+                        node.children.set(step.key, {
+                            key: step.key, label: step.label, date: step.date, isEdition: !!step.isEdition,
+                            tab: m.tab, level: i, children: new Map(), matches: [], labelCounts: {}
+                        });
                     }
                     node = node.children.get(step.key);
                     node.matches.push(m);
@@ -1186,11 +1319,10 @@
                 });
             });
             finaliseLabels(root);
-            if (TAB_CONFIG[tab].collapseSingle) {
-                while (root.children.size === 1 && ![...root.children.values()][0].isEdition) {
-                    root = [...root.children.values()][0];
-                }
-            }
+            root.children.forEach(typeNode => {
+                typeNode.label = TAB_CONFIG[typeNode.tab].rootLabel;
+                typeNode.titleName = TAB_CONFIG[typeNode.tab].name;
+            });
             return root;
         }
 
@@ -1198,6 +1330,34 @@
             const variants = Object.entries(node.labelCounts);
             if (variants.length) node.label = variants.sort((a, b) => b[1] - a[1])[0][0];
             node.children.forEach(finaliseLabels);
+        }
+
+        // The level the view starts from: a single show type's node, or a combined node
+        // whose cards are the selected show types
+        function getBaseNode() {
+            const typeNodes = SCOPE_TABS
+                .filter(t => selectedShowTypes.has(t))
+                .map(t => scopeTree.children.get('type:' + t))
+                .filter(Boolean);
+
+            if (typeNodes.length === 1) {
+                let node = typeNodes[0];
+                if (TAB_CONFIG[node.tab].collapseSingle) {
+                    while (node.children.size === 1 && ![...node.children.values()][0].isEdition) {
+                        node = [...node.children.values()][0];
+                    }
+                }
+                return node;
+            }
+
+            const selectedTabs = SCOPE_TABS.filter(t => selectedShowTypes.has(t));
+            return {
+                key: '', isCombined: true,
+                label: selectedTabs.map(t => TAB_CONFIG[t].label).join(' + '),
+                titleName: selectedTabs.map(t => TAB_CONFIG[t].name).join(' + '),
+                children: new Map(typeNodes.map(n => [n.key, { ...n, label: TAB_CONFIG[n.tab].label }])),
+                matches: typeNodes.flatMap(n => n.matches)
+            };
         }
 
         function calculateWrestlerStats(matches, minMatches = 3) {
@@ -1225,65 +1385,205 @@
             const el = document.getElementById(id);
             el.innerHTML = wrestlers.slice(0, limit).map((w, i) => `
                 <tr><td class="rank ${i < 3 ? 'top3' : ''}">${i + 1}</td>
-                <td class="name"><a href="wrestler-stats.html?wrestler=${w.slug}">${w.name}</a></td>
+                ${leaderboardPhotoCell(w.name)}
+                <td class="name"><a href="wrestler-stats.html?wrestler=${w.slug}">${esc(w.name)}</a></td>
                 <td class="${getRatingClass(w.avg)}" style="font-weight: bold;">${w.avg.toFixed(2)}</td>
                 <td class="hide-mobile">${w.matches}</td>
                 <td class="hide-mobile ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
-            `).join('') || '<tr><td colspan="5" style="text-align: center; color: #888;">No data available</td></tr>';
-        }
-        
-        function buildScopeTabMarkup() {
-            SCOPE_TABS.forEach(tab => {
-                document.getElementById(tab).innerHTML = `
-                    <div class="scope-crumbs" id="${tab}-crumbs"></div>
-                    <div class="stats-summary">
-                        <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="${tab}-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                        <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="${tab}-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
-                        <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="${tab}-9plus">--</div><div class="stat-label">9+ Matches</div></div>
-                        <div class="stat-box tt" data-tt="Number of individual shows these matches come from."><div class="stat-number" id="${tab}-shows">--</div><div class="stat-label">${TAB_CONFIG[tab].countLabel}</div></div>
-                        <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match."><div class="stat-number" id="${tab}-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
-                    </div>
-
-                    <div id="${tab}-grid-section">
-                        <h3 class="section-title tt" id="${tab}-grid-title" data-tt="Select a card to filter the whole tab to it." style="cursor: help; margin-bottom: 20px;"></h3>
-                        <div class="event-grid" id="${tab}-grid"></div>
-                    </div>
-
-                    <div class="table-container">
-                        <h3 class="section-title tt" id="${tab}-top-title" style="cursor: help;"></h3>
-                        <div class="best-match-card" id="${tab}-top-matches"></div>
-                    </div>
-
-                    <div class="table-container">
-                        <h3 class="section-title tt tt-below" id="${tab}-lb-title" style="cursor: help;"></h3>
-                        <table><thead><tr><th style="width: 50px;">#</th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                        <tbody id="${tab}-leaderboard"></tbody></table>
-                    </div>`;
-            });
+            `).join('') || '<tr><td colspan="6" style="text-align: center; color: #888;">No data available</td></tr>';
         }
 
-        // Walks the saved path; if a filter change removed a level, stop at the deepest one that still exists
-        function resolveScopeNodes(tab) {
-            const nodes = [scopeTrees[tab]];
+        // ===========================================
+        // PHOTOS — same tier-ring logic as index.html.
+        // Ring colour uses the wrestler's/team's peak rating (as on index's all-time stats).
+        // ===========================================
+
+        function imageSlug(name) {
+            return name.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
+
+        function leaderboardPhotoCell(name) {
+            const info = wrestlerInfo[name] || {};
+            const rating = info.peakRating;
+            const members = info.isTeam ? (findTeamMembersArray(name) || []) : [];
+
+            if (info.isTeam && members.length >= 2) {
+                const shown = members.slice(0, 3);
+                const size = shown.length === 3 ? 30 : 38;
+                const imgs = shown.map(member => {
+                    const ini = createInitialsCircle(generateTagInitials(member), size, getTierSolidColour(rating));
+                    const img = `<img src="images/wrestlers/${imageSlug(member)}.jpg" alt="${esc(member)}" style="width:${size}px;height:${size}px;" onerror="this.onerror=null;this.src='${ini}';">`;
+                    return `<a href="wrestler-stats.html?wrestler=${imageSlug(member)}">${wrapPhotoWithTier(img, rating, size)}</a>`;
+                });
+                return `<td class="wrestler-image"><div style="display:flex;gap:2px;justify-content:center;">${imgs.join('')}</div></td>`;
+            }
+
+            const ini = createInitialsCircle(generateInitials(name), 56, getTierSolidColour(rating));
+            const img = `<img src="images/wrestlers/${imageSlug(name)}.jpg" alt="${esc(name)}" style="width:56px;height:56px;" onerror="this.onerror=null;this.src='${ini}';">`;
+            return `<td class="wrestler-image"><a href="wrestler-stats.html?wrestler=${imageSlug(name)}" style="display:block;">${wrapPhotoWithTier(img, rating, 56)}</a></td>`;
+        }
+
+        function createInitialsCircle(initials, size) {
+            const center = size / 2;
+            const fontSize = initials.length === 1 ? size * 0.4 : initials.length === 2 ? size * 0.3 : size * 0.25;
+            const textY = center + fontSize * 0.35;
+            const svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><circle cx="${center}" cy="${center}" r="${center}" fill="#2d2d2d"/><text x="${center}" y="${textY}" text-anchor="middle" fill="white" font-size="${fontSize}" font-weight="bold" font-family="Arial, sans-serif">${initials}</text></svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        function cleanNameForInitials(name) {
+            let cleanName = name.replace(/\bThe\b/gi, '').replace(/\band\b/gi, '').replace(/\bof\b/gi, '').replace(/\bin\b/gi, '').replace(/\bour\b/gi, '').trim();
+            if (cleanName.includes('(')) cleanName = cleanName.split('(')[0].trim();
+            return cleanName;
+        }
+
+        function generateInitials(name) {
+            const cleanName = cleanNameForInitials(name);
+            if (cleanName.includes('&')) return cleanName.split('&').map(p => p.trim().charAt(0)).join('').toUpperCase();
+            const words = cleanName.split(/\s+/).filter(w => w.length > 0 && !w.includes('"') && !w.includes("'"));
+            if (words.length === 1 && words[0].length <= 4 && words[0] === words[0].toUpperCase()) return words[0];
+            if (words.length >= 4) return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+            return words.slice(0, 3).map(w => w.charAt(0)).join('').toUpperCase();
+        }
+
+        function generateTagInitials(name) {
+            const words = cleanNameForInitials(name).split(/\s+/).filter(w => w.length > 0 && !w.includes('"') && !w.includes("'"));
+            if (words.length === 0) return '?';
+            if (words.length === 1) return words[0].charAt(0).toUpperCase();
+            return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+        }
+
+        function getTierColour(rating) {
+            if (rating == null || isNaN(rating)) return { tier: 'navy', solid: '#5b7fc7' };
+            if (rating >= 150) return { tier: 'platinum', gradient: 'linear-gradient(135deg, #c9a0ff, #9be8ff, #c9a0ff)' };
+            if (rating >= 140) return { tier: 'gold', solid: '#ffd700' };
+            if (rating >= 130) return { tier: 'silver', solid: '#c0c0c0' };
+            if (rating >= 120) return { tier: 'bronze', solid: '#cd7f32' };
+            return { tier: 'navy', solid: '#5b7fc7' };
+        }
+
+        function getTierSolidColour(rating) {
+            const tierInfo = getTierColour(rating);
+            return tierInfo.tier === 'platinum' ? '#c9a0ff' : tierInfo.solid;
+        }
+
+        function wrapPhotoWithTier(imgHTML, rating, sizePx, borderWidth = 2) {
+            const tierInfo = getTierColour(rating);
+            if (tierInfo.tier !== 'platinum') return mergeImgStyle(imgHTML, `border: ${borderWidth}px solid ${tierInfo.solid};`);
+            const framePadding = Math.max(2, Math.round(borderWidth));
+            const innerImg = mergeImgStyle(imgHTML, `width: ${sizePx}px; height: ${sizePx}px; border-radius: 50%; object-fit: cover; display: block; border: none;`);
+            return `<span style="display: inline-flex; border-radius: 50%; background: ${tierInfo.gradient}; padding: ${framePadding}px; box-sizing: content-box; line-height: 0;">${innerImg}</span>`;
+        }
+
+        function mergeImgStyle(imgHTML, newRules) {
+            const parse = str => {
+                const props = {};
+                str.split(';').forEach(rule => {
+                    const [prop, ...rest] = rule.split(':');
+                    if (prop && rest.length) props[prop.trim().toLowerCase()] = rest.join(':').trim();
+                });
+                return props;
+            };
+            const newProps = parse(newRules);
+            if (/style="[^"]*"/i.test(imgHTML)) {
+                return imgHTML.replace(/style="([^"]*)"/i, (m, existing) => {
+                    const combined = { ...parse(existing), ...newProps };
+                    return `style="${Object.entries(combined).map(([k, v]) => `${k}: ${v}`).join('; ')};"`;
+                });
+            }
+            return imgHTML.replace('<img ', `<img style="${newRules}" `);
+        }
+
+        // Same lookup order as index.html's findTeamMembersArray
+        function findTeamMembersArray(teamName) {
+            const teams = teamMembersData.teams || {};
+            const tryName = n => (teams[n] && teams[n].length >= 2) ? teams[n] : null;
+            let members = tryName(teamName) || tryName(teamName.replace(/^The\s+/i, '')) || tryName('The ' + teamName);
+            if (members) return members;
+
+            for (const c of nameChangeList) {
+                if (c.newName === teamName && tryName(c.oldName)) return tryName(c.oldName);
+                if (c.oldName === teamName && tryName(c.newName)) return tryName(c.newName);
+            }
+
+            // "Name1 & Name2" (parentheses-aware)
+            if (teamName.includes(' & ')) {
+                const parts = [];
+                let current = '', depth = 0;
+                for (let i = 0; i < teamName.length; i++) {
+                    const ch = teamName[i];
+                    if (ch === '(') depth++;
+                    else if (ch === ')') depth--;
+                    if (depth === 0 && teamName.substring(i, i + 3) === ' & ') { parts.push(current.trim()); current = ''; i += 2; }
+                    else current += ch;
+                }
+                if (current.trim()) parts.push(current.trim());
+                if (parts.length >= 2) return parts;
+            }
+            return null;
+        }
+
+        async function loadTeamMembers() {
+            try {
+                const r = await fetch('team-members.json');
+                if (r.ok) teamMembersData = await r.json();
+            } catch (e) {
+                console.warn('team-members.json not loaded, team photos will fall back to initials');
+            }
+        }
+
+        function buildScopeViewMarkup() {
+            document.getElementById('showsView').innerHTML = `
+                <div class="scope-crumbs" id="scope-crumbs"></div>
+                <div class="stats-summary">
+                    <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
+                    <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                    <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
+                    <div class="stat-box tt" data-tt="Number of individual shows these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
+                    <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who appeared in at least one match."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
+                </div>
+
+                <div id="scope-grid-section">
+                    <h3 class="section-title tt" id="scope-grid-title" data-tt="Select a card to filter the page to it." style="cursor: help; margin-bottom: 20px;"></h3>
+                    <div class="event-grid" id="scope-grid"></div>
+                    <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
+                </div>
+
+                <div class="table-container">
+                    <h3 class="section-title tt" id="scope-top-title" style="cursor: help;"></h3>
+                    <div class="best-match-card" id="scope-top-matches"></div>
+                </div>
+
+                <div class="table-container">
+                    <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
+                    <table><thead><tr><th style="width: 50px;">#</th><th></th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                    <tbody id="scope-leaderboard"></tbody></table>
+                </div>`;
+        }
+
+        // Walks the saved path from the base level; if a filter change removed a level,
+        // stop at the deepest one that still exists
+        function resolveScopeNodes() {
+            const nodes = [getBaseNode()];
             const validKeys = [];
-            for (const key of scopePath[tab]) {
+            for (const key of scopePath) {
                 const next = nodes[nodes.length - 1].children.get(key);
                 if (!next) break;
                 nodes.push(next);
                 validKeys.push(key);
             }
-            scopePath[tab] = validKeys;
+            scopePath = validKeys;
             return nodes;
         }
 
-        function drillInto(tab, key) {
-            scopePath[tab].push(key);
-            renderScopeTab(tab);
+        function drillInto(key) {
+            scopePath.push(key);
+            renderScopeView();
         }
 
-        function drillTo(tab, depth) {
-            scopePath[tab] = scopePath[tab].slice(0, depth);
-            renderScopeTab(tab);
+        function drillTo(depth) {
+            scopePath = scopePath.slice(0, depth);
+            renderScopeView();
         }
 
         function getAvg(list) {
@@ -1295,60 +1595,83 @@
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.08)'}">
                     <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div>
-                        <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(m.wrestler)}${esc(getVersusText(m))}</div>
+                        <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(getMatchupText(m))}</div>
                         <div style="color:#aaa;font-size:0.82em;">${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
         }
 
-        function renderScopeTab(tab) {
-            const nodes = resolveScopeNodes(tab);
+        function getGridTitle(node, children) {
+            if (children.every(c => c.isEdition)) return 'Editions';
+            if (node.isCombined) return 'Performance by Show Type';
+            const titles = TAB_CONFIG[node.tab].childTitles;
+            return titles[Math.min(node.level, titles.length - 1)];
+        }
+
+        function renderScopeView() {
+            if (!scopeTree) return;
+            const nodes = resolveScopeNodes();
             const node = nodes[nodes.length - 1];
-            const depth = nodes.length - 1;
             const all = node.matches;
             const unique = getUniqueMatches(all);
             const avg = getAvg(unique);
             const scopeName = node.titleName || node.label;
             const showCount = new Set(unique.map(m => `${m.show}|${m.date}`)).size;
 
-            // Breadcrumbs
-            document.getElementById(`${tab}-crumbs`).innerHTML = nodes.map((n, i) => {
+            // Back button + breadcrumbs
+            const back = nodes.length > 1
+                ? `<button class="tab scope-back" data-scope-depth="${nodes.length - 2}">← Back</button>`
+                : '';
+            document.getElementById('scope-crumbs').innerHTML = back + nodes.map((n, i) => {
                 const isCurrent = i === nodes.length - 1;
                 const sep = i > 0 ? '<span class="scope-crumb-sep">›</span>' : '';
-                return `${sep}<button class="scope-crumb${isCurrent ? ' current' : ''}" ${isCurrent ? 'disabled' : `data-scope-tab="${tab}" data-scope-depth="${i}"`}>${esc(n.label)}</button>`;
+                return `${sep}<button class="tab${isCurrent ? ' active' : ''}" ${isCurrent ? 'disabled' : `data-scope-depth="${i}"`}>${esc(n.label)}</button>`;
             }).join('');
 
             // Summary
-            document.getElementById(`${tab}-total-matches`).textContent = unique.length;
-            document.getElementById(`${tab}-avg-rating`).textContent = avg !== null ? avg.toFixed(2) : '--';
-            document.getElementById(`${tab}-9plus`).textContent = unique.filter(m => m.rating >= 9).length;
-            document.getElementById(`${tab}-shows`).textContent = showCount;
-            document.getElementById(`${tab}-wrestlers`).textContent = new Set(all.map(m => m.wrestler)).size;
+            document.getElementById('scope-total-matches').textContent = unique.length;
+            document.getElementById('scope-avg-rating').textContent = avg !== null ? avg.toFixed(2) : '--';
+            document.getElementById('scope-9plus').textContent = unique.filter(m => m.rating >= 9).length;
+            document.getElementById('scope-shows').textContent = showCount;
+            document.getElementById('scope-wrestlers').textContent = new Set(all.map(m => m.wrestler)).size;
 
             // Cards for the next level down
-            const children = [...node.children.values()];
-            const gridSection = document.getElementById(`${tab}-grid-section`);
+            let children = [...node.children.values()];
+            const gridSection = document.getElementById('scope-grid-section');
+            const moreToggle = document.getElementById('scope-more-toggle');
+            moreToggle.style.display = 'none';
+
             if (children.length === 0) {
                 gridSection.style.display = 'none';
             } else {
                 gridSection.style.display = '';
-                const editionLevel = children.every(c => c.isEdition);
-                const titles = TAB_CONFIG[tab].childTitles;
-                document.getElementById(`${tab}-grid-title`).textContent = editionLevel ? 'Editions' : (titles[Math.min(depth, titles.length - 1)]);
+                document.getElementById('scope-grid-title').textContent = getGridTitle(node, children);
 
-                if (editionLevel) {
+                if (children.every(c => c.isEdition)) {
                     children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-                } else if (tab === 'weekly' && depth === 0) {
+                } else if (node.isCombined) {
+                    children.sort((a, b) => SCOPE_TABS.indexOf(a.tab) - SCOPE_TABS.indexOf(b.tab));
+                } else if (node.tab === 'weekly' && node.level === 0) {
                     children.sort((a, b) => WEEKLY_SHOW_ORDER.indexOf(a.label) - WEEKLY_SHOW_ORDER.indexOf(b.label));
                 } else {
                     children.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
                 }
 
-                document.getElementById(`${tab}-grid`).innerHTML = children.map(c => {
+                // PPV list: older one-off events are tucked behind a toggle
+                if (!node.isCombined && node.tab === 'ppv' && node.level === 0) {
+                    const hidden = children.filter(c => PPV_HIDDEN_BY_DEFAULT.includes(c.label));
+                    if (hidden.length) {
+                        moreToggle.style.display = 'block';
+                        moreToggle.textContent = showAllPpvEvents ? 'Show fewer events' : `Show ${hidden.length} more event${hidden.length === 1 ? '' : 's'}`;
+                        if (!showAllPpvEvents) children = children.filter(c => !PPV_HIDDEN_BY_DEFAULT.includes(c.label));
+                    }
+                }
+
+                document.getElementById('scope-grid').innerHTML = children.map(c => {
                     const u = getUniqueMatches(c.matches);
                     const cAvg = getAvg(u);
                     const best = u.length ? Math.max(...u.map(m => m.rating)) : null;
-                    return `<div class="event-card clickable" data-scope-tab="${tab}" data-scope-key="${esc(c.key)}">
+                    return `<div class="event-card clickable" data-scope-key="${esc(c.key)}">
                         <div class="event-name">${esc(c.label)}</div>
                         ${c.isEdition ? `<div class="event-date">${formatDate(c.date)}</div>` : ''}
                         <div class="event-stats">
@@ -1361,8 +1684,8 @@
             }
 
             // Top matches: top 5 normally, every match once you're on a single show
-            const isSingleShow = node.isEdition;
-            const topTitle = document.getElementById(`${tab}-top-title`);
+            const isSingleShow = !!node.isEdition;
+            const topTitle = document.getElementById('scope-top-title');
             const topList = isSingleShow
                 ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
                 : getTop5(all);
@@ -1370,16 +1693,16 @@
             topTitle.setAttribute('data-tt', isSingleShow
                 ? 'Every rated match on this show, highest rated first.'
                 : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
-            document.getElementById(`${tab}-top-matches`).innerHTML = topList.length
+            document.getElementById('scope-top-matches').innerHTML = topList.length
                 ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1)).join('')
                 : '<div style="text-align:center;color:#888;padding:10px 0;">No matches for the selected filters</div>';
 
             // Leaderboard: 3 matches to qualify, fewer when the selection only covers one or two shows
             const minMatches = Math.max(1, Math.min(3, showCount));
-            const lbTitle = document.getElementById(`${tab}-lb-title`);
+            const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName} Performers`;
             lbTitle.setAttribute('data-tt', `Top performers for the current selection, ranked by average match rating. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
-            renderLeaderboard(`${tab}-leaderboard`, calculateWrestlerStats(all, minMatches));
+            renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
         }
 
         function renderStipsTab() {
@@ -1395,7 +1718,7 @@
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
                         <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                         <div>
-                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(m.wrestler)}${esc(getVersusText(m))}</div>
+                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(getMatchupText(m))}</div>
                             <div style="color:#aaa;font-size:0.82em;">${esc(m.stipulation)} · ${esc(m.event)}</div>
                         </div>
                     </div>`).join('');
@@ -1410,7 +1733,7 @@
                     const top5 = getTop5(matches).map(m => `
                         <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06);">
                             <span style="font-weight:bold;min-width:38px;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</span>
-                            <span style="color:#ddd;font-size:0.88em;">${esc(m.wrestler)}${esc(getVersusText(m))} <span style="color:#777;">· ${esc(m.event)}</span></span>
+                            <span style="color:#ddd;font-size:0.88em;">${esc(getMatchupText(m))} <span style="color:#777;">· ${esc(m.event)}</span></span>
                         </div>`).join('');
                     const id = `stip-${name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')}`;
                     return `
@@ -1438,7 +1761,7 @@
         }
 
         function renderAllTabs() {
-            SCOPE_TABS.forEach(renderScopeTab);
+            renderScopeView();
             renderStipsTab();
         }
 
@@ -1451,7 +1774,7 @@
             const loadingProgress = document.getElementById('loadingProgress');
             
             try {
-                await loadNameChanges();
+                await Promise.all([loadNameChanges(), loadTeamMembers()]);
                 // Get list of all wrestlers from statistics.json
                 const statsData = await (await fetch('statistics.json')).json();
                 const allWrestlers = [];
@@ -1493,6 +1816,12 @@
                 }
                 
                 allWrestlerData = results.filter(w => w !== null);
+
+                // Peak rating + team flag per wrestler/team, for leaderboard photo rings
+                wrestlerInfo = {};
+                allWrestlerData.forEach(w => {
+                    wrestlerInfo[normaliseName(w.name)] = { peakRating: w.peakRating, isTeam: !!w.isTeam };
+                });
                 
                 // Build year dropdown from actual data
                 buildYearDropdown();
@@ -1515,14 +1844,18 @@
         // INITIALIZATION
         // ===========================================
         
-        buildScopeTabMarkup();
+        buildScopeViewMarkup();
 
-        // Card and breadcrumb clicks for the show tabs
+        // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
             const card = e.target.closest('.event-card[data-scope-key]');
-            if (card) { drillInto(card.dataset.scopeTab, card.dataset.scopeKey); return; }
-            const crumb = e.target.closest('.scope-crumb[data-scope-depth]');
-            if (crumb) drillTo(crumb.dataset.scopeTab, Number(crumb.dataset.scopeDepth));
+            if (card) { drillInto(card.dataset.scopeKey); return; }
+            const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
+            if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
+            if (e.target.closest('#scope-more-toggle')) {
+                showAllPpvEvents = !showAllPpvEvents;
+                renderScopeView();
+            }
         });
 
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
