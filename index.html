@@ -2085,7 +2085,7 @@
         </div>
 
         <!-- Weekly Comments Section -->
-<section id="weekly-comments" style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+<section id="weekly-comments" hidden style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
     <h3 style="color: #ffd700; font-size: 1.3em; margin-bottom: 6px;">💬 Comments & Questions</h3>
     <p style="color: #b8b8b8; font-size: 0.9em; margin-bottom: 20px;">Thoughts on this week's rankings? Drop a comment below. Post as a guest with just a name, or sign up for a free account.</p>
     <div id="waline"></div>
@@ -2114,6 +2114,13 @@
 <script type="module" data-cfasync="false">
     import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
 
+    // Comments on/off switch: set to true to show the comments section again
+    const COMMENTS_ENABLED = false;
+
+    if (COMMENTS_ENABLED) {
+        document.getElementById('weekly-comments').hidden = false;
+    }
+
     // One comment thread per rankings week.
     // The thread key comes from the week label, e.g. "Sep '26 Week 4" -> "/week/sep-26-week-4"
     const walineOptions = {
@@ -2136,7 +2143,7 @@
     }
 
     window.setCommentsWeek = function (weekLabel) {
-        if (!weekLabel) return;
+        if (!COMMENTS_ENABLED || !weekLabel) return;
         const path = weekLabelToPath(weekLabel);
         if (path === activeCommentsPath) return;
         activeCommentsPath = path;
