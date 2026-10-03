@@ -518,51 +518,6 @@
             .wrestler-image div:has(a:nth-child(3)) a img { width: 17px !important; height: 17px !important; }
         }
 
-        /* Stipulation List */
-        .stip-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .stip-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .stip-item .stip-name {
-            font-weight: 700;
-            color: #fff;
-            min-width: 200px;
-        }
-
-        .stip-item .stip-stats {
-            display: flex;
-            gap: 25px;
-        }
-
-        .stip-item .stip-stat {
-            text-align: center;
-        }
-
-        .stip-item .stip-stat-value {
-            font-weight: 700;
-            color: #ffd700;
-        }
-
-        .stip-item .stip-stat-label {
-            color: #b8b8b8;
-            font-size: 0.75rem;
-        }
-
         /* Loading State */
         .loading-container {
             text-align: center;
@@ -648,15 +603,6 @@
             th, td {
                 padding: 10px;
                 font-size: 0.9em;
-            }
-
-            .stip-item {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .stip-item .stip-name {
-                min-width: auto;
             }
         }
 
@@ -984,33 +930,9 @@
             <p class="loading-progress" id="loadingProgress">0 / 0 wrestlers loaded</p>
         </div>
 
-        <!-- Show types view (markup built by buildScopeViewMarkup) -->
+        <!-- Shows / Match Types view (markup built by buildScopeViewMarkup) -->
         <div class="tab-content active" id="showsView"></div>
 
-        <!-- Match Types Tab -->
-        <div class="tab-content" id="stips">
-            <div class="stats-summary">
-                <div class="stat-box tt" data-tt="Total number of matches with a specific stipulation type."><div class="stat-number" id="stip-total">--</div><div class="stat-label">Stip Matches</div></div>
-                <div class="stat-box tt" data-tt="Average Cagematch community rating across all stipulation matches."><div class="stat-number" id="stip-avg">--</div><div class="stat-label">Average Rating</div></div>
-                <div class="stat-box tt" data-tt="Number of distinct stipulation types included in the current filter."><div class="stat-number" id="stip-types">--</div><div class="stat-label">Stipulation Types</div></div>
-            </div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="The top 5 highest-rated stipulation matches based on Cagematch community ratings." style="cursor: help;">Top 5 Stipulation Matches</h3>
-                <div class="best-match-card" id="best-stip-match">
-                    <div class="match-rating">--</div><div class="match-event">Loading...</div><div class="match-details">--</div><div class="match-participants">--</div>
-                </div>
-            </div>
-
-            <h3 class="section-title tt" data-tt="Performance breakdown by stipulation type, showing match count, average rating, and best match rating." style="cursor: help; margin-bottom: 20px;">Performance by Stipulation</h3>
-            <div class="stip-list" id="stip-list"></div>
-
-            <div class="table-container">
-                <h3 class="section-title tt" data-tt="Top stipulation match performers ranked by average rating. Minimum 3 stipulation matches to qualify." style="cursor: help;">Top Stipulation Match Performers</h3>
-                <table><thead><tr><th style="width: 50px;">#</th><th></th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
-                <tbody id="stip-leaderboard"></tbody></table>
-            </div>
-        </div><!-- end stips tab -->
         </div><!-- end tabsWrapper -->
     </div>
 
@@ -1055,6 +977,70 @@
 
         // PPV events hidden from the PPV card grid until "Show more events" is clicked
         const PPV_HIDDEN_BY_DEFAULT = ['Fyter Fest', 'Fight for the Fallen'];
+
+        // ===========================================
+        // MATCH TYPE (STIPULATION) GROUPS
+        // Group -> optional subgroup -> stipulation. Any stipulation not listed lands in "Other Specialty".
+        // ===========================================
+        const STIP_GROUPS = [
+            { name: 'No DQ & Hardcore', items: [
+                'No DQ', 'No Holds Barred', 'Falls Count Anywhere', 'FTW Rules', 'Lights Out', 'Anything Goes',
+                { sub: 'Unsanctioned & Hardcore', items: ['Hardcore', 'Unsanctioned', 'Broken Rules', 'Fight Without Honor'] }
+            ]},
+            { name: 'Battle Royals & Gauntlets', items: [
+                { sub: 'Battle Royals', items: ['Battle Royal', 'Royal Rampage', 'Tres de Mayo Battle Royal', 'The Butcher Battle Royal'] },
+                { sub: 'Casino Matches', items: ['Casino Battle Royale', 'Casino Gauntlet'] },
+                { sub: 'Gauntlets', items: ['Gauntlet', 'Gauntlet Challenge'] },
+                'Survival of the Fittest'
+            ]},
+            { name: 'Street Fights & Brawls', items: [
+                { sub: 'Street Fights', items: [
+                    'Street Fight', 'Chicago Street Fight', 'Philadelphia Street Fight', 'Atlanta Street Fight',
+                    'Cincinnati Street Fight', 'Mid-South Street Fight', 'Minneapolis Street Fight', 'Stampede Street Fight',
+                    'Tijuana Street Fight', 'Mexico City Street Fight', 'Memphis Street Fight', 'Lights Out Philly Street Fight'
+                ]},
+                { sub: 'Brawls', items: ['Parking Lot Fight', 'Fright Night Fight', 'Brisbane Brawl', 'Concession Stand Brawl'] }
+            ]},
+            { name: 'Tornado & Team Brawls', items: ['Tornado Tag', 'Bunkhouse Tag', 'Arcade Anarchy Tag', 'Anarchy in the Arena'] },
+            { name: 'Ladder Matches', items: ['Ladder', 'Casino Ladder', 'Escalera De La Muerte Match'] },
+            { name: 'Cage Matches', items: [
+                'Steel Cage', 'Blood And Guts',
+                { sub: 'Specialty Cages', items: ['Lights Out Steel Cage', 'Barbed Wire Steel Cage', 'MMA Rules Cage Match', 'Escape the Cage Elimination'] }
+            ]},
+            { name: 'Death Matches', items: [
+                'Texas Death Match',
+                { sub: 'Barbed Wire', items: ['Barbed Wire Death Match', 'Exploding Barbed Wire Death'] },
+                'Hardcore Holiday Death Match', 'Texas Chainsaw Massacre Death Match', "Tables N' Tacks"
+            ]},
+            { name: 'Falls, Submission & Time', items: [
+                '2 out of 3 Falls', 'I Quit',
+                { sub: 'Iron Man', items: ['Iron Man (30 Minutes)', 'Iron Man (60 Minutes)'] },
+                { sub: 'Count Outs & Time Limits', items: ['No Count Out', 'No Time Limit', '10 Minute Time Limit'] }
+            ]},
+            { name: 'Object & Gimmick Matches', items: ['Coffin Match', 'Tables', 'Dumpster Match', 'Stretcher', 'Trick or Treat Match'] },
+            { name: 'Cinematic Matches', items: ['Stadium Stampede', 'Elite Deletion', 'The Firm Deletion', 'Final Burial', 'Hollywood Ending'] },
+            { name: 'Ringside Rules', items: ['Lumberjack', 'Everyone Banned From Ringside'] },
+            { name: 'Strap & Chain Matches', items: ['Strap Match', 'Dog Collar', 'Double Chain Match', 'Texas Bullrope'] }
+        ];
+        const STIP_OTHER_GROUP = 'Other Specialty';
+
+        // Same stipulation under different names (keys lowercase) -> the name used above
+        const STIP_ALIASES = {
+            'ladder match': 'Ladder',
+            'tables match': 'Tables',
+            'no disqualification': 'No DQ',
+            'no count outs': 'No Count Out',
+            'no count out match': 'No Count Out',
+            'texas death': 'Texas Death Match',
+            'cincinatti street fight': 'Cincinnati Street Fight'
+        };
+
+        // Lowercase stipulation -> { name, group, sub }
+        const STIP_LOOKUP = {};
+        STIP_GROUPS.forEach(g => g.items.forEach(item => {
+            if (typeof item === 'string') STIP_LOOKUP[item.toLowerCase()] = { name: item, group: g.name, sub: null };
+            else item.items.forEach(name => { STIP_LOOKUP[name.toLowerCase()] = { name, group: g.name, sub: item.sub }; });
+        }));
 
         // Match "division" field -> division filter value (anything else counts as "other")
         const DIVISION_BY_MATCH = { "Men's": 'mens', "Women's": 'womens', 'Tag': 'menstag', "Women's Tag": 'womenstag', 'Trios': 'trios' };
@@ -1135,12 +1121,11 @@
         let selectedYears = new Set(); // empty = all years
         let selectedDivisions = new Set(ALL_DIVISIONS); // all by default
         let availableYears = [];
-        let showStats = { stipulations: {} };
         let scopeMatchesAll = [];   // every match entry with its drill-down path (first step = show type)
         let scopeTree = null;       // rebuilt on every processAllData()
-        let scopePath = [];         // node keys drilled into from the current starting level
+        let scopePaths = { shows: [], stips: [] }; // node keys drilled into, per view
         let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
-        let currentView = 'shows';  // 'shows' or 'stips'
+        let currentView = 'shows';  // 'shows' (by show) or 'stips' (by match type)
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
@@ -1188,11 +1173,10 @@
         // TAB SWITCHING
         // ===========================================
         
-        // Match Types is an on/off view: clicking it again returns to the show view
+        // Match Types is an on/off view: clicking it again returns to the show view.
+        // Both views use the same filters and the same page layout.
         function updateViewButtons() {
             document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
-            document.getElementById('showsView').classList.toggle('active', currentView === 'shows');
-            document.getElementById('stips').classList.toggle('active', currentView === 'stips');
         }
 
         // ===========================================
@@ -1202,10 +1186,8 @@
         function updateShowTypes() {
             const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')].map(cb => cb.value);
             selectedShowTypes = new Set(checked);
-            scopePath = [];
-            currentView = 'shows'; // choosing shows always brings you back to the show view
+            scopePaths.shows = [];
             updateShowBtn();
-            updateViewButtons();
             renderScopeView();
         }
 
@@ -1227,6 +1209,7 @@
         document.getElementById('stipsToggle').addEventListener('click', () => {
             currentView = currentView === 'stips' ? 'shows' : 'stips';
             updateViewButtons();
+            renderScopeView();
         });
 
         // ===========================================
@@ -1348,7 +1331,8 @@
                 key: `ed:${eventName.toLowerCase()}|${match.date || ''}`,
                 label: eventName,
                 date: match.date || '',
-                isEdition: true
+                isEdition: true,
+                isLeaf: true
             };
 
             if (tab === 'weekly') {
@@ -1495,7 +1479,6 @@
         // ===========================================
         
         function resetShowStats() {
-            showStats = { stipulations: {} };
             scopeMatchesAll = [];
             matchIndex = new Map();
         }
@@ -1564,12 +1547,14 @@
                     const scope = getScopePath(match, eventName);
                     if (scope) {
                         const typeStep = { key: 'type:' + scope.tab, label: TAB_CONFIG[scope.tab].label, tab: scope.tab };
-                        scopeMatchesAll.push({ ...matchData, tab: scope.tab, path: [typeStep, ...scope.path] });
-                    }
-
-                    if (match.matchStipulation && match.matchStipulation !== 'None' && match.matchStipulation !== '') {
-                        if (!showStats.stipulations[match.matchStipulation]) showStats.stipulations[match.matchStipulation] = [];
-                        showStats.stipulations[match.matchStipulation].push(matchData);
+                        const stip = getStipInfo(match.matchStipulation);
+                        scopeMatchesAll.push({
+                            ...matchData,
+                            stipulation: stip ? stip.name : null,
+                            tab: scope.tab,
+                            path: [typeStep, ...scope.path],
+                            stipPath: stip ? getStipPath(stip) : null
+                        });
                     }
                 });
             });
@@ -1577,18 +1562,19 @@
             scopeTree = buildScopeTree();
         }
 
-        // Builds one node tree: root -> show type -> show -> ... -> edition.
-        // Every match is added to each node along its path, so any node's .matches holds everything inside it.
-        // Each node records its show type (tab) and its level below the show type node (type node = 0).
-        function buildScopeTree() {
+        // Builds a node tree from each entry's path (pathField). Every entry is added to each node
+        // along its path, so any node's .matches holds everything inside it.
+        // Nodes record their show type (tab) and level (0 = first level below the root).
+        function buildTree(entries, pathField) {
             const root = { key: '', label: '', children: new Map(), matches: [], labelCounts: {} };
-            scopeMatchesAll.forEach(m => {
+            entries.forEach(m => {
                 let node = root;
                 node.matches.push(m);
-                m.path.forEach((step, i) => {
+                m[pathField].forEach((step, i) => {
                     if (!node.children.has(step.key)) {
                         node.children.set(step.key, {
-                            key: step.key, label: step.label, date: step.date, isEdition: !!step.isEdition,
+                            key: step.key, label: step.label, date: step.date,
+                            isEdition: !!step.isEdition, isLeaf: !!step.isLeaf,
                             tab: m.tab, level: i, children: new Map(), matches: [], labelCounts: {}
                         });
                     }
@@ -1600,11 +1586,41 @@
                 });
             });
             finaliseLabels(root);
+            return root;
+        }
+
+        // Shows tree: root -> show type -> show -> ... -> edition
+        function buildScopeTree() {
+            const root = buildTree(scopeMatchesAll, 'path');
             root.children.forEach(typeNode => {
                 typeNode.label = TAB_CONFIG[typeNode.tab].rootLabel;
                 typeNode.titleName = TAB_CONFIG[typeNode.tab].name;
             });
             return root;
+        }
+
+        // Match types tree for the selected show types: root -> group -> (subgroup) -> stipulation
+        function buildStipTree() {
+            const entries = scopeMatchesAll.filter(m => m.stipPath && selectedShowTypes.has(m.tab));
+            const root = buildTree(entries, 'stipPath');
+            root.label = 'All Match Types';
+            root.titleName = 'Stipulation';
+            root.isStipRoot = true;
+            return root;
+        }
+
+        function getStipInfo(rawStip) {
+            const raw = (rawStip || '').trim();
+            if (!raw || raw === 'None') return null;
+            const name = STIP_ALIASES[raw.toLowerCase()] || raw;
+            return STIP_LOOKUP[name.toLowerCase()] || { name, group: STIP_OTHER_GROUP, sub: null };
+        }
+
+        function getStipPath(stip) {
+            const path = [{ key: 'group:' + stip.group.toLowerCase(), label: stip.group }];
+            if (stip.sub) path.push({ key: 'sub:' + stip.sub.toLowerCase(), label: stip.sub });
+            path.push({ key: 'stip:' + stip.name.toLowerCase(), label: stip.name, isLeaf: true });
+            return path;
         }
 
         function finaliseLabels(node) {
@@ -1854,28 +1870,29 @@
                 </div>`;
         }
 
-        // Walks the saved path from the base level; if a filter change removed a level,
+        // Walks the saved path from the view's starting level; if a filter change removed a level,
         // stop at the deepest one that still exists
         function resolveScopeNodes() {
-            const nodes = [getBaseNode()];
+            const base = currentView === 'stips' ? buildStipTree() : getBaseNode();
+            const nodes = [base];
             const validKeys = [];
-            for (const key of scopePath) {
+            for (const key of scopePaths[currentView]) {
                 const next = nodes[nodes.length - 1].children.get(key);
                 if (!next) break;
                 nodes.push(next);
                 validKeys.push(key);
             }
-            scopePath = validKeys;
+            scopePaths[currentView] = validKeys;
             return nodes;
         }
 
         function drillInto(key) {
-            scopePath.push(key);
+            scopePaths[currentView].push(key);
             renderScopeView();
         }
 
         function drillTo(depth) {
-            scopePath = scopePath.slice(0, depth);
+            scopePaths[currentView] = scopePaths[currentView].slice(0, depth);
             renderScopeView();
         }
 
@@ -1889,13 +1906,14 @@
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
                         <div class="match-row-title">${esc(getMatchupText(m))}</div>
-                        <div class="match-row-meta">${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
+                        <div class="match-row-meta">${currentView === 'stips' && m.stipulation ? esc(m.stipulation) + ' · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
         }
 
         // Heading for the clickable list below the summary
         function getGridTitle(node, children) {
+            if (currentView === 'stips') return node.isStipRoot ? 'Performance by Match Type' : 'Stipulations';
             if (children.every(c => c.isEdition)) return 'Editions';
             if (node.isCombined) return 'Performance by Show Type';
             const titles = TAB_CONFIG[node.tab].childTitles;
@@ -1904,6 +1922,7 @@
 
         function renderScopeView() {
             if (!scopeTree) return;
+            const isStips = currentView === 'stips';
             const nodes = resolveScopeNodes();
             const node = nodes[nodes.length - 1];
             const all = node.matches;
@@ -1947,16 +1966,16 @@
 
                 if (children.every(c => c.isEdition)) {
                     children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-                } else if (node.isCombined) {
+                } else if (!isStips && node.isCombined) {
                     children.sort((a, b) => SCOPE_TABS.indexOf(a.tab) - SCOPE_TABS.indexOf(b.tab));
-                } else if (node.tab === 'weekly' && node.level === 0) {
+                } else if (!isStips && node.tab === 'weekly' && node.level === 0) {
                     children.sort((a, b) => WEEKLY_SHOW_ORDER.indexOf(a.label) - WEEKLY_SHOW_ORDER.indexOf(b.label));
                 } else {
                     children.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
                 }
 
                 // PPV list: older one-off events are tucked behind a toggle
-                if (!node.isCombined && node.tab === 'ppv' && node.level === 0) {
+                if (!isStips && !node.isCombined && node.tab === 'ppv' && node.level === 0) {
                     const hidden = children.filter(c => PPV_HIDDEN_BY_DEFAULT.includes(c.label));
                     if (hidden.length) {
                         moreToggle.style.display = 'block';
@@ -1979,15 +1998,15 @@
                 }).join('');
             }
 
-            // Top matches: top 5 normally, every match once you're on a single show
-            const isSingleShow = !!node.isEdition;
+            // Top matches: top 5 normally, every match once you're on a single show or stipulation
+            const isSingleShow = !!node.isLeaf;
             const topTitle = document.getElementById('scope-top-title');
             const topList = isSingleShow
                 ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
                 : getTop5(all);
             topTitle.textContent = isSingleShow ? 'All Matches' : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
             topTitle.setAttribute('data-tt', isSingleShow
-                ? 'Every rated match on this show, highest rated first.'
+                ? (isStips ? 'Every rated match with this stipulation, highest rated first.' : 'Every rated match on this show, highest rated first.')
                 : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
             document.getElementById('scope-top-matches').innerHTML = topList.length
                 ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1)).join('')
@@ -2001,64 +2020,8 @@
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
         }
 
-        function renderStipsTab() {
-            const all = Object.values(showStats.stipulations).flat();
-            const unique = getUniqueMatches(all);
-            document.getElementById('stip-total').textContent = unique.length;
-            document.getElementById('stip-avg').textContent = unique.length > 0 ? (unique.reduce((s, m) => s + m.rating, 0) / unique.length).toFixed(2) : '--';
-            document.getElementById('stip-types').textContent = Object.keys(showStats.stipulations).length;
-            
-            if (all.length > 0) {
-                const top5 = getTop5(all);
-                document.getElementById('best-stip-match').innerHTML = top5.map((m, i) => `
-                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < top5.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08)' : ''}">
-                        <div style="font-size:1.4em;font-weight:bold;min-width:36px;text-align:center;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
-                        <div>
-                            <div style="font-weight:bold;color:#fff;font-size:0.95em;">${esc(getMatchupText(m))}</div>
-                            <div style="color:#aaa;font-size:0.82em;">${esc(m.stipulation)} · ${esc(m.event)}</div>
-                        </div>
-                    </div>`).join('');
-            }
-            
-            document.getElementById('stip-list').innerHTML = Object.entries(showStats.stipulations)
-                .sort((a, b) => getUniqueMatches(b[1]).length - getUniqueMatches(a[1]).length)
-                .map(([name, matches]) => {
-                    const u = getUniqueMatches(matches);
-                    const avg = u.length > 0 ? (u.reduce((s, m) => s + m.rating, 0) / u.length).toFixed(2) : '--';
-                    const best = u.length > 0 ? Math.max(...u.map(m => m.rating)).toFixed(2) : '--';
-                    const top5 = getTop5(matches).map(m => `
-                        <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06);">
-                            <span style="font-weight:bold;min-width:38px;" class="${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</span>
-                            <span style="color:#ddd;font-size:0.88em;">${esc(getMatchupText(m))} <span style="color:#777;">· ${esc(m.event)}</span></span>
-                        </div>`).join('');
-                    const id = `stip-${name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')}`;
-                    return `
-                        <div class="stip-item" style="cursor:pointer;" onclick="toggleStip('${id}')">
-                            <span class="stip-name">${name}</span>
-                            <div class="stip-stats">
-                                <div class="stip-stat"><div class="stip-stat-value">${u.length}</div><div class="stip-stat-label">Matches</div></div>
-                                <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(avg))}">${avg}</div><div class="stip-stat-label">Avg</div></div>
-                                <div class="stip-stat"><div class="stip-stat-value ${getRatingClass(parseFloat(best))}">${best}</div><div class="stip-stat-label">Best</div></div>
-                                <div class="stip-stat"><div class="stip-stat-value" style="color:#ffd700;">▼</div><div class="stip-stat-label">Top 5</div></div>
-                            </div>
-                        </div>
-                        <div id="${id}" style="display:none;padding:10px 16px 16px;background:rgba(255,255,255,0.03);border-radius:0 0 8px 8px;margin-top:-4px;margin-bottom:8px;">
-                            ${top5}
-                        </div>`;
-                }).join('');
-            
-            renderLeaderboard('stip-leaderboard', calculateWrestlerStats(all));
-        }
-
-        function toggleStip(id) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
-        }
-
         function renderAllTabs() {
             renderScopeView();
-            renderStipsTab();
         }
 
         // ===========================================
