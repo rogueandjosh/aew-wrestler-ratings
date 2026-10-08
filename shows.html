@@ -438,6 +438,28 @@
             font-weight: bold;
         }
 
+        /* ‹ › arrows either side of each filter dropdown */
+        .filter-stepper {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .filter-arrow {
+            background: none;
+            border: none;
+            color: rgba(255, 215, 0, 0.55);
+            font-size: 1.6em;
+            line-height: 1;
+            padding: 0 6px 3px;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .filter-arrow:hover {
+            color: #ffd700;
+        }
+
         .scope-subgroups {
             display: flex;
             flex-wrap: wrap;
@@ -474,7 +496,7 @@
             font-size: 0.85em;
         }
 
-        /* Multi-select / Match Types */
+        /* Multi-select / Stipulation Matches */
         .view-options {
             display: flex;
             justify-content: flex-end;
@@ -717,6 +739,18 @@
             .filter-row > div:first-child {
                 grid-column: 1 / -1;
             }
+            .filter-row > div > .filter-stepper {
+                display: flex !important;
+            }
+            .filter-stepper > div {
+                flex: 1;
+                min-width: 0;
+                display: block !important;
+            }
+            .filter-arrow {
+                padding: 0 4px 3px;
+                font-size: 1.5em;
+            }
             #showDropdownBtn {
                 width: 100%;
                 min-width: 0 !important;
@@ -949,7 +983,7 @@
         <!-- Tab Navigation + Content (hidden until data loads) -->
         <div id="tabsWrapper">
         <div class="view-options">
-            <button class="tab view-option-btn" id="stipsToggle">🥊 Match Types</button>
+            <button class="tab view-option-btn" id="stipsToggle" title="Matches with a stipulation, grouped by type. Click again to go back to shows.">🪜 Stipulation Matches</button>
         </div>
 
         <!-- Loading State -->
@@ -959,7 +993,7 @@
             <p class="loading-progress" id="loadingProgress">0 / 0 wrestlers loaded</p>
         </div>
 
-        <!-- Shows / Match Types view (markup built by buildScopeViewMarkup) -->
+        <!-- Shows / Stipulation Matches view (markup built by buildScopeViewMarkup) -->
         <div class="tab-content active" id="showsView"></div>
 
         </div><!-- end tabsWrapper -->
@@ -1154,6 +1188,8 @@
         let scopeTree = null;       // rebuilt on every processAllData()
         let scopePaths = { shows: [], stips: [] }; // node keys drilled into, per view
         let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
+        let matchListExpanded = false; // "Show all N matches" on long match lists
+        const MATCH_LIST_PREVIEW = 10;
         let currentView = 'shows';  // 'shows' (by show) or 'stips' (by match type)
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
@@ -1202,7 +1238,7 @@
         // TAB SWITCHING
         // ===========================================
         
-        // Match Types is an on/off view: clicking it again returns to the show view.
+        // Stipulation Matches is an on/off view: clicking it again returns to the show view.
         // Both views use the same filters and the same page layout.
         function updateViewButtons() {
             document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
@@ -1211,6 +1247,48 @@
         // ===========================================
         // SHOWS FILTER
         // ===========================================
+
+        // ===========================================
+        // FILTER ARROWS — step through All → each single option → back to All
+        // ===========================================
+
+        const FILTER_STEPPERS = [
+            { btnId: 'showDropdownBtn', menu: '#showDropdownMenu', onChange: () => updateShowTypes(), name: 'show type' },
+            { btnId: 'yearDropdownBtn', menu: '#yearCheckboxes', onChange: () => updateYears(), name: 'year' },
+            { btnId: 'divDropdownBtn', menu: '#divDropdownMenu', onChange: () => updateDivisions(), name: 'division' }
+        ];
+
+        function stepFilter(index, dir) {
+            const cfg = FILTER_STEPPERS[index];
+            const inputs = [...document.querySelectorAll(`${cfg.menu} input[type="checkbox"]`)];
+            if (!inputs.length) return;
+            const checked = inputs.filter(cb => cb.checked);
+            // Position 0 = All; 1..n = a single option. A mixed selection counts as All.
+            const current = checked.length === 1 ? inputs.indexOf(checked[0]) + 1 : 0;
+            const next = (current + dir + inputs.length + 1) % (inputs.length + 1);
+            inputs.forEach((cb, i) => { cb.checked = next === 0 || i === next - 1; });
+            cfg.onChange();
+        }
+
+        // Wraps each filter dropdown with a ‹ and › button
+        function addFilterArrows() {
+            FILTER_STEPPERS.forEach((cfg, i) => {
+                const dropdown = document.getElementById(cfg.btnId).parentElement;
+                const wrap = document.createElement('div');
+                wrap.className = 'filter-stepper';
+                dropdown.parentElement.insertBefore(wrap, dropdown);
+                const arrow = (dir, symbol, label) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'filter-arrow';
+                    b.textContent = symbol;
+                    b.setAttribute('aria-label', `${label} ${cfg.name}`);
+                    b.addEventListener('click', () => stepFilter(i, dir));
+                    return b;
+                };
+                wrap.append(arrow(-1, '‹', 'Previous'), dropdown, arrow(1, '›', 'Next'));
+            });
+        }
 
         function updateShowTypes() {
             const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')].map(cb => cb.value);
@@ -1632,7 +1710,7 @@
         function buildStipTree() {
             const entries = scopeMatchesAll.filter(m => m.stipPath && selectedShowTypes.has(m.tab));
             const root = buildTree(entries, 'stipPath');
-            root.label = 'All Match Types';
+            root.label = 'All Stipulations';
             root.titleName = 'Stipulation';
             root.isStipRoot = true;
             return root;
@@ -1908,7 +1986,7 @@
             const validKeys = [];
             for (const key of scopePaths[currentView]) {
                 const current = nodes[nodes.length - 1];
-                // In Match Types a group lists all its stipulations, including those inside subgroups
+                // In Stipulation Matches a group lists all its stipulations, including those inside subgroups
                 const next = current.children.get(key) || (currentView === 'stips' ? getLeaves(current).get(key) : null);
                 if (!next) break;
                 nodes.push(next);
@@ -1928,11 +2006,13 @@
         }
 
         function drillInto(key) {
+            matchListExpanded = false;
             scopePaths[currentView].push(key);
             renderScopeView();
         }
 
         function drillTo(depth) {
+            matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, depth);
             renderScopeView();
         }
@@ -1954,7 +2034,7 @@
 
         // Heading for the clickable list below the summary
         function getGridTitle(node, children) {
-            if (currentView === 'stips') return node.isStipRoot ? 'Performance by Match Type' : 'Stipulations';
+            if (currentView === 'stips') return node.isStipRoot ? 'Stipulation Groups' : 'Stipulations';
             if (children.every(c => c.isEdition)) return 'Editions';
             if (node.isCombined) return 'Performance by Show Type';
             const titles = TAB_CONFIG[node.tab].childTitles;
@@ -1993,7 +2073,7 @@
             document.getElementById('scope-shows').textContent = showCount;
             document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
 
-            // Rows for the next level down. In a Match Types group, every stipulation is listed straight away
+            // Rows for the next level down. In a Stipulation Matches group, every stipulation is listed straight away
             // and any subgroups appear as "Break down by" buttons above the list.
             let children = [...node.children.values()];
             const subgroupsEl = document.getElementById('scope-subgroups');
@@ -2052,19 +2132,28 @@
                 }).join('');
             }
 
-            // Top matches: top 5 normally, every match once you're on a single show or stipulation
-            const isSingleShow = !!node.isLeaf;
+            // Match list: top 5 normally; every match on a single show, and at every level below
+            // "All Stipulations" (groups and subgroups list all their matches straight away)
+            const showFullList = !!node.isLeaf || (isStips && !node.isStipRoot);
             const topTitle = document.getElementById('scope-top-title');
-            const topList = isSingleShow
+            let topList = showFullList
                 ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
                 : getTop5(all);
-            topTitle.textContent = isSingleShow ? 'All Matches' : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
-            topTitle.setAttribute('data-tt', isSingleShow
-                ? (isStips ? 'Every rated match with this stipulation, highest rated first.' : 'Every rated match on this show, highest rated first.')
+            topTitle.textContent = showFullList ? `All Matches (${topList.length})` : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
+            topTitle.setAttribute('data-tt', showFullList
+                ? (isStips ? 'Every rated match in this selection, highest rated first.' : 'Every rated match on this show, highest rated first.')
                 : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
-            document.getElementById('scope-top-matches').innerHTML = topList.length
+
+            // Long lists start with the top 10 and a "Show all" button
+            const fullCount = topList.length;
+            const collapsed = showFullList && fullCount > MATCH_LIST_PREVIEW && !matchListExpanded;
+            if (collapsed) topList = topList.slice(0, MATCH_LIST_PREVIEW);
+            document.getElementById('scope-top-matches').innerHTML = (topList.length
                 ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1)).join('')
-                : '<div style="text-align:center;color:#888;padding:10px 0;">No matches for the selected filters</div>';
+                : '<div style="text-align:center;color:#888;padding:10px 0;">No matches for the selected filters</div>')
+                + (showFullList && fullCount > MATCH_LIST_PREVIEW
+                    ? `<button class="tab more-events-toggle" id="match-list-toggle">${matchListExpanded ? 'Show top 10 only' : `Show all ${fullCount} matches`}</button>`
+                    : '');
 
             // Leaderboard: 3 matches to qualify, fewer when the selection only covers one or two shows
             const minMatches = Math.max(1, Math.min(3, showCount));
@@ -2158,6 +2247,7 @@
         // ===========================================
         
         buildScopeViewMarkup();
+        addFilterArrows();
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
@@ -2165,6 +2255,11 @@
             if (row) { drillInto(row.dataset.scopeKey); return; }
             const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
             if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
+            if (e.target.closest('#match-list-toggle')) {
+                matchListExpanded = !matchListExpanded;
+                renderScopeView();
+                return;
+            }
             if (e.target.closest('#scope-more-toggle')) {
                 showAllPpvEvents = !showAllPpvEvents;
                 renderScopeView();
