@@ -3282,6 +3282,10 @@
                 return `"${details.matchType}" with ${list.length} separate entries — sides unknown`;
             }
 
+            // Mixed matches (e.g. mixed trios): the women often aren't stored in a team, so the
+            // wrestler list is incomplete — skip them until sides can be worked out reliably
+            if (/mixed/i.test(details.matchType || '')) return `"${details.matchType}" — mixed match, skipped`;
+
             // Matches with more than 10 people (battle royals etc.) are never picked
             const people = list.reduce((n, c) => { const m = getTeamMemberNames(c); return n + (m ? m.length : 1); }, 0);
             if (people > 10) return `${people} competitors — more than 10`;
