@@ -61,6 +61,9 @@ function isDoubtful(details) {
     if (members && members.some(m => listed.has(m.trim().toLowerCase()))) return true;
   }
   if (/\bman tag\b/i.test(details.matchType || '') && list.length !== 2) return true;
+  
+  // Mixed matches (e.g. mixed trios) have incomplete wrestler lists — never picked
+  if (/mixed/i.test(details.matchType || '')) return true;
   // Matches with more than 10 people (battle royals etc.) are never picked
   const people = list.reduce((n, c) => { const m = getTeamMemberNames(c); return n + (m ? m.length : 1); }, 0);
   if (people > 10) return true;
