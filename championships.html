@@ -3331,9 +3331,15 @@
             return 'rating-poor';
         }
 
+        // Team title boost: switched OFF since the Oct 2026 rebuild, which fixed tag/trios
+        // title ratings at the source (ChampionshipMatches D). With it off, every rating,
+        // rank and rank change shows exactly as exported. Set to true to bring it back.
+        const TEAM_TITLE_BOOST_ENABLED = false;
+
         // Staggered boost multipliers for tag/trios titles based on rating level
         // More gradual curve: starts low, increases more at higher ratings
         function getBoostMultiplier(title, rating) {
+            if (!TEAM_TITLE_BOOST_ENABLED) return 1.0;
             const lowerTitle = title.toLowerCase();
             const isTrios = lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man');
             const isTag = lowerTitle.includes('tag');
