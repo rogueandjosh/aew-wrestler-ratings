@@ -264,16 +264,53 @@
 
         .action-buttons {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: nowrap;
             gap: 8px;
+            justify-content: center;
             align-items: center;
         }
-        
+
         .action-buttons .reset-btn {
             width: auto;
-            min-width: 200px;
+            min-width: 110px;
             text-align: center;
             justify-content: center;
+        }
+
+        /* Subtle round chevron arrows either side of Year / Month / Week */
+        .week-selector .week-arrow {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 215, 0, 0.55);
+            background: transparent;
+            justify-content: center;
+            align-self: flex-end;
+            flex-shrink: 0;
+        }
+
+        .week-selector .week-arrow:hover:not(:disabled) {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .week-arrow svg {
+            display: block;
+        }
+
+        .search-row {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-row .show-search-item {
+            width: 100%;
+            max-width: 420px;
         }
         
         .random-btn {
@@ -303,35 +340,67 @@
             width: 100%;
         }
 
-        /* Mobile responsiveness */
+        /* Mobile: arrows flank one row of Year / Month / Week, search below,
+           then First / Random / Current side by side */
         @media (max-width: 768px) {
+            .week-selector {
+                gap: 12px;
+            }
+
             .selector-row {
-                flex-direction: column;
-                gap: 10px;
+                flex-wrap: nowrap;
+                gap: 5px;
+                align-items: flex-end;
             }
 
             .filters-group {
-                width: 100%;
-                flex-direction: column;
+                flex: 1;
+                min-width: 0;
+                display: grid;
+                grid-template-columns: 0.9fr 1fr 1.4fr;
+                gap: 5px;
             }
 
             .filter-item,
-            .week-item,
-            .show-search-item {
-                width: 100%;
-                min-width: unset;
+            .week-item {
+                min-width: 0;
+                gap: 3px;
             }
 
-            .week-selector button {
-                width: 100%;
-                justify-content: center;
+            .filter-item label {
+                font-size: 0.75em;
             }
 
-            .reset-btn {
+            .week-selector select {
+                height: 34px;
+                padding: 4px 2px 4px 6px;
+                font-size: 0.85em;
+            }
+
+            .week-selector .week-arrow {
+                width: 34px;
+                height: 34px;
+                min-width: 34px;
+            }
+
+            .search-row .show-search-item {
+                max-width: none;
+                min-width: 0;
+            }
+
+            .action-buttons {
                 width: 100%;
+                gap: 6px;
+            }
+
+            .action-buttons .reset-btn {
+                flex: 1;
+                min-width: 0;
+                padding: 8px 4px !important;
+                font-size: 0.85em !important;
+                gap: 4px;
             }
         }
-            min-width: 200px;
 
         .week-selector select:hover {
             background: rgba(255, 215, 0, 0.2);
@@ -1982,20 +2051,19 @@
             <div id="weekSelectorPanel" class="week-selector-panel" style="display: none;">
                 <div class="week-selector">
                     <div class="selector-row">
-                        <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">
-                            <span class="arrow">◄</span>
-                            <span class="btn-label">Older</span>
+                        <button id="prevWeekBtn" class="week-arrow" onclick="navigateWeek(1)" title="Older week" aria-label="Older week">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
                         
                         <div class="filters-group">
-                            <div class="filter-item">
+                            <div class="filter-item year-item">
                                 <label>Year</label>
                                 <select id="yearFilter" onchange="filterWeeks()">
                                     <option value="">All</option>
                                 </select>
                             </div>
                             
-                            <div class="filter-item">
+                            <div class="filter-item month-item">
                                 <label>Month</label>
                                 <select id="monthFilter" onchange="filterWeeks()">
                                     <option value="">All</option>
@@ -2009,6 +2077,14 @@
                                 </select>
                             </div>
 
+                        </div>
+                        
+                        <button id="nextWeekBtn" class="week-arrow" onclick="navigateWeek(-1)" title="Newer week" aria-label="Newer week">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="search-row">
                             <div class="filter-item show-search-item">
                                 <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the rankings from that week, or click into the empty box to browse every show in order.">Or Search a Show</label>
                                 <div class="show-search-wrap">
@@ -2017,23 +2093,17 @@
                                     <datalist id="showSearchList"></datalist>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">
-                            <span class="btn-label">Newer</span>
-                            <span class="arrow">►</span>
-                        </button>
                     </div>
                     
                     <div class="action-buttons">
-                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                            ↻ Current
-                        </button>
                         <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn first-btn tt" data-tt="Jump to the very first week of AEW ratings — Jun '19">
                             ⏮ First
                         </button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
                             🎲 Random
+                        </button>
+                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
+                            ↻ Current
                         </button>
                     </div>
                 </div>
@@ -4039,6 +4109,45 @@ let visibleColumns = {
                 // Initialize navigation buttons
                 updateNavigationButtons();
             }
+            relabelWeekSelectors();
+        }
+
+        // ===== Compact dropdown labels on mobile =====
+        // On narrow screens Year / Month / Week sit on one row, so the option text is
+        // shortened: 2026 -> '26, September -> Sep, Week shows just "Week 2" once a month
+        // is picked (otherwise "Oct '26 Week 2"), and the current week shows "Current".
+        // Only the visible text changes — option values are untouched, so all the
+        // filter/navigation logic works exactly as before.
+        const compactSelectorQuery = window.matchMedia('(max-width: 768px)');
+
+        function relabelWeekSelectors() {
+            const compact = compactSelectorQuery.matches;
+            const monthFilterVal = document.getElementById('monthFilter')?.value || '';
+            const weeksByFile = {};
+            getValidArchiveWeeks().forEach(w => { weeksByFile[w.filename] = w.label; });
+
+            const relabel = (selectId, compactText) => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                Array.from(select.options).forEach(opt => {
+                    if (opt.dataset.full === undefined) opt.dataset.full = opt.textContent;
+                    opt.textContent = compact ? (compactText(opt) ?? opt.dataset.full) : opt.dataset.full;
+                });
+            };
+
+            relabel('yearFilter', opt => opt.value ? `'${opt.value}` : null);
+            relabel('monthFilter', opt => opt.value || null);
+            relabel('weekSelect', opt => {
+                if (opt.value === 'current') return 'Current';
+                const label = weeksByFile[opt.value.replace('archive/', '')];
+                if (!label) return null;
+                const weekNum = label.match(/Week\s+(\d+)/);
+                return (monthFilterVal && weekNum) ? `Week ${weekNum[1]}` : label;
+            });
+        }
+
+        if (compactSelectorQuery.addEventListener) {
+            compactSelectorQuery.addEventListener('change', relabelWeekSelectors);
         }
 
         function populateShowSearch() {
@@ -4272,6 +4381,7 @@ let visibleColumns = {
             if (isNavigating) {
                 // Just restore the selection - navigation logic handles the rest
                 weekSelect.value = currentWeekSelection;
+                relabelWeekSelectors();
                 return;
             }
             
@@ -4295,6 +4405,7 @@ let visibleColumns = {
                 weekSelect.value = 'current';
             }
             // If no weeks available, dropdown will just have "Current Week" option
+            relabelWeekSelectors();
         }
         
         function updateMonthOptions(selectedYear) {
