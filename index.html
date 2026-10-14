@@ -301,6 +301,46 @@
             display: block;
         }
 
+        #weekSelectorPanel .action-buttons .reset-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 40px;
+            min-width: 120px;
+            background: rgba(255, 215, 0, 0.15) !important;
+            border: 2px solid #ffd700 !important;
+            box-sizing: border-box;
+            transform: none;
+        }
+
+        #weekSelectorPanel .action-buttons .reset-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.3) !important;
+            transform: none;
+        }
+
+        .week-selector button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .action-icon {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Touch screens keep :hover "stuck" after a tap — stop that
+           making the last-tapped button look bigger/brighter */
+        @media (hover: none) {
+            .week-selector button:hover:not(:disabled) {
+                transform: none;
+                background: transparent;
+            }
+            #weekSelectorPanel .action-buttons .reset-btn:hover:not(:disabled) {
+                background: rgba(255, 215, 0, 0.15) !important;
+            }
+        }
+
         .search-row {
             width: 100%;
             max-width: 1000px;
@@ -349,7 +389,7 @@
 
             .selector-row {
                 flex-wrap: nowrap;
-                gap: 5px;
+                gap: 4px;
                 align-items: flex-end;
             }
 
@@ -357,8 +397,8 @@
                 flex: 1;
                 min-width: 0;
                 display: grid;
-                grid-template-columns: 0.9fr 1fr 1.4fr;
-                gap: 5px;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
             }
 
             .filter-item,
@@ -371,16 +411,26 @@
                 font-size: 0.75em;
             }
 
+            /* Draw our own small chevron so the three boxes look identical on
+               iPhone and Android and the text gets more room */
             .week-selector select {
+                -webkit-appearance: none;
+                appearance: none;
                 height: 34px;
-                padding: 4px 2px 4px 6px;
-                font-size: 0.85em;
+                padding: 4px 14px 4px 6px;
+                font-size: 0.8em;
+                text-overflow: ellipsis;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 4px center;
+                background-size: 9px;
             }
 
             .week-selector .week-arrow {
-                width: 34px;
+                width: 30px;
                 height: 34px;
-                min-width: 34px;
+                min-width: 30px;
+                border-radius: 17px;
             }
 
             .search-row .show-search-item {
@@ -393,12 +443,13 @@
                 gap: 6px;
             }
 
-            .action-buttons .reset-btn {
-                flex: 1;
+            #weekSelectorPanel .action-buttons .reset-btn {
+                flex: 1 1 0;
                 min-width: 0;
-                padding: 8px 4px !important;
+                height: 38px;
+                padding: 0 4px !important;
                 font-size: 0.85em !important;
-                gap: 4px;
+                gap: 5px;
             }
         }
 
@@ -2072,7 +2123,7 @@
                             
                             <div class="filter-item week-item">
                                 <label>Week</label>
-                                <select id="weekSelect" onchange="loadSelectedWeek()">
+                                <select id="weekSelect" onchange="onWeekPicked()">
                                     <option value="current">Current Week</option>
                                 </select>
                             </div>
@@ -2097,13 +2148,16 @@
                     
                     <div class="action-buttons">
                         <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn first-btn tt" data-tt="Jump to the very first week of AEW ratings — Jun '19">
-                            ⏮ First
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5v14"/><path d="M18 6l-8 6 8 6z"/></svg>
+                            <span>First</span>
                         </button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                            🎲 Random
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
+                            <span>Random</span>
                         </button>
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                            ↻ Current
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                            <span>Current</span>
                         </button>
                     </div>
                 </div>
@@ -3974,11 +4028,6 @@ let visibleColumns = {
             ratingsData = await calculateArrowDirections(ratingsData);
             console.log('✅ Arrow directions calculated');
             
-            // Update Current Week button text
-            const resetBtn = document.getElementById('resetBtn');
-            if (resetBtn) {
-                resetBtn.textContent = '↻ Current';
-            }
 
             // Load statistics if available
             if (statsResponse) {
@@ -4114,8 +4163,9 @@ let visibleColumns = {
 
         // ===== Compact dropdown labels on mobile =====
         // On narrow screens Year / Month / Week sit on one row, so the option text is
-        // shortened: 2026 -> '26, September -> Sep, Week shows just "Week 2" once a month
-        // is picked (otherwise "Oct '26 Week 2"), and the current week shows "Current".
+        // shortened: 2026 -> '26, September -> Sep. Week drops the word "Week": just "2" once a
+        // month is picked, "Oct W2" with only a year picked, otherwise "Oct '26 W2".
+        // The current week shows "Current".
         // Only the visible text changes — option values are untouched, so all the
         // filter/navigation logic works exactly as before.
         const compactSelectorQuery = window.matchMedia('(max-width: 768px)');
@@ -4123,6 +4173,7 @@ let visibleColumns = {
         function relabelWeekSelectors() {
             const compact = compactSelectorQuery.matches;
             const monthFilterVal = document.getElementById('monthFilter')?.value || '';
+            const yearFilterVal = document.getElementById('yearFilter')?.value || '';
             const weeksByFile = {};
             getValidArchiveWeeks().forEach(w => { weeksByFile[w.filename] = w.label; });
 
@@ -4141,8 +4192,12 @@ let visibleColumns = {
                 if (opt.value === 'current') return 'Current';
                 const label = weeksByFile[opt.value.replace('archive/', '')];
                 if (!label) return null;
-                const weekNum = label.match(/Week\s+(\d+)/);
-                return (monthFilterVal && weekNum) ? `Week ${weekNum[1]}` : label;
+                const parts = label.match(/^(\w{3})\w*\s+('\d{2})\s+Week\s+(\d+)/);
+                if (!parts) return label.replace(/\s*Week\s+/, ' W');
+                const [, mon, yr, num] = parts;
+                if (monthFilterVal) return num;
+                if (yearFilterVal) return `${mon} W${num}`;
+                return `${mon} ${yr} W${num}`;
             });
         }
 
@@ -4608,6 +4663,31 @@ let visibleColumns = {
             nextBtn.disabled = (currentIndex <= 0); // Disable right at current
         }
 
+        // Picking a week straight from the dropdown (with Year/Month on "All") now sets
+        // Year and Month to match, the same way the arrows, First and Random already do.
+        // Keeps the three boxes consistent and lets the Week box show just the number.
+        function onWeekPicked() {
+            const weekSelect = document.getElementById('weekSelect');
+            const picked = weekSelect.value;
+            const yearFilter = document.getElementById('yearFilter');
+            const monthFilter = document.getElementById('monthFilter');
+
+            if (picked !== 'current' && archiveIndex && (!yearFilter.value || !monthFilter.value)) {
+                const filename = picked.replace('archive/', '');
+                const week = archiveIndex.weeks.find(w => w.filename === filename);
+                if (week) {
+                    isNavigating = true;
+                    yearFilter.value = week.label.match(/'(\d+)/)?.[1] || '';
+                    monthFilter.value = week.label.split(' ')[0] || '';
+                    weekSelect.value = picked;
+                    filterWeeks();
+                    weekSelect.value = picked;
+                    isNavigating = false;
+                }
+            }
+            loadSelectedWeek();
+        }
+
         function loadSelectedWeek() {
             const select = document.getElementById('weekSelect');
             const selectedValue = select.value;
@@ -4678,11 +4758,6 @@ let visibleColumns = {
                         }
                         console.log('🟢 Arrow directions processed');
                         
-                        // Update Current Week button text
-                        const resetBtn = document.getElementById('resetBtn');
-                        if (resetBtn) {
-                            resetBtn.textContent = '↻ Current';
-                        }
                         
                         // Data is already correct from JSON export - no processing needed
                         
@@ -4736,11 +4811,7 @@ let visibleColumns = {
                                 ratingsData.bestMatchOfWeek = null;
                             }
                             
-                            // Update button and header for archive week
-                            const resetBtn = document.getElementById('resetBtn');
-                            if (resetBtn) {
-                                resetBtn.textContent = '↻ Current';
-                            }
+                            // Update header for archive week
 
                             // Check if this is the newest week
                             const isNewestWeek = ratingsData.currentWeek === archiveIndex.weeks[0]?.label;
