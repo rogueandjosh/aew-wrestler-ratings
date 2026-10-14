@@ -1121,12 +1121,14 @@
             if (week1 === week2) return 0;
             if (week1 === 'current') return 1;
             if (week2 === 'current') return -1;
+            // The first three archive entries are monthly ("Jun '19", "Jul '19", "Aug '19")
+            // with no week number — treat them as Week 1 so they still compare correctly.
             const parseWeek = (week) => {
-                const match = week.match(/(\w+)\s+'(\d+)\s+Week\s+(\d+)/);
+                const match = week.match(/(\w+)\s+['\u2019](\d+)(?:\s+Week\s+(\d+))?/);
                 if (!match) return null;
                 const monthMap = { 'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
                     'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12 };
-                return { year: 2000 + parseInt(match[2]), month: monthMap[match[1]], weekNum: parseInt(match[3]) };
+                return { year: 2000 + parseInt(match[2]), month: monthMap[match[1]], weekNum: match[3] ? parseInt(match[3]) : 1 };
             };
             const w1 = parseWeek(week1);
             const w2 = parseWeek(week2);
@@ -1134,6 +1136,30 @@
             if (w1.year !== w2.year) return w1.year - w2.year;
             if (w1.month !== w2.month) return w1.month - w2.month;
             return w1.weekNum - w2.weekNum;
+        }
+
+        // Event text for match lists. Themed episodes get the show first —
+        // "Dynamite: Anniversary '20" — unless the name already includes the show
+        // (PPVs like "Revolution '24", "Royal Rampage '23").
+        function formatEventName(m) {
+            const event = m.event;
+            const show = m.show;
+            if (!event) return 'N/A';
+            if (!show || event.toLowerCase().includes(show.toLowerCase())) return event;
+            return `${show}: ${event}`;
+        }
+
+        // The monthly Jun/Jul/Aug '19 entries in ratingHistory come through with the export
+        // date (e.g. 2026-10-12) instead of a 2019 date, which puts them in the wrong year
+        // for the year buttons, Weeks at #1 and the graph. Give them the 1st of their month.
+        function fixMonthlyHistoryDates(history) {
+            if (!Array.isArray(history)) return;
+            const monthNum = { Jan:'01', Feb:'02', Mar:'03', Apr:'04', May:'05', Jun:'06',
+                Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12' };
+            history.forEach(snap => {
+                const m = (snap.week || '').match(/^(\w{3})\s+['\u2019](\d{2})$/);
+                if (m && monthNum[m[1]]) snap.date = `20${m[2]}-${monthNum[m[1]]}-01`;
+            });
         }
 
         function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
@@ -1767,6 +1793,7 @@
                     throw new Error(`Wrestler data unavailable (HTTP ${response.status})`);
                 }
                 wrestlerData = await response.json();
+                fixMonthlyHistoryDates(wrestlerData.ratingHistory);
                 
                 // Check if wrestler is in current rankings (active or dropped out)
 let foundInCurrentRankings = false;
@@ -2844,7 +2871,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                                     <strong style="color: #ffd700;">Date:</strong> ${dateStr}
                                 </div>
                                 <div style="color: #e0e0e0; margin-bottom: 6px;">
-                                    <strong style="color: #ffd700;">Event:</strong> ${m.event || 'N/A'}
+                                    <strong style="color: #ffd700;">Event:</strong> ${formatEventName(m)}
                                 </div>
                                 <div style="color: #e0e0e0; margin-bottom: 6px;">
                                     <strong style="color: #ffd700;">Match Type:</strong> ${m.matchType || 'N/A'}
@@ -2890,7 +2917,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}${bestMatchStar}</div>
+                        <div class="match-info-col">${formatEventName(m)} • ${m.year}${bestMatchStar}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
                         ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
@@ -2898,7 +2925,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                             <strong>Date:</strong> ${dateStr}
                         </div>
                         <div style="margin-bottom: 6px;">
-                            <strong>Event:</strong> ${m.event || 'N/A'}
+                            <strong>Event:</strong> ${formatEventName(m)}
                         </div>
                         <div style="margin-bottom: 6px;">
                             <strong>Match Type:</strong> ${m.matchType || 'N/A'}
@@ -2932,7 +2959,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${m.event || 'N/A'} • ${m.year}${bestMatchStar}</div>
+                        <div class="match-info-col">${formatEventName(m)} • ${m.year}${bestMatchStar}</div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
                         ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
@@ -2940,7 +2967,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                             <strong>Date:</strong> ${dateStr}
                         </div>
                         <div style="margin-bottom: 6px;">
-                            <strong>Event:</strong> ${m.event || 'N/A'}
+                            <strong>Event:</strong> ${formatEventName(m)}
                         </div>
                         <div style="margin-bottom: 6px;">
                             <strong>Match Type:</strong> ${m.matchType || 'N/A'}
