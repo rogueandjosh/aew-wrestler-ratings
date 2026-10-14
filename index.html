@@ -1683,6 +1683,22 @@
             margin-left: 0;
         }
 
+        /* Desktop: "This Week's Analysis — October '26 Week 2" on one line.
+           Phones: the week sits on its own line under the title, without the dash. */
+        .analysis-week::before {
+            content: '\2014\00a0';
+        }
+
+        @media (max-width: 699px) {
+            .analysis-week {
+                display: block;
+                margin-top: 2px;
+            }
+            .analysis-week::before {
+                content: none;
+            }
+        }
+
         /* Chevron matches the On This Day one — same round gold button, same size, and the
            same spot: the empty spacer stands in for On This Day's ✕ so the two line up. */
         .analysis-head-right {
@@ -7446,7 +7462,7 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                     banner.style.display = 'none';
                     return;
                 }
-                weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
+                weekEl.textContent = expandMonthName(data.week);
                 await renderAnalysisSections(data.sections || {});
                 // Restore toggle behaviour
                 header.onclick = toggleAnalysis;
@@ -7475,7 +7491,7 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                     banner.style.display = 'none';
                     return;
                 }
-                weekEl.textContent = '\u2014 ' + expandMonthName(data.week);
+                weekEl.textContent = expandMonthName(data.week);
                 await renderAnalysisSections(data.sections || {});
                 // Archive weeks: start collapsed, user can expand
                 body.classList.remove('open');
