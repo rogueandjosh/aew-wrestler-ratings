@@ -1110,6 +1110,78 @@
             color: #f87171;
         }
 
+        /* Current champion — top of each title's drop-down (current week only) */
+        .current-champion {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            border-radius: 10px;
+        }
+
+        .current-champion-photos {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .current-champion-photos img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            background: #2d2d2d;
+            display: block;
+        }
+
+        .current-champion-photos.team img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .current-champion-photos.team a:not(:first-child) img {
+            margin-left: -12px;
+        }
+
+        .current-champion-label {
+            color: #a8a394;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .current-champion-name {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.15em;
+            text-decoration: none;
+        }
+
+        a.current-champion-name:hover {
+            text-decoration: underline;
+        }
+
+        .current-champion-members,
+        .current-champion-since {
+            color: #b8b8b8;
+            font-size: 0.82em;
+        }
+
+        @media (max-width: 768px) {
+            .current-champion {
+                padding: 10px 12px;
+                gap: 10px;
+                white-space: normal;
+            }
+            .current-champion-photos img { width: 46px; height: 46px; }
+            .current-champion-photos.team img { width: 38px; height: 38px; }
+            .current-champion-name { font-size: 1em; }
+        }
+
         /* Mobile stats table - hidden on desktop */
         .mobile-stats-table-wrapper {
             display: none;
@@ -2427,12 +2499,76 @@
                 .replace(/^-|-$/g, '');
         }
 
+        // ===== CURRENT CHAMPIONS =====
+        // champions.json is written by a daily GitHub Action from Wikipedia's
+        // "List of current champions" pages, with names already matched to the site's
+        // own names (see scripts/update-champions.mjs). Shown only for the current week.
+        let currentChampions = null;
+        let teamMembersForChamps = null;
+
+        async function loadCurrentChampions() {
+            try {
+                const [champRes, teamRes] = await Promise.all([
+                    fetch('champions.json', { cache: 'no-cache' }),
+                    fetch('team-members.json')
+                ]);
+                if (champRes.ok) currentChampions = (await champRes.json()).champions || null;
+                if (teamRes.ok) teamMembersForChamps = (await teamRes.json()).teams || null;
+            } catch (e) {
+                currentChampions = null; // no champions file yet — the block simply doesn't show
+            }
+        }
+
+        function champInitialsImage(name, size) {
+            const words = name.replace(/\bThe\b/gi, '').split(/[\s&,]+/).filter(Boolean);
+            const initials = (words.length === 1 ? words[0].slice(0, 2) : words.slice(0, 3).map(w => w[0]).join('')).toUpperCase();
+            const fontSize = Math.round(size * (initials.length > 2 ? 0.28 : 0.34));
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#2d2d2d"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-weight="bold" font-size="${fontSize}">${initials}</text></svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        function champPhoto(name, linkSlug) {
+            const fallback = champInitialsImage(name, 56);
+            const img = `<img src="images/wrestlers/${createSlug(name)}.jpg" alt="${name}" onerror="this.onerror=null;this.src='${fallback}';">`;
+            return linkSlug ? `<a href="wrestler-stats.html?wrestler=${linkSlug}">${img}</a>` : img;
+        }
+
+        function buildCurrentChampionBlock(title) {
+            if (currentWeekValue !== 'current' || !currentChampions) return '';
+            const c = currentChampions[title];
+            if (!c) return '';
+
+            if (!c.champion) {
+                return `<div class="current-champion"><div><div class="current-champion-label">Current Champion</div><div class="current-champion-name">Vacant</div></div></div>`;
+            }
+
+            const members = c.isTeam && teamMembersForChamps ? (teamMembersForChamps[c.champion] || []) : [];
+            const photos = members.length >= 2
+                ? members.map(m => champPhoto(m, c.slug)).join('')
+                : champPhoto(c.champion, c.slug);
+            const nameHtml = c.slug
+                ? `<a class="current-champion-name" href="wrestler-stats.html?wrestler=${c.slug}">${c.champion}</a>`
+                : `<span class="current-champion-name">${c.champion}</span>`;
+            const sinceText = c.since ? `Since ${c.since.replace(/^(\w+) (\d+), (\d+)$/, '$2 $1 $3')}` : '';
+
+            return `
+                <div class="current-champion">
+                    <div class="current-champion-photos${members.length >= 2 ? ' team' : ''}">${photos}</div>
+                    <div>
+                        <div class="current-champion-label">${c.isTeam ? 'Current Champions' : 'Current Champion'}</div>
+                        ${nameHtml}
+                        ${members.length >= 2 ? `<div class="current-champion-members">${members.join(' & ')}</div>` : ''}
+                        ${sinceText ? `<div class="current-champion-since">${sinceText}</div>` : ''}
+                    </div>
+                </div>`;
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', init);
 
         async function init() {
             try {
-                await loadArchiveIndex();
+                await Promise.all([loadArchiveIndex(), loadCurrentChampions()]);
                 await loadCompetitorData();
                 await checkIfCurrentMatchesMostRecent();
                 await loadChampionshipData('current');
@@ -2947,6 +3083,7 @@
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
                             <div class="details-content">
+                                ${buildCurrentChampionBlock(champ.title)}
                                 <!-- Mobile-only stats table -->
                                 <div class="mobile-stats-table-wrapper">
                                     <table class="mobile-stats-table">
@@ -4035,6 +4172,7 @@
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
+        <p>Current champions sourced from <a href="https://en.wikipedia.org/wiki/List_of_current_champions_in_All_Elite_Wrestling" target="_blank" style="color: #ffd700; text-decoration: none;">Wikipedia</a> under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a>.</p>
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 </body>
