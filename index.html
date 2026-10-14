@@ -2603,7 +2603,8 @@
 
         // ===== TOOLTIP TOGGLE =====
         (function() {
-            const stored = localStorage.getItem('aewTooltips');
+            let stored = null;
+            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
             const on = stored === null ? true : stored === 'true';
             if (on) document.body.classList.add('tooltips-on');
             const btn = document.getElementById('tooltipToggle');
@@ -2615,7 +2616,7 @@
 
         function toggleTooltips() {
             const on = document.body.classList.toggle('tooltips-on');
-            localStorage.setItem('aewTooltips', on);
+            try { localStorage.setItem('aewTooltips', on); } catch (e) {}
             const btn = document.getElementById('tooltipToggle');
             if (btn) {
                 btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
@@ -2791,7 +2792,6 @@
             try {
                 const response = await fetch('name-changes.json');
                 nameChangesData = await response.json();
-                console.log('✅ Loaded name changes:', nameChangesData.totalChanges);
                 return nameChangesData;
             } catch (error) {
                 console.warn('⚠️ Name changes file not found, names will not be merged');
@@ -2853,7 +2853,6 @@
             try {
                 currentData = await fetch('current-rankings.json').then(r => r.json());
             } catch (e) {
-                console.log('Could not load current-rankings.json');
             }
         }
 
@@ -2926,7 +2925,6 @@
         const wrestlers = Object.values(recentlyDropped)
             .sort((a, b) => (a.lastRank || 999) - (b.lastRank || 999));
 
-        console.log('🔍 Recently dropped (last 4 weeks):', wrestlers.length);
 
         if (wrestlers.length === 0) {
             section.innerHTML = '<p style="color: #b8b8b8;">No wrestlers have dropped out in the last 4 weeks.</p>';
@@ -2969,7 +2967,6 @@
         section.innerHTML = html;
 
     } catch (error) {
-        console.log('Error building recently dropped section:', error);
         section.innerHTML = '<p style="color: #b8b8b8;">Error loading recently dropped wrestlers.</p>';
     }
 }
@@ -2981,7 +2978,6 @@
             try {
                 const response = await fetch('team-members.json');
                 teamMembersData = await response.json();
-                console.log('✅ Loaded team members:', teamMembersData.totalTeams);
                 return teamMembersData;
             } catch (error) {
                 console.warn('⚠️ Team members file not found, team members will not be shown');
@@ -2996,7 +2992,6 @@
             try {
                 const response = await fetch('factions.json');
                 factionsData = await response.json();
-                console.log('✅ Loaded factions:', factionsData.factions?.length);
                 return factionsData;
             } catch (error) {
                 console.warn('⚠️ Factions file not found');
@@ -3012,7 +3007,6 @@
             try {
                 const response = await fetch('wrestlers/index.json');
                 wrestlersIndexData = await response.json();
-                console.log('✅ Loaded wrestlers index:', wrestlersIndexData.length);
                 return wrestlersIndexData;
             } catch (error) {
                 console.warn('⚠️ Wrestlers index not found, pronoun/team adjustments will be skipped');
@@ -3060,13 +3054,13 @@
         // needs resolving to "Death Triangle" to find its real member list / current page.
         function resolveCurrentName(name) {
             if (!nameChangesData || !nameChangesData.changes) return name;
+            // Follows the name changes in date order (match ID), so chains (A → B → C) and
+            // names that change and later change back (Penta El Zero M ↔ Penta Oscuro,
+            // Matt ↔ Matthew Jackson) both end on the name in use now.
+            const sorted = [...nameChangesData.changes].sort((a, b) => a.matchId - b.matchId);
             let current = name;
-            let hops = 0;
-            while (hops < 10) {
-                const change = nameChangesData.changes.find(c => c.oldName === current);
-                if (!change) break;
-                current = change.newName;
-                hops++;
+            for (const change of sorted) {
+                if (change.oldName === current) current = change.newName;
             }
             return current;
         }
@@ -4000,7 +3994,6 @@ let visibleColumns = {
                             wrestler.change = '—';
                         } else if (typeof wrestler.change !== 'string') {
                             // If it's a number or other type, convert to string first
-                            console.log('Non-string change value:', wrestler.change, typeof wrestler.change, 'for:', wrestler.name);
                             wrestler.change = String(wrestler.change);
                             // Then apply same arrow logic
                             if (wrestler.change.startsWith('-')) {
@@ -4118,14 +4111,11 @@ let visibleColumns = {
                             nameChanges[change.oldName] = change.newName;
                         }
                     });
-                    console.log('Loaded ' + Object.keys(nameChanges).length + ' name changes');
-                    console.log('Name changes:', nameChanges);
                 } else {
                     // If it's already an object mapping, use it directly
                     nameChanges = changesArray;
                 }
             } catch (error) {
-                console.log('Could not load name changes:', error);
                 nameChanges = {};
             }
             
@@ -4140,9 +4130,7 @@ let visibleColumns = {
             ratingsData = await currentResponse.json();
             ratingsData = fixEncodingIssues(ratingsData);
             
-            console.log('🔍 Current rankings loaded, calculating arrow directions...');
             ratingsData = await calculateArrowDirections(ratingsData);
-            console.log('✅ Arrow directions calculated');
             
 
             // Load statistics if available
@@ -4176,11 +4164,12 @@ let visibleColumns = {
             );
             
             // Check for saved state from back button, otherwise show men's division
-            const savedState = sessionStorage.getItem('aew_previous_state');
+            let savedState = null;
+            try { savedState = sessionStorage.getItem('aew_previous_state'); } catch (e) {} // storage can be blocked
             let analysisOpenState = false;
             if (savedState) {
                 const state = JSON.parse(savedState);
-                sessionStorage.removeItem('aew_previous_state');
+                try { sessionStorage.removeItem('aew_previous_state'); } catch (e) {}
                 analysisOpenState = state.analysisOpen || false;
                 
                 if (state.view === 'statistics') {
@@ -4217,9 +4206,7 @@ let visibleColumns = {
                     if (currentNames !== archiveNames) { allMatch = false; break; }
                 }
                 skipFirstArchiveWeek = allMatch;
-                console.log('🔍 Duplicate archive week check:', skipFirstArchiveWeek ? 'DUPLICATE — first archive week will be hidden' : 'No duplicate');
             } catch (e) {
-                console.log('Could not check for duplicate archive week:', e);
             }
         }
 
@@ -4428,7 +4415,6 @@ let visibleColumns = {
             }
 
             if (!match) {
-                console.log('No show match found for:', query);
                 return;
             }
 
@@ -4441,7 +4427,6 @@ let visibleColumns = {
 
             const optionExists = Array.from(weekSelect.options).some(opt => opt.value === targetValue);
             if (!optionExists) {
-                console.log('Show matched but archive file not found in week selector:', targetValue);
                 return;
             }
 
@@ -4688,10 +4673,6 @@ let visibleColumns = {
         function navigateWeek(direction) {
             const weekSelect = document.getElementById('weekSelect');
             let currentValue = weekSelect.value;
-            console.log('🔴 NAVIGATE DEBUG:');
-            console.log('  currentValue:', currentValue);
-            console.log('  direction:', direction);
-            console.log('  Button clicked:', direction === 1 ? 'PREV/OLDER' : 'NEXT/NEWER');
             
             if (!archiveIndex) return;
             
@@ -4791,13 +4772,10 @@ let visibleColumns = {
             
             if (selectedValue === 'current') {
                 // Reload current rankings
-                console.log('🟢 === LOADING CURRENT WEEK ===');
                 fetch('current-rankings.json')
                     .then(response => response.json())
                     .then(async data => {
-                        console.log('🟢 Data loaded successfully');
                         ratingsData = fixEncodingIssues(data);
-                        console.log('🟢 Encoding fixed');
                         
                         // Instead of calculating arrows, copy them from the archived version of this week
                         if (archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length > 0) {
@@ -4839,9 +4817,7 @@ let visibleColumns = {
                                         }
                                     });
                                     
-                                    console.log('✅ Copied rank changes from archived version of current week');
                                 } catch (error) {
-                                    console.log('Could not load archived current week, calculating arrows:', error);
                                     // Fallback to calculation if archive load fails
                                     ratingsData = await calculateArrowDirections(ratingsData);
                                 }
@@ -4853,7 +4829,6 @@ let visibleColumns = {
                             // No archive index, calculate arrows
                             ratingsData = await calculateArrowDirections(ratingsData);
                         }
-                        console.log('🟢 Arrow directions processed');
                         
                         
                         // Data is already correct from JSON export - no processing needed
@@ -5429,7 +5404,6 @@ if (tableEl) {
                     let prevWeekUrl = null;
                     const currentWeekLabel = ratingsData.currentWeek; // Use THIS week's label
 
-                    console.log('📅 Current week being displayed:', currentWeekLabel);
 
                     // Find this week in archive index
                     const thisWeekEntry = archiveIndex.weeks.find(w => w.label === currentWeekLabel);
@@ -5439,24 +5413,19 @@ if (tableEl) {
                         const thisWeekIndex = archiveIndex.weeks.indexOf(thisWeekEntry);
                         if (thisWeekIndex + 1 < archiveIndex.weeks.length) {
                             prevWeekUrl = archiveIndex.weeks[thisWeekIndex + 1].url;
-                            console.log('📅 Loading previous week:', archiveIndex.weeks[thisWeekIndex + 1].label);
                         }
                     } else if (archiveIndex.weeks[0]?.label === currentWeekLabel) {
                         // This is the newest archived week (same as current)
                         prevWeekUrl = archiveIndex.weeks[1]?.url;
-                        console.log('📅 Loading previous week:', archiveIndex.weeks[1]?.label);
                     } else {
                         // For archive weeks, find the previous week
                         // Archive array: [0]=newest, [1]=older, [2]=even older...
                         // So previous week = currentIndex + 1
                         const currentFilename = currentWeekSelect.value.replace('archive/', '');
                         const currentIndex = archiveIndex.weeks.findIndex(w => w.filename === currentFilename);
-                        console.log('📅 Current index in archive:', currentIndex, 'filename:', currentFilename);
                         if (currentIndex >= 0 && currentIndex + 1 < archiveIndex.weeks.length) {
                             prevWeekUrl = archiveIndex.weeks[currentIndex + 1].url;
-                            console.log('📅 Loading previous week:', archiveIndex.weeks[currentIndex + 1].label);
                         } else {
-                            console.log('📅 No previous week available (this is the oldest week)');
                         }
                     }
                     
@@ -5465,14 +5434,9 @@ if (tableEl) {
                     if (prevWeekUrl) {
                         try {
                             prevWeekData = await fetch(prevWeekUrl + '?t=' + Date.now()).then(r => r.json());
-                            console.log('✅ Loaded previous week data from:', prevWeekUrl);
-                            console.log('   currentWeek in prev data:', prevWeekData.currentWeek);
-                            console.log('   mens array length:', prevWeekData.mens?.length);
                         } catch (e) {
-                            console.log('Could not load previous week:', e);
                         }
                     } else {
-                        console.log('❌ No prevWeekUrl found');
                     }
                     
                     for (let i = 0; i < droppedOut.length; i++) {
@@ -5482,10 +5446,8 @@ if (tableEl) {
                             // Always look up rank and rating from previous week for inactive wrestlers
                             // (Don't trust lastRank/lastRating from JSON as they may be from when first went inactive)
                             const isInactiveWrestler = /\(Inactive/i.test(wrestler.name);
-                            console.log(`🔍 Wrestler: ${wrestler.name}, isInactive: ${isInactiveWrestler}, has prevWeekData: ${!!prevWeekData}`);
                             
                             if (isInactiveWrestler && prevWeekData) {
-                                console.log(`   🔄 LOOKING UP FRESH DATA for inactive wrestler`);
                                 // Search BOTH active roster AND dropped out section from previous week
                                 const prevRoster = prevWeekData[division] || [];
                                 const prevDroppedKey = division + 'DroppedOut';
@@ -5499,7 +5461,6 @@ if (tableEl) {
                                     .replace(/\s*\(Name change\)/i, '')
                                     .trim();
                                 
-                                console.log('🔍 Looking up dropped wrestler:', cleanName);
                                 
                                 // First try active roster
                                 let prevWrestler = prevRoster.find(w => {
@@ -5514,7 +5475,6 @@ if (tableEl) {
                                 
                                 // If not in active roster, try dropped out section
                                 if (!prevWrestler && prevDropped.length > 0) {
-                                    console.log('   Not in active roster, checking dropped out section...');
                                     prevWrestler = prevDropped.find(w => {
                                         const prevName = w.name
                                             .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
@@ -5527,15 +5487,11 @@ if (tableEl) {
                                 }
                                 
                                 if (prevWrestler) {
-                                    console.log('   ✅ FOUND: rank', prevWrestler.lastRank || prevWrestler.rank, 'rating', prevWrestler.lastRating || prevWrestler.rating);
                                     wrestler.lastRank = prevWrestler.lastRank || prevWrestler.rank;
                                     wrestler.lastRating = prevWrestler.lastRating || prevWrestler.rating;
-                                    console.log('   ✅ UPDATED wrestler.lastRank to:', wrestler.lastRank, 'wrestler.lastRating to:', wrestler.lastRating);
                                 } else {
-                                    console.log('   ❌ NOT FOUND in either active or dropped out');
                                 }
                             } else if (isInactiveWrestler && !prevWeekData) {
-                                console.log('   ⚠️ No prevWeekData available to look up!');
                             } else if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
                                 // Search BOTH active roster AND dropped out section from previous week
                                 const prevRoster = prevWeekData[division] || [];
@@ -5550,7 +5506,6 @@ if (tableEl) {
                                     .replace(/\s*\(Name change\)/i, '')
                                     .trim();
                                 
-                                console.log('🔍 Looking up dropped wrestler:', cleanName);
                                 
                                 // First try active roster
                                 let prevWrestler = prevRoster.find(w => {
@@ -5565,7 +5520,6 @@ if (tableEl) {
                                 
                                 // If not in active roster, try dropped out section
                                 if (!prevWrestler && prevDropped.length > 0) {
-                                    console.log('   Not in active roster, checking dropped out section...');
                                     prevWrestler = prevDropped.find(w => {
                                         const prevName = w.name
                                             .replace(/\s*\(Inactive\s+for\s+\d+\+?\s+weeks?\)/i, '')
@@ -5578,11 +5532,9 @@ if (tableEl) {
                                 }
                                 
                                 if (prevWrestler) {
-                                    console.log('   ✅ FOUND: rank', prevWrestler.lastRank || prevWrestler.rank, 'rating', prevWrestler.lastRating || prevWrestler.rating);
                                     wrestler.lastRank = prevWrestler.lastRank || prevWrestler.rank;
                                     wrestler.lastRating = prevWrestler.lastRating || prevWrestler.rating;
                                 } else {
-                                    console.log('   ❌ NOT FOUND in either active or dropped out');
                                 }
                             } else if ((!wrestler.lastRank || !wrestler.lastRating) && prevWeekData) {
                                 // For non-inactive wrestlers (name changes), use JSON values if present
@@ -5611,9 +5563,6 @@ if (tableEl) {
                             
                             // Debug logging for Matt/Nick Jackson
                             if (actualName.includes('Jackson')) {
-                                console.log(`Dropped wrestler: ${actualName}`);
-                                console.log(`Is name change? ${isNameChange}`);
-                                console.log(`nameChanges[${actualName}] = ${nameChanges[actualName]}`);
                             }
                             
                             let displayName = wrestler.name.replace(/\s*\(Inactive.*$/gi, '');
@@ -6329,11 +6278,7 @@ if (tableEl) {
             selectedWeekLabel = ratingsData.currentWeek;
         }
 
-        console.log('=== STATISTICS DEBUG ===');
-console.log('Selected week value:', select.value);
-console.log('Selected week label:', selectedWeekLabel);
 const dynamicStats = await loadDynamicStatistics(selectedWeekLabel, archiveIndex);
-console.log('Stats loaded for:', selectedWeekLabel);
         renderDynamicStatistics(division, dynamicStats, selectedWeekLabel);
 
     } catch (error) {
@@ -6968,24 +6913,12 @@ function calculateStatsFromWeeks(weekDataArray, selectedWeekLabel, nameChanges =
                     ws.inSelectedWeek = true;
                 }
 
-                // Debug for Bryan Danielson and Mariah May
-if (canonicalName.includes('Danielson') || canonicalName.includes('Mariah')) {
-    console.log(`${canonicalName} in week ${weekLabel}:`, {
-        selectedWeek: selectedWeekLabel,
-        rating: rating,
-        matches: weekLabel === selectedWeekLabel,
-        weekIndex: weekIndex,
-        totalWeeks: weekDataArray.length
-    });
-}
-
 if (weekLabel === selectedWeekLabel || 
     (selectedWeekLabel === 'current' && weekIndex === weekDataArray.length - 1)) {
     ws.currentRating = rating;
     ws.inSelectedWeek = true;
     
     if (canonicalName.includes('Danielson') || canonicalName.includes('Mariah')) {
-        console.log(`  ✅ SET inSelectedWeek = true for ${canonicalName}`);
     }
 }
             });
@@ -7631,7 +7564,7 @@ document.addEventListener('click', function(e) {
             week: document.getElementById('weekSelect')?.value || 'current',
             analysisOpen: document.getElementById('analysisBody')?.classList.contains('open') || false
         };
-        sessionStorage.setItem('aew_previous_state', JSON.stringify(state));
+        try { sessionStorage.setItem('aew_previous_state', JSON.stringify(state)); } catch (e) {}
     }
 });
     </script>
