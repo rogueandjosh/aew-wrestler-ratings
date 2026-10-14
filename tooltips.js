@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Apply saved preference
-    const stored = localStorage.getItem('aewTooltips');
+    let stored = null;
+            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
     const on = stored === null ? true : stored === 'true';
     if (on) document.body.classList.add('tooltips-on');
     updateToggleBtn(document.getElementById('tooltipToggle'));
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function toggleTooltips() {
     const on = document.body.classList.toggle('tooltips-on');
-    localStorage.setItem('aewTooltips', on);
+    try { localStorage.setItem('aewTooltips', on); } catch (e) {}
     updateToggleBtn(document.getElementById('tooltipToggle'));
 }
 
