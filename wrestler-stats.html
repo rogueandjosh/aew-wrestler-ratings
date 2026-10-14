@@ -1744,6 +1744,26 @@
             return bestMatchCreditedKeys.has(`${dateOnly}_${match.rating.toFixed(2)}`);
         }
 
+        // Old-name slug → slug of the name in use now (unchanged if it isn't an old name,
+        // or if the current name has no stats file).
+        async function resolveSlugToCurrentName(slug) {
+            const changes = Array.isArray(allNameChanges) ? allNameChanges : (allNameChanges?.changes || []);
+            if (!changes.length) return slug;
+            const sorted = [...changes].sort((a, b) => a.matchId - b.matchId);
+            const startChange = sorted.find(c => createSlug(c.oldName) === slug || createSlug(c.newName) === slug);
+            if (!startChange) return slug;
+            let current = createSlug(startChange.oldName) === slug ? startChange.oldName : startChange.newName;
+            // Follows the name changes in date order (match ID), so chains (A → B → C) and
+            // names that change and later change back (Penta El Zero M ↔ Penta Oscuro,
+            // Matt ↔ Matthew Jackson) both end on the name in use now.
+            for (const change of sorted) {
+                if (change.oldName === current) current = change.newName;
+            }
+            const currentSlug = createSlug(current);
+            if (currentSlug === slug) return slug;
+            return (await checkTeamFileExists(currentSlug)) ? currentSlug : slug;
+        }
+
         (async function() {
             await Promise.all([loadTeamData(), loadBestMatchArchive()]);
             await loadCurrentRankings();  // Must complete before loadWrestlerData so
@@ -1759,7 +1779,14 @@
             if (!wrestlerSlug) {
                 showError('No wrestler specified. Please select a wrestler from the rankings page.');
             } else {
-                loadWrestlerData(wrestlerSlug);
+                // Links from older weeks use the name at the time (e.g. "Cody" in 2019).
+                // Send those to the page for the name in use now, which has the full career.
+                const currentSlug = await resolveSlugToCurrentName(wrestlerSlug);
+                if (currentSlug !== wrestlerSlug) {
+                    urlParams.set('wrestler', currentSlug);
+                    history.replaceState(null, '', `${location.pathname}?${urlParams.toString()}${location.hash}`);
+                }
+                loadWrestlerData(currentSlug);
             }
         })();
 
@@ -3935,7 +3962,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
     
     // ===== TOOLTIP TOGGLE =====
     (function() {
-        const stored = localStorage.getItem('aewTooltips');
+        let stored = null;
+            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
         const on = stored === null ? true : stored === 'true';
         if (on) document.body.classList.add('tooltips-on');
         const btn = document.getElementById('tooltipToggle');
@@ -3947,7 +3975,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
     function toggleTooltips() {
         const on = document.body.classList.toggle('tooltips-on');
-        localStorage.setItem('aewTooltips', on);
+        try { localStorage.setItem('aewTooltips', on); } catch (e) {}
         const btn = document.getElementById('tooltipToggle');
         if (btn) {
             btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
