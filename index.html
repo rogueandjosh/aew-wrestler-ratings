@@ -1995,6 +1995,30 @@
             font-size:0.85em;
         }
         .otd-expand-btn:hover{background:rgba(255,215,0,0.18);}
+
+        /* ✕ — hides the card down to the slim bar for today */
+        .otd-hide-btn{
+            width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+            color:#a8a394;cursor:pointer;flex-shrink:0;transition:color .2s ease,background .2s ease;
+        }
+        .otd-hide-btn:hover{color:#ffd700;background:rgba(255,215,0,0.1);}
+
+        /* Light level: just "📅 On This Day" on the left and the chevron on the right */
+        .otd-teaser.minimised{
+            padding:8px 14px;margin-bottom:20px;
+            background:rgba(255,215,0,0.03);border-color:rgba(255,215,0,0.2);
+        }
+        .otd-teaser.minimised .otd-photo-row,
+        .otd-teaser.minimised .otd-head-date,
+        .otd-teaser.minimised .otd-teaser-date,
+        .otd-teaser.minimised .otd-show-badges,
+        .otd-teaser.minimised .otd-head-badges,
+        .otd-teaser.minimised .otd-hide-btn,
+        .otd-teaser.minimised .otd-teaser-expandable{display:none !important;}
+        .otd-teaser.minimised .otd-teaser-head{grid-template-areas:"title right";grid-template-columns:minmax(0,1fr) auto;align-items:center;}
+        .otd-teaser.minimised .otd-teaser-title{align-items:center;font-size:0.85em;opacity:0.85;}
+        .otd-teaser.minimised .otd-teaser-head-right{align-items:center;}
+        .otd-teaser.minimised .otd-expand-btn{width:24px;height:24px;border-width:1.5px;background:transparent;}
         .otd-expand-btn svg{transition:transform .3s ease;}
         .otd-teaser.expanded .otd-expand-btn svg{transform:rotate(180deg);}
 
@@ -3076,9 +3100,6 @@
         // Standalone specials that aren't full PPVs but still air on their own, never framed
         // as a numbered Dynamite/Collision episode — single-border gold badge
         const SOLO_SHOWS = ['Battle of the Belts','Grand Slam: Mexico','Grand Slam: Australia','Grand Slam: France'];
-        // "Named Dynamites" — genuinely a Dynamite (or Collision/Rampage) episode, just
-        // branded with a special name layered on top — dual-badge treatment
-        const NAMED_DYNAMITE_SPECIALS = ['Grand Slam','Winter Is Coming','Beach Break','Fyter Fest','Fight for the Fallen','Bash at the Beach','Homecoming','Maximum Carnage','Sep to Remember','Holiday Bash',"New Year's Smash",'Spring BreakThru','Summer Blockbuster','Fright Night Dynamite','Dynamite on 34th Street','Rebel Heart','Big Business','The Crossroads','House of the Dragon','Tag Team Appreciation Night',"St. Patrick's Day Slam",'Brodie Lee Celebration of Life'];
 
         // Builds the show badge(s) directly from details.event / details.suppName — exact
         // value matching against the curated lists above, no text-scanning needed since
@@ -3262,15 +3283,24 @@
         // (.otd-details-grid) lays it out as two balanced columns on wider screens —
         // filled top-to-bottom, left column taking the extra cell when the count is odd —
         // and a single column on phones. No spanning items, so no auto-placement surprises.
+        // Show row text. Themed episodes get the show first — "Dynamite: Anniversary '20".
+        // If the themed name already includes the show (PPVs like "Revolution '24",
+        // "Royal Rampage '23", "Dynamite on 34th Street '24") it's shown on its own.
+        function formatShowName(details) {
+            const event = details.event;
+            const suppName = (details.suppName && details.suppName !== 'N/A') ? details.suppName : null;
+            if (!suppName) return event;
+            if (suppName.toLowerCase().includes(event.toLowerCase())) return suppName;
+            return `${event}: ${suppName}`;
+        }
+
         function buildMatchTable(details) {
             // One ordered list; CSS splits it into two balanced columns (see .otd-details-grid).
             const rows = [];
 
             if (details.date) rows.push(['Date', formatFullDate(details.date)]);
             if (details.location) rows.push(['Location', stripBracketedText(details.location).replace(/;\s*/g, ', ')]);
-            if (details.event) {
-                rows.push(['Show', (details.suppName && details.suppName !== 'N/A') ? details.suppName : details.event]);
-            }
+            if (details.event) rows.push(['Show', formatShowName(details)]);
             if (details.competitors && details.competitors.length > 0) {
                 
                 rows.push(['Wrestlers', details.competitors.map(c => hyperlinkCompetitor(c, otdWeekLabelFromDate(details.date))).join(' vs. ')]);
@@ -3421,8 +3451,51 @@
             }
         }
 
+        // On This Day has three levels:
+        //   middle — the normal card (default)
+        //   full   — chevron opens the match details (chevron again goes back to middle)
+        //   light  — the ✕ shrinks it to a slim "📅 On This Day" bar for the rest of the day;
+        //            the chevron on the bar brings it back to middle.
+        // "Hidden today" is kept in this browser as the date it was hidden, so a new day's
+        // match always shows in full again.
+        const OTD_HIDDEN_KEY = 'otdHiddenDate';
+
+        function otdTodayKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function isOtdHiddenToday() {
+            try { return localStorage.getItem(OTD_HIDDEN_KEY) === otdTodayKey(); } catch (e) { return false; }
+        }
+
+        function hideTeaserForToday() {
+            const card = document.getElementById('teaserCard');
+            card.classList.remove('expanded');
+            card.classList.add('minimised');
+            updateTeaserButtons(card);
+            try { localStorage.setItem(OTD_HIDDEN_KEY, otdTodayKey()); } catch (e) {}
+        }
+
+        function updateTeaserButtons(card) {
+            const btn = card.querySelector('.otd-expand-btn');
+            if (!btn) return;
+            const minimised = card.classList.contains('minimised');
+            const expanded = card.classList.contains('expanded');
+            btn.setAttribute('aria-expanded', expanded);
+            btn.title = minimised ? 'Show On This Day' : (expanded ? 'Show less' : 'Show more');
+            btn.setAttribute('aria-label', minimised ? 'Show On This Day' : 'Show match details');
+        }
+
         function toggleTeaser() {
             const card = document.getElementById('teaserCard');
+            // From the slim bar, the chevron brings the card back to its normal size
+            if (card.classList.contains('minimised')) {
+                card.classList.remove('minimised');
+                try { localStorage.removeItem(OTD_HIDDEN_KEY); } catch (e) {}
+                updateTeaserButtons(card);
+                return;
+            }
             const expanded = card.classList.toggle('expanded');
             const btn = card.querySelector('.otd-expand-btn');
             if (btn) {
@@ -3435,7 +3508,7 @@
             const container = document.getElementById('teaserCard');
             if (!container) return;
 
-            const today = new Date(); // TEMP TEST DATE — remember to revert!
+            const today = new Date();
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             let otdData;
@@ -3479,12 +3552,20 @@
                              onclick="toggleTeaser()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTeaser();}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
+                        <div class="otd-hide-btn" role="button" tabindex="0" title="Hide for today" aria-label="Hide On This Day for today"
+                             onclick="hideTeaserForToday()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();hideTeaserForToday();}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                        </div>
                     </div>
                 </div>
                 <div class="otd-teaser-expandable">
                     ${table}
                 </div>
             `;
+            if (isOtdHiddenToday()) {
+                container.classList.add('minimised');
+                updateTeaserButtons(container);
+            }
             container.style.display = 'block';
         }
 
