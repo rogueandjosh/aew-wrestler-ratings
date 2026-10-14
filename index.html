@@ -3286,6 +3286,14 @@
         // Show row text. Themed episodes get the show first — "Dynamite: Anniversary '20".
         // If the themed name already includes the show (PPVs like "Revolution '24",
         // "Royal Rampage '23", "Dynamite on 34th Street '24") it's shown on its own.
+        // Themed weekly shows come through as "Dynamite - Anniversary '20"; show them as
+        // "Dynamite: Anniversary '20" (only the first dash after the show name changes,
+        // so "- Night 1" stays as it is).
+        function formatBestMatchShow(show) {
+            if (!show) return show;
+            return show.replace(/^(Dynamite|Collision|Rampage) - /, '$1: ');
+        }
+
         function formatShowName(details) {
             const event = details.event;
             const suppName = (details.suppName && details.suppName !== 'N/A') ? details.suppName : null;
@@ -4298,7 +4306,7 @@ let visibleColumns = {
             popup.innerHTML = `
                 <div class="best-match-title">⭐ Best Match of the Week</div>
                 <div class="best-match-row"><strong>Date:</strong> ${dateStr}</div>
-                <div class="best-match-row"><strong>Event:</strong> ${bestMatch.show || 'N/A'}</div>
+                <div class="best-match-row"><strong>Event:</strong> ${formatBestMatchShow(bestMatch.show) || 'N/A'}</div>
                 <div class="best-match-row"><strong>Rating:</strong> ${(bestMatch.rating || 0).toFixed(2)}</div>
                 <div class="best-match-row"><strong>Match Type:</strong> ${bestMatch.matchType || 'N/A'}</div>
                 <div class="best-match-row"><strong>Stipulation:</strong> ${bestMatch.stipulation || 'N/A'}</div>
