@@ -1035,13 +1035,15 @@
             }
         }
 
-        // Compare week labels e.g. "Jun '19 Week 1" — returns negative if a < b
+        // Compare week labels e.g. "Jun '19 Week 1" — returns negative if a < b.
+        // The first three archive entries are monthly ("Jun '19") with no week number —
+        // treated as Week 1.
         function compareWeeks(a, b) {
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             const parse = s => {
-                const m = s.match(/^(\w+)\s+['\u2019](\d+)\s+Week\s+(\d+)$/);
+                const m = s.match(/^(\w+)\s+['\u2019](\d+)(?:\s+Week\s+(\d+))?$/);
                 if (!m) return null;
-                return { year: parseInt(m[2]), month: months.indexOf(m[1]), week: parseInt(m[3]) };
+                return { year: parseInt(m[2]), month: months.indexOf(m[1]), week: m[3] ? parseInt(m[3]) : 1 };
             };
             const pa = parse(a), pb = parse(b);
             if (!pa || !pb) return 0;
@@ -1231,7 +1233,7 @@
 
                     wrestlers.forEach((w, idx) => {
                         const isActive = activeWrestlerNames.has(w.name);
-                        const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})\s+Week/);
+                        const peakYearMatch = (w.peakWeek || '').match(/['\u2019](\d{2})(?:\s+Week|$)/);
                         const peakYear = peakYearMatch ? 2000 + parseInt(peakYearMatch[1]) : null;
                         // Use activeYears from statistics.json; fall back to peakYear only for old exports
                         const activeYears = (w.activeYears && w.activeYears.length)
