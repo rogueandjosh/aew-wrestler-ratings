@@ -1387,7 +1387,8 @@
 
         // ===== TOOLTIP TOGGLE =====
         (function() {
-            const stored = localStorage.getItem('aewTooltips');
+            let stored = null;
+            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
             const on = stored === null ? true : stored === 'true';
             if (on) document.body.classList.add('tooltips-on');
             const btn = document.getElementById('tooltipToggle');
@@ -1399,7 +1400,7 @@
 
         function toggleTooltips() {
             const on = document.body.classList.toggle('tooltips-on');
-            localStorage.setItem('aewTooltips', on);
+            try { localStorage.setItem('aewTooltips', on); } catch (e) {}
             const btn = document.getElementById('tooltipToggle');
             if (btn) {
                 btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
