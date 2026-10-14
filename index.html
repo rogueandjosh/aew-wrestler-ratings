@@ -323,12 +323,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .action-icon {
-            width: 15px;
-            height: 15px;
-            flex-shrink: 0;
-        }
-
         /* Touch screens keep :hover "stuck" after a tap — stop that
            making the last-tapped button look bigger/brighter */
         @media (hover: none) {
@@ -2123,7 +2117,7 @@
                             
                             <div class="filter-item week-item">
                                 <label>Week</label>
-                                <select id="weekSelect" onchange="onWeekPicked()">
+                                <select id="weekSelect" onchange="loadSelectedWeek()">
                                     <option value="current">Current Week</option>
                                 </select>
                             </div>
@@ -2148,16 +2142,13 @@
                     
                     <div class="action-buttons">
                         <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn first-btn tt" data-tt="Jump to the very first week of AEW ratings — Jun '19">
-                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5v14"/><path d="M18 6l-8 6 8 6z"/></svg>
-                            <span>First</span>
+                            ⏮ First
                         </button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn random-btn">
-                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
-                            <span>Random</span>
+                            🎲 Random
                         </button>
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">
-                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-                            <span>Current</span>
+                            ↻ Current
                         </button>
                     </div>
                 </div>
@@ -4123,14 +4114,11 @@ let visibleColumns = {
                 const years = new Set();
                 const months = new Set();
                 
-                // Include archive weeks in dropdown, skipping the first if it duplicates current
+                // Archive weeks are not listed here — the Week dropdown only lists a month's
+                // weeks once Year and Month are chosen (see filterWeeks). Just collect the
+                // years/months for the filter dropdowns, skipping the first if it duplicates current.
                 const weeksToShow = skipFirstArchiveWeek ? validWeeks.slice(1) : validWeeks;
                 weeksToShow.forEach(week => {
-                    const option = document.createElement('option');
-                    option.value = `archive/${week.filename}`;
-                    option.textContent = expandMonthName(week.label);
-                    select.appendChild(option);
-                    
                     // Extract year and month
                     const year = week.label.match(/'(\d+)/)?.[1];
                     const month = week.label.split(' ')[0];
@@ -4163,19 +4151,13 @@ let visibleColumns = {
 
         // ===== Compact dropdown labels on mobile =====
         // On narrow screens Year / Month / Week sit on one row, so the option text is
-        // shortened: 2026 -> '26, September -> Sep. Week drops the word "Week": just "2" once a
-        // month is picked, "Oct W2" with only a year picked, otherwise "Oct '26 W2".
-        // The current week shows "Current".
+        // shortened: 2026 -> '26, September -> Sep, and the current week shows "Current".
         // Only the visible text changes — option values are untouched, so all the
         // filter/navigation logic works exactly as before.
         const compactSelectorQuery = window.matchMedia('(max-width: 768px)');
 
         function relabelWeekSelectors() {
             const compact = compactSelectorQuery.matches;
-            const monthFilterVal = document.getElementById('monthFilter')?.value || '';
-            const yearFilterVal = document.getElementById('yearFilter')?.value || '';
-            const weeksByFile = {};
-            getValidArchiveWeeks().forEach(w => { weeksByFile[w.filename] = w.label; });
 
             const relabel = (selectId, compactText) => {
                 const select = document.getElementById(selectId);
@@ -4188,17 +4170,7 @@ let visibleColumns = {
 
             relabel('yearFilter', opt => opt.value ? `'${opt.value}` : null);
             relabel('monthFilter', opt => opt.value || null);
-            relabel('weekSelect', opt => {
-                if (opt.value === 'current') return 'Current';
-                const label = weeksByFile[opt.value.replace('archive/', '')];
-                if (!label) return null;
-                const parts = label.match(/^(\w{3})\w*\s+('\d{2})\s+Week\s+(\d+)/);
-                if (!parts) return label.replace(/\s*Week\s+/, ' W');
-                const [, mon, yr, num] = parts;
-                if (monthFilterVal) return num;
-                if (yearFilterVal) return `${mon} W${num}`;
-                return `${mon} ${yr} W${num}`;
-            });
+            relabel('weekSelect', opt => opt.value === 'current' ? 'Current' : null);
         }
 
         if (compactSelectorQuery.addEventListener) {
@@ -4338,13 +4310,9 @@ let visibleColumns = {
             const targetValue = `archive/${match.filename}`;
             const weekSelect = document.getElementById('weekSelect');
 
-            // The dropdown may be narrowed by the year/month filters — reset them
-            // so the target week is guaranteed to be a valid option.
-            const yearFilter = document.getElementById('yearFilter');
-            const monthFilter = document.getElementById('monthFilter');
-            if (yearFilter) yearFilter.value = '';
-            if (monthFilter) monthFilter.value = '';
-            filterWeeks();
+            // Set Year / Month to the show's week so that week is listed in the Week dropdown
+            const matchedWeek = getValidArchiveWeeks().find(w => w.filename === match.filename);
+            if (matchedWeek) selectArchiveWeek(matchedWeek);
 
             const optionExists = Array.from(weekSelect.options).some(opt => opt.value === targetValue);
             if (!optionExists) {
@@ -4377,7 +4345,14 @@ let visibleColumns = {
                 if (returnWeek && returnDivision) {
                 // Set the week selector
                 const weekSelect = document.getElementById('weekSelect');
-                weekSelect.value = decodeURIComponent(returnWeek);
+                const returnWeekValue = decodeURIComponent(returnWeek);
+                // Archived weeks are only listed once Year/Month match, so set those first
+                const returnArchiveWeek = getValidArchiveWeeks().find(w => `archive/${w.filename}` === returnWeekValue);
+                if (returnArchiveWeek) {
+                    selectArchiveWeek(returnArchiveWeek);
+                } else {
+                    weekSelect.value = returnWeekValue;
+                }
     
                 // If returning to statistics view, don't load week data
                 if (returnView === 'statistics') {
@@ -4425,11 +4400,17 @@ let visibleColumns = {
                 return true;
             });
             
-            // Populate week dropdown with filtered weeks
+            // Populate week dropdown: only the weeks of the chosen year + month, shown as
+            // "Week 1", "Week 2"… (Week 5 appears only when that month has one).
+            // With Year/Month on "All" the list just holds the current week.
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
-            filteredWeeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="archive/${week.filename}">${week.label}</option>`;
-            });
+            if (yearFilter && monthFilter) {
+                filteredWeeks.forEach(week => {
+                    const weekNum = week.label.match(/Week\s+(\d+)/);
+                    const text = weekNum ? `Week ${weekNum[1]}` : week.label;
+                    weekSelect.innerHTML += `<option value="archive/${week.filename}">${text}</option>`;
+                });
+            }
             
             // If we're in the middle of navigation, skip auto-selection logic
             // The navigation function will set the correct value
@@ -4451,8 +4432,9 @@ let visibleColumns = {
                     // Don't call loadSelectedWeek - it's already loaded or will be loaded by existing logic
                 } else {
                     // Current selection not valid or was "Current Week" - select oldest archived week
+                    // (setting Year and Month to match it, so its month's weeks are listed)
                     const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
-                    weekSelect.value = `archive/${oldestWeek.filename}`;
+                    selectArchiveWeek(oldestWeek);
                     loadSelectedWeek(); // Load it!
                 }
             } else if (weekStillAvailable && currentWeekSelection === 'current') {
@@ -4463,6 +4445,20 @@ let visibleColumns = {
             relabelWeekSelectors();
         }
         
+        // Point Year / Month / Week at one archived week (Year and Month set to match,
+        // so the Week list holds that month's weeks). Does not load it — callers do.
+        function selectArchiveWeek(week) {
+            const weekSelect = document.getElementById('weekSelect');
+            const wasNavigating = isNavigating;
+            isNavigating = true;
+            document.getElementById('yearFilter').value = week.label.match(/'(\d+)/)?.[1] || '';
+            document.getElementById('monthFilter').value = week.label.split(' ')[0] || '';
+            filterWeeks();
+            weekSelect.value = `archive/${week.filename}`;
+            isNavigating = wasNavigating;
+            relabelWeekSelectors();
+        }
+
         function updateMonthOptions(selectedYear) {
             const monthFilter = document.getElementById('monthFilter');
     
@@ -4661,31 +4657,6 @@ let visibleColumns = {
             // At oldest week (last index): can go forward (right/next) but NOT back (left/prev)
             prevBtn.disabled = (currentIndex >= allWeeks.length - 1); // Disable left at oldest
             nextBtn.disabled = (currentIndex <= 0); // Disable right at current
-        }
-
-        // Picking a week straight from the dropdown (with Year/Month on "All") now sets
-        // Year and Month to match, the same way the arrows, First and Random already do.
-        // Keeps the three boxes consistent and lets the Week box show just the number.
-        function onWeekPicked() {
-            const weekSelect = document.getElementById('weekSelect');
-            const picked = weekSelect.value;
-            const yearFilter = document.getElementById('yearFilter');
-            const monthFilter = document.getElementById('monthFilter');
-
-            if (picked !== 'current' && archiveIndex && (!yearFilter.value || !monthFilter.value)) {
-                const filename = picked.replace('archive/', '');
-                const week = archiveIndex.weeks.find(w => w.filename === filename);
-                if (week) {
-                    isNavigating = true;
-                    yearFilter.value = week.label.match(/'(\d+)/)?.[1] || '';
-                    monthFilter.value = week.label.split(' ')[0] || '';
-                    weekSelect.value = picked;
-                    filterWeeks();
-                    weekSelect.value = picked;
-                    isNavigating = false;
-                }
-            }
-            loadSelectedWeek();
         }
 
         function loadSelectedWeek() {
