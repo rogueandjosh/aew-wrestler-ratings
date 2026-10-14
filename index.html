@@ -1659,6 +1659,14 @@
             user-select: none;
         }
 
+        /* The header also carries the tooltip class (.tt), whose rule makes it
+           inline-block — the id keeps it a full-width flex row so the chevron sits right. */
+        #analysisBanner .analysis-header {
+            display: flex;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         .analysis-header:hover {
             background: rgba(255, 215, 0, 0.05);
         }
@@ -1675,14 +1683,54 @@
             margin-left: 0;
         }
 
+        /* Chevron matches the On This Day one — same round gold button, same size, and the
+           same spot: the empty spacer stands in for On This Day's ✕ so the two line up. */
+        .analysis-head-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
         .analysis-chevron {
-            color: #ffd700;
-            font-size: 0.9em;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid #ffd700;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            transition: background 0.25s ease;
+        }
+
+        .analysis-header:hover .analysis-chevron {
+            background: rgba(255, 215, 0, 0.18);
+        }
+
+        .analysis-chevron svg {
             transition: transform 0.3s ease;
         }
 
-        .analysis-chevron.open {
+        .analysis-chevron.open svg {
             transform: rotate(180deg);
+        }
+
+        .analysis-chevron-spacer {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 699px) {
+            .analysis-header {
+                padding: 10px 12px;
+            }
+            .analysis-chevron {
+                width: 28px;
+                height: 28px;
+            }
         }
 
         .analysis-body {
@@ -2188,7 +2236,12 @@
                     <span class="analysis-title">📝 This Week's Analysis</span>
                     <span class="analysis-week" id="analysisWeekLabel"></span>
                 </span>
-                <span class="analysis-chevron" id="analysisChevron">▼</span>
+                <span class="analysis-head-right">
+                    <span class="analysis-chevron" id="analysisChevron" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </span>
+                    <span class="analysis-chevron-spacer" aria-hidden="true"></span>
+                </span>
             </div>
             <div class="analysis-body" id="analysisBody">
                 <div id="analysisSections"></div>
