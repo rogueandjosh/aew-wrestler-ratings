@@ -212,7 +212,7 @@
             transition: all 0.3s ease;
         }
 
-        .week-selector button:hover {
+        .week-selector button:not(.week-arrow):hover {
             background: rgba(255, 215, 0, 0.2);
         }
 
@@ -240,6 +240,159 @@
             background: rgba(255, 215, 0, 0.2) !important;
             font-size: 0.9em !important;
             padding: 8px 15px !important;
+        }
+
+        /* Week selector — same layout as the home page: round ‹ › arrows either side of
+           Year / Month / Week, show search on its own row, then First / Random / Current */
+        .week-selector .week-arrow {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 215, 0, 0.55);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-end;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .week-selector .week-arrow:hover:not(:disabled) {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .week-selector .week-arrow:disabled {
+            cursor: not-allowed;
+        }
+
+        .week-arrow svg {
+            display: block;
+        }
+
+        .search-row {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-row .show-search-item {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .action-buttons {
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        #weekSelectorPanel .action-buttons .reset-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 40px;
+            min-width: 120px;
+            background: rgba(255, 215, 0, 0.15) !important;
+            border: 2px solid #ffd700 !important;
+            box-sizing: border-box;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #weekSelectorPanel .action-buttons .reset-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.3) !important;
+        }
+
+        /* Touch screens keep :hover "stuck" after a tap — don't let that change the look */
+        @media (hover: none) {
+            .week-selector .week-arrow:hover:not(:disabled) {
+                background: transparent;
+                border-color: rgba(255, 215, 0, 0.55);
+            }
+            #weekSelectorPanel .action-buttons .reset-btn:hover:not(:disabled) {
+                background: rgba(255, 215, 0, 0.15) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .week-selector {
+                gap: 12px;
+            }
+
+            .selector-row {
+                width: 100%;
+                flex-wrap: nowrap;
+                gap: 4px;
+                align-items: flex-end;
+            }
+
+            .filters-group {
+                flex: 1;
+                min-width: 0;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+
+            .filter-item,
+            .week-item {
+                min-width: 0;
+                gap: 3px;
+            }
+
+            .filter-item label {
+                font-size: 0.75em;
+            }
+
+            /* Own small chevron so the three boxes look identical on iPhone and Android */
+            .week-selector select {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 34px;
+                padding: 4px 14px 4px 6px;
+                font-size: 0.8em;
+                text-overflow: ellipsis;
+                border-color: #ffd700;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 4px center;
+                background-size: 9px;
+            }
+
+            .week-selector .week-arrow {
+                width: 30px;
+                height: 34px;
+                min-width: 30px;
+                border-radius: 17px;
+            }
+
+            .search-row .show-search-item {
+                max-width: none;
+            }
+
+            .show-search-item input {
+                min-width: 0;
+            }
+
+            .action-buttons {
+                width: 100%;
+                gap: 6px;
+            }
+
+            #weekSelectorPanel .action-buttons .reset-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                height: 38px;
+                padding: 0 4px !important;
+                font-size: 0.85em !important;
+            }
         }
 
         .show-search-wrap {
@@ -1831,17 +1984,19 @@
             <div id="weekSelectorPanel" class="week-selector-panel" style="display: none;">
                 <div class="week-selector">
                     <div class="selector-row">
-                        <button id="prevWeekBtn" onclick="navigateWeek(1)" title="Go to older week">◄ Older</button>
+                        <button id="prevWeekBtn" class="week-arrow" onclick="navigateWeek(1)" title="Older week" aria-label="Older week">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        </button>
 
                         <div class="filters-group">
-                            <div class="filter-item">
+                            <div class="filter-item year-item">
                                 <label>Year</label>
                                 <select id="yearFilter" onchange="filterWeeks()">
                                     <option value="">All</option>
                                 </select>
                             </div>
 
-                            <div class="filter-item">
+                            <div class="filter-item month-item">
                                 <label>Month</label>
                                 <select id="monthFilter" onchange="filterWeeks()">
                                     <option value="">All</option>
@@ -1855,6 +2010,14 @@
                                 </select>
                             </div>
 
+                        </div>
+
+                        <button id="nextWeekBtn" class="week-arrow" onclick="navigateWeek(-1)" title="Newer week" aria-label="Newer week">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="search-row">
                             <div class="filter-item show-search-item">
                                 <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the championship ratings from that week, or click into the empty box to browse every show in order.">Or Search a Show</label>
                                 <div class="show-search-wrap">
@@ -1863,15 +2026,12 @@
                                     <datalist id="showSearchList"></datalist>
                                 </div>
                             </div>
-                        </div>
-
-                        <button id="nextWeekBtn" onclick="navigateWeek(-1)" title="Go to newer week">Newer ►</button>
                     </div>
 
                     <div class="action-buttons">
-                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
                         <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn tt" data-tt="Jump to the very first week of Championship ratings">⏮ First</button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn">🎲 Random</button>
+                        <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
                     </div>
                     <span id="archiveStatusMsg"></span>
                 </div>
@@ -3455,11 +3615,10 @@
                 monthFilter.innerHTML += `<option value="${month}">${fullName}</option>`;
             });
 
-            weeksToShow.forEach(week => {
-                weekSelect.innerHTML += `<option value="championship-archive/${week.file}">${week.week}</option>`;
-            });
-
+            // Archive weeks aren't listed here — the Week dropdown only lists a month's
+            // weeks once Year and Month are chosen (see filterWeeks).
             updateNavigationButtons();
+            relabelWeekSelectors();
         }
 
         function filterWeeks() {
@@ -3481,14 +3640,20 @@
                 return true;
             });
 
-            // Rebuild dropdown
+            // Rebuild dropdown: only the chosen year + month's weeks, as "Week 1", "Week 2"…
+            // (Week 5 only when the month has one). With Year/Month on "All" it just holds
+            // the current week. The monthly Aug '19 entry has no week number — Week 1.
             weekSelect.innerHTML = '<option value="current">Current Week</option>';
-            filteredWeeks.forEach(week => {
-                weekSelect.innerHTML += `<option value="championship-archive/${week.file}">${week.week}</option>`;
-            });
+            if (yearFilter && monthFilter) {
+                filteredWeeks.forEach(week => {
+                    const weekNum = week.week.match(/Week\s+(\d+)/);
+                    weekSelect.innerHTML += `<option value="championship-archive/${week.file}">Week ${weekNum ? weekNum[1] : 1}</option>`;
+                });
+            }
 
             // If navigating, don't auto-select - the navigate function handles selection
             if (isNavigating) {
+                relabelWeekSelectors();
                 return;
             }
 
@@ -3501,8 +3666,9 @@
                     weekSelect.value = currentWeekSelection;
                 } else {
                     // Current selection not valid - select OLDEST week in filtered list and LOAD it
+                    // (Year and Month are set to match it, so its month's weeks are listed)
                     const oldestWeek = filteredWeeks[filteredWeeks.length - 1];
-                    weekSelect.value = `championship-archive/${oldestWeek.file}`;
+                    selectArchiveWeek(oldestWeek);
                     loadSelectedWeek();
                 }
             } else if (!yearFilter && !monthFilter) {
@@ -3515,6 +3681,47 @@
             }
 
             updateNavigationButtons();
+            relabelWeekSelectors();
+        }
+
+        // Point Year / Month / Week at one archived week (Year and Month set to match,
+        // so the Week list holds that month's weeks). Does not load it — callers do.
+        function selectArchiveWeek(week) {
+            const match = week.week.match(/^(\w+)\s+'(\d{2})/);
+            const wasNavigating = isNavigating;
+            isNavigating = true;
+            document.getElementById('yearFilter').value = match ? match[2] : '';
+            document.getElementById('monthFilter').value = match ? match[1] : '';
+            filterWeeks();
+            document.getElementById('weekSelect').value = `championship-archive/${week.file}`;
+            isNavigating = wasNavigating;
+            updateNavigationButtons();
+            relabelWeekSelectors();
+        }
+
+        // ===== Compact dropdown labels on mobile =====
+        // On narrow screens Year / Month / Week sit on one row, so Year shows '26,
+        // Month shows Sep and the current week shows "Current". Only the visible text
+        // changes — option values are untouched.
+        const compactSelectorQuery = window.matchMedia('(max-width: 768px)');
+
+        function relabelWeekSelectors() {
+            const compact = compactSelectorQuery.matches;
+            const relabel = (selectId, compactText) => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                Array.from(select.options).forEach(opt => {
+                    if (opt.dataset.full === undefined) opt.dataset.full = opt.textContent;
+                    opt.textContent = compact ? (compactText(opt) ?? opt.dataset.full) : opt.dataset.full;
+                });
+            };
+            relabel('yearFilter', opt => opt.value ? `'${opt.value}` : null);
+            relabel('monthFilter', opt => opt.value || null);
+            relabel('weekSelect', opt => opt.value === 'current' ? 'Current' : null);
+        }
+
+        if (compactSelectorQuery.addEventListener) {
+            compactSelectorQuery.addEventListener('change', relabelWeekSelectors);
         }
 
         function loadSelectedWeek() {
@@ -3573,6 +3780,8 @@
 
             // Clear navigation flag AFTER all dropdown changes
             isNavigating = false;
+            updateNavigationButtons();
+            relabelWeekSelectors();
 
             // Load the selected week
             loadSelectedWeek();
@@ -3639,21 +3848,7 @@
             const randomIndex = Math.floor(Math.random() * archiveIndex.weeks.length);
             const randomWeek = archiveIndex.weeks[randomIndex];
 
-            const match = randomWeek.week.match(/^(\w+)\s+'(\d{2})/);
-            const month = match ? match[1] : '';
-            const year = match ? match[2] : '';
-
-            isNavigating = true;
-
-            document.getElementById('yearFilter').value = year;
-            document.getElementById('monthFilter').value = month;
-
-            filterWeeks();
-
-            document.getElementById('weekSelect').value = `championship-archive/${randomWeek.file}`;
-
-            isNavigating = false;
-
+            selectArchiveWeek(randomWeek);
             loadSelectedWeek();
         }
 
@@ -3670,16 +3865,7 @@
             // Archive is stored newest-first, so the last entry is the oldest
             const firstWeek = weeksToUse[weeksToUse.length - 1];
 
-            const match = firstWeek.week.match(/^(\w+)\s+'(\d{2})/);
-            const month = match ? match[1] : '';
-            const year = match ? match[2] : '';
-
-            isNavigating = true;
-            document.getElementById('yearFilter').value = year;
-            document.getElementById('monthFilter').value = month;
-            filterWeeks();
-            document.getElementById('weekSelect').value = `championship-archive/${firstWeek.file}`;
-            isNavigating = false;
+            selectArchiveWeek(firstWeek);
             loadSelectedWeek();
         }
 
@@ -3754,9 +3940,7 @@
             const targetValue = `championship-archive/${champWeek.file}`;
             const weekSelect = document.getElementById('weekSelect');
 
-            document.getElementById('yearFilter').value = '';
-            document.getElementById('monthFilter').value = '';
-            filterWeeks();
+            selectArchiveWeek(champWeek);
 
             const optionExists = Array.from(weekSelect.options).some(opt => opt.value === targetValue);
             if (!optionExists) {
