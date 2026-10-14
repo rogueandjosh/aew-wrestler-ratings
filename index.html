@@ -2003,22 +2003,22 @@
         }
         .otd-hide-btn:hover{color:#ffd700;background:rgba(255,215,0,0.1);}
 
-        /* Light level: just "📅 On This Day" on the left and the chevron on the right */
-        .otd-teaser.minimised{
-            padding:8px 14px;margin-bottom:20px;
-            background:rgba(255,215,0,0.03);border-color:rgba(255,215,0,0.2);
-        }
+        /* Light level: the header row stays exactly as it is in the middle level —
+           same "📅 On This Day" size, same chevron in the same spot (the ✕ keeps its space,
+           just invisible) — everything else is removed and the bar is slimmer top and bottom.
+           Same background and border as the full card. */
+        .otd-teaser.minimised{padding-top:8px;padding-bottom:8px;}
         .otd-teaser.minimised .otd-photo-row,
         .otd-teaser.minimised .otd-head-date,
         .otd-teaser.minimised .otd-teaser-date,
         .otd-teaser.minimised .otd-show-badges,
         .otd-teaser.minimised .otd-head-badges,
-        .otd-teaser.minimised .otd-hide-btn,
         .otd-teaser.minimised .otd-teaser-expandable{display:none !important;}
+        .otd-teaser.minimised .otd-hide-btn{visibility:hidden;pointer-events:none;}
         .otd-teaser.minimised .otd-teaser-head{grid-template-areas:"title right";grid-template-columns:minmax(0,1fr) auto;align-items:center;}
-        .otd-teaser.minimised .otd-teaser-title{align-items:center;font-size:0.85em;opacity:0.85;}
+        .otd-teaser.minimised .otd-teaser-title,
+        .otd-teaser.minimised .otd-teaser-title-text,
         .otd-teaser.minimised .otd-teaser-head-right{align-items:center;}
-        .otd-teaser.minimised .otd-expand-btn{width:24px;height:24px;border-width:1.5px;background:transparent;}
         .otd-expand-btn svg{transition:transform .3s ease;}
         .otd-teaser.expanded .otd-expand-btn svg{transform:rotate(180deg);}
 
