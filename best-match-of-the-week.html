@@ -546,6 +546,14 @@
             }
         }
 
+        // Themed weekly shows come through as "Dynamite - Anniversary '20"; show them as
+        // "Dynamite: Anniversary '20" (only the first dash after the show name changes,
+        // so "- Night 1" stays as it is).
+        function formatBestMatchShow(show) {
+            if (!show) return show;
+            return show.replace(/^(Dynamite|Collision|Rampage) - /, '$1: ');
+        }
+
         function compareWeeks(week1, week2) {
             if (week1 === week2) return 0;
             if (week1 === 'current') return 1;
@@ -1183,7 +1191,7 @@
 
                 const cells = {
                     week: visibleColumns.week ? `<td class="col-week">${e.week || dateStr}</td>` : '',
-                    show: `<td class="col-show">${e.show || 'N/A'}</td>`,
+                    show: `<td class="col-show">${formatBestMatchShow(e.show) || 'N/A'}</td>`,
                     rating: `<td class="rating-cell col-rating">${(e.rating || 0).toFixed(2)}</td>`,
                     wrestlers: `<td class="col-wrestlers">${wrestlersHtml}</td>`,
                     division: visibleColumns.division ? `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>` : '',
