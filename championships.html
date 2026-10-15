@@ -2686,23 +2686,33 @@
             const isTeam = /tag|trios|six man/i.test(title);
             const reigns = championHistory[title] || [];
 
+            // Reigns are kept in Wikipedia's order, which matters when two changes happen on the
+            // same day (e.g. Copeland won the TNT title and lost it to Cage that same night).
+            // Each entry ends where the NEXT entry in the list begins.
+            const endAt = i => (reigns[i + 1] ? reigns[i + 1].start : null);
+
             // Who held the title on the date being viewed. Current week: the "current
             // champions" page (freshest). Archive week: the last history entry that had
             // started by the end of that week (a vacancy counts — the title was vacant).
             let holder = null;
+            let holderIdx = -1;
             if (week.isCurrent && currentChampions && currentChampions[title]) {
                 const c = currentChampions[title];
-                holder = c.champion ? { champion: c.champion, slug: c.slug, members: c.members, start: sinceToIso(c.since) } : { vacant: true, start: sinceToIso(c.since) };
+                const start = sinceToIso(c.since);
+                holder = c.champion ? { champion: c.champion, slug: c.slug, members: c.members, start } : { vacant: true, start };
+                // Same reign in the history (latest entry with that start date), or — if the
+                // history hasn't caught up yet — treat it as coming after everything listed
+                holderIdx = reigns.length;
+                for (let i = reigns.length - 1; i >= 0; i--) {
+                    if (reigns[i].start === start) { holderIdx = i; break; }
+                    if (reigns[i].start < start) break;
+                }
             } else if (week.date) {
-                for (const r of reigns) if (r.start <= week.date) holder = r;
+                for (let i = 0; i < reigns.length; i++) if (reigns[i].start <= week.date) holderIdx = i;
+                if (holderIdx >= 0) holder = reigns[holderIdx];
             }
             if (!holder) return '';
 
-            // When an entry ends: where the next entry begins (or "now" if it's the latest)
-            const endOf = r => {
-                const next = reigns.find(x => x.start > r.start);
-                return next ? next.start : null;
-            };
             let main;
             const labelBase = week.isCurrent ? 'Current Champion' : `Champion · ${week.label}`;
             if (holder.vacant) {
@@ -2731,18 +2741,12 @@
                     </div>`;
             }
 
-            // The 3 champions before the holder (vacancies skipped). Each reign ends where the
-            // next history entry (champion or vacancy) begins, capped at the holder's start.
+            // The 3 champions before the holder (vacancies skipped), in list order
             const previous = [];
-            const cutoff = holder.start || week.date;
-            if (cutoff) {
-                const earlier = reigns.filter(r => r.start < cutoff && !r.vacant && r.champion);
-                for (let i = earlier.length - 1; i >= 0 && previous.length < 3; i--) {
-                    const r = earlier[i];
-                    let end = endOf(r);
-                    if (!end || end > cutoff) end = cutoff;
-                    previous.push({ ...r, end });
-                }
+            for (let i = holderIdx - 1; i >= 0 && previous.length < 3; i--) {
+                const r = reigns[i];
+                if (r.vacant || !r.champion) continue;
+                previous.push({ ...r, end: endAt(i) || holder.start || null });
             }
             const prevHtml = previous.length ? `
                 <div class="previous-champions">
