@@ -2573,13 +2573,19 @@
         let championHistory = {};   // title → reigns, oldest first: { start, champion, slug } or { start, vacant }
         let championWeekEnds = {};  // archive week label → that week's last day (YYYY-MM-DD)
         let teamMembersForChamps = null;
+        let nameChangesForChamps = [];
 
         async function loadCurrentChampions() {
             try {
-                const [champRes, teamRes] = await Promise.all([
+                const [champRes, teamRes, namesRes] = await Promise.all([
                     fetch('champions.json', { cache: 'no-cache' }),
-                    fetch('team-members.json')
+                    fetch('team-members.json'),
+                    fetch('name-changes.json').catch(() => null)
                 ]);
+                if (namesRes && namesRes.ok) {
+                    const nc = await namesRes.json();
+                    nameChangesForChamps = (nc.changes || []).slice().sort((a, b) => a.matchId - b.matchId);
+                }
                 if (champRes.ok) {
                     const data = await champRes.json();
                     currentChampions = data.champions || null;
@@ -2600,23 +2606,28 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
-        function champPhoto(name, linkSlug) {
-            const fallback = champInitialsImage(name, 56);
-            const img = `<img src="images/wrestlers/${createSlug(name)}.jpg" alt="${name}" onerror="this.onerror=null;this.src='${fallback}';">`;
-            return linkSlug ? `<a href="wrestler-stats.html?wrestler=${linkSlug}">${img}</a>` : img;
+        // The name in use now for a wrestler or team who has changed name — follows the
+        // name changes in date order, e.g. "The Acclaimed" → "Bowens & Caster"
+        function currentNameOf(name) {
+            let current = name;
+            for (const change of nameChangesForChamps) {
+                if (change.oldName === current) current = change.newName;
+            }
+            return current;
         }
 
-        // Days in the current reign, worked out from today's date each time the page
-        // loads (calendar days, the same way Wikipedia counts "days held").
-        function reignDays(since) {
-            if (!since) return null;
-            const won = new Date(since);
-            if (isNaN(won)) return null;
-            const now = new Date();
-            const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-            const start = Date.UTC(won.getFullYear(), won.getMonth(), won.getDate());
-            const days = Math.round((today - start) / 86400000);
-            return days >= 0 ? days : null;
+        // Photo: tries the photo under the name in use now first (photos are saved under
+        // current names), then the name given, then initials
+        function champPhoto(name, linkSlug) {
+            const fallback = champInitialsImage(name, 56);
+            const nowSlug = createSlug(currentNameOf(name));
+            const ownSlug = createSlug(name);
+            const second = nowSlug !== ownSlug ? `images/wrestlers/${ownSlug}.jpg` : fallback;
+            const onError = nowSlug !== ownSlug
+                ? `if(!this.dataset.tried){this.dataset.tried=1;this.src='${second}';}else{this.onerror=null;this.src='${fallback}';}`
+                : `this.onerror=null;this.src='${fallback}';`;
+            const img = `<img src="images/wrestlers/${nowSlug}.jpg" alt="${name}" onerror="${onError}">`;
+            return linkSlug ? `<a href="wrestler-stats.html?wrestler=${linkSlug}">${img}</a>` : img;
         }
 
         // ----- date helpers (all in whole calendar days, UTC, like Wikipedia's "days held") -----
@@ -2651,8 +2662,16 @@
             return { isCurrent: false, date: label ? championWeekEnds[label] || null : null, label };
         }
 
-        function champPhotosHtml(name, slug, isTeam) {
-            const members = isTeam && teamMembersForChamps ? (teamMembersForChamps[name] || []) : [];
+        // Team members for photos: the members saved with the reign (from the site's team
+        // list, or Wikipedia's names), then the site's team list under this name or the
+        // team's current name — so teams that later changed name still show their members
+        function champPhotosHtml(name, slug, isTeam, savedMembers) {
+            let members = [];
+            if (isTeam) {
+                members = (savedMembers && savedMembers.length >= 2 ? savedMembers : null)
+                    || (teamMembersForChamps && (teamMembersForChamps[name] || teamMembersForChamps[currentNameOf(name)]))
+                    || [];
+            }
             return {
                 members,
                 html: members.length >= 2 ? members.map(m => champPhoto(m, slug)).join('') : champPhoto(name, slug)
@@ -2673,7 +2692,7 @@
             let holder = null;
             if (week.isCurrent && currentChampions && currentChampions[title]) {
                 const c = currentChampions[title];
-                holder = c.champion ? { champion: c.champion, slug: c.slug, start: sinceToIso(c.since) } : { vacant: true, start: sinceToIso(c.since) };
+                holder = c.champion ? { champion: c.champion, slug: c.slug, members: c.members, start: sinceToIso(c.since) } : { vacant: true, start: sinceToIso(c.since) };
             } else if (week.date) {
                 for (const r of reigns) if (r.start <= week.date) holder = r;
             }
@@ -2689,7 +2708,7 @@
             if (holder.vacant) {
                 main = `<div class="current-champion-main"><div><div class="current-champion-label">${labelBase}</div><div class="current-champion-name">Vacant</div>${holder.start ? `<div class="current-champion-since">Since ${fmtLong(holder.start)}</div>` : ''}</div></div>`;
             } else {
-                const photos = champPhotosHtml(holder.champion, holder.slug, isTeam);
+                const photos = champPhotosHtml(holder.champion, holder.slug, isTeam, holder.members);
                 const nameHtml = holder.slug
                     ? `<a class="current-champion-name" href="wrestler-stats.html?wrestler=${holder.slug}">${holder.champion}</a>`
                     : `<span class="current-champion-name">${holder.champion}</span>`;
@@ -2729,7 +2748,7 @@
                 <div class="previous-champions">
                     <div class="current-champion-label">Previous Champions</div>
                     ${previous.map(r => {
-                        const photos = champPhotosHtml(r.champion, r.slug, isTeam);
+                        const photos = champPhotosHtml(r.champion, r.slug, isTeam, r.members);
                         const name = r.slug ? `<a href="wrestler-stats.html?wrestler=${r.slug}">${r.champion}</a>` : r.champion;
                         const dates = `${fmtShort(r.start)} – ${r.end ? fmtShort(r.end) : '?'}`;
                         const days = r.end ? ` · ${fmtDays(daysBetween(r.start, r.end))}` : '';
