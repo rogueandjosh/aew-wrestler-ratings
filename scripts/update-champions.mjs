@@ -328,15 +328,21 @@ export function bracketPeople(wikiChampion) {
   return inBrackets.split(/\s*(?:,|&|\band\b)\s*/).map(s => s.trim()).filter(Boolean);
 }
 
-// true if the person `m` is one of `names` (exact, near-identical, or all of their name's words)
 // ---------- people: Wikipedia's spelling → the site's name ----------
 // Set once in main() (and in tests): every individual on the site, and every name that
 // appears in name-changes.json.
-let siteSinglesNames = [];
-let nameChangeNames = new Set();
+let peoplePool = [];                      // [{ name, norm, tokens }] — worked out once
+const resolvedCache = new Map();          // Wikipedia spelling → site name (each worked out once)
 export function setSiteContext(wrestlersIndex, nameChanges = []) {
-  siteSinglesNames = wrestlersIndex.filter(w => !w.isTeam).map(w => w.name);
-  nameChangeNames = new Set(nameChanges.flatMap(c => [c.oldName, c.newName]));
+  const names = new Set([
+    ...wrestlersIndex.filter(w => !w.isTeam).map(w => w.name),
+    ...nameChanges.flatMap(c => [c.oldName, c.newName]),
+  ]);
+  peoplePool = [...names].filter(Boolean).map(name => {
+    const norm = normalizeName(name);
+    return { name, norm, tokens: norm.split(' ') };
+  });
+  resolvedCache.clear();
 }
 
 // Turns Wikipedia's spelling of a person into the name the site uses, so the right photo
@@ -346,33 +352,34 @@ export function setSiteContext(wrestlersIndex, nameChanges = []) {
 //   "Pentagón Jr."        → "Pentagon Jr."      (accents ignored)
 // Names from name-changes.json count as site names too. Unknown people are left as they are.
 export function resolvePerson(name) {
+  if (resolvedCache.has(name)) return resolvedCache.get(name);
+  const result = resolvePersonUncached(name);
+  resolvedCache.set(name, result);
+  return result;
+}
+
+function resolvePersonUncached(name) {
   const clean = stripNicknames(name || '');
   const norm = normalizeName(clean);
   if (!norm) return clean;
-  const pool = [...new Set([...siteSinglesNames, ...nameChangeNames])];
-  const exact = pool.find(n => normalizeName(n) === norm);
-  if (exact) return exact;
+  const exact = peoplePool.find(p => p.norm === norm);
+  if (exact) return exact.name;
 
   const tokens = norm.split(' ');
   // site name is an abbreviation: same number of words, each a start of Wikipedia's word
-  const abbrev = pool.filter(n => {
-    const nt = normalizeName(n).split(' ');
-    return nt.length === tokens.length && nt.every((t, i) => tokens[i].startsWith(t));
-  });
-  if (abbrev.length === 1) return abbrev[0];
+  const abbrev = peoplePool.filter(p => p.tokens.length === tokens.length && p.tokens.every((t, i) => tokens[i].startsWith(t)));
+  if (abbrev.length === 1) return abbrev[0].name;
 
   // all of Wikipedia's words appear in exactly one site name
-  const subset = pool.filter(n => {
-    const nt = new Set(normalizeName(n).split(' '));
-    return tokens.every(t => nt.has(t));
-  });
-  if (subset.length === 1) return subset[0];
+  const subset = peoplePool.filter(p => tokens.every(t => p.tokens.includes(t)));
+  if (subset.length === 1) return subset[0].name;
 
-  // very close spelling
+  // very close spelling (only names of a similar length are worth comparing)
   let best = null, bestScore = 0, tie = false;
-  for (const n of pool) {
-    const sc = similarity(clean, n);
-    if (sc > bestScore) { best = n; bestScore = sc; tie = false; } else if (sc === bestScore) tie = true;
+  for (const p of peoplePool) {
+    if (Math.abs(p.norm.length - norm.length) > norm.length * 0.3) continue;
+    const sc = similarity(clean, p.name);
+    if (sc > bestScore) { best = p.name; bestScore = sc; tie = false; } else if (sc === bestScore) tie = true;
   }
   return best && bestScore >= 0.85 && !tie ? best : clean;
 }
