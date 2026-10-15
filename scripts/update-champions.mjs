@@ -37,7 +37,14 @@ const TITLE_NAME_OVERRIDES = {
   'AEW World Championship': 'AEW World Heavyweight Title',
   'ROH World Championship': 'ROH World Heavyweight Title',
   'ROH World Six-Man Tag Team Championship': 'ROH World Six Man Tag Titles',
+  'ROH World Television Championship': 'ROH World TV Title',
+  "ROH Women's World Television Championship": "ROH Women's TV Title",
 };
+
+// Reigns that began before this date are from before the site's data starts (AEW's first
+// show) — only exact or team-member matches are used for those, never "closest" guesses,
+// so an old ROH champion can't be mistaken for a current wrestler with a similar name.
+const SITE_DATA_STARTS = '2019-05-01';
 
 // Wikipedia champion name → site name, for any that the automatic matching gets wrong.
 // Add a line here if a champion ever shows up with the wrong name or photo.
@@ -232,15 +239,26 @@ export function parseChampionRows(html, promotion) {
 }
 
 // ---------- name matching ----------
-export function matchChampion(row, kind, wrestlersIndex, teamMembers) {
+// Removes ring nicknames in quotes and titles like Mr./Dr./D.M.D. before matching:
+// '"Hangman" Adam Page' → 'Adam Page', 'Dr. Britt Baker, D.M.D.' → 'Britt Baker'
+export function stripNicknames(name) {
+  return (name || '')
+    .replace(/["“”][^"“”]*["“”]\s*/g, '')
+    .replace(/^(Mr|Mrs|Ms|Dr)\.?\s+/i, '')
+    .replace(/,?\s*D\.?M\.?D\.?$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGuesses = true } = {}) {
   if (row.vacant || !row.wikiChampion) return { name: null, slug: null, matchedBy: 'vacant', score: 0 };
 
-  const full = row.wikiChampion;
+  const full = stripNicknames(row.wikiChampion);
   const base = full.replace(/\s*\(.*\)\s*$/, '').trim();          // "The Young Bucks (Matt and Nick)" → "The Young Bucks"
   const inBrackets = (full.match(/\(([^)]*)\)/) || [])[1] || '';
   const bracketNames = inBrackets.split(/\s*(?:,|&|\band\b)\s*/).map(s => s.trim()).filter(Boolean);
   const baseNames = base.split(/\s*(?:,|&|\band\b)\s*/).map(s => s.trim()).filter(Boolean);
-  const people = [...new Set([...row.wikiLinks, ...bracketNames, ...baseNames])];
+  const people = [...new Set([...row.wikiLinks.map(stripNicknames), ...bracketNames, ...baseNames])];
 
   const pool = wrestlersIndex.filter(w => kind === 'singles'
     ? !w.isTeam
@@ -254,10 +272,14 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers) {
     return w ? result(w, 'override', 1) : { name: override, slug: createSlug(override), matchedBy: 'override', score: 1 };
   }
 
-  // 1. exact (normalised) name
-  for (const candidate of [full, base]) {
-    const hits = rank(pool.filter(w => normalizeName(w.name) === normalizeName(candidate)));
-    if (hits.length) return result(hits[0], 'exact', 1);
+  // 1. exact (normalised) name — first in this title's division, then anywhere on the site
+  //    (e.g. a team listed under Men's Tag on the site that held a six-man title)
+  const wider = kind === 'singles' ? wrestlersIndex.filter(w => !w.isTeam) : wrestlersIndex.filter(w => w.isTeam);
+  for (const list of [pool, wider]) {
+    for (const candidate of [full, base]) {
+      const hits = rank(list.filter(w => normalizeName(w.name) === normalizeName(candidate)));
+      if (hits.length) return result(hits[0], 'exact', 1);
+    }
   }
 
   // 2. teams: every member of a site team is among the Wikipedia champions
@@ -276,10 +298,13 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers) {
     if (hits.length) return result(hits[0], 'members', 1);
   }
 
-  // 3. a shortened name that fits exactly one site name ("Andrade" → "Andrade El Idolo")
+  // Older reigns (before the site's data) stop here — no guessing
+  if (!allowGuesses) return { name: base, slug: null, matchedBy: 'none', score: 0 };
+
+  // 3. singles: a shortened name that fits exactly one site name ("Andrade" → "Andrade El Idolo")
   const tokens = n => normalizeName(n).split(' ').filter(Boolean);
   const baseTokens = tokens(base);
-  if (baseTokens.length) {
+  if (kind === 'singles' && baseTokens.length) {
     const subsetHits = pool.filter(w => {
       const wt = new Set(tokens(w.name));
       return baseTokens.every(t => wt.has(t));
@@ -293,7 +318,9 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers) {
     const sc = Math.max(similarity(full, w.name), similarity(base, w.name));
     if (sc > bestScore || (sc === bestScore && best && w.isActive && !best.isActive)) { best = w; bestScore = sc; }
   }
-  if (best && bestScore >= FUZZY_THRESHOLD) return result(best, 'closest', bestScore);
+  // Teams need a much closer name than people — "The Righteous" must not become "Righteous & Archer"
+  const threshold = kind === 'singles' ? FUZZY_THRESHOLD : 0.9;
+  if (best && bestScore >= threshold) return result(best, 'closest', bestScore);
 
   // 5. no good match — keep Wikipedia's name (page shows initials)
   return { name: base, slug: null, matchedBy: 'none', score: Math.round(bestScore * 100) / 100 };
@@ -357,7 +384,8 @@ export async function main() {
     if (!reigns.length) { console.warn(`⚠️ No reign history found for ${title}`); continue; }
     history[title] = reigns.map(r => {
       if (r.vacant) return { start: r.start, vacant: true };
-      const m = matchChampion({ ...r, vacant: false }, titleKind(title), wrestlersIndex, teamMembers);
+      const m = matchChampion({ ...r, vacant: false }, titleKind(title), wrestlersIndex, teamMembers,
+        { allowGuesses: r.start >= SITE_DATA_STARTS });
       return { start: r.start, champion: m.name, slug: m.slug, wikiChampion: r.wikiChampion, matchedBy: m.matchedBy };
     });
     const unmatchedCount = history[title].filter(r => r.matchedBy === 'none').length;
