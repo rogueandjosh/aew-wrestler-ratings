@@ -1,5 +1,10 @@
-// Updates champions.json with today's champions, read from Wikipedia's
-// "List of current champions" pages (AEW + ROH) through the official Wikipedia API.
+// Updates champions.json from Wikipedia, through the official Wikipedia API:
+//   • today's champions — from the "List of current champions" pages (AEW + ROH)
+//   • each title's full reign history — from its "List of … Champions" page (or the
+//     title's own article), so the championships page can show who held each title
+//     in any archive week, plus the 3 champions before them
+//   • each archive week's end date — from the site's own archive/*.json "dateRange",
+//     used to match a week to the reign that covered it
 //
 // Run by .github/workflows/champions.yml. Node 20+, no packages needed.
 //
@@ -22,6 +27,7 @@ const SOURCES = [
   { page: 'List_of_current_champions_in_Ring_of_Honor', promotion: 'ROH' },
 ];
 const MIN_TITLES = 8;
+const REQUEST_GAP_MS = 300;            // be polite to Wikipedia between page requests
 const FUZZY_THRESHOLD = 0.78;
 const USER_AGENT = 'EliteWrestlerRatingsBot/1.0 (https://www.elitewrestlerratings.com; contact@elitewrestlerratings.com)';
 
@@ -112,13 +118,83 @@ function siteTitleName(wikiTitle, knownTitles) {
 }
 
 // ---------- Wikipedia ----------
-async function fetchPageHtml(page) {
+async function fetchPageHtml(page, { allowMissing = false } = {}) {
   const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(page)}&prop=text&format=json&formatversion=2&redirects=1`;
   const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, 'Api-User-Agent': USER_AGENT } });
   if (!res.ok) throw new Error(`Wikipedia ${page}: HTTP ${res.status}`);
   const data = await res.json();
+  if (data.error && allowMissing) return null;           // e.g. page doesn't exist
   if (!data.parse || !data.parse.text) throw new Error(`Wikipedia ${page}: no page text`);
   return data.parse.text;
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ---------- dates ----------
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DATE_US = new RegExp(`\\b(${MONTHS.join('|')})\\s+(\\d{1,2}),\\s+(\\d{4})\\b`);           // August 30, 2026
+const DATE_UK = new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(${MONTHS.join('|')})\\s+(\\d{4})\\b`, 'g'); // 30 August 2026 / 30th August 2026
+const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+export function toIsoDate(text) {
+  if (!text) return null;
+  const us = text.match(DATE_US);
+  if (us) return iso(us[3], MONTHS.indexOf(us[1]) + 1, us[2]);
+  const uk = [...text.matchAll(DATE_UK)][0];
+  if (uk) return iso(uk[3], MONTHS.indexOf(uk[2]) + 1, uk[1]);
+  return null;
+}
+
+// "4th September 2024 to 10th September 2024" / "7th to 13th October 2026" → last full date
+export function weekEndFromRange(range) {
+  const all = [...(range || '').matchAll(DATE_UK)];
+  if (!all.length) return null;
+  const last = all[all.length - 1];
+  return iso(last[3], MONTHS.indexOf(last[2]) + 1, last[1]);
+}
+
+// ---------- reign history ----------
+// Reads a title's reigns table. Rows are found by their date: the champion is the cell
+// just before the first date in the row (No. | Champion | Date | Event | …). Vacancies
+// are kept as markers (they end the previous reign) and interim reigns are skipped.
+// The table with the most reign rows wins, so "combined reigns" and other tables are ignored.
+export function parseReignRows(html) {
+  const tables = html.match(/<table[^>]*class="[^"]*wikitable[^"]*"[\s\S]*?<\/table>/gi) || [];
+  let best = [];
+  for (const table of tables) {
+    if (!/Champion/i.test(table)) continue;
+    const reigns = [];
+    for (const rowHtml of table.split(/<tr\b/i).slice(1)) {
+      const cells = [...rowHtml.matchAll(/<(td|th)\b[^>]*>([\s\S]*?)(?=<\/?(?:td|th)\b|<\/tr>|$)/gi)]
+        .map(m => ({ html: m[2], text: cleanCellText(m[2]) }));
+      const dateIdx = cells.findIndex(c => toIsoDate(c.text));
+      if (dateIdx < 1) continue;
+      const champ = cells[dateIdx - 1];
+      if (!champ.text || /^[\d—–-]+$/.test(champ.text)) continue;
+      if (/\binterim\b/i.test(champ.text)) continue;
+      const vacant = /^(vacat|deactivat|retired|unified|abandon)/i.test(champ.text);
+      reigns.push({
+        start: toIsoDate(cells[dateIdx].text),
+        vacant,
+        wikiChampion: vacant ? null : champ.text,
+        wikiLinks: vacant ? [] : linkTexts(champ.html),
+      });
+    }
+    if (reigns.length > best.length) best = reigns;
+  }
+  // Oldest first, without duplicates
+  const seen = new Set();
+  return best
+    .filter(r => { const k = r.start + '|' + r.wikiChampion; return !seen.has(k) && seen.add(k); })
+    .sort((a, b) => a.start.localeCompare(b.start));
+}
+
+// Site title → Wikipedia page names to try for its history
+function historyPageCandidates(siteTitle, wikiTitle) {
+  const reverse = Object.fromEntries(Object.entries(TITLE_NAME_OVERRIDES).map(([w, s]) => [s, w]));
+  const wiki = wikiTitle || reverse[siteTitle] || siteTitle.replace(/\s+Titles?$/, ' Championship');
+  const base = wiki.replace(/\s+Championship$/, '');
+  return [`List of ${base} Champions`, `List of ${base} champions`, wiki];
 }
 
 // Reads every table row that has a championship name in it. The champion is taken from
@@ -187,7 +263,11 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers) {
   // 2. teams: every member of a site team is among the Wikipedia champions
   if (kind !== 'singles' && teamMembers) {
     const peopleNorm = people.map(normalizeName);
-    const isAmong = m => peopleNorm.some(p => p === normalizeName(m) || similarity(p, m) >= 0.9);
+    const isAmong = m => {
+      const mTokens = normalizeName(m).split(' ');
+      return peopleNorm.some(p => p === normalizeName(m) || similarity(p, m) >= 0.9
+        || (mTokens.length >= 2 && mTokens.every(t => p.split(' ').includes(t))));   // "Hangman" Adam Page
+    };
     const size = kind === 'trios' ? 3 : 2;
     const hits = rank(pool.filter(w => {
       const members = teamMembers[w.name];
@@ -254,6 +334,58 @@ export async function main() {
     }
   }
 
+  // ----- reign history for every AEW / ROH title the site knows about (incl. retired) -----
+  const historyTitles = new Map();   // site title → Wikipedia title (if known)
+  for (const [title, c] of Object.entries(champions)) historyTitles.set(title, c.wikiTitle);
+  for (const t of knownTitles) if (/^(AEW|ROH)\b/.test(t) && !/\binterim\b/i.test(t) && !historyTitles.has(t)) historyTitles.set(t, null);
+
+  const history = {};
+  for (const [title, wikiTitle] of historyTitles) {
+    let reigns = [];
+    let usedPage = null;
+    for (const page of historyPageCandidates(title, wikiTitle)) {
+      try {
+        await sleep(REQUEST_GAP_MS);
+        const html = await fetchPageHtml(page, { allowMissing: true });
+        if (!html) continue;
+        const found = parseReignRows(html);
+        if (found.length >= 2) { reigns = found; usedPage = page; break; }
+      } catch (e) {
+        problems.push(e.message);
+      }
+    }
+    if (!reigns.length) { console.warn(`⚠️ No reign history found for ${title}`); continue; }
+    history[title] = reigns.map(r => {
+      if (r.vacant) return { start: r.start, vacant: true };
+      const m = matchChampion({ ...r, vacant: false }, titleKind(title), wrestlersIndex, teamMembers);
+      return { start: r.start, champion: m.name, slug: m.slug, wikiChampion: r.wikiChampion, matchedBy: m.matchedBy };
+    });
+    const unmatchedCount = history[title].filter(r => r.matchedBy === 'none').length;
+    console.log(`📜 ${title.padEnd(42)} ${String(reigns.length).padStart(3)} reigns from "${usedPage}"${unmatchedCount ? ` (${unmatchedCount} without a site match)` : ''}`);
+  }
+
+  // ----- each archive week's end date, from the site's own archive files -----
+  const weekEnds = {};
+  try {
+    const index = await readJson('archive/index.json');
+    for (const w of index.weeks || []) {
+      if (!w.filename || w.filename === 'archive-index.json' || weekEnds[w.label]) continue;
+      try {
+        const week = await readJson(`archive/${w.filename}`);
+        // The first three entries are whole months ("Jun '19") with no date range —
+        // use the last day of that month
+        const monthOnly = w.label.match(/^(\w{3})\s+'(\d{2})$/);
+        const monthIdx = monthOnly ? MONTHS.findIndex(m => m.startsWith(monthOnly[1])) : -1;
+        const end = weekEndFromRange(week.dateRange)
+          || (monthIdx >= 0 ? new Date(Date.UTC(2000 + Number(monthOnly[2]), monthIdx + 1, 0)).toISOString().slice(0, 10) : null);
+        if (end) weekEnds[w.label] = end;
+      } catch {}
+    }
+  } catch (e) {
+    problems.push('archive/index.json: ' + e.message);
+  }
+  console.log(`🗓️ ${Object.keys(weekEnds).length} archive weeks with end dates`);
+
   const count = Object.keys(champions).length;
   if (count < MIN_TITLES) {
     console.error(`❌ Only ${count} titles read — champions.json NOT updated. ${problems.join(' | ')}`);
@@ -265,14 +397,16 @@ export async function main() {
   // Only rewrite the file when a champion actually changed, so the commit history stays clean
   let previous = null;
   try { previous = await readJson('champions.json'); } catch {}
-  if (previous && JSON.stringify(previous.champions) === JSON.stringify(champions)) {
+  if (previous && JSON.stringify([previous.champions, previous.history, previous.weekEnds]) === JSON.stringify([champions, history, weekEnds])) {
     console.log('No champion changes.');
     return;
   }
   const out = {
     updated: new Date().toISOString().slice(0, 10),
-    source: 'Wikipedia — List of current champions (AEW, ROH)',
+    source: 'Wikipedia — List of current champions and title histories (AEW, ROH)',
     champions,
+    history,
+    weekEnds,
   };
   await writeFile('champions.json', JSON.stringify(out, null, 2) + '\n');
   console.log(`✅ champions.json updated (${count} titles).`);
