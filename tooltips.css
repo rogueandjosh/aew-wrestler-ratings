@@ -1,28 +1,53 @@
 /* ===== SHARED TOOLTIP STYLES ===== */
+/* One floating box, positioned by tooltips.js so it always stays on screen */
 #ttBox {
     display: none;
     position: fixed;
+    left: 0;
+    top: 0;
     background: #1a1a2e;
     color: #e0e0e0;
     border: 1px solid #ffd700;
     border-radius: 6px;
     padding: 7px 11px;
-    font-size: 0.78em;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: normal;
     white-space: normal;
-    width: 200px;
+    width: max-content;
+    max-width: 260px;
     text-align: center;
     pointer-events: none;
     z-index: 99999;
     box-shadow: 0 3px 10px rgba(0,0,0,0.5);
     line-height: 1.4;
+    opacity: 0;
+    transition: opacity 0.15s ease;
 }
+#ttBox.visible { opacity: 1; }
 
-/* CSS tooltips for non-table elements (buttons etc) */
+/* Arrow pointing at the element (side and position set by tooltips.js) */
+#ttBox::after {
+    content: '';
+    position: absolute;
+    left: var(--tt-arrow-x, 50%);
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+}
+#ttBox[data-side="above"]::after { top: 100%; border-top-color: #ffd700; }
+#ttBox[data-side="below"]::after { bottom: 100%; border-bottom-color: #ffd700; }
+
+/* Elements with tooltips */
 .tt:not(th):not(td) {
     position: relative;
     display: inline-block;
 }
-.tt:not(th):not(td)::after {
+body.tooltips-on .tt[data-tt] { cursor: help; }
+body.tooltips-on button.tt[data-tt],
+body.tooltips-on a.tt[data-tt] { cursor: pointer; }
+
+/* Fallback CSS-only tooltips, used only if tooltips.js hasn't loaded */
+body:not(.tt-js) .tt:not(th):not(td)::after {
     content: attr(data-tt);
     position: absolute;
     bottom: calc(100% + 8px);
@@ -45,32 +70,18 @@
     box-shadow: 0 3px 10px rgba(0,0,0,0.5);
     line-height: 1.4;
 }
-.tt.tt-below:not(th):not(td)::after {
+body:not(.tt-js) .tt.tt-below:not(th):not(td)::after {
     bottom: auto;
     top: calc(100% + 8px);
 }
-.tt:not(th):not(td)::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 2px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #ffd700;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease 0.4s;
-    z-index: 9999;
-}
-.tt.tt-below:not(th):not(td)::before {
-    bottom: auto;
-    top: calc(100% + 2px);
-    border-top-color: transparent;
-    border-bottom-color: #ffd700;
-}
-body.tooltips-on .tt:not(th):not(td):hover::after,
-body.tooltips-on .tt:not(th):not(td):hover::before {
+body.tooltips-on:not(.tt-js) .tt:not(th):not(td):hover::after {
     opacity: 1;
+}
+/* Pages that still carry their own CSS tooltip rules: switch those off too */
+body.tt-js .tt::after,
+body.tt-js .tt::before {
+    content: none !important;
+    display: none !important;
 }
 
 /* Toggle button */
