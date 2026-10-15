@@ -1945,6 +1945,28 @@
             .otd-teaser-head .otd-photo-row.multi .otd-photo-vs{font-size:0.55em;}
             .otd-teaser-title{font-size:0.9em;}
         }
+        /* Phones: the date sits on its own line under "On This Day", the same way the week
+           sits under "This Week's Analysis" (the bigger heading no longer fits beside it) */
+        @media (max-width:699px){
+            #teaserCard .otd-teaser-head{
+                grid-template-columns:minmax(0,1fr) auto;
+                grid-template-areas:"title right" "photos photos";
+            }
+            #teaserCard .otd-head-date{display:none;}
+            #teaserCard .otd-teaser-title{align-items:flex-start;white-space:normal;}
+            #teaserCard .otd-teaser-title .otd-teaser-date{
+                display:block;margin-top:2px;white-space:nowrap;
+                font-family:'Overlock','Arial',sans-serif;font-size:13.6px;color:#b8b8b8;letter-spacing:0;
+            }
+            #teaserCard.minimised .otd-teaser-title{align-items:center;}
+        }
+
+        /* "📅 On This Day" matches the "📝 This Week's Analysis" heading exactly —
+           same font, weight, size and colour, on every screen size */
+        #teaserCard .otd-teaser-title > span:first-child,
+        #teaserCard .otd-teaser-title-text > span:first-child{
+            font-family:'Overlock','Arial',sans-serif;font-weight:700;font-size:18.4px;color:#ffd700;line-height:1.2;
+        }
         .otd-show-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0;}
         .otd-show-badge{display:inline-flex;align-items:center;font-family:'Amaranth',sans-serif;font-size:0.68em;font-weight:bold;letter-spacing:0.6px;text-transform:uppercase;padding:3px 11px;border-radius:20px;}
         .otd-show-badge.weekly, .otd-show-badge.special{color:#c9d3dc;background:rgba(255,255,255,0.03);border:1px solid rgba(201,211,220,0.45);}
