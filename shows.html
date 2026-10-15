@@ -19,7 +19,7 @@
     <title>Show Statistics - Elite Wrestler Ratings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="tooltips.css">
+    <link rel="stylesheet" href="tooltips.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -672,13 +672,8 @@
             }
         }
 
-        /* Hover tooltips can't be used on touch screens, and their hidden boxes
-           were widening the page sideways on phones */
+        /* No hover lift on touch screens */
         @media (hover: none), (max-width: 600px) {
-            .tt:not(th):not(td)::after,
-            .tt:not(th):not(td)::before {
-                display: none !important;
-            }
             .tab:hover {
                 transform: none;
             }
@@ -686,7 +681,7 @@
 
         /* ===== PHONE LAYOUT ===== */
         @media (max-width: 600px) {
-            /* Header: keep the title clear of the menu button; tooltips don't work on touch */
+            /* Header: keep the title clear of the menu button */
             header {
                 margin-bottom: 18px;
                 padding: 0 64px 14px;
@@ -697,9 +692,6 @@
             }
             .subtitle {
                 font-size: 0.85em;
-            }
-            #tooltipToggle {
-                display: none !important;
             }
 
             /* Filters: Year and Division side by side, label above */
@@ -916,7 +908,7 @@
                 <a href="index.html" class="back-link">
                     🏠 Home
                 </a>
-                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Toggle on/off to show extra info when hovering over elements">
+                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Turn the extra info boxes on or off">
                     💡 Tooltips ON
                 </button>
             </div>
@@ -926,7 +918,7 @@
         <section class="filter-section">
             <div class="filter-row" style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
                 <div>
-                    <h2 class="tt" data-tt="Choose which show types to include — select one, several, or All." style="cursor: help; margin-bottom: 10px;">Shows</h2>
+                    <h2 class="tt" data-tt="Choose which show types to include: one, several, or All. The arrows step through them one at a time." style="cursor: help; margin-bottom: 10px;">Shows</h2>
                     <div style="position: relative; display: inline-block;">
                         <button type="button" id="showDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Shows</button>
                         <div id="showDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
@@ -945,7 +937,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="tt" data-tt="Filter by year — select one or more years, or keep All to see all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
+                    <h2 class="tt" data-tt="Pick one or more years, or keep All Years for all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
                     <div style="position: relative; display: inline-block;">
                         <button type="button" id="yearDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 130px; text-align: left;">All Years</button>
                         <div id="yearDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
@@ -958,7 +950,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="tt" data-tt="Filter by division — select one or more to narrow results to specific wrestler types." style="cursor: help; margin-bottom: 10px;">Division</h2>
+                    <h2 class="tt" data-tt="Filters by each match's own division, so Women's Tag shows only women's tag matches, even for wrestlers who also wrestle singles." style="cursor: help; margin-bottom: 10px;">Division</h2>
                     <div style="position: relative; display: inline-block;">
                         <button type="button" id="divDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Divisions</button>
                         <div id="divDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
@@ -972,7 +964,7 @@
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="menstag" checked onchange="updateDivisions()"> Men's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womenstag" checked onchange="updateDivisions()"> Women's Tag</label>
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
-                                <label class="tt" data-tt="Matches outside the five ranked divisions, such as multi-person and mixed tags." style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="other" checked onchange="updateDivisions()"> Other</label>
+                                <label class="tt" data-tt="Matches outside the five ranked divisions, such as mixed tags and big multi-person tags." style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="other" checked onchange="updateDivisions()"> Other</label>
                             </div>
                         </div>
                     </div>
@@ -983,7 +975,7 @@
         <!-- Tab Navigation + Content (hidden until data loads) -->
         <div id="tabsWrapper">
         <div class="view-options">
-            <button class="tab view-option-btn" id="stipsToggle" title="Matches with a stipulation, grouped by type. Click again to go back to shows.">🪜 Stipulation Matches</button>
+            <button class="tab view-option-btn tt tt-below" id="stipsToggle" data-tt="Only matches with a stipulation, grouped by type. Uses the same Shows, Year and Division filters. Click again to go back.">🪜 Stipulation Matches</button>
         </div>
 
         <!-- Loading State -->
@@ -1006,7 +998,8 @@
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 
-    <script src="tooltips.js"></script>
+    <script src="tooltips.js?v=2"></script>
+    <script src="match-filters.js?v=6"></script>
     <script>
         // ===========================================
         // CONFIGURATION
@@ -1041,69 +1034,11 @@
         // PPV events hidden from the PPV card grid until "Show more events" is clicked
         const PPV_HIDDEN_BY_DEFAULT = ['Fyter Fest', 'Fight for the Fallen'];
 
-        // ===========================================
-        // MATCH TYPE (STIPULATION) GROUPS
-        // Group -> optional subgroup -> stipulation. Any stipulation not listed lands in "Other Specialty".
-        // ===========================================
-        const STIP_GROUPS = [
-            { name: 'No DQ & Hardcore', items: [
-                'No DQ', 'No Holds Barred', 'Falls Count Anywhere', 'FTW Rules', 'Lights Out', 'Anything Goes',
-                { sub: 'Unsanctioned & Hardcore', items: ['Hardcore', 'Unsanctioned', 'Broken Rules', 'Fight Without Honor'] }
-            ]},
-            { name: 'Battle Royals & Gauntlets', items: [
-                { sub: 'Battle Royals', items: ['Battle Royal', 'Royal Rampage', 'Tres de Mayo Battle Royal', 'The Butcher Battle Royal'] },
-                { sub: 'Casino Matches', items: ['Casino Battle Royale', 'Casino Gauntlet'] },
-                { sub: 'Gauntlets', items: ['Gauntlet', 'Gauntlet Challenge'] },
-                'Survival of the Fittest'
-            ]},
-            { name: 'Street Fights & Brawls', items: [
-                { sub: 'Street Fights', items: [
-                    'Street Fight', 'Chicago Street Fight', 'Philadelphia Street Fight', 'Atlanta Street Fight',
-                    'Cincinnati Street Fight', 'Mid-South Street Fight', 'Minneapolis Street Fight', 'Stampede Street Fight',
-                    'Tijuana Street Fight', 'Mexico City Street Fight', 'Memphis Street Fight', 'Lights Out Philly Street Fight'
-                ]},
-                { sub: 'Brawls', items: ['Parking Lot Fight', 'Fright Night Fight', 'Brisbane Brawl', 'Concession Stand Brawl'] }
-            ]},
-            { name: 'Tornado & Team Brawls', items: ['Tornado Tag', 'Bunkhouse Tag', 'Arcade Anarchy Tag', 'Anarchy in the Arena'] },
-            { name: 'Ladder Matches', items: ['Ladder', 'Casino Ladder', 'Escalera De La Muerte Match'] },
-            { name: 'Cage Matches', items: [
-                'Steel Cage', 'Blood And Guts',
-                { sub: 'Specialty Cages', items: ['Lights Out Steel Cage', 'Barbed Wire Steel Cage', 'MMA Rules Cage Match', 'Escape the Cage Elimination'] }
-            ]},
-            { name: 'Death Matches', items: [
-                'Texas Death Match',
-                { sub: 'Barbed Wire', items: ['Barbed Wire Death Match', 'Exploding Barbed Wire Death'] },
-                'Hardcore Holiday Death Match', 'Texas Chainsaw Massacre Death Match', "Tables N' Tacks"
-            ]},
-            { name: 'Falls, Submission & Time', items: [
-                '2 out of 3 Falls', 'I Quit',
-                { sub: 'Iron Man', items: ['Iron Man (30 Minutes)', 'Iron Man (60 Minutes)'] },
-                { sub: 'Count Outs & Time Limits', items: ['No Count Out', 'No Time Limit', '10 Minute Time Limit'] }
-            ]},
-            { name: 'Object & Gimmick Matches', items: ['Coffin Match', 'Tables', 'Dumpster Match', 'Stretcher', 'Trick or Treat Match'] },
-            { name: 'Cinematic Matches', items: ['Stadium Stampede', 'Elite Deletion', 'The Firm Deletion', 'Final Burial', 'Hollywood Ending'] },
-            { name: 'Ringside Rules', items: ['Lumberjack', 'Everyone Banned From Ringside'] },
-            { name: 'Strap & Chain Matches', items: ['Strap Match', 'Dog Collar', 'Double Chain Match', 'Texas Bullrope'] }
-        ];
-        const STIP_OTHER_GROUP = 'Other Specialty';
-
-        // Same stipulation under different names (keys lowercase) -> the name used above
-        const STIP_ALIASES = {
-            'ladder match': 'Ladder',
-            'tables match': 'Tables',
-            'no disqualification': 'No DQ',
-            'no count outs': 'No Count Out',
-            'no count out match': 'No Count Out',
-            'texas death': 'Texas Death Match',
-            'cincinatti street fight': 'Cincinnati Street Fight'
-        };
-
-        // Lowercase stipulation -> { name, group, sub }
-        const STIP_LOOKUP = {};
-        STIP_GROUPS.forEach(g => g.items.forEach(item => {
-            if (typeof item === 'string') STIP_LOOKUP[item.toLowerCase()] = { name: item, group: g.name, sub: null };
-            else item.items.forEach(name => { STIP_LOOKUP[name.toLowerCase()] = { name, group: g.name, sub: item.sub }; });
-        }));
+        // Stipulation groups live in match-filters.js (shared with wrestler-stats.html):
+        // STIPULATION_GROUPS, normalizeMatchStipulation() and getStipulationGroup().
+        // A merged name that covers several Data sheet values (e.g. "Street Fight" covers
+        // Chicago Street Fight, Philadelphia Street Fight...) becomes a "Break down by" option.
+        let stipMergedWithVariants = new Set(); // filled once the wrestler files have loaded
 
         // Match "division" field -> division filter value (anything else counts as "other")
         const DIVISION_BY_MATCH = { "Men's": 'mens', "Women's": 'womens', 'Tag': 'menstag', "Women's Tag": 'womenstag', 'Trios': 'trios' };
@@ -1122,6 +1057,8 @@
             '3 year anniversary': 'Anniversary',
             '5 year anniversary': 'Anniversary',
             'anniversary show': 'Anniversary',
+            "new year's smash dec": "New Year's Smash",
+            "new year's smash jan": "New Year's Smash",
             'slam dunk saturday': 'Slam Dunk',
             'slam dunk sunday': 'Slam Dunk',
             "a celebration of mr brodie lee's life": 'Tributes & Celebrations',
@@ -1209,31 +1146,7 @@
             }
         }
 
-        // ===========================================
-        // TOOLTIP FUNCTIONS
-        // ===========================================
-        
-        (function initTooltips() {
-            let stored = null;
-            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
-            const on = stored === null ? true : stored === 'true';
-            if (on) document.body.classList.add('tooltips-on');
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        })();
-
-        function toggleTooltips() {
-            const on = document.body.classList.toggle('tooltips-on');
-            try { localStorage.setItem('aewTooltips', on); } catch (e) {}
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        }
+        // Tooltips (on/off button and positioning) are handled by the shared tooltips.js
 
         // ===========================================
         // TAB SWITCHING
@@ -1284,6 +1197,8 @@
                     b.className = 'filter-arrow';
                     b.textContent = symbol;
                     b.setAttribute('aria-label', `${label} ${cfg.name}`);
+                    b.classList.add('tt');
+                    b.dataset.tt = `${label} ${cfg.name}`;
                     b.addEventListener('click', () => stepFilter(i, dir));
                     return b;
                 };
@@ -1717,11 +1632,25 @@
             return root;
         }
 
+        // Raw stipulation → { name, group, sub } using the shared groups in match-filters.js
         function getStipInfo(rawStip) {
             const raw = (rawStip || '').trim();
-            if (!raw || raw === 'None') return null;
-            const name = STIP_ALIASES[raw.toLowerCase()] || raw;
-            return STIP_LOOKUP[name.toLowerCase()] || { name, group: STIP_OTHER_GROUP, sub: null };
+            const group = getStipulationGroup(raw);
+            if (!group) return null;
+            const merged = normalizeMatchStipulation(raw);
+            return { name: raw, group, sub: stipMergedWithVariants.has(merged) ? merged : null };
+        }
+
+        // Works out which merged names cover more than one Data sheet value, across all loaded matches
+        function findStipVariants() {
+            const variants = {};
+            allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => {
+                const raw = (m.matchStipulation || '').trim();
+                if (!raw || raw === 'None') return;
+                const merged = normalizeMatchStipulation(raw);
+                (variants[merged] = variants[merged] || new Set()).add(raw);
+            }));
+            stipMergedWithVariants = new Set(Object.keys(variants).filter(k => variants[k].size > 1));
         }
 
         function getStipPath(stip) {
@@ -1953,15 +1882,15 @@
                     <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
                     <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
                     <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
-                    <div class="stat-box tt" data-tt="Number of individual shows these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
-                    <div class="stat-box tt" data-tt="Number of unique wrestlers or teams who competed in at least one match, counted in each match's own division (teams for tag and trios matches)."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
+                    <div class="stat-box tt" data-tt="How many separate shows (episodes or events) these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
+                    <div class="stat-box tt" data-tt="How many wrestlers and teams appear. Tag and trios matches count the team; singles and multi-person matches count each wrestler."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
                 </div>
 
                 <div class="table-container" id="scope-grid-section">
-                    <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to see its breakdown." style="cursor: help;"></h3>
+                    <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
-                        <thead><tr><th>Name</th><th class="num">Matches</th><th class="num">Avg</th><th class="num">Best</th><th class="chev"></th></tr></thead>
+                        <thead><tr><th>Name</th><th class="num tt" data-tt="Number of matches">Matches</th><th class="num tt" data-tt="Average Cagematch match rating">Avg</th><th class="num tt" data-tt="Highest-rated match">Best</th><th class="chev"></th></tr></thead>
                         <tbody id="scope-grid"></tbody>
                     </table>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
@@ -1974,7 +1903,7 @@
 
                 <div class="table-container">
                     <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
-                    <table><thead><tr><th style="width: 50px;">#</th><th></th><th>Wrestler</th><th>Avg Rating</th><th class="hide-mobile">Matches</th><th class="hide-mobile">Best</th></tr></thead>
+                    <table><thead><tr><th style="width: 50px;">#</th><th></th><th>Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection">Avg Rating</th><th class="hide-mobile tt" data-tt="Matches in this selection">Matches</th><th class="hide-mobile tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
                     <tbody id="scope-leaderboard"></tbody></table>
                 </div>`;
         }
@@ -2084,7 +2013,7 @@
                 if (subgroups.length) {
                     subgroups.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
                     subgroupsEl.innerHTML = '<span class="scope-subgroups-label">Break down by:</span>' + subgroups.map(sg =>
-                        `<button class="tab scope-sub-btn" data-scope-key="${esc(sg.key)}">${esc(sg.label)} <span class="scope-sub-count">${getUniqueMatches(sg.matches).length}</span></button>`
+                        `<button class="tab scope-sub-btn tt" data-tt="Show only the ${esc(sg.label)} variations (${[...sg.children.values()].length})" data-scope-key="${esc(sg.key)}">${esc(sg.label)} <span class="scope-sub-count">${getUniqueMatches(sg.matches).length}</span></button>`
                     ).join('');
                     children = [...getLeaves(node).values()];
                 }
@@ -2142,8 +2071,8 @@
                 : getTop5(all);
             topTitle.textContent = showFullList ? `All Matches (${topList.length})` : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
             topTitle.setAttribute('data-tt', showFullList
-                ? (isStips ? 'Every rated match in this selection, highest rated first.' : 'Every rated match on this show, highest rated first.')
-                : 'The top 5 highest-rated matches for the current selection, based on Cagematch community ratings.');
+                ? (isStips ? 'Every match in this selection, highest rated first.' : 'Every match on this show, highest rated first.')
+                : 'The five highest-rated matches in this selection, by Cagematch community rating.');
 
             // Long lists start with the top 10 and a "Show all" button
             const fullCount = topList.length;
@@ -2160,7 +2089,7 @@
             const minMatches = Math.max(1, Math.min(3, showCount));
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
-            lbTitle.setAttribute('data-tt', `Top performers for the current selection, ranked by average match rating. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
+            lbTitle.setAttribute('data-tt', `Ranked by average match rating. Tag and trios matches count for the team, singles for the wrestler. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
         }
 
@@ -2228,6 +2157,7 @@
                 
                 // Build year dropdown from actual data
                 buildYearDropdown();
+                findStipVariants();
 
                 // Process and render
                 processAllData();
