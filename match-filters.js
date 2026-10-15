@@ -71,6 +71,46 @@ function normalizeMatchStipulation(raw) {
 }
 
 // ---------------------------------------------------------------------------
+// STIPULATION GROUPS — the wider families used on shows.html.
+// Three levels: group → merged name (from normalizeMatchStipulation above) →
+// the exact Data sheet / Lists value. List each MERGED name once here; any
+// stipulation not listed falls under STIPULATION_OTHER_GROUP until it's added.
+// ---------------------------------------------------------------------------
+const STIPULATION_GROUPS = [
+    { group: 'No DQ & Hardcore', stips: [
+        'No DQ', 'No Holds Barred', 'Falls Count Anywhere', 'FTW Rules', 'Lights Out', 'Anything Goes',
+        'Hardcore', 'Unsanctioned', 'Broken Rules', 'Fight Without Honor'] },
+    { group: 'Battle Royals & Gauntlets', stips: [
+        'Battle Royal', 'Royal Rampage', 'Tres de Mayo Battle Royal', 'Casino Battle Royale', 'Casino Gauntlet',
+        'Gauntlet', 'Survival of the Fittest Elimination'] },
+    { group: 'Street Fights & Brawls', stips: [
+        'Street Fight', 'Parking Lot Fight', 'Fright Night Fight', 'Brisbane Brawl', 'Concession Stand Brawl'] },
+    { group: 'Tornado & Team Brawls', stips: ['Tornado Tag', 'Bunkhouse Tag', 'Arcade Anarchy Tag', 'Anarchy in the Arena'] },
+    { group: 'Ladder Matches', stips: ['Ladder', 'Casino Ladder', 'Escalera de la Muerte'] },
+    { group: 'Cage Matches', stips: ['Steel Cage', 'Blood and Guts', 'MMA Rules Cage', 'Escape the Cage Elimination'] },
+    { group: 'Death Matches', stips: [
+        'Texas Death', 'Barbed Wire Death Match', 'Hardcore Holiday Death Match', 'Texas Chainsaw Massacre Death Match',
+        "Tables N' Tacks"] },
+    { group: 'Falls, Submission & Time', stips: [
+        '2 out of 3 Falls', 'I Quit', 'Iron Man', 'No Count Out', 'No Time Limit', '10 Minute Time Limit'] },
+    { group: 'Object & Gimmick Matches', stips: ['Coffin', 'Tables', 'Dumpster', 'Stretcher', 'Trick or Treat'] },
+    { group: 'Cinematic Matches', stips: ['Stadium Stampede', 'Elite Deletion', 'The Firm Deletion', 'Final Burial', 'Hollywood Ending'] },
+    { group: 'Ringside Rules', stips: ['Lumberjack', 'Everyone Banned From Ringside'] },
+    { group: 'Strap & Chain Matches', stips: ['Strap', 'Dog Collar', 'Double Chain', 'Texas Bullrope'] }
+];
+const STIPULATION_OTHER_GROUP = 'Other Specialty';
+
+const STIPULATION_GROUP_LOOKUP = {};   // lowercase merged name → group
+STIPULATION_GROUPS.forEach(g => g.stips.forEach(name => { STIPULATION_GROUP_LOOKUP[name.toLowerCase()] = g.group; }));
+
+// Raw stipulation → group name, or null for 'None'
+function getStipulationGroup(raw) {
+    const merged = normalizeMatchStipulation(raw);
+    if (merged === 'None') return null;
+    return STIPULATION_GROUP_LOOKUP[merged.toLowerCase()] || STIPULATION_OTHER_GROUP;
+}
+
+// ---------------------------------------------------------------------------
 // SHOW TYPE — from showType (Column E). Kept as-is; older files without the
 // field (or blank values) fall under 'Not Recorded'.
 // ---------------------------------------------------------------------------
