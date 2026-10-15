@@ -329,11 +329,65 @@ export function bracketPeople(wikiChampion) {
 }
 
 // true if the person `m` is one of `names` (exact, near-identical, or all of their name's words)
+// ---------- people: Wikipedia's spelling → the site's name ----------
+// Set once in main() (and in tests): every individual on the site, and every name that
+// appears in name-changes.json.
+let siteSinglesNames = [];
+let nameChangeNames = new Set();
+export function setSiteContext(wrestlersIndex, nameChanges = []) {
+  siteSinglesNames = wrestlersIndex.filter(w => !w.isTeam).map(w => w.name);
+  nameChangeNames = new Set(nameChanges.flatMap(c => [c.oldName, c.newName]));
+}
+
+// Turns Wikipedia's spelling of a person into the name the site uses, so the right photo
+// and page are found:
+//   "Penta El Zero Miedo" → "Penta El Zero M"   (site name is an abbreviation of it)
+//   "Fénix"               → "Rey Fenix"         (the only site name containing all its words)
+//   "Pentagón Jr."        → "Pentagon Jr."      (accents ignored)
+// Names from name-changes.json count as site names too. Unknown people are left as they are.
+export function resolvePerson(name) {
+  const clean = stripNicknames(name || '');
+  const norm = normalizeName(clean);
+  if (!norm) return clean;
+  const pool = [...new Set([...siteSinglesNames, ...nameChangeNames])];
+  const exact = pool.find(n => normalizeName(n) === norm);
+  if (exact) return exact;
+
+  const tokens = norm.split(' ');
+  // site name is an abbreviation: same number of words, each a start of Wikipedia's word
+  const abbrev = pool.filter(n => {
+    const nt = normalizeName(n).split(' ');
+    return nt.length === tokens.length && nt.every((t, i) => tokens[i].startsWith(t));
+  });
+  if (abbrev.length === 1) return abbrev[0];
+
+  // all of Wikipedia's words appear in exactly one site name
+  const subset = pool.filter(n => {
+    const nt = new Set(normalizeName(n).split(' '));
+    return tokens.every(t => nt.has(t));
+  });
+  if (subset.length === 1) return subset[0];
+
+  // very close spelling
+  let best = null, bestScore = 0, tie = false;
+  for (const n of pool) {
+    const sc = similarity(clean, n);
+    if (sc > bestScore) { best = n; bestScore = sc; tie = false; } else if (sc === bestScore) tie = true;
+  }
+  return best && bestScore >= 0.85 && !tie ? best : clean;
+}
+
+// true if the person `m` is one of `names` (exact, near-identical, all of their name's
+// words, or the same site person once Wikipedia's spelling is resolved)
 function personAmong(m, names) {
   const mNorm = normalizeName(m);
   const mTokens = mNorm.split(' ');
-  return names.map(normalizeName).some(p => p === mNorm || similarity(p, m) >= 0.9
-    || (mTokens.length >= 2 && mTokens.every(t => p.split(' ').includes(t))));   // "Hangman" Adam Page
+  return names.some(raw => {
+    const p = normalizeName(raw);
+    return p === mNorm || similarity(p, m) >= 0.9
+      || (mTokens.length >= 2 && mTokens.every(t => p.split(' ').includes(t)))     // "Hangman" Adam Page
+      || normalizeName(resolvePerson(raw)) === mNorm;                               // Penta El Zero Miedo
+  });
 }
 
 // Team members to show photos for: the site's own list for the matched team (when it agrees
@@ -349,7 +403,7 @@ export function teamMembersFor(row, matchedName, kind, wrestlersIndex, teamMembe
   const base = normalizeName(stripNicknames(row.wikiChampion || '').replace(/\s*\(.*\)\s*$/, ''));
   const people = named.length >= 2 ? named : (row.wikiLinks || []).map(stripNicknames)
     .filter(n => n && normalizeName(n) !== base && !wrestlersIndex.some(w => w.isTeam && normalizeName(w.name) === normalizeName(n)));
-  const siteNames = people.map(n => (singles.find(w => normalizeName(w.name) === normalizeName(n)) || { name: n }).name);
+  const siteNames = people.map(resolvePerson);
   return siteNames.length >= 2 ? [...new Set(siteNames)].slice(0, size) : [];
 }
 
@@ -377,7 +431,8 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGue
 
   // 1. exact (normalised) name in this title's division
   const exactIn = list => {
-    for (const candidate of [full, base]) {
+    const candidates = kind === 'singles' ? [full, base, resolvePerson(base)] : [full, base];
+    for (const candidate of candidates) {
       const hits = rank(list.filter(w => normalizeName(w.name) === normalizeName(candidate)));
       if (hits.length) return hits[0];
     }
@@ -444,6 +499,9 @@ export async function main() {
   const readJson = async f => JSON.parse(await readFile(f, 'utf8'));
   const wrestlersIndex = await readJson('wrestlers/index.json');
   const teamMembers = (await readJson('team-members.json')).teams || {};
+  let nameChanges = [];
+  try { nameChanges = (await readJson('name-changes.json')).changes || []; } catch {}
+  setSiteContext(wrestlersIndex, nameChanges);
   // Every title the site has ever shown — so any new title is looked up automatically
   const knownTitleSet = new Set();
   try { (await readJson('championship-competitors.json')).titles.forEach(t => knownTitleSet.add(t.title)); } catch {}
