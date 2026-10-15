@@ -41,6 +41,12 @@ const TITLE_NAME_OVERRIDES = {
   "ROH Women's World Television Championship": "ROH Women's TV Title",
 };
 
+// Titles that aren't on the AEW/ROH "current champions" pages but whose history should
+// still be read (site title → Wikipedia title). Add more here, e.g. other promotions' titles.
+const EXTRA_HISTORY_TITLES = {
+  'FTW Title': 'FTW Championship',
+};
+
 // Reigns that began before this date are from before the site's data starts (AEW's first
 // show) — only exact or team-member matches are used for those, never "closest" guesses,
 // so an old ROH champion can't be mistaken for a current wrestler with a similar name.
@@ -250,18 +256,36 @@ export function stripNicknames(name) {
     .trim();
 }
 
-// Team members to show photos for: the site's own list for the matched team, otherwise
-// the people Wikipedia names (each matched to the site's name where it's an exact match).
+// The people Wikipedia names in brackets after a team: "The Elite (Adam Page, Matt
+// Jackson, and Nick Jackson)" → ["Adam Page", "Matt Jackson", "Nick Jackson"]
+export function bracketPeople(wikiChampion) {
+  const inBrackets = (stripNicknames(wikiChampion || '').match(/\(([^)]*)\)/) || [])[1] || '';
+  return inBrackets.split(/\s*(?:,|&|\band\b)\s*/).map(s => s.trim()).filter(Boolean);
+}
+
+// true if the person `m` is one of `names` (exact, near-identical, or all of their name's words)
+function personAmong(m, names) {
+  const mNorm = normalizeName(m);
+  const mTokens = mNorm.split(' ');
+  return names.map(normalizeName).some(p => p === mNorm || similarity(p, m) >= 0.9
+    || (mTokens.length >= 2 && mTokens.every(t => p.split(' ').includes(t))));   // "Hangman" Adam Page
+}
+
+// Team members to show photos for: the site's own list for the matched team (when it agrees
+// with Wikipedia), otherwise the people Wikipedia names — each matched to the site's own
+// spelling where there's an exact match.
 export function teamMembersFor(row, matchedName, kind, wrestlersIndex, teamMembers) {
   if (kind === 'singles' || row.vacant) return [];
   const size = kind === 'trios' ? 3 : 2;
-  if (matchedName && teamMembers && teamMembers[matchedName] && teamMembers[matchedName].length === size) return teamMembers[matchedName];
-  const base = normalizeName(stripNicknames(row.wikiChampion || '').replace(/\s*\(.*\)\s*$/, ''));
+  const named = bracketPeople(row.wikiChampion);
+  const siteList = matchedName && teamMembers ? teamMembers[matchedName] : null;
+  if (siteList && siteList.length === size && (named.length < 2 || siteList.every(m => personAmong(m, named)))) return siteList;
   const singles = wrestlersIndex.filter(w => !w.isTeam);
-  const people = (row.wikiLinks || []).map(stripNicknames)
+  const base = normalizeName(stripNicknames(row.wikiChampion || '').replace(/\s*\(.*\)\s*$/, ''));
+  const people = named.length >= 2 ? named : (row.wikiLinks || []).map(stripNicknames)
     .filter(n => n && normalizeName(n) !== base && !wrestlersIndex.some(w => w.isTeam && normalizeName(w.name) === normalizeName(n)));
-  const named = people.map(n => (singles.find(w => normalizeName(w.name) === normalizeName(n)) || { name: n }).name);
-  return named.length >= 2 ? [...new Set(named)].slice(0, size) : [];
+  const siteNames = people.map(n => (singles.find(w => normalizeName(w.name) === normalizeName(n)) || { name: n }).name);
+  return siteNames.length >= 2 ? [...new Set(siteNames)].slice(0, size) : [];
 }
 
 export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGuesses = true } = {}) {
@@ -294,17 +318,20 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGue
     }
     return null;
   };
+  // A team name can be reused by different line-ups (e.g. "The Elite" was Omega & the Bucks
+  // and later Page & the Bucks), so an exact name only counts if its members agree with
+  // the people Wikipedia names in brackets
+  const namedPeople = bracketPeople(row.wikiChampion);
+  const teamAgrees = w => {
+    if (kind === 'singles' || namedPeople.length < 2 || !teamMembers || !teamMembers[w.name]) return true;
+    return teamMembers[w.name].every(m => personAmong(m, namedPeople));
+  };
   const exact = exactIn(pool);
-  if (exact) return result(exact, 'exact', 1);
+  if (exact && teamAgrees(exact)) return result(exact, 'exact', 1);
 
   // 2. teams: every member of a site team is among the Wikipedia champions
   if (kind !== 'singles' && teamMembers) {
-    const peopleNorm = people.map(normalizeName);
-    const isAmong = m => {
-      const mTokens = normalizeName(m).split(' ');
-      return peopleNorm.some(p => p === normalizeName(m) || similarity(p, m) >= 0.9
-        || (mTokens.length >= 2 && mTokens.every(t => p.split(' ').includes(t))));   // "Hangman" Adam Page
-    };
+    const isAmong = m => personAmong(m, people);
     const size = kind === 'trios' ? 3 : 2;
     const hits = rank(pool.filter(w => {
       const members = teamMembers[w.name];
@@ -317,7 +344,7 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGue
   //     that held a six-man title)
   const wider = kind === 'singles' ? wrestlersIndex.filter(w => !w.isTeam) : wrestlersIndex.filter(w => w.isTeam);
   const exactWider = exactIn(wider);
-  if (exactWider) return result(exactWider, 'exact', 1);
+  if (exactWider && teamAgrees(exactWider)) return result(exactWider, 'exact', 1);
 
   // Older reigns (before the site's data) stop here — no guessing
   if (!allowGuesses) return { name: base, slug: null, matchedBy: 'none', score: 0 };
@@ -387,6 +414,7 @@ export async function main() {
   const historyTitles = new Map();   // site title → Wikipedia title (if known)
   for (const [title, c] of Object.entries(champions)) historyTitles.set(title, c.wikiTitle);
   for (const t of knownTitles) if (/^(AEW|ROH)\b/.test(t) && !/\binterim\b/i.test(t) && !historyTitles.has(t)) historyTitles.set(t, null);
+  for (const [t, wiki] of Object.entries(EXTRA_HISTORY_TITLES)) if (!historyTitles.has(t)) historyTitles.set(t, wiki);
 
   const history = {};
   for (const [title, wikiTitle] of historyTitles) {
