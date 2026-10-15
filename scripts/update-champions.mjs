@@ -250,6 +250,20 @@ export function stripNicknames(name) {
     .trim();
 }
 
+// Team members to show photos for: the site's own list for the matched team, otherwise
+// the people Wikipedia names (each matched to the site's name where it's an exact match).
+export function teamMembersFor(row, matchedName, kind, wrestlersIndex, teamMembers) {
+  if (kind === 'singles' || row.vacant) return [];
+  const size = kind === 'trios' ? 3 : 2;
+  if (matchedName && teamMembers && teamMembers[matchedName] && teamMembers[matchedName].length === size) return teamMembers[matchedName];
+  const base = normalizeName(stripNicknames(row.wikiChampion || '').replace(/\s*\(.*\)\s*$/, ''));
+  const singles = wrestlersIndex.filter(w => !w.isTeam);
+  const people = (row.wikiLinks || []).map(stripNicknames)
+    .filter(n => n && normalizeName(n) !== base && !wrestlersIndex.some(w => w.isTeam && normalizeName(w.name) === normalizeName(n)));
+  const named = people.map(n => (singles.find(w => normalizeName(w.name) === normalizeName(n)) || { name: n }).name);
+  return named.length >= 2 ? [...new Set(named)].slice(0, size) : [];
+}
+
 export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGuesses = true } = {}) {
   if (row.vacant || !row.wikiChampion) return { name: null, slug: null, matchedBy: 'vacant', score: 0 };
 
@@ -272,15 +286,16 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGue
     return w ? result(w, 'override', 1) : { name: override, slug: createSlug(override), matchedBy: 'override', score: 1 };
   }
 
-  // 1. exact (normalised) name — first in this title's division, then anywhere on the site
-  //    (e.g. a team listed under Men's Tag on the site that held a six-man title)
-  const wider = kind === 'singles' ? wrestlersIndex.filter(w => !w.isTeam) : wrestlersIndex.filter(w => w.isTeam);
-  for (const list of [pool, wider]) {
+  // 1. exact (normalised) name in this title's division
+  const exactIn = list => {
     for (const candidate of [full, base]) {
       const hits = rank(list.filter(w => normalizeName(w.name) === normalizeName(candidate)));
-      if (hits.length) return result(hits[0], 'exact', 1);
+      if (hits.length) return hits[0];
     }
-  }
+    return null;
+  };
+  const exact = exactIn(pool);
+  if (exact) return result(exact, 'exact', 1);
 
   // 2. teams: every member of a site team is among the Wikipedia champions
   if (kind !== 'singles' && teamMembers) {
@@ -297,6 +312,12 @@ export function matchChampion(row, kind, wrestlersIndex, teamMembers, { allowGue
     }));
     if (hits.length) return result(hits[0], 'members', 1);
   }
+
+  // 2b. exact name anywhere else on the site (e.g. a team listed under Men's Tag
+  //     that held a six-man title)
+  const wider = kind === 'singles' ? wrestlersIndex.filter(w => !w.isTeam) : wrestlersIndex.filter(w => w.isTeam);
+  const exactWider = exactIn(wider);
+  if (exactWider) return result(exactWider, 'exact', 1);
 
   // Older reigns (before the site's data) stop here — no guessing
   if (!allowGuesses) return { name: base, slug: null, matchedBy: 'none', score: 0 };
@@ -351,6 +372,7 @@ export async function main() {
         champion: match.name,
         slug: match.slug,
         isTeam: titleKind(title) !== 'singles',
+        members: teamMembersFor(row, match.name, titleKind(title), wrestlersIndex, teamMembers),
         since: row.since,
         wikiTitle: row.wikiTitle,
         wikiChampion: row.wikiChampion,
@@ -386,7 +408,8 @@ export async function main() {
       if (r.vacant) return { start: r.start, vacant: true };
       const m = matchChampion({ ...r, vacant: false }, titleKind(title), wrestlersIndex, teamMembers,
         { allowGuesses: r.start >= SITE_DATA_STARTS });
-      return { start: r.start, champion: m.name, slug: m.slug, wikiChampion: r.wikiChampion, matchedBy: m.matchedBy };
+      const members = teamMembersFor(r, m.name, titleKind(title), wrestlersIndex, teamMembers);
+      return { start: r.start, champion: m.name, slug: m.slug, ...(members.length ? { members } : {}), wikiChampion: r.wikiChampion, matchedBy: m.matchedBy };
     });
     const unmatchedCount = history[title].filter(r => r.matchedBy === 'none').length;
     console.log(`📜 ${title.padEnd(42)} ${String(reigns.length).padStart(3)} reigns from "${usedPage}"${unmatchedCount ? ` (${unmatchedCount} without a site match)` : ''}`);
