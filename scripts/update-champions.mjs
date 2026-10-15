@@ -16,6 +16,12 @@
 //   4. closest similar name, if it is close enough
 //   5. otherwise the Wikipedia name is kept and the page shows initials
 //
+// New titles are picked up automatically: every title found in the site's own data
+// (championship-competitors.json, current-championship-rankings.json and the championship
+// archive) is looked up — first by the usual Wikipedia page names, then with a Wikipedia
+// search if those don't exist. Interim titles are matched to their main title the same way.
+// The lists below are only shortcuts/corrections for names that can't be worked out.
+//
 // Safety: if fewer than MIN_TITLES titles are read (e.g. Wikipedia changed its page
 // layout), champions.json is left untouched and the run fails, so a bad read never
 // replaces good data.
@@ -45,6 +51,38 @@ const TITLE_NAME_OVERRIDES = {
 // still be read (site title → Wikipedia title). Add more here, e.g. other promotions' titles.
 const EXTRA_HISTORY_TITLES = {
   'FTW Title': 'FTW Championship',
+  'AEW American Title': 'AEW American Championship',
+  // AAA
+  'AAA Mega Title': 'AAA Mega Championship',
+  'AAA Latin American Title': 'AAA Latin American Championship',
+  'AAA World Tag Team Titles': 'AAA World Tag Team Championship',
+  // CMLL
+  'CMLL World Heavyweight Title': 'CMLL World Heavyweight Championship',
+  "CMLL Women's World Title": "CMLL World Women's Championship",
+  'CMLL World Trios Titles': 'CMLL World Trios Championship',
+  // NJPW
+  'IWGP World Heavyweight Title': 'IWGP World Heavyweight Championship',
+  'IWGP Global Heavyweight Title': 'IWGP Global Heavyweight Championship',
+  'IWGP United States Title': 'IWGP United States Heavyweight Championship',
+  'IWGP Tag Team Titles': 'IWGP Tag Team Championship',
+  'NJPW World TV Title': 'NJPW World Television Championship',
+  'NJPW STRONG Openweight Title': 'Strong Openweight Championship',
+  "NJPW STRONG Women's Title": "Strong Women's Championship",
+  // Impact / TNA (Wikipedia now files these under TNA — its redirects are followed)
+  'Impact World Title': 'TNA World Championship',
+  'Impact World Tag Team Titles': 'TNA World Tag Team Championship',
+  // Others
+  "NWA World Women's Title": "NWA World Women's Championship",
+  'Regina Di WAVE Title': 'Regina di WAVE Championship',
+  "RevPro Undisputed British Women's Title": "Undisputed British Women's Championship",
+};
+
+// Interim titles: read from the main title's history, using only its interim reigns
+// (Wikipedia lists them as "Name (Interim)" in the main title's table).
+const INTERIM_TITLES = {
+  'AEW Interim World Title': 'AEW World Heavyweight Title',
+  'AEW Interim TNT Title': 'AEW TNT Title',
+  "ROH Interim Women's TV Title": "ROH Women's TV Title",
 };
 
 // Reigns that began before this date are from before the site's data starts (AEW's first
@@ -171,7 +209,7 @@ export function weekEndFromRange(range) {
 // just before the first date in the row (No. | Champion | Date | Event | …). Vacancies
 // are kept as markers (they end the previous reign) and interim reigns are skipped.
 // The table with the most reign rows wins, so "combined reigns" and other tables are ignored.
-export function parseReignRows(html) {
+export function parseReignRows(html, { interimOnly = false } = {}) {
   const tables = html.match(/<table[^>]*class="[^"]*wikitable[^"]*"[\s\S]*?<\/table>/gi) || [];
   let best = [];
   for (const table of tables) {
@@ -184,7 +222,9 @@ export function parseReignRows(html) {
       if (dateIdx < 1) continue;
       const champ = cells[dateIdx - 1];
       if (!champ.text || /^[\d—–-]+$/.test(champ.text)) continue;
-      if (/\binterim\b/i.test(champ.text)) continue;
+      const isInterim = /\binterim\b/i.test(champ.text);
+      if (interimOnly !== isInterim) continue;
+      if (isInterim) champ.text = champ.text.replace(/\s*\(?\binterim\b\)?/ig, '').trim();
       const vacant = /^(vacat|deactivat|retired|unified|abandon)/i.test(champ.text);
       reigns.push({
         start: toIsoDate(cells[dateIdx].text),
@@ -208,6 +248,31 @@ function historyPageCandidates(siteTitle, wikiTitle) {
   const wiki = wikiTitle || reverse[siteTitle] || siteTitle.replace(/\s+Titles?$/, ' Championship');
   const base = wiki.replace(/\s+Championship$/, '');
   return [`List of ${base} Champions`, `List of ${base} champions`, wiki];
+}
+
+// Wikipedia search, used when the usual page names don't exist (e.g. a newly added title
+// whose Wikipedia page has a slightly different name). Returns page titles, best first.
+async function searchWikipedia(query) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=5&format=json&formatversion=2`;
+  const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, 'Api-User-Agent': USER_AGENT } });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return ((data.query && data.query.search) || [])
+    .map(r => r.title)
+    .filter(t => /champion/i.test(t));          // only championship / champions pages
+}
+
+// Main title for an interim title: "AEW Interim World Title" → "AEW World Heavyweight Title"
+function interimParent(title, siteTitles) {
+  if (INTERIM_TITLES[title]) return INTERIM_TITLES[title];
+  const without = title.replace(/\binterim\s+/i, '');
+  let best = null, bestScore = 0;
+  for (const t of siteTitles) {
+    if (/\binterim\b/i.test(t)) continue;
+    const sc = similarity(without, t);
+    if (sc > bestScore) { best = t; bestScore = sc; }
+  }
+  return bestScore >= 0.6 ? best : null;
 }
 
 // Reads every table row that has a championship name in it. The champion is taken from
@@ -379,8 +444,20 @@ export async function main() {
   const readJson = async f => JSON.parse(await readFile(f, 'utf8'));
   const wrestlersIndex = await readJson('wrestlers/index.json');
   const teamMembers = (await readJson('team-members.json')).teams || {};
-  let knownTitles = [];
-  try { knownTitles = (await readJson('championship-competitors.json')).titles.map(t => t.title); } catch {}
+  // Every title the site has ever shown — so any new title is looked up automatically
+  const knownTitleSet = new Set();
+  try { (await readJson('championship-competitors.json')).titles.forEach(t => knownTitleSet.add(t.title)); } catch {}
+  try { (await readJson('current-championship-rankings.json')).championships.forEach(c => knownTitleSet.add(c.title)); } catch {}
+  try {
+    const champIndex = await readJson('championship-archive/index.json');
+    for (const w of champIndex.weeks || []) {
+      try {
+        const wk = await readJson(`championship-archive/${w.file}`);
+        [...(wk.championships || []), ...(wk.droppedOut || [])].forEach(c => c.title && knownTitleSet.add(c.title));
+      } catch {}
+    }
+  } catch {}
+  const knownTitles = [...knownTitleSet];
 
   const champions = {};
   const problems = [];
@@ -410,32 +487,58 @@ export async function main() {
     }
   }
 
-  // ----- reign history for every AEW / ROH title the site knows about (incl. retired) -----
+  // ----- reign history for every title the site knows about (AEW/ROH incl. retired,
+  //       interim titles, and the other promotions' titles listed above) -----
   const historyTitles = new Map();   // site title → Wikipedia title (if known)
   for (const [title, c] of Object.entries(champions)) historyTitles.set(title, c.wikiTitle);
-  for (const t of knownTitles) if (/^(AEW|ROH)\b/.test(t) && !/\binterim\b/i.test(t) && !historyTitles.has(t)) historyTitles.set(t, null);
   for (const [t, wiki] of Object.entries(EXTRA_HISTORY_TITLES)) if (!historyTitles.has(t)) historyTitles.set(t, wiki);
+  for (const t of knownTitles) if (!historyTitles.has(t)) historyTitles.set(t, null);   // any other (new) title
+  for (const t of Object.keys(INTERIM_TITLES)) historyTitles.set(t, null);
+  const newlyFound = [];
+  const isAewOrRoh = t => /^(AEW|ROH)\b/.test(t);
 
   const history = {};
   for (const [title, wikiTitle] of historyTitles) {
     let reigns = [];
     let usedPage = null;
-    for (const page of historyPageCandidates(title, wikiTitle)) {
+    const interimOf = /\binterim\b/i.test(title) ? interimParent(title, knownTitles) : null;
+    if (/\binterim\b/i.test(title) && !interimOf) { console.warn(`⚠️ Couldn't work out the main title for ${title}`); continue; }
+    const pages = interimOf
+      ? historyPageCandidates(interimOf, historyTitles.get(interimOf))
+      : historyPageCandidates(title, wikiTitle);
+    const isListed = !!(EXTRA_HISTORY_TITLES[title] || INTERIM_TITLES[title] || champions[title] || isAewOrRoh(title));
+    let searched = false;
+    const wikiName = pages[pages.length - 1] || title;     // e.g. "AAA Mega Championship"
+    for (let pi = 0; pi < pages.length; pi++) {
+      const page = pages[pi];
       try {
         await sleep(REQUEST_GAP_MS);
         const html = await fetchPageHtml(page, { allowMissing: true });
-        if (!html) continue;
-        const found = parseReignRows(html);
-        if (found.length >= 2) { reigns = found; usedPage = page; break; }
+        const found = html ? parseReignRows(html, { interimOnly: !!interimOf }) : [];
+        if (found.length >= (interimOf ? 1 : 2)) { reigns = found; usedPage = page; break; }
       } catch (e) {
         problems.push(e.message);
       }
+      // Usual page names didn't work — add Wikipedia's own search results and keep trying
+      if (pi === pages.length - 1 && !searched && !interimOf) {
+        searched = true;
+        try {
+          await sleep(REQUEST_GAP_MS);
+          const results = await searchWikipedia(`${wikiName} champions`);
+          for (const r of results) if (!pages.includes(r)) pages.push(r);
+        } catch (e) {
+          problems.push(e.message);
+        }
+      }
     }
+    if (reigns.length && !isListed) newlyFound.push(`${title} → "${usedPage}"`);
     if (!reigns.length) { console.warn(`⚠️ No reign history found for ${title}`); continue; }
     history[title] = reigns.map(r => {
       if (r.vacant) return { start: r.start, vacant: true };
+      // Close-name guesses only for AEW/ROH reigns from the site's era — other promotions'
+      // champions must match exactly (or by team members), so nobody is mis-identified
       const m = matchChampion({ ...r, vacant: false }, titleKind(title), wrestlersIndex, teamMembers,
-        { allowGuesses: r.start >= SITE_DATA_STARTS });
+        { allowGuesses: isAewOrRoh(title) && r.start >= SITE_DATA_STARTS });
       const members = teamMembersFor(r, m.name, titleKind(title), wrestlersIndex, teamMembers);
       return { start: r.start, champion: m.name, slug: m.slug, ...(members.length ? { members } : {}), wikiChampion: r.wikiChampion, matchedBy: m.matchedBy };
     });
@@ -464,6 +567,7 @@ export async function main() {
     problems.push('archive/index.json: ' + e.message);
   }
   console.log(`🗓️ ${Object.keys(weekEnds).length} archive weeks with end dates`);
+  if (newlyFound.length) console.log(`🆕 New titles found automatically (check they're the right pages):\n  ${newlyFound.join('\n  ')}`);
 
   const count = Object.keys(champions).length;
   if (count < MIN_TITLES) {
