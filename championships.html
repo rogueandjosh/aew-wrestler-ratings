@@ -778,7 +778,84 @@
         .details-content {
             padding: 20px;
             background: rgba(255, 215, 0, 0.05);
+            position: relative;
         }
+
+        /* Close controls for an open title */
+        /* The wrap spans the full panel; the button sticks to the visible right edge,
+           so it stays on screen when a wide table scrolls sideways on phones */
+        .details-close-top-wrap {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            right: 0;
+            height: 0;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .details-close-top {
+            position: sticky;
+            right: 8px;
+            margin-right: 8px;
+            flex: 0 0 auto;
+            pointer-events: auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            background: rgba(20, 20, 20, 0.85);
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .details-close-top svg { width: 16px; height: 16px; }
+        .details-close-bar {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .details-close-bottom {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: #ffd700;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.85em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .details-close-bottom svg { width: 14px; height: 14px; }
+        @media (max-width: 768px) {
+            .details-close-bar { justify-content: flex-end; }
+            .details-close-bottom { position: sticky; right: 8px; }
+        }
+        @media (hover: hover) {
+            .details-close-top:hover,
+            .details-close-bottom:hover {
+                background: rgba(255, 215, 0, 0.22);
+                border-color: #ffd700;
+            }
+        }
+        .title-cell .row-chevron {
+            display: inline-block;
+            margin-left: 6px;
+            color: #ffd700;
+            opacity: 0.6;
+            font-size: 0.75em;
+            transition: transform 0.2s;
+        }
+        tr.row-open .title-cell .row-chevron { transform: rotate(180deg); opacity: 1; }
 
         .details-grid {
             display: grid;
@@ -982,11 +1059,12 @@
 
         .dropped-details {
             display: none;
+            position: relative;
             padding: 15px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 0 0 8px 8px;
             margin-top: -3px;
-            padding-top: 20px;
+            padding-top: 46px;
         }
 
         .dropped-details.expanded {
@@ -2698,8 +2776,12 @@
 
             let main;
             const labelBase = week.isCurrent ? 'Current Champion' : `Champion · ${week.label}`;
+            const labelTip = week.isCurrent
+                ? 'Today\'s holder of this title, checked against Wikipedia every day. The day count runs from the date the title was won.'
+                : 'Who held this title at the end of the selected week, and how long they had held it by then. Pick another week above to see who held it then.';
+            const labelHtml = text => `<div class="current-champion-label tt" data-tt="${labelTip}">${text}</div>`;
             if (holder.vacant) {
-                main = `<div class="current-champion-main"><div><div class="current-champion-label">${labelBase}</div><div class="current-champion-name">Vacant</div>${holder.start ? `<div class="current-champion-since">Since ${fmtLong(holder.start)}</div>` : ''}</div></div>`;
+                main = `<div class="current-champion-main"><div>${labelHtml(labelBase)}<div class="current-champion-name">Vacant</div>${holder.start ? `<div class="current-champion-since">Since ${fmtLong(holder.start)}</div>` : ''}</div></div>`;
             } else {
                 const photos = champPhotosHtml(holder.champion, holder.slug, isTeam, holder.members);
                 const nameHtml = holder.slug
@@ -2716,7 +2798,7 @@
                     <div class="current-champion-main">
                         <div class="current-champion-photos${photos.members.length >= 2 ? ' team' : ''}">${photos.html}</div>
                         <div>
-                            <div class="current-champion-label">${label}</div>
+                            ${labelHtml(label)}
                             ${nameHtml}
                             ${photos.members.length >= 2 ? `<div class="current-champion-members">${photos.members.join(' & ')}</div>` : ''}
                             ${holder.start ? `<div class="current-champion-since">Since ${fmtLong(holder.start)} · <span class="current-champion-days">${daysText}</span></div>` : ''}
@@ -2733,7 +2815,7 @@
             }
             const prevHtml = previous.length ? `
                 <div class="previous-champions">
-                    <div class="current-champion-label">Previous Champions</div>
+                    <div class="current-champion-label tt" data-tt="The three champions before them, with the dates and length of each reign. Vacancies are skipped. Click a name to see that wrestler's stats.">Previous Champions</div>
                     ${previous.map(r => {
                         const photos = champPhotosHtml(r.champion, r.slug, isTeam, r.members);
                         const name = r.slug ? `<a href="wrestler-stats.html?wrestler=${r.slug}">${r.champion}</a>` : r.champion;
@@ -3220,7 +3302,7 @@
                         <thead>
                             <tr>
                                 <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th class="sortable tt" data-tt="Click any row to expand and see detailed statistics. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th class="sortable tt" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
                                 <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
@@ -3247,9 +3329,9 @@
                 const titleIcon = getTitleIcon(champ.title, champ.displayRank, championships.length);
 
                 html += `
-                    <tr onclick="toggleDetails(${index})" style="cursor: pointer;">
+                    <tr id="champ-row-${index}" class="${expandedRows.has(index) ? 'row-open' : ''}" onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.displayRank}</td>
-                        <td class="title-cell">${titleIcon}${champ.title}</td>
+                        <td class="title-cell">${titleIcon}${champ.title}<span class="row-chevron" aria-hidden="true">▼</span></td>
                         <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                         ${viewMode === 'reign' ? `
@@ -3269,6 +3351,7 @@
                     <tr class="details-row ${isExpanded ? 'expanded' : ''}" id="details-${index}">
                         <td colspan="9">
                             <div class="details-content">
+                                ${detailsCloseTop(index)}
                                 ${buildCurrentChampionBlock(champ.title)}
                                 <!-- Mobile-only stats table -->
                                 <div class="mobile-stats-table-wrapper">
@@ -3365,6 +3448,7 @@
                                     </div>
                                     ${renderCompetitorsSection(champ.title)}
                                 </div>
+                                ${detailsCloseBar(index)}
                             </div>
                         </td>
                     </tr>
@@ -3377,7 +3461,7 @@
             if (droppedOutTitles.length > 0) {
                 html += `
                     <div class="dropped-out-section">
-                        <button class="dropped-out-toggle tt" data-tt="Titles that were ranked last week but have no matches this week. Click to expand, then click any title for detailed stats. On mobile, scroll right to see all stats." onclick="toggleDroppedOut(event)">
+                        <button class="dropped-out-toggle tt" data-tt="Titles that were ranked last week but have no matches this week. Click to expand, then click any title for detailed stats. Click the title again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="toggleDroppedOut(event)">
                             ▼ Dropped Out This Week (${droppedOutTitles.length})
                         </button>
                         <div id="droppedOutList" class="dropped-out-list">
@@ -3393,6 +3477,7 @@
                                             <span class="dropped-info">Was #${title.rank} • ${formatRating(title.rating)}</span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
+                                            ${detailsCloseTop(dropIndex)}
                                             <div class="details-grid">
                                                 <div class="details-section">
                                                     <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
@@ -3448,6 +3533,7 @@
                                                 </div>
                                                 ${renderCompetitorsSection(title.title)}
                                             </div>
+                                            ${detailsCloseBar(dropIndex)}
                                         </div>
                                     </div>
                                 `;
@@ -3464,7 +3550,7 @@
             if (inactiveTitles.length > 0) {
                 html += `
                     <div class="inactive-titles-section">
-                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data. Click to expand, then click any title for detailed stats. On mobile, scroll right to see all stats." onclick="toggleInactiveTitles(event)">
+                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data. Click to expand, then click any title for detailed stats. Click the title again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="toggleInactiveTitles(event)">
                             ▼ Inactive Titles (${inactiveTitles.length})
                         </button>
                         <div id="inactiveTitlesList" class="inactive-titles-list">
@@ -3480,6 +3566,7 @@
                                             <span class="inactive-info"></span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
+                                            ${detailsCloseTop(inactiveIndex)}
                                             <div class="details-grid">
                                                 <div class="details-section">
                                                     <h4>ℹ️ Status</h4>
@@ -3502,6 +3589,7 @@
                                                 </div>
                                                 ${renderCompetitorsSection(title.title)}
                                             </div>
+                                            ${detailsCloseBar(inactiveIndex)}
                                         </div>
                                     </div>
                                 `;
@@ -3527,6 +3615,30 @@
             `;
 
             document.getElementById('content').innerHTML = html;
+        }
+
+        const CLOSE_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"></polyline></svg>';
+
+        function detailsCloseTop(index) {
+            return `<div class="details-close-top-wrap"><button type="button" class="details-close-top" aria-label="Close" title="Close" onclick="closeDetails(${index}, event)">${CLOSE_CHEVRON}</button></div>`;
+        }
+
+        function detailsCloseBar(index) {
+            return `<div class="details-close-bar"><button type="button" class="details-close-bottom" onclick="closeDetails(${index}, event)">${CLOSE_CHEVRON}Close</button></div>`;
+        }
+
+        // Close an open title and, if its row has scrolled off the top, bring it back into view
+        function closeDetails(index, event) {
+            if (event) event.stopPropagation();
+            const detailsEl = document.getElementById(`details-${index}`);
+            const isMain = index < (championshipData.championships || []).length;
+            if (expandedRows.has(index) || (detailsEl && detailsEl.classList.contains('expanded'))) toggleDetails(index);
+            const rowEl = isMain ? document.getElementById(`champ-row-${index}`)
+                                 : (detailsEl && detailsEl.previousElementSibling);
+            if (rowEl) {
+                const top = rowEl.getBoundingClientRect().top;
+                if (top < 0 || top > window.innerHeight) rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function toggleDetails(index) {
