@@ -243,6 +243,123 @@
             white-space: nowrap;
         }
 
+        /* Champion card for the 17 Oct 2026 update — same styles as championships.html */
+        .ch-preview { max-width: 420px; margin: 4px auto 14px; line-height: normal; }
+        .ch-preview .current-champion { margin-bottom: 0; }
+        .current-champion {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            border-radius: 10px;
+        }
+        .current-champion-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .previous-champions {
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .previous-champion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .previous-champion-photos {
+            display: flex;
+            flex-shrink: 0;
+            min-width: 34px;
+        }
+        .previous-champion-photos img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid rgba(255, 215, 0, 0.7);
+            background: #2d2d2d;
+            display: block;
+        }
+        .previous-champion-photos.team a:not(:first-child) img,
+        .previous-champion-photos.team img:not(:first-child) {
+            margin-left: -10px;
+        }
+        .previous-champion-name {
+            font-weight: 700;
+            color: #e0e0e0;
+        }
+        .previous-champion-name a {
+            color: #e0e0e0;
+            text-decoration: none;
+        }
+        .previous-champion-name a:hover {
+            color: #ffd700;
+            text-decoration: underline;
+        }
+        .previous-champion-dates {
+            color: #b8b8b8;
+            font-size: 0.82em;
+        }
+        .current-champion-photos {
+            display: flex;
+            flex-shrink: 0;
+        }
+        .current-champion-photos img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd700;
+            background: #2d2d2d;
+            display: block;
+        }
+        .current-champion-photos.team img {
+            width: 48px;
+            height: 48px;
+        }
+        .current-champion-photos.team a:not(:first-child) img {
+            margin-left: -12px;
+        }
+        .current-champion-label {
+            color: #a8a394;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .current-champion-name {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.15em;
+            text-decoration: none;
+        }
+        .current-champion-days {
+            color: #ffd700;
+            font-weight: 700;
+        }
+        .current-champion-members,
+        .current-champion-since {
+            color: #b8b8b8;
+            font-size: 0.82em;
+        }
+        @media (max-width: 768px) {
+            .current-champion {
+                padding: 10px 12px;
+                gap: 10px;
+                white-space: normal;
+            }
+            .current-champion-photos img { width: 46px; height: 46px; }
+            .current-champion-photos.team img { width: 38px; height: 38px; }
+            .current-champion-name { font-size: 1em; }
+        }
+
         .update-body p { margin-bottom: 10px; }
         .update-body p:last-child { margin-bottom: 0; }
 
@@ -330,6 +447,52 @@
     </header>
 
     <div class="updates-list">
+
+        <!-- ── Oct 17, 2026 — Championships follow the week selector ── -->
+        <div class="update-card">
+            <div class="update-header">
+                <span class="update-date">17 Oct 2026</span>
+                <span class="update-tag tag-feature">FEATURE</span>
+                <span class="update-title">🏆 Championships: Champions &amp; Any-Week History</span>
+            </div>
+            <div class="update-body">
+                <div class="ch-preview" aria-hidden="true">
+                    <div class="current-champion">
+                        <div class="current-champion-main">
+                            <div class="current-champion-photos"><img src="images/wrestlers/will-ospreay.jpg" alt="" onerror="this.style.visibility='hidden'"></div>
+                            <div>
+                                <div class="current-champion-label">Champion · Sep '26 Week 3</div>
+                                <span class="current-champion-name">Will Ospreay</span>
+                                <div class="current-champion-since">Since 30 August 2026 · <span class="current-champion-days">23 days</span></div>
+                            </div>
+                        </div>
+                        <div class="previous-champions">
+                            <div class="current-champion-label">Previous Champions</div>
+                        <div class="previous-champion">
+                            <div class="previous-champion-photos"><img src="images/wrestlers/kenny-omega.jpg" alt="" onerror="this.style.visibility='hidden'"></div>
+                            <div><div class="previous-champion-name">Kenny Omega</div><div class="previous-champion-dates">8 Jul 2026 – 30 Aug 2026 · 53 days</div></div>
+                        </div>
+                        <div class="previous-champion">
+                            <div class="previous-champion-photos"><img src="images/wrestlers/mjf.jpg" alt="" onerror="this.style.visibility='hidden'"></div>
+                            <div><div class="previous-champion-name">MJF</div><div class="previous-champion-dates">24 May 2026 – 8 Jul 2026 · 45 days</div></div>
+                        </div>
+                        <div class="previous-champion">
+                            <div class="previous-champion-photos"><img src="images/wrestlers/darby-allin.jpg" alt="" onerror="this.style.visibility='hidden'"></div>
+                            <div><div class="previous-champion-name">Darby Allin</div><div class="previous-champion-dates">15 Apr 2026 – 24 May 2026 · 39 days</div></div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <p>Open any title on the <a href="championships.html">Championships page</a> to see the champion, with their photo and days held, plus the three champions before them.</p>
+                <p>The whole page now follows the week selector. Pick any week since August 2019 and the ratings, champions, inactive titles and competitors all show that week as it was.</p>
+                <ul>
+                    <li>Same compact selector as the home page, plus <strong>↺ Back to current week</strong></li>
+                    <li>An open title stays open as you change weeks; ▲ or Close collapses it</li>
+                    <li>The week stays in the page address, so you can refresh or share it</li>
+                </ul>
+                <a href="championships.html" class="update-link-btn">🏆 View Championships →</a>
+            </div>
+        </div>
 
         <!-- ── Oct 14, 2026 — Neater week selector & home page tidy-up ── -->
         <div class="update-card">
