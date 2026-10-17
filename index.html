@@ -1649,6 +1649,10 @@
         }
 
         /* ===== WEEKLY ANALYSIS ===== */
+        .otd-placeholder { min-height: 108px; }
+        @media (min-width: 700px) { .otd-placeholder { min-height: 124px; } }
+        .analysis-banner { min-height: 61px; }
+
         .analysis-banner {
             background: rgba(255, 215, 0, 0.07);
             border: 1px solid rgba(255, 215, 0, 0.35);
@@ -2282,10 +2286,10 @@
         </header>
         <main>
 
-        <div class="otd-teaser" id="teaserCard" style="display:none;"></div>
+        <div class="otd-teaser otd-placeholder" id="teaserCard"></div>
 
         <!-- Weekly Analysis Banner -->
-        <div id="analysisBanner" class="analysis-banner" style="display:none;">
+        <div id="analysisBanner" class="analysis-banner">
             <div class="analysis-header tt tt-below" role="button" tabindex="0" aria-expanded="false" onclick="toggleAnalysis()" data-tt="A weekly breakdown of the biggest rating movers and match talking points.">
                 <span>
                     <span class="analysis-title">📝 This Week's Analysis</span>
@@ -3647,6 +3651,7 @@
                 otdData = await response.json();
             } catch (error) {
                 console.warn('\u26a0\ufe0f No On This Day data for', mmdd);
+                container.style.display = 'none';
                 return;
             }
 
@@ -3654,7 +3659,7 @@
 
             const fullDateSeed = `${today.getFullYear()}-${mmdd}`;
             const picked = pickOnThisDayContent(otdData, fullDateSeed, mmdd, today.getFullYear(), picksData);
-            if (!picked || !picked.details) return;
+            if (!picked || !picked.details) { container.style.display = 'none'; return; }
 
             const details = picked.details;
             const badges = buildShowBadgesFromDetails(details);
@@ -3695,6 +3700,7 @@
                 container.classList.add('minimised');
                 updateTeaserButtons(container);
             }
+            container.classList.remove('otd-placeholder');
             container.style.display = 'block';
         }
 
