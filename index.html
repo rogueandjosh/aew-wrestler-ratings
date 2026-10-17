@@ -2269,7 +2269,7 @@
 
         <!-- Weekly Analysis Banner -->
         <div id="analysisBanner" class="analysis-banner" style="display:none;">
-            <div class="analysis-header tt tt-below" onclick="toggleAnalysis()" data-tt="A weekly breakdown of the biggest rating movers and match talking points.">
+            <div class="analysis-header tt tt-below" role="button" tabindex="0" aria-expanded="false" onclick="toggleAnalysis()" data-tt="A weekly breakdown of the biggest rating movers and match talking points.">
                 <span>
                     <span class="analysis-title">📝 This Week's Analysis</span>
                     <span class="analysis-week" id="analysisWeekLabel"></span>
@@ -7424,6 +7424,7 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                 if (restoreOpen) {
                     body.classList.add('open');
                     chevron.classList.add('open');
+                    header.setAttribute('aria-expanded', 'true');
                 }
             })
             .catch(() => { banner.style.display = 'none'; });
@@ -7473,7 +7474,8 @@ function toggleAnalysis() {
     const body = document.getElementById('analysisBody');
     const chevron = document.getElementById('analysisChevron');
     const isOpen = body.classList.toggle('open');
-    chevron.classList.toggle('open', isOpen);
+        chevron.classList.toggle('open', isOpen);
+    document.querySelector('.analysis-header').setAttribute('aria-expanded', isOpen);
 }
 
 async function buildNameToSlug(divisionFilter = null) {
@@ -7634,5 +7636,17 @@ document.addEventListener('click', function(e) {
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
+
+    <script>
+// Let Enter/Space activate clickable non-buttons (role="button" or data-key-click)
+document.addEventListener('keydown', function (e) {
+    const el = e.target.closest('[role="button"], [data-key-click]');
+    if (!el || el.tagName === 'BUTTON' || e.target !== el) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        el.click();
+    }
+});
+</script>
 </body>
 </html>
