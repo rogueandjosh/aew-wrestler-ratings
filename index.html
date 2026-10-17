@@ -2317,7 +2317,7 @@
 
         <!-- Weekly Comments Section -->
 <section id="weekly-comments" hidden style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
-    <h3 style="color: #ffd700; font-size: 1.3em; margin-bottom: 6px;">💬 Comments & Questions</h3>
+    <h3 id="comments-heading" style="color: #ffd700; font-size: 1.3em; margin-bottom: 6px;">💬 Comments & Questions</h3>
     <p style="color: #b8b8b8; font-size: 0.9em; margin-bottom: 20px;">Thoughts on this week's rankings? Drop a comment below. Post as a guest with just a name, or sign up for a free account.</p>
     <div id="waline"></div>
 </section>
@@ -2365,6 +2365,15 @@
             placeholder: 'Share your thoughts on the rankings...'
         }
     };
+
+        // Label Waline's comment box with the visible heading (it redraws, so keep watching)
+    const walineEl = document.getElementById('waline');
+    new MutationObserver(() => {
+        const box = walineEl.querySelector('textarea');
+        if (box && !box.hasAttribute('aria-labelledby')) {
+            box.setAttribute('aria-labelledby', 'comments-heading');
+        }
+    }).observe(walineEl, { childList: true, subtree: true });
 
     let walineInstance = null;
     let activeCommentsPath = null;
