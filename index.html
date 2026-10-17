@@ -2129,6 +2129,11 @@
             outline: 2px solid #ffd700 !important;
             outline-offset: 2px !important;
         }
+                .sr-only {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+        }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 </head>
@@ -5053,9 +5058,10 @@ let visibleColumns = {
                checked
                aria-labelledby="show-dropped-label-${division}"
                onchange="applyFilters('${division}', true)">
-        <span class="toggle-slider"></span>
+                <span class="toggle-slider"></span>
+        <span class="sr-only">Show Dropped Out Wrestlers</span>
     </label>
-    <label class="filter-label" id="show-dropped-label-${division}" for="show-dropped-${division}">Show Dropped Out Wrestlers</label>
+    <label class="filter-label" id="show-dropped-label-${division}" ...
 </div>
 
                 <div class="stats-summary" id="stats-${division}">
