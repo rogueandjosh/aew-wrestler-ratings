@@ -826,8 +826,13 @@
             background-color: #ffd700;
         }
 
-        input:checked + .toggle-slider:before {
+                input:checked + .toggle-slider:before {
             transform: translateX(26px);
+        }
+
+        .toggle-switch input:focus-visible + .toggle-slider {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
         }
 
         .filter-label {
