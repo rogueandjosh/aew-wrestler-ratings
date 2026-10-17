@@ -119,6 +119,25 @@
             font-weight: 700;
         }
 
+        .back-to-current {
+            display: none;
+            margin: 8px auto 0;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: #ffd700;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.85em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .back-to-current.visible { display: inline-block; }
+        @media (hover: hover) {
+            .back-to-current:hover { background: rgba(255, 215, 0, 0.22); border-color: #ffd700; }
+        }
+
         .expand-toggle {
             background: none;
             border: none;
@@ -2197,8 +2216,9 @@
             <p class="last-updated" id="lastUpdated"></p>
 
             <h2 id="currentHeading" class="current-heading">Loading...</h2>
+            <button id="backToCurrentBtn" type="button" class="back-to-current tt" data-tt="You're looking at a past week. Click to go back to the latest week." onclick="resetToCurrent()">↺ Back to current week</button>
 
-            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from June 2019 to the current one. Select a year/month/week, search for a specific show, or pick one at random! All the ratings shown will update to this week." onclick="toggleWeekSelector()">
+            <button id="expandWeekBtn" class="expand-toggle tt" data-tt="Here you can select any week from August 2019 to the current one. Select a year/month/week, search for a specific show, or pick one at random! Everything on the page updates to that week: ratings, champions, inactive titles and competitors. The week stays in the page address, so refreshing, going back or sharing the link keeps it." onclick="toggleWeekSelector()">
                 ▼ Change Week / Browse Archive
             </button>
 
@@ -2270,6 +2290,8 @@
         let showIndex = [];
         let competitorData = null;
         let currentWeekValue = 'current';
+        let championshipTimeline = null;   // championship-timeline.json (built from the archive by a GitHub Action)
+        let championshipMatches = null;    // championship-matches.json (exported by Apps Script) — optional
         let expandedRows = new Set();
         let tooltipsEnabled = true;
         let isNavigating = false;
@@ -2844,8 +2866,13 @@
                 await Promise.all([loadArchiveIndex(), loadCurrentChampions()]);
                 await loadCompetitorData();
                 await checkIfCurrentMatchesMostRecent();
-                await loadChampionshipData('current');
+                await loadWeekSummaries();
+                await loadChampionshipData(weekValueFromHash());
                 setupTooltips();
+                window.addEventListener('hashchange', () => {
+                    const value = weekValueFromHash();
+                    if (value !== currentWeekValue) loadChampionshipData(value);
+                });
                 // Fetch lastUpdated date from current-rankings.json — same
                 // source as all other pages so the date stays consistent.
                 // Runs after main data loads so it doesn't block rendering.
@@ -2886,9 +2913,66 @@
             }
         }
 
+        // Competitors for a title as of the selected week. The current week uses the
+        // all-time file; a past week is counted from championship-matches.json when
+        // it's there ({ weeks, titles, matches: [[week, title, rating, "A;B"], …] }).
+        // Without that file a past week falls back to the all-time list.
+        let weekCompetitorCache = { week: null, titles: null };
+
+        function competitorsAreForWeek() {
+            return currentWeekValue !== 'current' && summaryWeekIndex(championshipMatches && championshipMatches.weeks) >= 0;
+        }
+
         function getCompetitorsForTitle(titleName) {
+            if (competitorsAreForWeek()) {
+                const w = summaryWeekIndex(championshipMatches.weeks);
+                if (weekCompetitorCache.week !== w) weekCompetitorCache = { week: w, titles: buildCompetitorsUpTo(w) };
+                return weekCompetitorCache.titles[titleName] || null;
+            }
             if (!competitorData || !competitorData.titles) return null;
             return competitorData.titles.find(t => t.title === titleName);
+        }
+
+        function buildCompetitorsUpTo(w) {
+            const m = championshipMatches;
+            const yearOf = i => {
+                const key = m.weeks[i] || '';
+                return key.slice(0, 4);
+            };
+            const byTitle = {};
+            (m.matches || []).forEach(([week, titleIdx, rating, names]) => {
+                if (week > w) return;
+                const title = m.titles[titleIdx];
+                const t = byTitle[title] || (byTitle[title] = { title, totalMatches: 0, people: {} });
+                t.totalMatches++;
+                String(names || '').split(';').map(n => n.trim()).filter(Boolean).forEach(n => {
+                    const p = t.people[n] || (t.people[n] = { name: n, matches: 0, rated: 0, sum: 0, high: null, low: null, years: new Set() });
+                    p.matches++;
+                    p.years.add(yearOf(week));
+                    if (typeof rating === 'number') {
+                        p.rated++;
+                        p.sum += rating;
+                        p.high = p.high === null ? rating : Math.max(p.high, rating);
+                        p.low = p.low === null ? rating : Math.min(p.low, rating);
+                    }
+                });
+            });
+            const out = {};
+            Object.values(byTitle).forEach(t => {
+                out[t.title] = {
+                    title: t.title,
+                    totalMatches: t.totalMatches,
+                    competitors: Object.values(t.people).map(p => ({
+                        name: p.name,
+                        matches: p.matches,
+                        avg: p.rated ? Math.round((p.sum / p.rated) * 100) / 100 : null,
+                        high: p.high,
+                        low: p.low,
+                        years: [...p.years].sort()
+                    }))
+                };
+            });
+            return out;
         }
 
         function sortCompetitors(competitors, titleName) {
@@ -2959,7 +3043,11 @@
             
             return `
                 <div class="details-section competitors-section">
-                    <h4 class="tt" data-tt="All-time competitors for this championship. These stats cover the full history of the title, not just the selected week. Click column headers to sort.">👤 Competitors (All-Time)</h4>
+                    ${competitorsAreForWeek()
+                        ? `<h4 class="tt" data-tt="Everyone who had competed for this championship up to the end of ${championshipData.currentWeek || 'the selected week'}. Click column headers to sort.">👤 Competitors (to ${championshipData.currentWeek || 'this week'})</h4>`
+                        : currentWeekValue !== 'current'
+                            ? `<h4 class="tt" data-tt="Everyone who has competed for this championship, up to today rather than just up to the selected week. Click column headers to sort.">👤 Competitors (All-Time, to today)</h4>`
+                            : `<h4 class="tt" data-tt="Everyone who has competed for this championship across its full history. Click column headers to sort.">👤 Competitors (All-Time)</h4>`}
                     <div class="competitors-scroll">
                         <table class="competitors-table">
                             <thead>
@@ -2975,8 +3063,8 @@
                                     <tr>
                                         <td><a href="wrestler-stats.html?wrestler=${createSlug(c.name)}" class="competitor-link">${c.name}</a></td>
                                         <td>${c.matches}</td>
-                                        <td>${c.avg.toFixed(2)}</td>
-                                        <td>${c.high.toFixed(2)}</td>
+                                        <td>${c.avg != null ? c.avg.toFixed(2) : '—'}</td>
+                                        <td>${c.high != null ? c.high.toFixed(2) : '—'}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -3136,6 +3224,8 @@
 
                 championshipData = await response.json();
                 currentWeekValue = weekValue;
+                syncSelectorsTo(weekValue);
+                setWeekHash(weekValue);
 
                 renderChampionships();
                 updateHeader();
@@ -3149,6 +3239,123 @@
         function updateHeader() {
             const heading = document.getElementById('currentHeading');
             heading.textContent = championshipData.currentWeek || 'Current Week';
+            const back = document.getElementById('backToCurrentBtn');
+            if (back) back.classList.toggle('visible', currentWeekValue !== 'current');
+        }
+
+        // ===== Week in the page address =====
+        // championships.html#week=2021-06-week1 opens that week, so refresh, Back and
+        // shared links keep it. The home page links here the same way (its week keys
+        // match: 2019-08-week1 → the Aug '19 file, June/July '19 → the first week).
+        function weekKeyFromValue(value) {
+            if (!value || value === 'current') return 'current';
+            return value.replace('championship-archive/', '').replace(/^championship-/, '').replace(/\.json$/, '');
+        }
+
+        function weekValueFromKey(key) {
+            if (!key || key === 'current' || !archiveIndex || !archiveIndex.weeks || !archiveIndex.weeks.length) return 'current';
+            const weeks = archiveIndex.weeks;
+            const byFile = k => weeks.find(w => w.file === `championship-${k}.json`);
+            let week = byFile(key) || byFile(key.replace(/-week1$/, ''));
+            if (!week && /^\d{4}-\d{2}/.test(key)) {
+                // Before the first championship week (June/July 2019) → the first week
+                const oldest = weeks[weeks.length - 1];
+                if (key.slice(0, 7) < weekKeyFromValue(oldest.file).slice(0, 7)) week = oldest;
+            }
+            if (!week) return 'current';
+            // The newest archive week is the same as "current" when it's hidden from the list
+            if (skipFirstArchiveWeek && week === weeks[0]) return 'current';
+            return `championship-archive/${week.file}`;
+        }
+
+        function weekValueFromHash() {
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            return weekValueFromKey(params.get('week'));
+        }
+
+        function setWeekHash(value) {
+            const key = weekKeyFromValue(value);
+            const url = key === 'current'
+                ? `${location.pathname}${location.search}`
+                : `${location.pathname}${location.search}#week=${key}`;
+            try { history.replaceState(null, '', url); } catch (e) {}
+        }
+
+        // Point Year / Month / Week at the loaded week (when it came from the address)
+        function syncSelectorsTo(value) {
+            const weekSelect = document.getElementById('weekSelect');
+            if (!weekSelect || weekSelect.value === value) return;
+            if (value === 'current') {
+                document.getElementById('yearFilter').value = '';
+                document.getElementById('monthFilter').value = '';
+                const was = isNavigating;
+                isNavigating = true;
+                filterWeeks();
+                isNavigating = was;
+                weekSelect.value = 'current';
+                updateNavigationButtons();
+                relabelWeekSelectors();
+                return;
+            }
+            const file = value.replace('championship-archive/', '');
+            const week = archiveIndex && archiveIndex.weeks ? archiveIndex.weeks.find(w => w.file === file) : null;
+            if (week) selectArchiveWeek(week);
+        }
+
+        // ===== Week summaries =====
+        // championship-timeline.json: each title's stats at the end of every spell in the
+        // rankings (built from the archive by a GitHub Action), so Inactive Titles can be
+        // worked out for any week.
+        // championship-matches.json (optional, from Apps Script): every title match, so
+        // Competitors can be counted up to any week. Without it, past weeks show all-time.
+        async function loadWeekSummaries() {
+            const get = file => fetch(file).then(r => (r.ok ? r.json() : null)).catch(() => null);
+            [championshipTimeline, championshipMatches] = await Promise.all([
+                get('championship-timeline.json'),
+                get('championship-matches.json')
+            ]);
+        }
+
+        // Position of the selected week in a summary file's week list (oldest = 0).
+        // "current" is the newest archive week, or after all of them if it isn't archived yet.
+        function summaryWeekIndex(summaryWeeks) {
+            if (!summaryWeeks || !summaryWeeks.length) return -1;
+            let key = weekKeyFromValue(currentWeekValue);
+            if (key === 'current') {
+                if (!(skipFirstArchiveWeek && archiveIndex && archiveIndex.weeks && archiveIndex.weeks.length)) return summaryWeeks.length;
+                key = weekKeyFromValue(archiveIndex.weeks[0].file);
+            }
+            const i = summaryWeeks.indexOf(key);
+            return i >= 0 ? i : (currentWeekValue === 'current' ? summaryWeeks.length : -1);
+        }
+
+        // Titles ranked at some point before the selected week but not in it (and not in
+        // the week before — those are under Dropped Out), with stats from their last ranked week
+        function inactiveTitlesFromTimeline(activeNames, droppedNames) {
+            const t = championshipTimeline;
+            const w = summaryWeekIndex(t && t.weeks);
+            if (!t || !t.titles || w < 0) return null;
+            const f = (t.fields || []).reduce((m, k, i) => (m[k] = i, m), {});
+            const list = [];
+            Object.entries(t.titles).forEach(([title, spells]) => {
+                if (activeNames.has(title) || droppedNames.has(title)) return;
+                let last = null;
+                for (const e of spells) { if (e[f.week] < w) last = e; else break; }
+                if (!last) return; // not ranked yet by this week
+                list.push({
+                    title,
+                    isInactive: true,
+                    lastWeekIdx: last[f.week],
+                    lastWeekLabel: (t.labels && t.labels[last[f.week]]) || null,
+                    rating: last[f.rating],
+                    allTimePeak: last[f.allTimePeak],
+                    allTimeHighest: last[f.allTimeHighest],
+                    allTimeLowest: last[f.allTimeLowest],
+                    totalMatches: last[f.totalMatches]
+                });
+            });
+            // Most recently ranked first
+            return list.sort((a, b) => b.lastWeekIdx - a.lastWeekIdx || a.title.localeCompare(b.title));
         }
 
         async function renderChampionships() {
@@ -3262,6 +3469,16 @@
                 console.log('⚠️ No archive index or empty weeks array');
             }
 
+            // Inactive titles for the selected week: from the timeline when it's there
+            // (exact for any week); otherwise the all-time list. Titles under Dropped Out
+            // aren't listed twice.
+            const droppedNames = new Set(droppedOutTitles.map(t => t.title));
+            const timelineInactive = inactiveTitlesFromTimeline(new Set(championships.map(c => c.title)), droppedNames);
+            inactiveTitles = timelineInactive || inactiveTitles.filter(t => !droppedNames.has(t.title));
+
+            const pastWeek = currentWeekValue !== 'current';
+            const weekLabel = (championshipData && championshipData.currentWeek) || 'this week';
+
             // Sort championships (active only in table)
             // First, sort by boosted rating to get correct ranking order
             const rankedChampionships = [...championships].sort((a, b) => {
@@ -3295,9 +3512,9 @@
                 <div class="table-container">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                         <div class="view-toggle-container">
-                            <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="Shows statistics for the most recent championship reign only.">Current Reign</span>
+                            <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="${pastWeek ? `Shows statistics for the reign that was running in ${weekLabel}.` : 'Shows statistics for the most recent championship reign only.'}">${pastWeek ? 'Reign' : 'Current Reign'}</span>
                             <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" role="switch" tabindex="0" aria-checked="${viewMode === 'alltime'}" aria-label="Show all-time statistics" data-key-click onclick="toggleViewMode()"></div>
-                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
+                            <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="${pastWeek ? `Shows each championship's statistics from its first match up to ${weekLabel}.` : 'Shows all-time historical statistics for each championship.'}">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" class="tt" data-tt="Show or hide additional columns: Floor, Best Match, and Worst Match." onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-family: 'Overlock', 'Arial', sans-serif;">
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
@@ -3306,12 +3523,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th tabindex="0" data-key-click class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th tabindex="0" data-key-click class="sortable" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
-                                <th tabindex="0" data-key-click class="sortable" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
-                                <th tabindex="0" data-key-click class="sortable" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" style="text-align: center;" data-tt="${pastWeek ? `Ranking position in ${weekLabel}, based on championship rating.` : 'Current ranking position based on championship rating.'}" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" data-tt="${pastWeek ? `This championship's rating in ${weekLabel}.` : 'This is the current rating of this championship.'}" onclick="sortBy('rating', event)">${pastWeek ? 'Rating' : 'Current'} ${getSortArrow('rating')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
-                                <th tabindex="0" data-key-click class="sortable" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
@@ -3364,7 +3581,7 @@
                                         <thead>
                                             <tr>
                                                 <th>📊 STATS</th>
-                                                <th>Current Reign</th>
+                                                <th>${pastWeek ? 'Reign' : 'Current Reign'}</th>
                                                 <th>All-Time</th>
                                             </tr>
                                         </thead>
@@ -3444,7 +3661,7 @@
                                             <span class="detail-value">${champ.totalMatches || '—'}</span>
                                         </div>
                                         <div class="detail-item">
-                                            <span class="detail-label">Current Streak</span>
+                                            <span class="detail-label">${pastWeek ? 'Streak' : 'Current Streak'}</span>
                                             <span class="detail-value">${champ.streak} ${champ.streak === 1 ? 'match' : 'matches'}</span>
                                         </div>
                                         <div class="belt-display tt" data-tt="Visual representation of this championship belt.">
@@ -3555,7 +3772,7 @@
             if (inactiveTitles.length > 0) {
                 html += `
                     <div class="inactive-titles-section">
-                        <button class="inactive-titles-toggle tt" data-tt="Championships that are not currently being tracked but have historical match data. Click to expand, then click any title for detailed stats. Click the title again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="toggleInactiveTitles(event)">
+                        <button class="inactive-titles-toggle tt" data-tt="${pastWeek ? `Championships that had been ranked before ${weekLabel} but weren't ranked that week.` : 'Championships that have been ranked before but aren\'t ranked this week.'} Each shows its stats from the last week it was ranked. Click to expand, then click any title for detailed stats. Click the title again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="toggleInactiveTitles(event)">
                             ▼ Inactive Titles (${inactiveTitles.length})
                         </button>
                         <div id="inactiveTitlesList" class="inactive-titles-list">
@@ -3568,15 +3785,24 @@
                                     <div class="inactive-item-wrapper">
                                         <div class="inactive-item clickable" role="button" tabindex="0" onclick="toggleDetails(${inactiveIndex})">
                                             <span class="inactive-title-name">${titleIcon}${title.title}</span>
-                                            <span class="inactive-info"></span>
+                                            <span class="inactive-info">${title.lastWeekLabel ? `Last ranked ${title.lastWeekLabel}${title.rating ? ` • ${formatRating(applyBoost(title.rating, title.title))}` : ''}` : ''}</span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
                                             ${detailsCloseTop(inactiveIndex)}
                                             <div class="details-grid">
                                                 <div class="details-section">
                                                     <h4>ℹ️ Status</h4>
-                                                    <p style="color: #9ca3af; font-size: 0.85em;">This title is currently inactive.</p>
+                                                    <p style="color: #9ca3af; font-size: 0.85em;">${title.lastWeekLabel ? `Not ranked since ${title.lastWeekLabel}. Stats are from that week.` : 'This title is currently inactive.'}</p>
+                                                    ${title.rating ? `
                                                     <div class="detail-item" style="margin-top: 10px;">
+                                                        <span class="detail-label">Last Rating</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.rating, title.title))}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <span class="detail-label">All-Time Peak</span>
+                                                        <span class="detail-value">${formatRating(applyBoost(title.allTimePeak, title.title))}</span>
+                                                    </div>` : ''}
+                                                    <div class="detail-item"${title.rating ? '' : ' style="margin-top: 10px;"'}>
                                                         <span class="detail-label">Best Match Ever</span>
                                                         <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
                                                     </div>
