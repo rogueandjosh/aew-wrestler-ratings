@@ -21,8 +21,8 @@
     <script src="best-match-shared.js?v=2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         @font-face {
         font-family: 'Mokoto';
@@ -2153,7 +2153,7 @@
             clip: rect(0 0 0 0); white-space: nowrap; border: 0;
         }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" media="print" onload="this.media='all'" />
 </head>
 <body>
 <div id="ttBox"></div>
@@ -2458,6 +2458,7 @@
                     <video
                         controls
                         playsinline
+                        preload="none"
                         style="max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700;">
                         <source src="what-is-EWR.mp4" type="video/mp4">
                         Your browser doesn't support video playback.
