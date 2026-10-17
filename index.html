@@ -5418,7 +5418,7 @@ if (tableEl) {
             <thead>
                 <tr>
                     <th class="col-rank">Rank</th>
-                    <th class="col-photo"></th>
+                    <<th class="col-photo" aria-label="Photo"></th>
                     <th class="col-name">Name</th>
                     <th class="col-rating tt" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Rating</th>
                     <th class="col-change tt" data-tt="This is the ranking change from the previous week.">Change</th>
@@ -6054,7 +6054,7 @@ if (tableEl) {
                     <table>
                         <thead><tr>
                             <th class="col-rank">Rank</th>
-                            <th class="col-photo"></th>
+                            <th class="col-photo" aria-label="Photo"></th>
                             <th class="col-name">Name</th>
                             <th class="col-rating tt" data-tt="Current rating combined across selected divisions.">Rating</th>
                             <th class="matches-col col-matches tt" data-tt="Number of counting matches.">Matches</th>
@@ -6203,7 +6203,7 @@ if (tableEl) {
             // Build header row using same s-* classes as renderDynamicStatistics
             let headerHtml = '<tr>';
             if (visibleColumns.rank) headerHtml += '<th class="no-sort s-rank">#</th>';
-            headerHtml += '<th class="no-sort s-photo"></th>';
+            headerHtml += '<th class="no-sort s-photo" aria-label="Photo"></th>';
             headerHtml += '<th class="no-sort s-name">Name</th>';
             if (visibleColumns.current) headerHtml += '<th class="s-stat tt" data-tt="Current rating.">Current</th>';
             if (visibleColumns.peak) headerHtml += '<th class="s-stat s-hide-mobile tt" data-tt="Peak rating.">Peak</th>';
@@ -6361,7 +6361,7 @@ function renderStatistics(division) {
                 <thead>
                     <tr>
                         <th class="no-sort s-rank">#</th>
-                        <th class="no-sort s-photo"></th>
+                        <th class="no-sort s-photo" aria-label="Photo"></th>
                         <th tabindex="0" data-key-click class="sortable s-name" onclick="sortStatistics('name')">Name</th>
                         <th tabindex="0" data-key-click class="sortable tt s-stat" onclick="sortStatistics('current')" data-tt="This is the wrestler's current rating.">Current</th>
                         <th tabindex="0" data-key-click class="sortable tt s-stat s-hide-mobile" onclick="sortStatistics('peak')" data-tt="The highest rating the wrestler has achieved up to this week in the rankings.">Peak</th>
@@ -7334,7 +7334,7 @@ const displayName = getCanonicalNameAtWeek(canonicalName, selectedWeekLabel, nam
             <table class="stats-table">
                 <thead><tr>
                         ${visibleColumns.rank ? '<th class="no-sort s-rank">#</th>' : ''}
-                        <th class="no-sort s-photo"></th>
+                        <th class="no-sort s-photo" aria-label="Photo"></th>
                         <th class="sortable s-name" onclick="sortStatsData('name')">Name</th>
                         ${visibleColumns.current ? `<th class="sortable tt s-stat" onclick="sortStatsData('current')" data-tt="The current rating for this ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'}.">Current</th>` : ''}
                         ${visibleColumns.peak ? `<th class="sortable tt s-stat s-hide-mobile" onclick="sortStatsData('peak')" data-tt="The highest rating the ${['menstag','womenstag','trios'].includes(division) ? 'team' : 'wrestler'} has achieved up to this week in the rankings.">Peak</th>` : ''}
