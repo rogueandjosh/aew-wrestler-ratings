@@ -5365,7 +5365,7 @@ for (let i = 0; i < filteredData.length; i++) {
     let bestMatchAsterisk = '';
     const bestMatch = ratingsData?.bestMatchOfWeek;
     if (isCreditedForBestMatch(division, wrestler.name, bestMatch, teamMembersData, nameChanges)) {
-        bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
+        bestMatchAsterisk = `<span class="best-match-asterisk" role="button" tabindex="0" aria-label="Best Match of the Week details" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
     }
 
 rows.push(`
@@ -6025,7 +6025,7 @@ if (tableEl) {
                 let bestMatchAsterisk = '';
                 const bestMatch = ratingsData?.bestMatchOfWeek;
                 if (isCreditedForBestMatch(division, wrestler.name, bestMatch, teamMembersData, nameChanges)) {
-                    bestMatchAsterisk = `<span class="best-match-asterisk" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
+                    bestMatchAsterisk = `<span class="best-match-asterisk" role="button" tabindex="0" aria-label="Best Match of the Week details" onclick="showBestMatchPopup(event)" title="Best Match of the Week">*</span>`;
                 }
 
                 return `<tr class="${tagTriosClass}">
