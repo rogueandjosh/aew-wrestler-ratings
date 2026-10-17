@@ -2959,10 +2959,10 @@
                         <table class="competitors-table">
                             <thead>
                                 <tr>
-                                    <th class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'name', event)">Name ${getCompetitorSortArrow(titleName, 'name')}</th>
-                                    <th class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'matches', event)">M ${getCompetitorSortArrow(titleName, 'matches')}</th>
-                                    <th class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'avg', event)">Avg ${getCompetitorSortArrow(titleName, 'avg')}</th>
-                                    <th class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'high', event)">Best ${getCompetitorSortArrow(titleName, 'high')}</th>
+                                    <th tabindex="0" data-key-click class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'name', event)">Name ${getCompetitorSortArrow(titleName, 'name')}</th>
+                                    <th tabindex="0" data-key-click class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'matches', event)">M ${getCompetitorSortArrow(titleName, 'matches')}</th>
+                                    <th tabindex="0" data-key-click class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'avg', event)">Avg ${getCompetitorSortArrow(titleName, 'avg')}</th>
+                                    <th tabindex="0" data-key-click class="sortable" onclick="sortCompetitorColumn('${escapedTitle}', 'high', event)">Best ${getCompetitorSortArrow(titleName, 'high')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3291,7 +3291,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                         <div class="view-toggle-container">
                             <span class="view-toggle-label tt ${viewMode === 'reign' ? 'active' : ''}" data-tt="Shows statistics for the most recent championship reign only.">Current Reign</span>
-                            <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" onclick="toggleViewMode()"></div>
+                            <div class="view-toggle ${viewMode === 'alltime' ? 'alltime' : ''}" role="switch" tabindex="0" aria-checked="${viewMode === 'alltime'}" aria-label="Show all-time statistics" data-key-click onclick="toggleViewMode()"></div>
                             <span class="view-toggle-label tt ${viewMode === 'alltime' ? 'active' : ''}" data-tt="Shows all-time historical statistics for each championship.">All-Time</span>
                         </div>
                         <button id="toggleExtraCols" class="tt" data-tt="Show or hide additional columns: Floor, Best Match, and Worst Match." onclick="toggleExtraColumns()" style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; color: #ffd700; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-family: 'Overlock', 'Arial', sans-serif;">
@@ -3301,12 +3301,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th class="sortable tt" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
-                                <th class="sortable tt" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
-                                <th class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt" style="text-align: center;" data-tt="Current ranking position based on championship rating." onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
+                                <th tabindex="0" data-key-click class="sortable" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th tabindex="0" data-key-click class="sortable" data-tt="This is the current rating of this championship." onclick="sortBy('rating', event)">Current ${getSortArrow('rating')}</th>
+                                <th tabindex="0" data-key-click class="sortable" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
-                                <th class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
+                                <th tabindex="0" data-key-click class="sortable" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
                                 <th class="sortable tt extra-col" data-tt="The highest rated match from Cagematch.net during the most recent reign." onclick="sortBy('highestMatch', event)">Best Match ${getSortArrow('highestMatch')}</th>
                                 <th class="sortable tt extra-col" data-tt="The lowest rated match from Cagematch.net during the most recent reign." onclick="sortBy('lowestMatch', event)">Worst Match ${getSortArrow('lowestMatch')}</th>
@@ -3329,7 +3329,7 @@
                 const titleIcon = getTitleIcon(champ.title, champ.displayRank, championships.length);
 
                 html += `
-                    <tr id="champ-row-${index}" class="${expandedRows.has(index) ? 'row-open' : ''}" onclick="toggleDetails(${index})" style="cursor: pointer;">
+                    <tr id="champ-row-${index}" class="${expandedRows.has(index) ? 'row-open' : ''}" tabindex="0" data-key-click aria-expanded="${expandedRows.has(index)}" onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.displayRank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}<span class="row-chevron" aria-hidden="true">▼</span></td>
                         <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
@@ -3472,7 +3472,7 @@
                                 
                                 return `
                                     <div class="dropped-out-item-wrapper">
-                                        <div class="dropped-out-item clickable" onclick="toggleDetails(${dropIndex})">
+                                        <div class="dropped-out-item clickable" role="button" tabindex="0" onclick="toggleDetails(${dropIndex})">
                                             <span class="dropped-title">${titleIcon}${title.title}</span>
                                             <span class="dropped-info">Was #${title.rank} • ${formatRating(title.rating)}</span>
                                         </div>
@@ -3561,7 +3561,7 @@
                                 
                                 return `
                                     <div class="inactive-item-wrapper">
-                                        <div class="inactive-item clickable" onclick="toggleDetails(${inactiveIndex})">
+                                        <div class="inactive-item clickable" role="button" tabindex="0" onclick="toggleDetails(${inactiveIndex})">
                                             <span class="inactive-title-name">${titleIcon}${title.title}</span>
                                             <span class="inactive-info"></span>
                                         </div>
