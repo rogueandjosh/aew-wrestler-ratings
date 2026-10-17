@@ -5022,20 +5022,16 @@ let visibleColumns = {
                     </div>
                     <div class="filter-row">
                         <div class="toggle-container">
-                            <label class="toggle-switch">
-                                <input type="checkbox" 
-                                       id="show-dropped-${division}" 
-                                       checked
-                                       onchange="applyFilters('${division}', true)">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="filter-label">Show Dropped Out Wrestlers</span>
-                        </div>
-                        <div class="active-count" id="active-count-${division}">
-                            Showing ${data.length} of ${data.length} wrestlers
-                        </div>
-                    </div>
-                </div>
+    <label class="toggle-switch">
+        <input type="checkbox" 
+               id="show-dropped-${division}" 
+               checked
+               aria-labelledby="show-dropped-label-${division}"
+               onchange="applyFilters('${division}', true)">
+        <span class="toggle-slider"></span>
+    </label>
+    <label class="filter-label" id="show-dropped-label-${division}" for="show-dropped-${division}">Show Dropped Out Wrestlers</label>
+</div>
 
                 <div class="stats-summary" id="stats-${division}">
                 </div>
