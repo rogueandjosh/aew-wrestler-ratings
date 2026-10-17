@@ -2292,7 +2292,12 @@
         let currentWeekValue = 'current';
         let championshipTimeline = null;   // championship-timeline.json (built from the archive by a GitHub Action)
         let championshipMatches = null;    // championship-matches.json (exported by Apps Script) — optional
+        // Open drop-downs are remembered by title (e.g. "main|AEW World Heavyweight Title"),
+        // not by row number — so sorting or changing week keeps the same title open, and a
+        // title that isn't in the new week's list simply isn't open any more.
         let expandedRows = new Set();
+        let rowKeys = [];   // row number → "main|Title", "dropped|Title" or "inactive|Title" for the current render
+        function isRowOpen(i) { return expandedRows.has(rowKeys[i]); }
         let tooltipsEnabled = true;
         let isNavigating = false;
         let currentSort = { column: 'rank', direction: 'asc' };
@@ -3504,6 +3509,15 @@
             // Now apply user's sort preference
             const sortedChampionships = sortChampionships(rankedChampionships);
 
+            // Row numbers for this render (main table, then Dropped Out, then Inactive);
+            // forget open titles that aren't on the page any more
+            rowKeys = [
+                ...sortedChampionships.map(c => `main|${c.title}`),
+                ...droppedOutTitles.map(t => `dropped|${t.title}`),
+                ...inactiveTitles.map(t => `inactive|${t.title}`)
+            ];
+            expandedRows = new Set([...expandedRows].filter(k => rowKeys.includes(k)));
+
             let html = `
                 <div class="table-container">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
@@ -3543,11 +3557,11 @@
 
             sortedChampionships.forEach((champ, index) => {
                 const rankChange = formatRankChange(champ.boostedRankChange);
-                const isExpanded = expandedRows.has(index);
+                const isExpanded = isRowOpen(index);
                 const titleIcon = getTitleIcon(champ.title, champ.displayRank, championships.length);
 
                 html += `
-                    <tr id="champ-row-${index}" class="${expandedRows.has(index) ? 'row-open' : ''}" tabindex="0" data-key-click aria-expanded="${expandedRows.has(index)}" onclick="toggleDetails(${index})" style="cursor: pointer;">
+                    <tr id="champ-row-${index}" class="${isRowOpen(index) ? 'row-open' : ''}" tabindex="0" data-key-click aria-expanded="${isRowOpen(index)}" onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.displayRank}</td>
                         <td class="title-cell">${titleIcon}${champ.title}<span class="row-chevron" aria-hidden="true">▼</span></td>
                         <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
@@ -3685,7 +3699,7 @@
                         <div id="droppedOutList" class="dropped-out-list">
                             ${droppedOutTitles.map((title, idx) => {
                                 const dropIndex = championships.length + idx;
-                                const isExpanded = expandedRows.has(dropIndex);
+                                const isExpanded = isRowOpen(dropIndex);
                                 const titleIcon = getTitleIcon(title.title, title.rank || 99, championships.length);
                                 
                                 return `
@@ -3774,7 +3788,7 @@
                         <div id="inactiveTitlesList" class="inactive-titles-list">
                             ${inactiveTitles.map((title, idx) => {
                                 const inactiveIndex = championships.length + droppedOutTitles.length + idx;
-                                const isExpanded = expandedRows.has(inactiveIndex);
+                                const isExpanded = isRowOpen(inactiveIndex);
                                 const titleIcon = getTitleIcon(title.title, 99, 99, 'fallback');
                                 
                                 return `
@@ -3859,7 +3873,7 @@
             if (event) event.stopPropagation();
             const detailsEl = document.getElementById(`details-${index}`);
             const isMain = index < (championshipData.championships || []).length;
-            if (expandedRows.has(index) || (detailsEl && detailsEl.classList.contains('expanded'))) toggleDetails(index);
+            if (isRowOpen(index) || (detailsEl && detailsEl.classList.contains('expanded'))) toggleDetails(index);
             const rowEl = isMain ? document.getElementById(`champ-row-${index}`)
                                  : (detailsEl && detailsEl.previousElementSibling);
             if (rowEl) {
@@ -3878,18 +3892,18 @@
                 const detailsEl = document.getElementById(`details-${index}`);
                 if (detailsEl) {
                     detailsEl.classList.toggle('expanded');
-                    if (expandedRows.has(index)) {
-                        expandedRows.delete(index);
+                    if (expandedRows.has(rowKeys[index])) {
+                        expandedRows.delete(rowKeys[index]);
                     } else {
-                        expandedRows.add(index);
+                        expandedRows.add(rowKeys[index]);
                     }
                 }
             } else {
                 // For main rankings, use the full re-render
-                if (expandedRows.has(index)) {
-                    expandedRows.delete(index);
+                if (expandedRows.has(rowKeys[index])) {
+                    expandedRows.delete(rowKeys[index]);
                 } else {
-                    expandedRows.add(index);
+                    expandedRows.add(rowKeys[index]);
                 }
                 renderChampionships();
             }
