@@ -101,6 +101,7 @@
             margin-top: 5px;
             font-size: 0.9em;
             color: #888;
+            min-height: 1.4em;
         }
 
         .date-range {
@@ -108,6 +109,7 @@
             font-size: 1em;
             color: #ffd700;
             font-weight: 600;
+            min-height: 1.4em;
         }
 
         .current-heading {
@@ -1481,7 +1483,12 @@
             color: #ffd700;
             font-weight: bold;
             cursor: pointer;
-            margin-left: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            min-height: 24px;
+            vertical-align: middle;
         }
 
         .best-match-asterisk:hover {
@@ -2184,7 +2191,7 @@
                     <a href="updates.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         📋 Updates 
                     </a>
-                    <a href="javascript:void(0)" onclick="toggleContactSubmenu(event)" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em; border-top: 1px solid rgba(255,215,0,0.2);">
+                    <a href="#contactSubmenu" role="button" aria-expanded="false" aria-controls="contactSubmenu" onclick="toggleContactSubmenu(event)" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em; border-top: 1px solid rgba(255,215,0,0.2);">
                         <span>📞 Contact</span><span id="contactSubmenuArrow">▾</span>
                     </a>
                     <div id="contactSubmenu" style="display: none; background: rgba(255,215,0,0.06);">
@@ -2360,6 +2367,11 @@
         --waline-dark-grey: #b8b8b8;
         --waline-code-bg-color: #1e2030;
         --waline-bq-color: #2f3248;
+    }
+    #waline .wl-btn.primary,
+    #waline .wl-btn.primary:hover {
+        color: #1a1a2e !important;
+        font-weight: bold;
     }
 </style>
 
@@ -7659,12 +7671,14 @@ document.addEventListener('click', function(e) {
     });
 
     function toggleContactSubmenu(e) {
+        e.preventDefault();
         e.stopPropagation();
         const submenu = document.getElementById('contactSubmenu');
         const arrow = document.getElementById('contactSubmenuArrow');
         const isOpen = submenu.style.display === 'block';
         submenu.style.display = isOpen ? 'none' : 'block';
         arrow.textContent = isOpen ? '▾' : '▴';
+        e.currentTarget.setAttribute('aria-expanded', String(!isOpen));
     }
 
     document.querySelector('#otherMenuDropdown a').addEventListener('mouseenter', function() {
