@@ -2384,6 +2384,9 @@
             mdLink.title = 'Markdown guide (opens in a new tab)';
             mdLink.dataset.labelled = '1';
         }
+        walineEl.querySelectorAll('svg[ariaHidden]:not([aria-hidden])').forEach(svg => {
+            svg.setAttribute('aria-hidden', 'true');
+        });
     }).observe(walineEl, { childList: true, subtree: true });
 
     let walineInstance = null;
