@@ -1312,7 +1312,7 @@
             const headerRow = document.getElementById('leaderboardTableHeaderRow');
             const cells = {
                 rank: `<th class="rank-cell col-rank">#</th>`,
-                photo: `<th class="col-photo"></th>`,
+                photo: `<th class="col-photo" aria-label="Photo"></th>`,
                 name: `<th tabindex="0" data-key-click class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
                 divisions: `<th tabindex="0" data-key-click class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
                 count: `<th tabindex="0" data-key-click class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week. Only those with 2 or more appearances are shown here.">⭐</th>`,
