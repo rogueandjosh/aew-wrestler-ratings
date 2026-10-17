@@ -852,14 +852,14 @@
         function renderArchiveTableHeader() {
             const headerRow = document.getElementById('archiveTableHeaderRow');
             const cells = {
-                week: visibleColumns.week ? `<th class="sortable col-week" onclick="sortArchive('date')">Week</th>` : '',
-                show: `<th class="sortable col-show" onclick="sortArchive('show')">Show</th>`,
-                rating: `<th class="sortable tt col-rating" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
-                wrestlers: `<th class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`,
-                division: visibleColumns.division ? `<th class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>` : '',
-                matchType: visibleColumns.matchType ? `<th class="sortable" onclick="sortArchive('matchType')">Match Type</th>` : '',
-                stipulation: visibleColumns.stipulation ? `<th class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>` : '',
-                stakes: visibleColumns.stakes ? `<th class="sortable" onclick="sortArchive('stakes')">Stakes</th>` : ''
+                week: visibleColumns.week ? `<th tabindex="0" data-key-click class="sortable col-week" onclick="sortArchive('date')">Week</th>` : '',
+                show: `<th tabindex="0" data-key-click class="sortable col-show" onclick="sortArchive('show')">Show</th>`,
+                rating: `<th tabindex="0" data-key-click class="sortable tt col-rating" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
+                wrestlers: `<th tabindex="0" data-key-click class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`,
+                division: visibleColumns.division ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>` : '',
+                matchType: visibleColumns.matchType ? `<th tabindex="0" data-key-click class="sortable" onclick="sortArchive('matchType')">Match Type</th>` : '',
+                stipulation: visibleColumns.stipulation ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>` : '',
+                stakes: visibleColumns.stakes ? `<th tabindex="0" data-key-click class="sortable" onclick="sortArchive('stakes')">Stakes</th>` : ''
             };
 
             // Base order everywhere; on mobile, Division moves to the far
@@ -1309,11 +1309,11 @@
             const cells = {
                 rank: `<th class="rank-cell col-rank">#</th>`,
                 photo: `<th class="col-photo"></th>`,
-                name: `<th class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
-                divisions: `<th class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
-                count: `<th class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week. Only those with 2 or more appearances are shown here.">⭐</th>`,
-                totalMatches: `<th class="sortable tt col-total-matches" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Matches</th>`,
-                percentage: `<th class="sortable tt col-percentage" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>`
+                name: `<th tabindex="0" data-key-click class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
+                divisions: `<th tabindex="0" data-key-click class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
+                count: `<th tabindex="0" data-key-click class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week. Only those with 2 or more appearances are shown here.">⭐</th>`,
+                totalMatches: `<<th tabindex="0" data-key-click class="sortable tt col-total-matches" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Matches</th>`,
+                percentage: `<th tabindex="0" data-key-click class="sortable tt col-percentage" onclick="sortLeaderboard('percentage')" data-tt="Best Match Count divided by Total Matches — what share of their matches have been that week's best.">Best Match %</th>`
             };
 
             let order = ['rank', 'photo', 'name', 'count', 'totalMatches', 'percentage', 'divisions'];
