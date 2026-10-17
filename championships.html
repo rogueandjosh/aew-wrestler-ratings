@@ -2913,63 +2913,59 @@
             }
         }
 
-        // Competitors for a title as of the selected week. The current week uses the
-        // all-time file; a past week is counted from championship-matches.json when
-        // it's there ({ weeks, titles, matches: [[week, title, rating, "A;B"], …] }).
-        // Without that file a past week falls back to the all-time list.
-        let weekCompetitorCache = { week: null, titles: null };
+        // Competitors for a title as of the selected week. The current week uses
+        // championship-competitors.json. A past week is counted from
+        // championship-matches.json (Apps Script, cmx_export): one row per title match,
+        // [weekKey, titleIndex, rating, "A;B", year]. Week keys ("2021-06-week1",
+        // "2019-08") sort in date order, so "up to this week" is a plain comparison.
+        // Counting matches exportChampionshipCompetitorStats: every match counts, only
+        // ratings above 0 go into Avg/Best/Worst, top 20 by matches.
+        // Without the file a past week falls back to the all-time list.
+        let weekCompetitorCache = { key: null, titles: null };
 
         function competitorsAreForWeek() {
-            return currentWeekValue !== 'current' && summaryWeekIndex(championshipMatches && championshipMatches.weeks) >= 0;
+            return currentWeekValue !== 'current' && !!(championshipMatches && championshipMatches.matches && championshipMatches.titles);
         }
 
         function getCompetitorsForTitle(titleName) {
             if (competitorsAreForWeek()) {
-                const w = summaryWeekIndex(championshipMatches.weeks);
-                if (weekCompetitorCache.week !== w) weekCompetitorCache = { week: w, titles: buildCompetitorsUpTo(w) };
+                const key = weekKeyFromValue(currentWeekValue);
+                if (weekCompetitorCache.key !== key) weekCompetitorCache = { key, titles: buildCompetitorsUpTo(key) };
                 return weekCompetitorCache.titles[titleName] || null;
             }
             if (!competitorData || !competitorData.titles) return null;
             return competitorData.titles.find(t => t.title === titleName);
         }
 
-        function buildCompetitorsUpTo(w) {
+        function buildCompetitorsUpTo(key) {
             const m = championshipMatches;
-            const yearOf = i => {
-                const key = m.weeks[i] || '';
-                return key.slice(0, 4);
-            };
             const byTitle = {};
-            (m.matches || []).forEach(([week, titleIdx, rating, names]) => {
-                if (week > w) return;
+            m.matches.forEach(([week, titleIdx, rating, names, year]) => {
+                if (!week || week > key) return;
                 const title = m.titles[titleIdx];
                 const t = byTitle[title] || (byTitle[title] = { title, totalMatches: 0, people: {} });
                 t.totalMatches++;
-                String(names || '').split(';').map(n => n.trim()).filter(Boolean).forEach(n => {
-                    const p = t.people[n] || (t.people[n] = { name: n, matches: 0, rated: 0, sum: 0, high: null, low: null, years: new Set() });
+                String(names || '').split(';').filter(Boolean).forEach(n => {
+                    const p = t.people[n] || (t.people[n] = { matches: 0, ratings: [], years: new Set() });
                     p.matches++;
-                    p.years.add(yearOf(week));
-                    if (typeof rating === 'number') {
-                        p.rated++;
-                        p.sum += rating;
-                        p.high = p.high === null ? rating : Math.max(p.high, rating);
-                        p.low = p.low === null ? rating : Math.min(p.low, rating);
-                    }
+                    if (typeof rating === 'number' && rating > 0) p.ratings.push(rating);
+                    p.years.add(String(year));
                 });
             });
+            const calc = r => r.length ? {
+                avg: parseFloat((r.reduce((a, b) => a + b, 0) / r.length).toFixed(2)),
+                high: parseFloat(Math.max(...r).toFixed(2)),
+                low: parseFloat(Math.min(...r).toFixed(2))
+            } : { avg: 0, high: 0, low: 0 };
             const out = {};
             Object.values(byTitle).forEach(t => {
                 out[t.title] = {
                     title: t.title,
                     totalMatches: t.totalMatches,
-                    competitors: Object.values(t.people).map(p => ({
-                        name: p.name,
-                        matches: p.matches,
-                        avg: p.rated ? Math.round((p.sum / p.rated) * 100) / 100 : null,
-                        high: p.high,
-                        low: p.low,
-                        years: [...p.years].sort()
-                    }))
+                    competitors: Object.entries(t.people)
+                        .map(([name, p]) => ({ name, matches: p.matches, ...calc(p.ratings), years: [...p.years].sort() }))
+                        .sort((a, b) => b.matches - a.matches)
+                        .slice(0, 20)
                 };
             });
             return out;
