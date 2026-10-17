@@ -2367,11 +2367,17 @@
     };
 
         // Label Waline's comment box with the visible heading (it redraws, so keep watching)
-    const walineEl = document.getElementById('waline');
+        const walineEl = document.getElementById('waline');
     new MutationObserver(() => {
         const box = walineEl.querySelector('textarea');
         if (box && !box.hasAttribute('aria-labelledby')) {
             box.setAttribute('aria-labelledby', 'comments-heading');
+        }
+        const mdLink = walineEl.querySelector('a.wl-action[target="_blank"]');
+        if (mdLink && !mdLink.dataset.labelled) {
+            mdLink.setAttribute('aria-label', 'Markdown guide (opens in a new tab)');
+            mdLink.title = 'Markdown guide (opens in a new tab)';
+            mdLink.dataset.labelled = '1';
         }
     }).observe(walineEl, { childList: true, subtree: true });
 
