@@ -1,0 +1,41 @@
+name: Championship timeline
+
+on:
+  push:
+    paths:
+      - 'championship-archive/**'   # rebuilds as soon as a new week is uploaded
+  workflow_dispatch:                 # adds a "Run workflow" button for manual runs
+
+permissions:
+  contents: write
+
+concurrency:
+  group: championship-timeline
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build championship timeline from the archive
+        run: node scripts/build-championship-timeline.mjs
+
+      - name: Commit timeline file if changed
+        run: |
+          if [ -z "$(git status --porcelain championship-timeline.json)" ]; then
+            echo "No timeline changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
+          git add championship-timeline.json
+          git commit -m "Championship timeline: rebuild from archive"
+          git pull --rebase
+          git push
