@@ -99,3 +99,9 @@ body.tt-js .tt::before {
 }
 #tooltipToggle:hover { color: #ffd700; }
 #tooltipToggle.active { color: #ffd700; }
+
+/* Clear keyboard focus ring everywhere */
+:focus-visible {
+    outline: 2px solid #ffd700 !important;
+    outline-offset: 2px !important;
+}
