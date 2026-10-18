@@ -6,21 +6,36 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="canonical" href="https://www.elitewrestlerratings.com/best-match-of-the-week.html" />
-    <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
+        <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-6YFQ4441BC');
+  (function () {
+    var loaded = false;
+    function loadGA() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC';
+      document.head.appendChild(s);
+    }
+    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+      window.addEventListener(evt, loadGA, { once: true, passive: true });
+    });
+    window.addEventListener('load', function () { setTimeout(loadGA, 6000); });
+  })();
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Match of the Week | AEW Wrestler Ratings</title>
+    <meta name="description" content="Every AEW Best Match of the Week since 2019, chosen by Cagematch.net fan ratings — browse the full archive or see which wrestlers top the all-time leaderboard.">
     <script src="best-match-shared.js?v=2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -48,7 +63,8 @@
 
         h1 { color: #ffd700; font-size: 2.2em; margin-bottom: 8px; }
         .subtitle { color: #b8b8b8; margin-bottom: 5px; }
-        .last-updated { color: #888; font-size: 0.9em; }
+        .last-updated { color: #888; font-size: 0.9em; min-height: 1.4em; }
+        #archiveTableBody td.loading { height: 100vh; vertical-align: top; }
 
         .nav-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 12px 0 5px; }
 
@@ -674,11 +690,44 @@
             return teamName;
         }
 
-        function switchTab(tab) {
+                function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
             document.getElementById('archiveTab').style.display = tab === 'archive' ? 'block' : 'none';
             document.getElementById('leaderboardTab').style.display = tab === 'leaderboard' ? 'block' : 'none';
+            if (tab === 'leaderboard') ensureRostersLoaded();
+        }
+
+        // The leaderboard needs every week's full roster (~370 files), so only
+        // download them the first time someone opens the Leaderboard tab.
+        let rostersPromise = null;
+        function ensureRostersLoaded() {
+            if (rostersPromise) return rostersPromise;
+            const tbody = document.getElementById('leaderboardTableBody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading leaderboard...</td></tr>';
+            rostersPromise = (async () => {
+                const archiveIndexResponse = await fetch('archive/index.json');
+                const archiveIndexData = await archiveIndexResponse.json();
+                const seenFilenames = new Set();
+                const validWeeks = archiveIndexData.weeks.filter(w => {
+                    if (w.filename === 'archive-index.json' || w.filename === 'index.json') return false;
+                    if (seenFilenames.has(w.filename)) return false;
+                    seenFilenames.add(w.filename);
+                    return true;
+                });
+                const rosterResults = await Promise.all(validWeeks.map(w =>
+                    fetch(`archive/${w.filename}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null)
+                ));
+                window.weekRosterArray = rosterResults.filter(w => w !== null);
+                renderLeaderboard();
+            })().catch(error => {
+                console.error('Failed to load leaderboard data:', error);
+                rostersPromise = null;
+                if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Failed to load leaderboard data.</td></tr>';
+            });
+            return rostersPromise;
         }
 
         function createSlug(name) {
@@ -905,28 +954,6 @@
                 await loadTeamMembers();
                 await loadFactions();
 
-                // Fetch every week's FULL roster (all 5 divisions) — needed so the
-                // leaderboard can check "was this wrestler/team actually active and
-                // ranked that week" before granting Best Match credit, exactly
-                // matching the All Wrestler Statistics page's own logic.
-                const archiveIndexResponse = await fetch('archive/index.json');
-                const archiveIndexData = await archiveIndexResponse.json();
-                const seenFilenames = new Set();
-                const validWeeks = archiveIndexData.weeks.filter(w => {
-                    if (w.filename === 'archive-index.json' || w.filename === 'index.json') return false;
-                    if (seenFilenames.has(w.filename)) return false;
-                    seenFilenames.add(w.filename);
-                    return true;
-                });
-
-                const rosterFetchPromises = validWeeks.map(w =>
-                    fetch(`archive/${w.filename}`)
-                        .then(r => r.ok ? r.json() : null)
-                        .catch(() => null)
-                );
-                const rosterResults = await Promise.all(rosterFetchPromises);
-                window.weekRosterArray = rosterResults.filter(w => w !== null);
-
                 // Sort newest first by default
                 allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -936,7 +963,9 @@
                 populateWrestlerSearchList();
                 syncColumnCheckboxes();
                 renderArchiveTable();
-                renderLeaderboard();
+                if (document.querySelector('.tab[data-tab="leaderboard"]').classList.contains('active')) {
+                    ensureRostersLoaded();
+                }
 
                 fetch('current-rankings.json')
                     .then(r => r.ok ? r.json() : null)
