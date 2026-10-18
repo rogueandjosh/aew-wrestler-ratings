@@ -6,25 +6,40 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="canonical" href="https://www.elitewrestlerratings.com/wrestler-stats.html" />
-    <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
+       <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-6YFQ4441BC');
+  (function () {
+    var loaded = false;
+    function loadGA() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC';
+      document.head.appendChild(s);
+    }
+    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+      window.addEventListener(evt, loadGA, { once: true, passive: true });
+    });
+    window.addEventListener('load', function () { setTimeout(loadGA, 6000); });
+  })();
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wrestler Stats - Elite Wrestler Ratings</title>
-    <script src="best-match-shared.js?v=2"></script>
+    <meta name="description" content="Full Elite Wrestler Ratings history for every AEW wrestler and team — rating chart, match-by-match results, peaks, title reigns and Best Match appearances.">
+    <script src="best-match-shared.js?v=2" defer></script>
     <!-- Bump ?v= whenever match-filters.js changes, so browsers/Cloudflare fetch the new copy -->
-    <script src="match-filters.js?v=6"></script>
+    <script src="match-filters.js?v=6" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
     <style>
         * {
             margin: 0;
@@ -172,7 +187,7 @@
         }
 
         .status-active {
-            background-color: #22c55e;
+            background-color: #15803d;
             color: #fff;
         }
 
@@ -670,6 +685,7 @@
             padding: 60px 20px;
             color: #ffd700;
             font-size: 1.5em;
+            min-height: 100vh;
         }
 
         .error {
@@ -1108,6 +1124,7 @@
         </div>
 
         <div id="error" style="display: none;"></div>
+        </main>
     </div>
 
     <script>
@@ -2175,8 +2192,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const initialsUrl1 = createInitialsCircle(initials1, 90);
                     const initialsUrl2 = createInitialsCircle(initials2, 90);
                     
-                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
-                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
 
                     imageHTML = `
                         ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
@@ -2186,8 +2203,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     // No member data - use team initials
                     const teamInitials = generateInitials(wrestlerData.name);
                     const teamInitialsUrl = createInitialsCircle(teamInitials, 90);
-                    const teamImgA = `<img src="${teamInitialsUrl}">`;
-                    const teamImgB = `<img src="${teamInitialsUrl}">`;
+                    const teamImgA = `<img src="${teamInitialsUrl}" alt="">`;
+                    const teamImgB = `<img src="${teamInitialsUrl}" alt="">`;
                     imageHTML = `
                         ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
                         ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 90, 4, 3, isActive)}
@@ -2207,9 +2224,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     const initialsUrl2 = createInitialsCircle(initials2, 70);
                     const initialsUrl3 = createInitialsCircle(initials3, 70);
                     
-                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
-                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
-                    const memberImg3 = `<img src="images/wrestlers/${slug3}.jpg" onerror="this.onerror=null; this.src='${initialsUrl3}';">`;
+                    const memberImg1 = `<img src="images/wrestlers/${slug1}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl1}';">`;
+                    const memberImg2 = `<img src="images/wrestlers/${slug2}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl2}';">`;
+                    const memberImg3 = `<img src="images/wrestlers/${slug3}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl3}';">`;
 
                     imageHTML = `
                         ${wrapPhotoWithDualTier(memberImg1, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
@@ -2220,9 +2237,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     // No member data - use placeholders
                     const teamInitials = generateInitials(wrestlerData.name);
                     const teamInitialsUrl = createInitialsCircle(teamInitials, 70);
-                    const teamImgA = `<img src="${teamInitialsUrl}">`;
-                    const teamImgB = `<img src="${teamInitialsUrl}">`;
-                    const teamImgC = `<img src="${teamInitialsUrl}">`;
+                    const teamImgA = `<img src="${teamInitialsUrl}" alt="">`;
+                    const teamImgB = `<img src="${teamInitialsUrl}" alt="">`;
+                    const teamImgC = `<<img src="${teamInitialsUrl}" alt="">`;
                     imageHTML = `
                         ${wrapPhotoWithDualTier(teamImgA, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
                         ${wrapPhotoWithDualTier(teamImgB, teamPeakRating, teamCurrentRating, 70, 4, 3, isActive)}
@@ -2235,7 +2252,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const initials = generateInitials(wrestlerData.name);
                 const initialsUrl = createInitialsCircle(initials, 120);
                 
-                const singleImg = `<img src="images/wrestlers/${slug}.jpg" onerror="this.onerror=null; this.src='${initialsUrl}';">`;
+                const singleImg = `<img src="images/wrestlers/${slug}.jpg" alt="" onerror="this.onerror=null; this.src='${initialsUrl}';">`;
                 imageHTML = wrapPhotoWithDualTier(singleImg, careerPeakRating, wrestlerData.currentRating, 120, 4, 3, isActive);
             }
             
