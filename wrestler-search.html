@@ -77,15 +77,11 @@
         }
 
         .last-updated {
-            margin: 0;
+            margin: 4px 0 8px;
             font-size: 0.85em;
             color: #888;
-            line-height: 0;
-        }
-
-        .last-updated:not(:empty) {
-            margin: 4px 0 8px;
             line-height: 1.4;
+            min-height: 1.4em;
         }
 
         .nav-buttons {
@@ -591,6 +587,8 @@
             font-size: 1.3em;
             grid-column: 1 / -1;
         }
+        
+        #resultsGrid > .loading { min-height: 100vh; }
 
         /* Rating colors */
         .rating-high { color: #22c55e; }
