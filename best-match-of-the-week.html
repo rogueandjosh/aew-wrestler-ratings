@@ -372,6 +372,7 @@
             </div>
             <p class="last-updated" id="lastUpdated"></p>
         </header>
+        <main>
 
         <p style="text-align: center; color: #b8b8b8; margin: -10px 0 25px; max-width: 750px; margin-left: auto; margin-right: auto;">
             Every week, the highest Cagematch-rated match becomes that week's <strong style="color: #ffd700;">Best Match of the Week</strong>. This page is the full history of every winner since June 2019 — browse the archive, filter by division, or see who's featured the most.
@@ -390,25 +391,25 @@
                 <div id="archiveFiltersPanel">
                 <div class="filters-row">
                     <div class="filter-item">
-                        <label class="tt tt-left" data-tt="Filter the archive to a specific calendar year.">Year</label>
+                        <label for="yearFilter" class="tt tt-left" data-tt="Filter the archive to a specific calendar year.">Year</label>
                         <select id="yearFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label class="tt" data-tt="Filter by the type of match, e.g. One on One, Tag Team, Trios.">Match Type</label>
+                        <label for="matchTypeFilter" class="tt" data-tt="Filter by the type of match, e.g. One on One, Tag Team, Trios.">Match Type</label>
                         <select id="matchTypeFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label class="tt" data-tt="Filter by stipulation. Similar variants (e.g. different Street Fight or Texas Death matches) are grouped together automatically.">Stipulation</label>
+                        <label for="stipulationFilter" class="tt" data-tt="Filter by stipulation. Similar variants (e.g. different Street Fight or Texas Death matches) are grouped together automatically.">Stipulation</label>
                         <select id="stipulationFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
-                        <label class="tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
+                        <label for="archiveWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
                             <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onArchiveSearchInput()" autocomplete="off">
                             <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -483,7 +484,7 @@
                 <div class="section-title tt" data-tt="Only wrestlers and teams with 2 or more Best Match appearances are shown.">Top Wrestlers &amp; Teams by Best Match Appearances</div>
                 <div class="filters-row">
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
-                        <label class="tt" data-tt="Type a wrestler or team name to filter the leaderboard to just them.">Search Wrestler</label>
+                        <label for="leaderboardWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to filter the leaderboard to just them.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
                             <input type="text" id="leaderboardWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onLeaderboardSearchInput()" autocomplete="off">
                             <button type="button" id="leaderboardWrestlerSearchClear" class="wrestler-search-clear" onclick="clearLeaderboardSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -509,6 +510,7 @@
                 <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show by default — click to reveal the full leaderboard." style="display: none;">Show All</button>
             </div>
         </div>
+        </main>
     </div>
 
     <datalist id="wrestlerSearchList"></datalist>
