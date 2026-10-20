@@ -7501,12 +7501,15 @@ async function renderAnalysisSections(sections) {
 
     const order = ['overall', 'mens', 'womens', 'menstag', 'womenstag', 'trios'];
     let html = '';
+    const knownNames = await getMultiWordNames();
 
     for (const key of order) {
         if (sections[key] && sections[key].trim() !== '') {
+            // Fix capitals in known names first (e.g. "Sisters of Sin" -> "Sisters Of Sin")
+            const fixedText = fixNameCapitals(sections[key], knownNames);
             // Pass division key so only that division's names are linked
             // 'overall' gets all divisions
-            const linked = await linkWrestlerNames(sections[key], key === 'overall' ? null : key);
+            const linked = await linkWrestlerNames(fixedText, key === 'overall' ? null : key);
             html += '<div class="analysis-section-label">' + sectionLabels[key] + '</div>';
             html += '<div class="analysis-text">' + linked + '</div>';
         }
@@ -7635,6 +7638,47 @@ async function buildNameToSlug(divisionFilter = null) {
     }
 
     return nameToSlug;
+}
+
+// ── Name capitals in the weekly analysis ───────────────────────────
+// Analysis text is typed by hand, so a name can slip in with the wrong
+// capitals (e.g. "Sisters of Sin" instead of "Sisters Of Sin"). Every
+// multi-word wrestler/team name the site knows (wrestlers/index.json) is
+// matched ignoring case and written back exactly as the site spells it.
+// Safeguards:
+//  - multi-word names only (single words like "Hook" could be normal words)
+//  - the match must already contain a capital letter, so ordinary phrases
+//    written in lower case (e.g. "best friends") are left alone
+//  - a lower-case "the" at the start is kept ("the Young Bucks" mid-sentence)
+let multiWordNamesCache = null;
+
+async function getMultiWordNames() {
+    if (multiWordNamesCache) return multiWordNamesCache;
+    const index = await loadWrestlersIndex();
+    const names = new Set();
+    (index || []).forEach(w => {
+        const clean = (w.name || '').replace(/\s*\(.*?\)\s*/g, '').trim();
+        if (clean.includes(' ')) names.add(clean);
+    });
+    multiWordNamesCache = [...names].sort((a, b) => b.length - a.length);
+    return multiWordNamesCache;
+}
+
+function fixNameCapitals(text, names) {
+    if (!text || !names || names.length === 0) return text || '';
+    let result = text;
+    names.forEach(name => {
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp('(?<![a-zA-Z0-9])' + escaped + '(?![a-zA-Z0-9])', 'gi');
+        result = result.replace(regex, match => {
+            if (match === name) return match;
+            const startsWithLowerThe = name.startsWith('The ') && match.startsWith('the ');
+            const body = /^the /i.test(match) ? match.slice(4) : match;
+            if (!/[A-Z]/.test(body)) return match;
+            return startsWithLowerThe ? 'the ' + name.slice(4) : name;
+        });
+    });
+    return result;
 }
 
 async function linkWrestlerNames(text, divisionFilter = null) {
