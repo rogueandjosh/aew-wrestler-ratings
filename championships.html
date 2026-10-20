@@ -513,6 +513,7 @@
             margin-top: 20px;
             border: 1px solid rgba(255, 215, 0, 0.2);
             overflow-x: auto;
+            container-type: inline-size;
         }
 
         table {
@@ -930,6 +931,71 @@
         .detail-value {
             color: #e0e0e0;
             font-weight: 600;
+        }
+
+        /* Ratings card: Recent Reign vs All-Time in one small table */
+        .ratings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1em;
+            min-width: 0;
+        }
+
+        .ratings-table th,
+        .ratings-table td {
+            padding: 6px 0 6px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: none;
+            white-space: nowrap;
+        }
+
+        .ratings-table th {
+            color: #ffd700;
+            font-size: 0.72em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: right;
+            white-space: normal;
+            line-height: 1.2;
+            vertical-align: bottom;
+        }
+
+        .ratings-table td:first-child,
+        .ratings-table th:first-child {
+            padding-left: 0;
+            text-align: left;
+            color: #b8b8b8;
+            font-size: 0.9em;
+        }
+
+        .ratings-table td:not(:first-child) {
+            color: #e0e0e0;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .ratings-table th:last-child {
+            white-space: nowrap;
+        }
+
+        .ratings-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Ratings | Stats | Competitors — competitors gets about half */
+        @media (min-width: 769px) {
+            .details-grid.three-card {
+                grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(0, 2fr);
+            }
+        }
+
+        /* Tablet: a little more room for the two stat cards */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .details-grid.three-card {
+                grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr) minmax(0, 1.8fr);
+                gap: 14px;
+            }
         }
 
         .extra-col {
@@ -1600,8 +1666,8 @@
             }
 
             .mobile-stats-table {
-                width: max-content;
-                min-width: 100%;
+                width: 100%;
+                min-width: 0;
                 font-size: 0.8em;
                 border-collapse: collapse;
                 background: rgba(255, 255, 255, 0.03);
@@ -1612,9 +1678,10 @@
             .mobile-stats-table th {
                 background: rgba(255, 215, 0, 0.1);
                 color: #ffd700;
-                padding: 8px 12px;
+                padding: 8px 10px;
                 text-align: center;
-                white-space: nowrap;
+                white-space: normal;
+                line-height: 1.2;
                 font-size: 0.85em;
                 text-transform: uppercase;
             }
@@ -1624,7 +1691,7 @@
             }
 
             .mobile-stats-table td {
-                padding: 8px 12px;
+                padding: 8px 10px;
                 white-space: nowrap;
                 border-top: 1px solid rgba(255, 255, 255, 0.05);
             }
@@ -1658,13 +1725,13 @@
 
             .competitors-table th,
             .competitors-table td {
-                padding: 6px 10px;
+                padding: 6px 7px;
                 white-space: nowrap;
             }
 
             .competitors-table th:first-child,
             .competitors-table td:first-child {
-                max-width: 130px;
+                max-width: 120px;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
@@ -1699,6 +1766,16 @@
 
             .details-content {
                 padding: 10px;
+            }
+
+            /* The rankings table scrolls sideways on phones, which made the open
+               title's panel as wide as the whole table (stats and competitor
+               columns off-screen). Keep the panel to the visible width instead. */
+            .details-row .details-content {
+                position: sticky;
+                left: 0;
+                width: 100cqw;
+                box-sizing: border-box;
             }
 
             /* Fix detail items on mobile - keep label and value together */
@@ -3051,6 +3128,34 @@
                 : '<span class="sort-arrow active">▼</span>';
         }
 
+        // Ratings card (desktop + Dropped Out): one small table instead of two
+        // cards that repeated the same four labels.
+        function renderRatingsCard(t, pastWeek, weekLabel) {
+            const fmtMatch = v => v ? v.toFixed(2) : '—';
+            const allTimeTip = pastWeek
+                ? `Statistics for all matches for this championship up to ${weekLabel}.`
+                : 'Statistics for all matches for this championship.';
+            return `
+                <div class="details-section ratings-section">
+                    <h4>📊 Ratings</h4>
+                    <table class="ratings-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="tt" data-tt="Statistics for the most recent reign. Please note that a new reign only begins once the title has been defended.">Recent Reign</th>
+                                <th class="tt" data-tt="${allTimeTip}">All-Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Peak Rating</td><td>${formatRating(applyBoost(t.peak, t.title))}</td><td>${formatRating(applyBoost(t.allTimePeak, t.title))}</td></tr>
+                            <tr><td>Floor Rating</td><td>${formatRating(applyBoost(t.floor, t.title))}</td><td>${formatRating(applyBoost(t.allTimeFloor, t.title))}</td></tr>
+                            <tr><td>Best Match</td><td>${fmtMatch(t.highestMatch)}</td><td>${fmtMatch(t.allTimeHighest)}</td></tr>
+                            <tr><td>Worst Match</td><td>${fmtMatch(t.lowestMatch)}</td><td>${fmtMatch(t.allTimeLowest)}</td></tr>
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
         function renderCompetitorsSection(titleName) {
             const titleData = getCompetitorsForTitle(titleName);
             if (!titleData || !titleData.competitors || titleData.competitors.length === 0) {
@@ -3643,45 +3748,8 @@
                                     </table>
                                 </div>
                                 <!-- Desktop details grid -->
-                                <div class="details-grid">
-                                    <div class="details-section">
-                                        <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Peak Rating</span>
-                                            <span class="detail-value">${formatRating(applyBoost(champ.peak, champ.title))}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Floor Rating</span>
-                                            <span class="detail-value">${formatRating(applyBoost(champ.floor, champ.title))}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Best Match</span>
-                                            <span class="detail-value">${champ.highestMatch ? champ.highestMatch.toFixed(2) : '—'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Worst Match</span>
-                                            <span class="detail-value">${champ.lowestMatch ? champ.lowestMatch.toFixed(2) : '—'}</span>
-                                        </div>
-                                    </div>
-                                    <div class="details-section">
-                                        <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Peak Rating</span>
-                                            <span class="detail-value">${formatRating(applyBoost(champ.allTimePeak, champ.title))}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Floor Rating</span>
-                                            <span class="detail-value">${formatRating(applyBoost(champ.allTimeFloor, champ.title))}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Best Match Ever</span>
-                                            <span class="detail-value">${champ.allTimeHighest ? champ.allTimeHighest.toFixed(2) : '—'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Worst Match Ever</span>
-                                            <span class="detail-value">${champ.allTimeLowest ? champ.allTimeLowest.toFixed(2) : '—'}</span>
-                                        </div>
-                                    </div>
+                                <div class="details-grid three-card">
+                                    ${renderRatingsCard(champ, pastWeek, weekLabel)}
                                     <div class="details-section">
                                         <h4 class="tt" data-tt="Some additional information about this championship.">📈 Stats</h4>
                                         <div class="detail-item">
@@ -3728,45 +3796,8 @@
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${dropIndex}">
                                             ${detailsCloseTop(dropIndex)}
-                                            <div class="details-grid">
-                                                <div class="details-section">
-                                                    <h4 class="tt" data-tt="These are the statistics specifically for the most recent reign. Please note that a new reign only begins once the title has been defended.">📊 Most Recent Reign</h4>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(applyBoost(title.peak, title.title))}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(applyBoost(title.floor, title.title))}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Best Match</span>
-                                                        <span class="detail-value">${title.highestMatch ? title.highestMatch.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Worst Match</span>
-                                                        <span class="detail-value">${title.lowestMatch ? title.lowestMatch.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="details-section">
-                                                    <h4 class="tt" data-tt="This shows the statistics for all matches for this specific championship.">🏆 All-Time</h4>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Peak Rating</span>
-                                                        <span class="detail-value">${formatRating(applyBoost(title.allTimePeak, title.title))}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Floor Rating</span>
-                                                        <span class="detail-value">${formatRating(applyBoost(title.allTimeFloor, title.title))}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Best Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <span class="detail-label">Worst Match Ever</span>
-                                                        <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
-                                                    </div>
-                                                </div>
+                                            <div class="details-grid three-card">
+                                                ${renderRatingsCard(title, pastWeek, weekLabel)}
                                                 <div class="details-section">
                                                     <h4 class="tt" data-tt="Some additional information about this championship.">📈 Stats</h4>
                                                     <div class="detail-item">
@@ -3831,11 +3862,11 @@
                                                         <span class="detail-value">${formatRating(applyBoost(title.allTimePeak, title.title))}</span>
                                                     </div>` : ''}
                                                     <div class="detail-item"${title.rating ? '' : ' style="margin-top: 10px;"'}>
-                                                        <span class="detail-label">Best Match Ever</span>
+                                                        <span class="detail-label">Best Match</span>
                                                         <span class="detail-value">${title.allTimeHighest ? title.allTimeHighest.toFixed(2) : '—'}</span>
                                                     </div>
                                                     <div class="detail-item">
-                                                        <span class="detail-label">Worst Match Ever</span>
+                                                        <span class="detail-label">Worst Match</span>
                                                         <span class="detail-value">${title.allTimeLowest ? title.allTimeLowest.toFixed(2) : '—'}</span>
                                                     </div>
                                                     <div class="detail-item">
