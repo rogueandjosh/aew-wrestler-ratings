@@ -5167,8 +5167,10 @@ const rows = [];
 for (let i = 0; i < filteredData.length; i++) {
     const wrestler = filteredData[i];
     const ratingClass = getRatingClass(wrestler.rating);
-    const changeClass = getChangeClass(wrestler.change);
-    const changeSymbol = getChangeSymbol(wrestler.change);
+    const changeValue = getDisplayChange(wrestler, ratingsData?.currentWeek);
+    const changeClass = getChangeClass(changeValue);
+    const changeSymbol = getChangeSymbol(changeValue);
+    const reentryAttr = changeValue === 'RE-ENTRY' ? ` data-reentry-slug="${createSlug(wrestler.name)}"` : '';
     const teamMembers = getTeamMembers(wrestler.name, division);
     
     // Determine image threshold based on division size
@@ -5415,7 +5417,7 @@ rows.push(`
         ${imageCell}
         <td class="name"><a href="wrestler-stats.html?wrestler=${createSlug(wrestler.name)}&returnWeek=${encodeURIComponent(document.getElementById('weekSelect').value)}&returnDivision=${division}" class="wrestler-link">${(division === 'menstag' || division === 'womenstag' || division === 'trios') ? stripTrioSuffix(getFactionDisplayName(wrestler.name, ratingsData?.currentWeek)) : wrestler.name}</a>${bestMatchAsterisk}${teamMembers}</td>
         <td class="rating ${ratingClass}">${(wrestler.rating || 100).toFixed(2)}</td>
-        <td class="change ${changeClass}">${changeSymbol}</td>
+        <td class="change ${changeClass}"${reentryAttr}>${changeSymbol}</td>
         <td class="matches-col">${wrestler.matches}</td>
         <td class="peak-col">${(wrestler.peak || 100).toFixed(2)}</td>
     </tr>
@@ -5472,6 +5474,7 @@ if (tableEl) {
             </tbody>
         </table>
     `;
+    resolveReentryCells(tableEl, ratingsData?.currentWeek);
 }
 
             // Update dropped out section
@@ -6771,6 +6774,60 @@ function renderStatistics(division) {
             const tierInfo = getTierColour(rating);
             if (tierInfo.tier === 'platinum') return '#c9a0ff';
             return tierInfo.solid;
+        }
+
+        // ── RE-ENTRY → NEW for first-time wrestlers/teams ──────────────
+        // The sheet sometimes marks a wrestler/team as RE-ENTRY in the week
+        // they are ranked for the very first time. Each name's own file
+        // (wrestlers/<slug>.json) has its full ratingHistory, so after the
+        // table is drawn we check every RE-ENTRY row: if the viewed week is
+        // the earliest week in that history, it is shown as NEW instead.
+        // Results are remembered so re-renders (search, Show All) show NEW
+        // straight away. If a file can't be loaded, RE-ENTRY is left as is.
+        var rankHistoryCache = {};            // slug -> Promise<ratingHistory[] | null>
+        var firstRankedWeeks = new Set();   // "week|slug" pairs confirmed as NEW
+
+        function loadRankHistory(slug) {
+            if (!rankHistoryCache[slug]) {
+                rankHistoryCache[slug] = fetch(`wrestlers/${slug}.json`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(d => (d && Array.isArray(d.ratingHistory)) ? d.ratingHistory : null)
+                    .catch(() => null);
+            }
+            return rankHistoryCache[slug];
+        }
+
+        // True only when the viewed week is in the history and no ranked
+        // week comes before it.
+        function isFirstRankedWeek(history, weekLabel) {
+            if (!history || !weekLabel) return false;
+            const thisWeek = history.find(h => h.week === weekLabel);
+            if (!thisWeek || !thisWeek.date) return false;
+            return !history.some(h => h.week !== weekLabel && h.date && h.date < thisWeek.date);
+        }
+
+        function getDisplayChange(wrestler, weekLabel) {
+            if (wrestler.change === 'RE-ENTRY' && firstRankedWeeks.has(`${weekLabel}|${createSlug(wrestler.name)}`)) {
+                return 'NEW';
+            }
+            return wrestler.change;
+        }
+
+        function resolveReentryCells(container, weekLabel) {
+            if (!container || !weekLabel) return;
+            container.querySelectorAll('td[data-reentry-slug]').forEach(cell => {
+                const slug = cell.dataset.reentrySlug;
+                loadRankHistory(slug).then(history => {
+                    if (!isFirstRankedWeek(history, weekLabel)) return;
+                    firstRankedWeeks.add(`${weekLabel}|${slug}`);
+                    // Only patch if this table is still showing the same week
+                    if (!cell.isConnected || ratingsData?.currentWeek !== weekLabel) return;
+                    cell.textContent = 'NEW';
+                    cell.classList.remove('rank-reentry');
+                    cell.classList.add('no-change');
+                    cell.removeAttribute('data-reentry-slug');
+                });
+            });
         }
 
         function getChangeClass(change) {
