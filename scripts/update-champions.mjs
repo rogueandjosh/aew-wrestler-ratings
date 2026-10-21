@@ -405,11 +405,25 @@ export function teamMembersFor(row, matchedName, kind, wrestlersIndex, teamMembe
   const size = kind === 'trios' ? 3 : 2;
   const named = bracketPeople(row.wikiChampion);
   const siteList = matchedName && teamMembers ? teamMembers[matchedName] : null;
-  if (siteList && siteList.length === size && (named.length < 2 || siteList.every(m => personAmong(m, named)))) return siteList;
-  const singles = wrestlersIndex.filter(w => !w.isTeam);
+  // Wikipedia often only brackets the tag team inside a trio, e.g.
+  // "Swerve Strickland and The New Level (Austin Creed and Kofi)" — so the bracket
+  // can name fewer people than the trio has. The site's list still agrees if every
+  // bracketed person is in it.
+  const agrees = list => named.length < 2
+    || (named.length >= size ? list.every(m => personAmong(m, named)) : named.every(n => personAmong(n, list)));
+  if (siteList && siteList.length === size && agrees(siteList)) return siteList;
   const base = normalizeName(stripNicknames(row.wikiChampion || '').replace(/\s*\(.*\)\s*$/, ''));
-  const people = named.length >= 2 ? named : (row.wikiLinks || []).map(stripNicknames)
+  const linked = (row.wikiLinks || []).map(stripNicknames)
     .filter(n => n && normalizeName(n) !== base && !wrestlersIndex.some(w => w.isTeam && normalizeName(w.name) === normalizeName(n)));
+  // Bracketed people first, then anyone else Wikipedia links (e.g. the third member
+  // named outside the bracket) until the team is full
+  let people = named.length >= 2 ? [...named] : linked;
+  if (named.length >= 2 && named.length < size) {
+    for (const n of linked) {
+      if (people.length >= size) break;
+      if (!personAmong(n, people)) people.push(n);
+    }
+  }
   const siteNames = people.map(resolvePerson);
   return siteNames.length >= 2 ? [...new Set(siteNames)].slice(0, size) : [];
 }

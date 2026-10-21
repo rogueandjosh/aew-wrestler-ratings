@@ -2856,9 +2856,12 @@
         function champPhotosHtml(name, slug, isTeam, savedMembers) {
             let members = [];
             if (isTeam) {
-                members = (savedMembers && savedMembers.length >= 2 ? savedMembers : null)
-                    || (teamMembersForChamps && (teamMembersForChamps[name] || teamMembersForChamps[currentNameOf(name)]))
-                    || [];
+                const saved = savedMembers && savedMembers.length >= 2 ? savedMembers : null;
+                const listed = (teamMembersForChamps && (teamMembersForChamps[name] || teamMembersForChamps[currentNameOf(name)])) || null;
+                // Trios where only the tag pair was saved (e.g. "New Level & Strickland" saved as
+                // Creed & Kofi): use the site's fuller list when it includes everyone saved
+                const listedIsFuller = saved && listed && listed.length > saved.length && saved.every(m => listed.includes(m));
+                members = (listedIsFuller ? listed : saved) || listed || [];
             }
             return {
                 members,
