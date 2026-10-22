@@ -5,7 +5,17 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="canonical" href="https://www.elitewrestlerratings.com/wrestler-stats.html" />
+<script>
+  // Each wrestler page is its own page for Google; no wrestler → go to Search
+  (function () {
+    var slug = new URLSearchParams(location.search).get('wrestler');
+    if (!slug) { location.replace('wrestler-search.html'); return; }
+    var link = document.createElement('link');
+    link.rel = 'canonical';
+    link.href = 'https://www.elitewrestlerratings.com/wrestler-stats.html?wrestler=' + encodeURIComponent(slug);
+    document.head.appendChild(link);
+  })();
+</script>
        <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -1802,6 +1812,8 @@
                 if (currentSlug !== wrestlerSlug) {
                     urlParams.set('wrestler', currentSlug);
                     history.replaceState(null, '', `${location.pathname}?${urlParams.toString()}${location.hash}`);
+                    const canon = document.querySelector('link[rel="canonical"]');
+                    if (canon) canon.href = 'https://www.elitewrestlerratings.com/wrestler-stats.html?wrestler=' + encodeURIComponent(currentSlug);
                 }
                 loadWrestlerData(currentSlug);
             }
@@ -3914,6 +3926,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         function showError(message) {
+            document.head.insertAdjacentHTML('beforeend', '<meta name="robots" content="noindex">');
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'block';
             document.getElementById('error').innerHTML = `
