@@ -7,7 +7,7 @@
 //   • skips headlines the site can't display reliably (same checks as index.html)
 //   • never re-picks a match already shown on that date in an earlier year —
 //     unless every candidate has been shown, then it picks from the least recently shown
-//   • weighted by rating (rating ^ WEIGHT_POWER), so stronger matches come up more often
+//   • weighted by rating (rating ^ 8), so stronger matches come up much more often
 // A recorded pick is never changed, so the file is a permanent history of what was shown.
 // Set OTD_NOW=YYYY-MM-DD to simulate another day when testing locally.
 // =====================================================================================
@@ -15,7 +15,7 @@ import fs from 'fs';
 
 const DAILY_DIR = 'on-this-day-daily';
 const PICKS_FILE = 'on-this-day-picks.json';
-const WEIGHT_POWER = 3;        // 9.6 vs 6.5 rating ≈ 3x as likely. Raise = favour stronger more.
+const WEIGHT_POWER = 8;        // 9.6 vs 6.5 rating ≈ 23x as likely; top-rated match picked ~47% of the time. Raise = favour stronger more.
 const DEFAULT_RATING = 6;      // used when a match has no rating
 const DAY_OFFSETS = [-1, 0, 1, 2];
 

@@ -3557,9 +3557,9 @@
             return null;
         }
 
-        // Same weighting as scripts/pick-on-this-day.mjs: rating cubed, so stronger
-        // matches are favoured (9.6 is about 3x as likely as 6.5). No rating counts as 6.
-        const OTD_WEIGHT_POWER = 5;
+        // Same weighting as scripts/pick-on-this-day.mjs: rating to the power 8, so stronger
+        // matches are strongly favoured (9.6 is about 23x as likely as 6.5). No rating counts as 6.
+        const OTD_WEIGHT_POWER = 8;
         function otdWeight(h) {
             const r = typeof h.details.rating === 'number' ? h.details.rating : 6;
             return Math.pow(Math.max(r, 1), OTD_WEIGHT_POWER);
@@ -3586,10 +3586,17 @@
                 if (recorded) return recorded;
             }
 
-            const shownBefore = new Set(Object.entries(history)
-                .filter(([y]) => Number(y) < Number(year)).map(([, id]) => String(id)));
-            const unshown = headlines.filter(h => !shownBefore.has(String(h.matchId)));
-            const pool = unshown.length > 0 ? unshown : headlines;
+            // Most recent earlier year each match was shown on this date
+            const lastShown = {};
+            Object.entries(history).forEach(([y, id]) => {
+                if (Number(y) < Number(year)) lastShown[String(id)] = Math.max(lastShown[String(id)] || 0, Number(y));
+            });
+            let pool = headlines.filter(h => lastShown[String(h.matchId)] === undefined);
+            if (pool.length === 0) {
+                // All shown before — same as the Action: pick from those shown longest ago
+                const oldest = Math.min(...headlines.map(h => lastShown[String(h.matchId)]));
+                pool = headlines.filter(h => lastShown[String(h.matchId)] === oldest);
+            }
 
             const rand = seededRandomFromDate(seedStr);
             const total = pool.reduce((sum, h) => sum + otdWeight(h), 0);
