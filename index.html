@@ -5103,7 +5103,7 @@ let visibleColumns = {
                 <span class="toggle-slider"></span>
         <span class="sr-only">Show Dropped Out Wrestlers</span>
     </label>
-    <label class="filter-label" id="show-dropped-label-${division}" ...
+    <label class="filter-label" id="show-dropped-label-${division}" for="show-dropped-${division}">Show Dropped Out Wrestlers</label>
 </div>
 
                 <div class="stats-summary" id="stats-${division}">
@@ -5486,6 +5486,7 @@ if (tableEl) {
 
             // Update dropped out section
             const droppedEl = document.getElementById('dropped-' + division);
+            if (droppedEl) droppedEl.style.display = showDropped ? '' : 'none';
             if (droppedEl && showDropped) {
                 const droppedOutKey = division + 'DroppedOut';
                 const droppedOut = ratingsData[droppedOutKey];
