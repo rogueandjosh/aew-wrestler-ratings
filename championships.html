@@ -428,6 +428,55 @@
             }
         }
 
+        /* Show search: our own scrollable list (the same on index.html and championships.html) */
+        .show-search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: -2px;
+            background: #1a1a2e;
+            border: 2px solid #ffd700;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0 0 8px 8px;
+            max-height: min(300px, 45vh);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            z-index: 1000;
+            display: none;
+            text-align: left;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+        .show-search-dropdown.open { display: block; }
+        .show-search-wrap.open input { border-radius: 5px 5px 0 0; }
+        .show-search-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            color: #e0e0e0;
+            font-size: 0.95em;
+            line-height: 1.3;
+        }
+        .show-search-option:last-child { border-bottom: none; }
+        .show-search-option .sso-week {
+            color: #a8a394;
+            font-size: 0.8em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .show-search-option.active { background: rgba(255, 215, 0, 0.15); }
+        @media (hover: hover) {
+            .show-search-option:hover { background: rgba(255, 215, 0, 0.15); }
+        }
+        .show-search-option.selected .sso-name { color: #ffd700; font-weight: 700; }
+        .show-search-option.random .sso-name { color: #ffd700; }
+        .show-search-empty { padding: 10px 12px; color: #999; font-size: 0.9em; }
+
         .show-search-wrap {
             position: relative;
             width: 100%;
@@ -2355,11 +2404,11 @@
 
                     <div class="search-row">
                             <div class="filter-item show-search-item">
-                                <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the championship ratings from that week, or click into the empty box to browse every show in order.">Or Search a Show</label>
+                                <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the championship ratings from that week, or tap the box to browse every show, newest first.">Or Search a Show</label>
                                 <div class="show-search-wrap">
-                                    <input type="text" id="showSearch" list="showSearchList" placeholder="e.g. All In: Texas" onchange="loadShowFromSearch()" oninput="toggleShowSearchClear()" autocomplete="off">
+                                    <input type="text" id="showSearch" placeholder="e.g. All In: Texas" oninput="toggleShowSearchClear()" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="showSearchDropdown">
                                     <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
-                                    <datalist id="showSearchList"></datalist>
+                                    <div id="showSearchDropdown" class="show-search-dropdown" role="listbox" aria-label="Shows"></div>
                                 </div>
                             </div>
                     </div>
@@ -4613,22 +4662,165 @@
             return `${monthNames[monthIdx]} '${yearShort} Week ${parseInt(m[3], 10)}`;
         }
 
+        // ===== SHOW SEARCH LIST =====
+        // Our own scrollable list instead of the phone's built-in suggestions, so it looks
+        // and works the same everywhere: tap the box to browse every show (newest first,
+        // with its week), type to narrow it, tap a show to load that week. Arrow keys,
+        // Enter and Escape work on a laptop. Same code on index.html and championships.html;
+        // only showSearchWeekLabel() differs per page.
+        const SHOW_RANDOM = '🎲 Random Show';
+        let showSearchItems = [];
+        let showSearchActive = -1;
+        let showSearchReady = false;
+
         function populateShowSearch() {
-            const datalist = document.getElementById('showSearchList');
-            if (!datalist || !showIndex || !showIndex.length) return;
+            if (showSearchReady) return;
+            const input = document.getElementById('showSearch');
+            const box = document.getElementById('showSearchDropdown');
+            if (!input || !box) return;
+            showSearchReady = true;
 
-            datalist.innerHTML = '';
-
-            const randomOption = document.createElement('option');
-            randomOption.value = '🎲 Random Show';
-            datalist.appendChild(randomOption);
-
-            const sorted = showIndex.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
-            sorted.forEach(entry => {
-                const option = document.createElement('option');
-                option.value = entry.show;
-                datalist.appendChild(option);
+            input.addEventListener('focus', openShowSearch);
+            input.addEventListener('click', openShowSearch);
+            input.addEventListener('input', () => renderShowSearch(input.value));
+            input.addEventListener('keydown', showSearchKeydown);
+            input.addEventListener('blur', () => setTimeout(() => {
+                const wrap = input.closest('.show-search-wrap');
+                if (!wrap || !wrap.contains(document.activeElement)) closeShowSearch();
+            }, 150));
+            // Keep the box focused while tapping/clicking in the list
+            box.addEventListener('mousedown', e => e.preventDefault());
+            box.addEventListener('click', e => {
+                const opt = e.target.closest('.show-search-option');
+                if (opt) pickShow(opt.dataset.show);
             });
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.show-search-wrap')) closeShowSearch();
+            });
+        }
+
+        function buildShowSearchItems() {
+            showSearchItems = (showIndex || []).slice()
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(e => ({ show: e.show, week: showSearchWeekLabel(e) }))
+                .filter(e => e.week);
+        }
+
+        function openShowSearch() {
+            const input = document.getElementById('showSearch');
+            if (!input || !showIndex || !showIndex.length) return;
+            buildShowSearchItems();
+            renderShowSearch(input.value);
+            document.getElementById('showSearchDropdown').classList.add('open');
+            input.closest('.show-search-wrap').classList.add('open');
+            input.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeShowSearch() {
+            const input = document.getElementById('showSearch');
+            const box = document.getElementById('showSearchDropdown');
+            if (!input || !box) return;
+            box.classList.remove('open');
+            input.closest('.show-search-wrap').classList.remove('open');
+            input.setAttribute('aria-expanded', 'false');
+            showSearchActive = -1;
+        }
+
+        function renderShowSearch(query) {
+            const box = document.getElementById('showSearchDropdown');
+            if (!box) return;
+            const q = String(query || '').trim().toLowerCase();
+            const exact = q && showSearchItems.some(i => i.show.toLowerCase() === q);
+            // Empty box, or a show already chosen: the full list. Otherwise: shows matching anywhere.
+            const list = (!q || exact) ? showSearchItems
+                : showSearchItems.filter(i => i.show.toLowerCase().includes(q) || i.week.toLowerCase().includes(q));
+            box.innerHTML = '';
+            const add = (show, week, cls) => {
+                const opt = document.createElement('div');
+                opt.className = 'show-search-option' + (cls ? ' ' + cls : '');
+                opt.setAttribute('role', 'option');
+                opt.dataset.show = show;
+                const n = document.createElement('span');
+                n.className = 'sso-name';
+                n.textContent = show;
+                opt.appendChild(n);
+                if (week) {
+                    const w = document.createElement('span');
+                    w.className = 'sso-week';
+                    w.textContent = week;
+                    opt.appendChild(w);
+                }
+                box.appendChild(opt);
+                return opt;
+            };
+            if (!q || exact) add(SHOW_RANDOM, '', 'random');
+            let selected = null;
+            list.forEach(i => {
+                const opt = add(i.show, i.week, exact && i.show.toLowerCase() === q ? 'selected' : '');
+                if (opt.classList.contains('selected')) selected = opt;
+            });
+            if (!list.length) {
+                const none = document.createElement('div');
+                none.className = 'show-search-empty';
+                none.textContent = 'No shows found';
+                box.appendChild(none);
+            }
+            showSearchActive = -1;
+            box.scrollTop = selected ? Math.max(0, selected.offsetTop - box.clientHeight / 2) : 0;
+        }
+
+        function showSearchKeydown(e) {
+            const box = document.getElementById('showSearchDropdown');
+            if (!box) return;
+            const opts = Array.from(box.querySelectorAll('.show-search-option'));
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (!box.classList.contains('open')) openShowSearch();
+                if (!opts.length) return;
+                showSearchActive = e.key === 'ArrowDown'
+                    ? Math.min(opts.length - 1, showSearchActive + 1)
+                    : Math.max(0, showSearchActive - 1);
+                opts.forEach((o, i) => o.classList.toggle('active', i === showSearchActive));
+                opts[showSearchActive].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const real = opts.filter(o => !o.classList.contains('random'));
+                const choice = opts[showSearchActive] || (real.length === 1 ? real[0] : null)
+                    || real.find(o => o.dataset.show.toLowerCase() === e.target.value.trim().toLowerCase());
+                if (choice) pickShow(choice.dataset.show);
+            } else if (e.key === 'Escape') {
+                closeShowSearch();
+            }
+        }
+
+        function pickShow(show) {
+            const input = document.getElementById('showSearch');
+            if (!input) return;
+            if (show === SHOW_RANDOM) {
+                if (!showSearchItems.length) buildShowSearchItems();
+                if (!showSearchItems.length) return;
+                show = showSearchItems[Math.floor(Math.random() * showSearchItems.length)].show;
+            }
+            input.value = show;
+            closeShowSearch();
+            toggleShowSearchClear();
+            loadShowFromSearch();
+        }
+
+        // The week label shown next to each show (null = no championship week for it, so not listed)
+        function showSearchWeekLabel(entry) {
+            if (!archiveIndex || !archiveIndex.weeks || !archiveIndex.weeks.length) return showIndexFilenameToLabel(entry.filename);
+            return champWeekLabelFor(entry.filename);
+        }
+
+        // This page's week label for a show-index file: "Jul '25 Week 2", or the month on its
+        // own for the monthly weeks ("2019-08-week1.json" → "Aug '19"); null if there isn't one
+        function champWeekLabelFor(filename) {
+            const label = showIndexFilenameToLabel(filename);
+            if (!label || !archiveIndex || !archiveIndex.weeks) return null;
+            if (archiveIndex.weeks.some(w => w.week === label)) return label;
+            const month = label.replace(/\s+Week\s+\d+$/, '');
+            return archiveIndex.weeks.some(w => w.week === month) ? month : null;
         }
 
         async function loadShowFromSearch() {
@@ -4655,7 +4847,14 @@
                 return;
             }
 
-            const label = showIndexFilenameToLabel(match.filename);
+            const label = champWeekLabelFor(match.filename);
+            // The newest week is shown as the current week, not listed separately
+            if (skipFirstArchiveWeek && label && archiveIndex.weeks[0] && archiveIndex.weeks[0].week === label) {
+                resetToCurrent();
+                toggleShowSearchClear();
+                input.blur();
+                return;
+            }
             const weeksToUse = skipFirstArchiveWeek ? archiveIndex.weeks.slice(1) : archiveIndex.weeks;
             const champWeek = label ? weeksToUse.find(w => w.week === label) : null;
 
