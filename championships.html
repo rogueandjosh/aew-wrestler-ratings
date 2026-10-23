@@ -477,6 +477,29 @@
         .show-search-option.random .sso-name { color: #ffd700; }
         .show-search-empty { padding: 10px 12px; color: #999; font-size: 0.9em; }
 
+        /* "Or Search a Show ⌄" — folds the show box away under the week buttons */
+        .week-selector button.show-search-toggle {
+            background: none !important;
+            border: none !important;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9em;
+            font-family: inherit;
+            padding: 4px 8px !important;
+            margin: 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: none !important;
+            height: auto;
+            min-width: 0;
+        }
+        .show-search-toggle svg { transition: transform 0.2s; flex-shrink: 0; }
+        .show-search-item.open .show-search-toggle svg { transform: rotate(180deg); }
+        .show-search-item { display: flex; flex-direction: column; align-items: center; }
+        .show-search-body { display: none; width: 100%; margin-top: 6px; }
+        .show-search-item.open .show-search-body { display: block; }
+
         .show-search-wrap {
             position: relative;
             width: 100%;
@@ -2402,21 +2425,23 @@
                         </button>
                     </div>
 
-                    <div class="search-row">
-                            <div class="filter-item show-search-item">
-                                <label class="tt" data-tt="Start typing a pay-per-view name to jump straight to the championship ratings from that week, or tap the box to browse every show, newest first.">Or Search a Show</label>
-                                <div class="show-search-wrap">
-                                    <input type="text" id="showSearch" placeholder="e.g. All In: Texas" oninput="toggleShowSearchClear()" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="showSearchDropdown">
-                                    <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
-                                    <div id="showSearchDropdown" class="show-search-dropdown" role="listbox" aria-label="Shows"></div>
-                                </div>
-                            </div>
-                    </div>
 
                     <div class="action-buttons">
                         <button id="firstBtn" onclick="loadFirstWeek()" class="reset-btn tt" data-tt="Jump to the very first week of Championship ratings">⏮ First</button>
                         <button id="randomBtn" onclick="loadRandomWeek()" class="reset-btn">🎲 Random</button>
                         <button id="resetBtn" onclick="resetToCurrent()" class="reset-btn">↻ Current</button>
+                    </div>
+                    <div class="search-row">
+                            <div class="filter-item show-search-item">
+                                <button type="button" id="showSearchToggle" class="show-search-toggle tt" data-tt="Open the show search, then type a pay-per-view name or browse every show (newest first) to jump to the championship ratings from that week." aria-expanded="false" aria-controls="showSearchBody" onclick="toggleShowSearchBox()">Or Search a Show <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                                <div id="showSearchBody" class="show-search-body">
+                                <div class="show-search-wrap">
+                                    <input type="text" id="showSearch" placeholder="e.g. All In: Texas" oninput="toggleShowSearchClear()" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="showSearchDropdown">
+                                    <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
+                                    <div id="showSearchDropdown" class="show-search-dropdown" role="listbox" aria-label="Shows"></div>
+                                </div>
+                                </div>
+                            </div>
                     </div>
                     <span id="archiveStatusMsg"></span>
                 </div>
@@ -4352,6 +4377,7 @@
 
             panel.style.display = isHidden ? 'block' : 'none';
             btn.textContent = isHidden ? '▲ Hide Week Selector' : '▼ Change Week / Browse Archive';
+            if (isHidden) setShowSearchBox(!!(document.getElementById('showSearch') || {}).value);
         }
 
         function populateWeekSelector() {
@@ -4705,7 +4731,7 @@
                 panel.addEventListener('change', e => { if (e.target.matches('select')) clearShowSearchText(); });
                 panel.addEventListener('click', e => {
                     const btn = e.target.closest('button');
-                    if (btn && !btn.closest('.show-search-wrap')) clearShowSearchText();
+                    if (btn && !btn.closest('.show-search-item')) clearShowSearchText();
                 });
             }
             const back = document.getElementById('backToCurrentBtn');
@@ -4714,10 +4740,27 @@
 
         function clearShowSearchText() {
             const input = document.getElementById('showSearch');
-            if (!input || !input.value) return;
-            input.value = '';
-            toggleShowSearchClear();
-            closeShowSearch();
+            if (!input) return;
+            if (input.value) {
+                input.value = '';
+                toggleShowSearchClear();
+            }
+            setShowSearchBox(false);
+        }
+
+        // "Or Search a Show ⌄": open/close the show box (the box itself works as before)
+        function setShowSearchBox(open) {
+            const item = document.querySelector('.show-search-item');
+            const toggle = document.getElementById('showSearchToggle');
+            if (!item) return;
+            item.classList.toggle('open', open);
+            if (toggle) toggle.setAttribute('aria-expanded', String(open));
+            if (!open) closeShowSearch();
+        }
+
+        function toggleShowSearchBox() {
+            const item = document.querySelector('.show-search-item');
+            setShowSearchBox(!(item && item.classList.contains('open')));
         }
 
         function buildShowSearchItems() {
@@ -4824,6 +4867,7 @@
             }
             input.value = show;
             closeShowSearch();
+            setShowSearchBox(true);
             toggleShowSearchClear();
             loadShowFromSearch();
         }
