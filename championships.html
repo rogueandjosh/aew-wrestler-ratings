@@ -4697,6 +4697,27 @@
             document.addEventListener('click', e => {
                 if (!e.target.closest('.show-search-wrap')) closeShowSearch();
             });
+            // Choosing a week any other way (Year/Month/Week, the arrows, First/Random/Current,
+            // Back to current week) empties the show box — only real user actions fire these,
+            // so loading a show from the box doesn't clear itself
+            const panel = document.getElementById('weekSelectorPanel');
+            if (panel) {
+                panel.addEventListener('change', e => { if (e.target.matches('select')) clearShowSearchText(); });
+                panel.addEventListener('click', e => {
+                    const btn = e.target.closest('button');
+                    if (btn && !btn.closest('.show-search-wrap')) clearShowSearchText();
+                });
+            }
+            const back = document.getElementById('backToCurrentBtn');
+            if (back) back.addEventListener('click', clearShowSearchText);
+        }
+
+        function clearShowSearchText() {
+            const input = document.getElementById('showSearch');
+            if (!input || !input.value) return;
+            input.value = '';
+            toggleShowSearchClear();
+            closeShowSearch();
         }
 
         function buildShowSearchItems() {
