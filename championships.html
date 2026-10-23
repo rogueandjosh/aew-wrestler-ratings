@@ -2488,7 +2488,9 @@
         let expandedRows = new Set();
         let rowKeys = [];   // row number → "main|Title", "dropped|Title" or "inactive|Title" for the current render
         function isRowOpen(i) { return expandedRows.has(rowKeys[i]); }
+        // Tooltips on/off — remembered across pages and visits (same 'aewTooltips' setting as the rest of the site)
         let tooltipsEnabled = true;
+        try { tooltipsEnabled = localStorage.getItem('aewTooltips') !== 'false'; } catch (e) {} // storage can be blocked by the browser
         let isNavigating = false;
         let currentSort = { column: 'rank', direction: 'asc' };
         let viewMode = 'reign'; // 'reign' or 'alltime'
@@ -3366,16 +3368,24 @@
 
         function toggleTooltips() {
             tooltipsEnabled = !tooltipsEnabled;
+            try { localStorage.setItem('aewTooltips', tooltipsEnabled); } catch (e) {}
+            updateTooltipButton();
+        }
+
+        function updateTooltipButton() {
             const btn = document.getElementById('tooltipToggle');
+            if (!btn) return;
             if (tooltipsEnabled) {
                 btn.textContent = '💡 Tooltips ON';
                 btn.classList.add('active');
             } else {
                 btn.textContent = '💡 Tooltips OFF';
                 btn.classList.remove('active');
-                document.getElementById('ttBox').classList.remove('visible');
+                const box = document.getElementById('ttBox');
+                if (box) box.classList.remove('visible');
             }
         }
+        document.addEventListener('DOMContentLoaded', updateTooltipButton);
 
         // ===== DATA LOADING =====
         let skipFirstArchiveWeek = false; // True if current matches most recent archive
