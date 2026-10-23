@@ -376,6 +376,35 @@
             .current-champion-name { font-size: 1em; }
         }
 
+        /* Week & show selector preview (23 Oct 2026 update) */
+        .ss-preview { max-width: 340px; }
+        .ss-labels { display: flex; gap: 5px; padding: 0 31px; color: #ffd700; font-weight: 700; font-size: 0.85em; }
+        .ss-labels span { flex: 1 1 0; text-align: center; }
+        .ss-toggle { text-align: center; color: #ffd700; font-weight: 700; font-size: 0.95em; margin-top: 2px; }
+        .ss-chev { display: inline-block; font-size: 0.9em; margin-left: 3px; }
+        .ss-card { border: 1.5px solid #ffd700; border-radius: 6px; overflow: hidden; }
+        .ss-input {
+            position: relative; padding: 8px 10px; color: #e0e0e0;
+            background: rgba(255, 215, 0, 0.18); border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .ss-x {
+            position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.15); color: #ffd700; font-size: 0.7em;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ss-list { background: #1a1a2e; }
+        .ss-opt {
+            display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+            padding: 8px 10px; color: #e0e0e0; border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+        }
+        .ss-opt span { color: #a8a394; font-size: 0.8em; white-space: nowrap; }
+        .ss-random { color: #ffd700; }
+        .ss-sel { color: #ffd700; font-weight: 700; }
+        .ss-sel span { color: #a8a394; font-weight: 400; }
+        .ss-preview .ws-box { white-space: nowrap; overflow: hidden; }
+        .ss-fade { border-bottom: none; opacity: 0.35; }
+
         .update-body p { margin-bottom: 10px; }
         .update-body p:last-child { margin-bottom: 0; }
 
@@ -462,6 +491,51 @@
     </header>
 
     <div class="updates-list">
+
+        <!-- ── Oct 23, 2026 — Smoother week & show selector ── -->
+        <div class="update-card">
+            <div class="update-header">
+                <span class="update-date">23 Oct 2026</span>
+                <span class="update-tag tag-feature">FEATURE</span>
+                <span class="update-title">🔍 Smoother Week &amp; Show Selector</span>
+            </div>
+            <div class="update-body">
+                <div class="ws-preview ss-preview" aria-hidden="true">
+                    <div class="ss-labels"><span>Year</span><span>Month</span><span>Week</span></div>
+                    <div class="ws-row">
+                        <span class="ws-arrow">‹</span>
+                        <span class="ws-box">'26</span>
+                        <span class="ws-box">Sep</span>
+                        <span class="ws-box">Week 4</span>
+                        <span class="ws-arrow">›</span>
+                    </div>
+                    <div class="ws-row">
+                        <span class="ws-btn">⏮ First</span>
+                        <span class="ws-btn">🎲 Random</span>
+                        <span class="ws-btn">↻ Current</span>
+                    </div>
+                    <div class="ss-toggle">Or Search a Show <span class="ss-chev">⌃</span></div>
+                    <div class="ss-card">
+                        <div class="ss-input">All Out '26<span class="ss-x">✕</span></div>
+                        <div class="ss-list">
+                            <div class="ss-opt ss-random">🎲 Random Show</div>
+                            <div class="ss-opt">WrestleDream '26<span>Oct '26 Week 3</span></div>
+                            <div class="ss-opt ss-sel">All Out '26<span>Sep '26 Week 4</span></div>
+                            <div class="ss-opt">All In: London '26<span>Aug '26 Week 5</span></div>
+                            <div class="ss-opt ss-fade">Redemption '26<span>Jul '26 Week 4</span></div>
+                        </div>
+                    </div>
+                </div>
+                <p>The week selector on the home page and <a href="championships.html">Championships</a> is tidier and easier to use:</p>
+                <ul>
+                    <li><strong>First, Random and Current</strong> now sit straight under Year, Month and Week</li>
+                    <li><strong>Or Search a Show ⌄</strong> opens the show search only when you want it</li>
+                    <li><strong>A neat, scrollable list</strong> of every show, newest first with its week. Type to narrow it down, or pick 🎲 Random Show</li>
+                    <li>Choosing a week any other way clears the show box, so it never shows a show from a different week</li>
+                </ul>
+                <p>Also, turning tooltips off is now remembered on the Championships page too.</p>
+            </div>
+        </div>
 
         <!-- ── Oct 17, 2026 — Championships follow the week selector ── -->
         <div class="update-card">
