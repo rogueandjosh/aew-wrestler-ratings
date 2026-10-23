@@ -428,28 +428,47 @@
             }
         }
 
-        /* Show search: our own scrollable list (the same on index.html and championships.html) */
+        /* Show search: our own scrollable list (the same on index.html and championships.html).
+           The box and its list form one gold card inside the selector panel. */
+        .show-search-field { position: relative; }
         .show-search-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            margin-top: -2px;
+            position: relative;
             background: #1a1a2e;
             border: 2px solid #ffd700;
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 0 0 8px 8px;
-            max-height: min(300px, 45vh);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 228px;              /* about 5 shows, the 6th peeking */
             overflow-y: auto;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
-            z-index: 1000;
             display: none;
             text-align: left;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
+        /* Soft fade at the bottom while there's more to scroll */
+        .show-search-dropdown::after {
+            content: '';
+            position: sticky;
+            bottom: 0;
+            display: block;
+            height: 30px;
+            margin-top: -30px;
+            background: linear-gradient(rgba(26, 26, 46, 0), #1a1a2e);
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .show-search-dropdown.at-end::after { opacity: 0; }
         .show-search-dropdown.open { display: block; }
-        .show-search-wrap.open input { border-radius: 5px 5px 0 0; }
+        .show-search-wrap.open input {
+            border-radius: 6px 6px 0 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        /* One gold frame: no second focus ring on this box — focus shows as a brighter fill */
+        #showSearch:focus,
+        #showSearch:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+            background: rgba(255, 215, 0, 0.18);
+        }
         .show-search-option {
             display: flex;
             justify-content: space-between;
@@ -457,7 +476,7 @@
             gap: 10px;
             padding: 10px 12px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
             color: #e0e0e0;
             font-size: 0.95em;
             line-height: 1.3;
@@ -2436,8 +2455,10 @@
                                 <button type="button" id="showSearchToggle" class="show-search-toggle tt" data-tt="Open the show search, then type a pay-per-view name or browse every show (newest first) to jump to the championship ratings from that week." aria-expanded="false" aria-controls="showSearchBody" onclick="toggleShowSearchBox()">Or Search a Show <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
                                 <div id="showSearchBody" class="show-search-body">
                                 <div class="show-search-wrap">
+                                    <div class="show-search-field">
                                     <input type="text" id="showSearch" placeholder="e.g. All In: Texas" oninput="toggleShowSearchClear()" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="showSearchDropdown">
                                     <button type="button" id="showSearchClear" class="show-search-clear" onclick="clearShowSearch()" style="display: none;" aria-label="Clear show search">✕</button>
+                                    </div>
                                     <div id="showSearchDropdown" class="show-search-dropdown" role="listbox" aria-label="Shows"></div>
                                 </div>
                                 </div>
@@ -4716,6 +4737,7 @@
             }, 150));
             // Keep the box focused while tapping/clicking in the list
             box.addEventListener('mousedown', e => e.preventDefault());
+            box.addEventListener('scroll', () => updateShowSearchFade(box));
             box.addEventListener('click', e => {
                 const opt = e.target.closest('.show-search-option');
                 if (opt) pickShow(opt.dataset.show);
@@ -4775,7 +4797,9 @@
             if (!input || !showIndex || !showIndex.length) return;
             buildShowSearchItems();
             renderShowSearch(input.value);
-            document.getElementById('showSearchDropdown').classList.add('open');
+            const listBox = document.getElementById('showSearchDropdown');
+            listBox.classList.add('open');
+            updateShowSearchFade(listBox);
             input.closest('.show-search-wrap').classList.add('open');
             input.setAttribute('aria-expanded', 'true');
         }
@@ -4831,6 +4855,11 @@
             }
             showSearchActive = -1;
             box.scrollTop = selected ? Math.max(0, selected.offsetTop - box.clientHeight / 2) : 0;
+            updateShowSearchFade(box);
+        }
+
+        function updateShowSearchFade(box) {
+            box.classList.toggle('at-end', box.scrollTop + box.clientHeight >= box.scrollHeight - 2);
         }
 
         function showSearchKeydown(e) {
