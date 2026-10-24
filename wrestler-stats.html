@@ -787,13 +787,13 @@
                 margin-bottom: 6px;
             }
 
-            .nav-buttons {
+            .nav-buttons:not(.ewr-header .nav-buttons) {
                 flex-wrap: wrap;
                 gap: 6px !important;
                 justify-content: center;
             }
 
-            .back-link {
+            .back-link:not(.ewr-header .back-link) {
                 padding: 6px 10px !important;
                 font-size: 0.8em !important;
             }
@@ -968,30 +968,24 @@
         #tooltipToggle:not(.active) { border-color: #888; color: #888; }
         #tooltipToggle:not(.active):hover { border-color: #ffd700; color: #ffd700; }
     </style>
+    <link rel="stylesheet" href="header.css?v=1">
 </head>
 <body>
     <script src="tooltips.js?v=2"></script>
     <div class="container">
-        <header style="position: relative;">
+        <header class="ewr-header">
+            <div class="nav-buttons">
+                <button type="button" onclick="goBackToRankings()" class="back-link">← Back</button>
+                <a href="index.html" class="back-link">🏠 Home</a>
+            </div>
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
             <p class="subtitle">Detailed statistics for individual wrestlers and teams</p>
             <p class="last-updated" id="lastUpdated"></p>
-            
-            <div class="nav-buttons" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
-               <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; color: #ffd700; font-size: 14px; font-weight: 600; transition: all 0.3s;">
-                    ← Back
-                </button>
-                <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; font-size: 14px; color: #ffd700;">                   
-                    🏠 Home
-                </a>
-                <a href="#" onclick="goToCompare(); return false;" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer; font-size: 14px; color: #ffd700;">
-                    🥊 Compare
-                </a>
-                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" title="Toggle on/off to show extra info when hovering over elements">
-                    💡 Tooltips ON
-                </button>
-            </div>
         </header>
+        <div class="ewr-subnav">
+            <a href="#" onclick="goToCompare(); return false;" class="ewr-btn">🥊 Compare</a>
+        </div>
 
         <div id="loading" class="loading">
             Loading wrestler statistics...

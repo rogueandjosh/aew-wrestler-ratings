@@ -785,25 +785,20 @@
 }
 
     </style>
+    <link rel="stylesheet" href="header.css?v=1">
 </head>
     <script src="tooltips.js?v=2"></script>
 <body>
     <div class="container">
-        <header style="border: 2px solid #ffd700; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+        <header class="ewr-header">
+            <div class="nav-buttons">
+                <button type="button" onclick="goBackToRankings()" class="back-link">← Back</button>
+                <a href="index.html" class="back-link">🏠 Home</a>
+            </div>
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1 style="cursor: pointer;" onclick="window.location.href='wrestler-compare.html'" title="Reset to default">🥊 Compare Wrestlers</h1>
             <p class="subtitle">Side-by-side wrestler comparison</p>
             <p class="last-updated" id="lastUpdated"></p>
-            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
-                <button onclick="goBackToRankings()" class="back-link" style="cursor: pointer; background: transparent; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit;">
-                    ← Back
-                </button>
-                <a href="index.html" class="back-link" style="text-decoration: none; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; display: inline-block; font-size: 14px; font-weight: 600;">
-                    🏠 Home
-                </a>
-                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: transparent; border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit;" title="Toggle on/off to show extra info when hovering over elements">
-                    💡 Tooltips ON
-                </button>
-            </div>
         </header>
 
         <main>

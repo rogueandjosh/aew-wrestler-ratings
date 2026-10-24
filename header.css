@@ -1,0 +1,102 @@
+/* ===== SHARED PAGE HEADER =====
+   Every page except index.html (which keeps its ☰ menu) uses this header:
+     <header class="ewr-header">
+       <div class="nav-buttons">← Back · 🏠 Home</div>          top-left
+       <button id="tooltipToggle">💡 Tooltips ON</button>       top-right
+       <h1>…</h1> <p class="subtitle">…</p> …                   centred
+     </header>
+   Change the look here and it changes on every page.
+   .ewr-btn gives the same gold button style to a button outside the header
+   (e.g. 🥊 Compare on wrestler-stats). */
+
+header.ewr-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 60px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+}
+
+/* Back / Home: top-left */
+header.ewr-header .nav-buttons {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+}
+header.ewr-header .back-link,
+.ewr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    padding: 8px 16px;
+    background: rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+    border-radius: 5px;
+    color: #ffd700;
+    font-family: inherit;
+    font-size: 14.4px;
+    font-weight: bold;
+    line-height: 1.3;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+header.ewr-header .back-link:hover,
+.ewr-btn:hover {
+    background: rgba(255, 215, 0, 0.3);
+    color: #ffd700;
+    transform: translateY(-2px);
+}
+
+/* Tooltips on/off: top-right */
+header.ewr-header #tooltipToggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+    margin: 0;
+    padding: 4px 8px;
+    background: none;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 4px;
+    color: #ffd700;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+header.ewr-header #tooltipToggle:hover { background: rgba(255, 215, 0, 0.1); border-color: #ffd700; }
+header.ewr-header #tooltipToggle:not(.active) { color: #666; border-color: #444; }
+header.ewr-header #tooltipToggle:not(.active):hover { color: #ffd700; border-color: #ffd700; }
+
+/* Below laptop width the buttons get their own row above the title */
+@media (max-width: 1100px) {
+    header.ewr-header { padding: 62px 20px 15px; }
+    header.ewr-header > h1:first-of-type { margin-top: 0; }
+}
+@media (max-width: 768px) {
+    header.ewr-header { padding: 56px 15px 15px; }
+    header.ewr-header .nav-buttons { top: 10px; left: 10px; gap: 8px; }
+    header.ewr-header .back-link,
+    .ewr-btn { padding: 6px 12px; font-size: 13.6px; }
+    header.ewr-header #tooltipToggle { top: 14px; right: 10px; }
+}
+
+/* Row of extra buttons straight under the header (e.g. 🥊 Compare) */
+.ewr-subnav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: -15px 0 25px;
+}

@@ -957,41 +957,12 @@
                 margin-top: 2px;
             }
         }
-        /* ===== Header: same gold box as the other pages ===== */
-        header.ewr-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px 60px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 15px;
-            border: 2px solid #ffd700;
-            border-bottom: 2px solid #ffd700;
-            position: relative;
-        }
+        /* Header: box and buttons come from the shared header.css */
         header.ewr-header h1 { color: #ffd700; font-size: 2.2em; margin: 30px 0 8px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
         header.ewr-header h1 a { color: inherit; text-decoration: none; }
         header.ewr-header .subtitle { color: #b8b8b8; font-size: 1em; }
-        header.ewr-header .nav-buttons {
-            position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; margin: 0;
-        }
-        header.ewr-header .back-link {
-            background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px;
-            border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9em; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 5px; font-family: inherit; transition: all 0.3s ease;
-        }
-        header.ewr-header .back-link:hover { background: rgba(255, 215, 0, 0.3); transform: translateY(-2px); }
-        header.ewr-header #tooltipToggle {
-            position: absolute; top: 15px; right: 15px; background: none; border: 1px solid rgba(255, 215, 0, 0.4);
-            cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; color: #ffd700;
-            font-family: inherit; margin: 0; transition: all 0.2s;
-        }
-        header.ewr-header #tooltipToggle:not(.active) { color: #666; border-color: #444; }
         @media (max-width: 768px) {
-            header.ewr-header { padding: 15px 20px; padding-top: 60px; }
-            header.ewr-header h1 { font-size: 1.6em; margin-top: 0; }
-            header.ewr-header .nav-buttons { top: 10px; left: 10px; }
-            header.ewr-header .back-link { padding: 6px 12px; font-size: 0.85em; }
-            header.ewr-header #tooltipToggle { top: 12px; right: 10px; }
+            header.ewr-header h1 { font-size: 1.6em; }
             header.ewr-header .subtitle { font-size: 0.85em; }
         }
 
@@ -1057,6 +1028,7 @@
         }
 
     </style>
+    <link rel="stylesheet" href="header.css?v=1">
 </head>
 <body>
     <div class="container">
