@@ -1109,7 +1109,7 @@
                         <div id="showDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
                             <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
                                 <button type="button" onclick="setAllShowTypes(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
-                                <button type="button" onclick="setAllShowTypes(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                                <button type="button" onclick="setAllShowTypes(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">Clear</button>
                             </div>
                             <div style="padding: 6px 0;">
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="weekly" checked onchange="updateShowTypes()"> Weekly TV</label>
@@ -1132,7 +1132,7 @@
                         <div id="yearDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
                             <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
                                 <button type="button" onclick="setAllYears(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
-                                <button type="button" onclick="setAllYears(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                                <button type="button" onclick="setAllYears(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">Clear</button>
                             </div>
                             <div id="yearCheckboxes"></div>
                         </div>
@@ -1145,7 +1145,7 @@
                         <div id="divDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
                             <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
                                 <button type="button" onclick="setAllDivisions(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
-                                <button type="button" onclick="setAllDivisions(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">None</button>
+                                <button type="button" onclick="setAllDivisions(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">Clear</button>
                             </div>
                             <div style="padding: 6px 0;">
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="mens" checked onchange="updateDivisions()"> Men's</label>
@@ -1165,7 +1165,7 @@
                         <div id="locDropdownMenu" class="loc-menu" style="display: none;">
                             <div class="facet-all-none">
                                 <button type="button" onclick="setAllLocations(true)">All</button>
-                                <button type="button" onclick="setAllLocations(false)">None</button>
+                                <button type="button" onclick="setAllLocations(false)">Clear</button>
                             </div>
                             <div id="locCheckboxes"></div>
                         </div>
@@ -1352,9 +1352,9 @@
             { key: 'cardPos', title: 'Card Position', noun: 'Positions', groups: () => CARD_POSITION_GROUPS, of: m => getCardPositionGroup(m.matchPos),
               tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' },
             { key: 'stip',    title: 'Stipulation',   noun: 'Stips',   // short so "All Stips" fits on phones
-              groups: () => ['None'].concat(STIPULATION_GROUPS.map(g => g.group), [STIPULATION_OTHER_GROUP]),
-              of: m => getStipulationGroup(m.matchStipulation) || 'None',
-              tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or None for regular matches. Same groups as on the wrestler pages.' }
+              groups: () => ['No Stips'].concat(STIPULATION_GROUPS.map(g => g.group), [STIPULATION_OTHER_GROUP]),
+              of: m => getStipulationGroup(m.matchStipulation) || 'No Stips',
+              tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or No Stips for regular matches. Same groups as on the wrestler pages.' }
         ];
         const facetOptions = {};          // facet key → options present in the data (fixed order)
         const selectedFacets = {};        // facet key → Set of ticked options (null = all)
@@ -1457,7 +1457,7 @@
                         <div class="facet-menu" id="${f.key}DropdownMenu">
                             <div class="facet-all-none">
                                 <button type="button" data-facet-all="${f.key}" data-val="1">All</button>
-                                <button type="button" data-facet-all="${f.key}" data-val="0">None</button>
+                                <button type="button" data-facet-all="${f.key}" data-val="0">Clear</button>
                             </div>
                             <div style="padding: 6px 0;" id="${f.key}Checkboxes"></div>
                         </div>
@@ -1515,7 +1515,7 @@
             const btn = document.getElementById(`${key}DropdownBtn`);
             if (ticked.length === all.length) btn.textContent = `All ${f.noun}`;
             else if (ticked.length === 0) btn.textContent = 'None';
-            else if (ticked.length === 1) btn.textContent = key === 'stip' && ticked[0].value === 'None' ? 'No Stips' : ticked[0].value;   // not to be confused with nothing ticked
+            else if (ticked.length === 1) btn.textContent = ticked[0].value;
             else btn.textContent = `${ticked.length} ${f.noun}`;
             const set = FACETS.filter(x => selectedFacets[x.key]).length;
             document.getElementById('moreFiltersCount').textContent = set ? `(${set} set)` : '';
