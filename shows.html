@@ -1057,6 +1057,7 @@
         <div id="tabsWrapper">
         <div class="view-options">
             <button class="tab view-option-btn tt tt-below" id="stipsToggle" data-tt="Only matches with a stipulation, grouped by type. Uses the same Shows, Year and Division filters. Click again to go back.">🪜 Stipulation Matches</button>
+            <button class="tab view-option-btn tt tt-below" id="venuesToggle" data-tt="Matches by where the show took place: country, then state or region, city and arena. Uses the same filters. Click again to go back.">📍 Venues</button>
         </div>
 
         <!-- Loading State -->
@@ -1204,11 +1205,11 @@
         let availableYears = [];
         let scopeMatchesAll = [];   // every match entry with its drill-down path (first step = show type)
         let scopeTree = null;       // rebuilt on every processAllData()
-        let scopePaths = { shows: [], stips: [] }; // node keys drilled into, per view
+        let scopePaths = { shows: [], stips: [], venues: [] }; // node keys drilled into, per view
         let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
         let matchListExpanded = false; // "Show all N matches" on long match lists
         const MATCH_LIST_PREVIEW = 10;
-        let currentView = 'shows';  // 'shows' (by show) or 'stips' (by match type)
+        let currentView = 'shows';  // 'shows' (by show), 'stips' (by match type) or 'venues' (by place)
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
@@ -1255,6 +1256,7 @@
         // Both views use the same filters and the same page layout.
         function updateViewButtons() {
             document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
+            document.getElementById('venuesToggle').classList.toggle('active', currentView === 'venues');
         }
 
         // ===========================================
@@ -1409,6 +1411,11 @@
 
         document.getElementById('stipsToggle').addEventListener('click', () => {
             currentView = currentView === 'stips' ? 'shows' : 'stips';
+            updateViewButtons();
+            renderScopeView();
+        });
+        document.getElementById('venuesToggle').addEventListener('click', () => {
+            currentView = currentView === 'venues' ? 'shows' : 'venues';
             updateViewButtons();
             renderScopeView();
         });
@@ -1824,6 +1831,7 @@
                         const stip = getStipInfo(match.matchStipulation);
                         scopeMatchesAll.push({
                             ...matchData,
+                            venuePath: getVenuePath((showDetails.shows[`${match.date}|${match.event}`] || [])[0]),
                             stipulation: stip ? stip.name : null,
                             tab: scope.tab,
                             path: [typeStep, ...scope.path],
@@ -1848,7 +1856,7 @@
                     if (!node.children.has(step.key)) {
                         node.children.set(step.key, {
                             key: step.key, label: step.label, date: step.date,
-                            isEdition: !!step.isEdition, isLeaf: !!step.isLeaf,
+                            isEdition: !!step.isEdition, isLeaf: !!step.isLeaf, kind: step.kind,
                             tab: m.tab, level: i, children: new Map(), matches: [], labelCounts: {}
                         });
                     }
@@ -1880,6 +1888,47 @@
             root.label = 'All Stipulations';
             root.titleName = 'Stipulation';
             root.isStipRoot = true;
+            return root;
+        }
+
+        // ===== VENUES =====
+        // Venue text from show-details.json, e.g. "Wembley Stadium; London, England (UK)" or
+        // "Daily's Place; Jacksonville, Florida" (US venues have no country in brackets)
+        const NON_US_WITHOUT_BRACKETS = ['Bahamas'];
+        function parseVenue(text) {
+            if (!text) return null;
+            const parts = text.split(' & ');
+            const v = parts.length > 1 && parts.every(p => p.includes(';')) ? parts[0] : text;   // shows split across two venues
+            const [arena, rest = ''] = v.split(';').map(x => x.trim());
+            let place = rest, country = 'USA';
+            const bracket = rest.match(/^(.*)\(([^)]+)\)\s*$/);
+            if (bracket) { place = bracket[1].trim(); country = bracket[2].trim(); }
+            let city = place, region = '';
+            const comma = place.lastIndexOf(',');
+            if (comma >= 0) { city = place.slice(0, comma).trim(); region = place.slice(comma + 1).trim(); }
+            if (!bracket && NON_US_WITHOUT_BRACKETS.includes(region)) { country = region; region = ''; }
+            return { arena, city, region, country };
+        }
+
+        // Country → state/region (when there is one) → city → arena
+        function getVenuePath(text) {
+            const v = parseVenue(text);
+            if (!v) return [{ key: 'venue:none', label: 'Venue not recorded', kind: 'country', isLeaf: true }];
+            const path = [{ key: 'c:' + v.country.toLowerCase(), label: v.country, kind: 'country' }];
+            let k = path[0].key;
+            if (v.region) { k += '|r:' + v.region.toLowerCase(); path.push({ key: k, label: v.region, kind: 'region' }); }
+            k += '|t:' + v.city.toLowerCase();
+            path.push({ key: k, label: v.city, kind: 'city' });
+            path.push({ key: k + '|a:' + v.arena.toLowerCase(), label: v.arena, kind: 'arena', isLeaf: true });
+            return path;
+        }
+
+        function buildVenueTree() {
+            const entries = scopeMatchesAll.filter(m => selectedShowTypes.has(m.tab));
+            const root = buildTree(entries, 'venuePath');
+            root.label = 'All Venues';
+            root.titleName = '';
+            root.isVenueRoot = true;
             return root;
         }
 
@@ -2164,7 +2213,7 @@
         // Walks the saved path from the view's starting level; if a filter change removed a level,
         // stop at the deepest one that still exists
         function resolveScopeNodes() {
-            const base = currentView === 'stips' ? buildStipTree() : getBaseNode();
+            const base = currentView === 'stips' ? buildStipTree() : currentView === 'venues' ? buildVenueTree() : getBaseNode();
             const nodes = [base];
             const validKeys = [];
             for (const key of scopePaths[currentView]) {
@@ -2222,6 +2271,10 @@
         // Heading for the clickable list below the summary
         function getGridTitle(node, children) {
             if (currentView === 'stips') return node.isStipRoot ? 'Stipulation Groups' : 'Stipulations';
+            if (currentView === 'venues') {
+                const kind = children[0] && children[0].kind;
+                return { country: 'Countries', region: 'States & Regions', city: 'Cities', arena: 'Arenas' }[kind] || 'Venues';
+            }
             if (children.every(c => c.isEdition)) return 'Editions';
             if (node.isCombined) return 'Performance by Show Type';
             const titles = TAB_CONFIG[node.tab].childTitles;
@@ -2291,14 +2344,14 @@
                     children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
                 } else if (!isStips && node.isCombined) {
                     children.sort((a, b) => SCOPE_TABS.indexOf(a.tab) - SCOPE_TABS.indexOf(b.tab));
-                } else if (!isStips && node.tab === 'weekly' && node.level === 0) {
+                } else if (currentView === 'shows' && node.tab === 'weekly' && node.level === 0) {
                     children.sort((a, b) => WEEKLY_SHOW_ORDER.indexOf(a.label) - WEEKLY_SHOW_ORDER.indexOf(b.label));
                 } else {
                     children.sort((a, b) => getUniqueMatches(b.matches).length - getUniqueMatches(a.matches).length);
                 }
 
                 // PPV list: older one-off events are tucked behind a toggle
-                if (!isStips && !node.isCombined && node.tab === 'ppv' && node.level === 0) {
+                if (currentView === 'shows' && !node.isCombined && node.tab === 'ppv' && node.level === 0) {
                     const hidden = children.filter(c => PPV_HIDDEN_BY_DEFAULT.includes(c.label));
                     if (hidden.length) {
                         moreToggle.style.display = 'block';
@@ -2306,6 +2359,8 @@
                         if (!showAllPpvEvents) children = children.filter(c => !PPV_HIDDEN_BY_DEFAULT.includes(c.label));
                     }
                 }
+
+                if (currentView === 'venues') children.sort((a, b) => (a.key === 'venue:none') - (b.key === 'venue:none'));
 
                 document.getElementById('scope-grid').innerHTML = children.map(c => {
                     const u = getUniqueMatches(c.matches);
@@ -2330,7 +2385,8 @@
                 : getTop5(all);
             topTitle.textContent = showFullList ? `All Matches (${topList.length})` : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
             topTitle.setAttribute('data-tt', showFullList
-                ? (isStips ? 'Every match in this selection, highest rated first.' : 'Every match on this show, highest rated first.')
+                ? (isStips ? 'Every match in this selection, highest rated first.'
+                    : currentView === 'venues' ? 'Every match at this venue, highest rated first.' : 'Every match on this show, highest rated first.')
                 : 'The five highest-rated matches in this selection, by Cagematch community rating.');
 
             // Long lists start with the top 10 and a "Show all" button
