@@ -887,6 +887,37 @@
             color: #ef4444;
         }
 
+        /* Main table: only the table scrolls sideways (the Current Reign /
+           All-Time switch and column button stay put). # and Title stay fixed
+           on the left while the numbers scroll. Every cell gets the box's solid
+           colour so the fixed columns blend in with the rest. */
+        .table-container:has(.champ-scroll) { background: #202237; }
+        .champ-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .champ-scroll > table { margin-top: 0; }
+        .champ-scroll > table > thead > tr > th,
+        .champ-scroll > table > tbody > tr > td { background: #202237; }
+        .champ-scroll > table > tbody > tr:hover > td { background: #2b2b34; }
+        .champ-scroll > table > thead > tr > th.sortable:hover { background: #635827; }
+        .champ-scroll th.col-rank, .champ-scroll td.rank-cell,
+        .champ-scroll th.col-title, .champ-scroll td.title-cell {
+            position: sticky; z-index: 2;
+        }
+        .champ-scroll th.col-rank, .champ-scroll td.rank-cell {
+            left: 0; width: 50px; min-width: 50px; max-width: 50px; box-sizing: border-box;
+        }
+        .champ-scroll th.col-title, .champ-scroll td.title-cell { left: 50px; }
+        .champ-scroll.scrolled th.col-title::after,
+        .champ-scroll.scrolled td.title-cell::after {
+            content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 1px;
+            background: rgba(255, 215, 0, 0.35); pointer-events: none;
+        }
+        /* The title cell stays a real table cell (so it can stay fixed);
+           its picture and name line up inside this wrapper instead */
+        table td.title-cell { display: table-cell !important; }
+        .title-cell-inner { display: flex; align-items: center; }
+        .scroll-hint { color: #b8b8b8; font-size: 0.8em; margin: 12px 0 6px; }
+        .scroll-hint[hidden] { display: none; }
+
         /* Expandable Details Row */
         .details-row {
             display: none;
@@ -3643,11 +3674,12 @@
                             ${document.body.classList.contains('show-extra-cols') ? '▶ Hide Extra Columns' : '◀ Show More Columns'}
                         </button>
                     </div>
-                    <table>
+                    <p class="scroll-hint" hidden>↔️ Swipe to see more columns</p>
+                    <div class="champ-scroll"><table>
                         <thead>
                             <tr>
-                                <th tabindex="0" data-key-click class="sortable tt" style="text-align: center;" data-tt="${pastWeek ? `Ranking position in ${weekLabel}, based on championship rating.` : 'Current ranking position based on championship rating.'}" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
-                                <th tabindex="0" data-key-click class="sortable tt" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt col-rank" style="text-align: center;" data-tt="${pastWeek ? `Ranking position in ${weekLabel}, based on championship rating.` : 'Current ranking position based on championship rating.'}" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt col-title" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt" data-tt="${pastWeek ? `This championship's rating in ${weekLabel}.` : 'This is the current rating of this championship.'}" onclick="sortBy('rating', event)">${pastWeek ? 'Rating' : 'Current'} ${getSortArrow('rating')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
@@ -3676,7 +3708,7 @@
                 html += `
                     <tr id="champ-row-${index}" class="${isRowOpen(index) ? 'row-open' : ''}" tabindex="0" data-key-click onclick="toggleDetails(${index})" style="cursor: pointer;">
                         <td class="rank-cell">${champ.displayRank}</td>
-                        <td class="title-cell">${titleIcon}${champ.title}<span class="row-chevron" aria-hidden="true">▼</span></td>
+                        <td class="title-cell"><span class="title-cell-inner">${titleIcon}${champ.title}<span class="row-chevron" aria-hidden="true">▼</span></span></td>
                         <td class="rating-cell ${getRatingClass(applyBoost(champ.rating, champ.title))}">${formatRating(applyBoost(champ.rating, champ.title))}</td>
                         <td class="${rankChange.class}">${rankChange.text}</td>
                         ${viewMode === 'reign' ? `
@@ -3763,7 +3795,7 @@
                 `;
             });
 
-            html += '</tbody></table></div>';
+            html += '</tbody></table></div></div>';
 
             // Dropped Out This Week Section (collapsible) - comes FIRST
             if (droppedOutTitles.length > 0) {
@@ -3895,6 +3927,7 @@
             `;
 
             document.getElementById('content').innerHTML = html;
+            updateChampScrollHint();
         }
 
         const CLOSE_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"></polyline></svg>';
@@ -3952,7 +3985,29 @@
             const btn = document.getElementById('toggleExtraCols');
             const isShowing = document.body.classList.toggle('show-extra-cols');
             btn.textContent = isShowing ? '▶ Hide Extra Columns' : '◀ Show More Columns';
+            updateChampScrollHint();
         }
+
+        // "Swipe to see more columns" only while the table is wider than the screen;
+        // the thin divider after Title only once the table has been scrolled
+        function updateChampScrollHint() {
+            requestAnimationFrame(() => {
+                document.querySelectorAll('.champ-scroll').forEach(sc => {
+                    const hint = sc.previousElementSibling;
+                    if (hint && hint.classList.contains('scroll-hint')) {
+                        hint.hidden = sc.scrollWidth <= sc.clientWidth + 2;
+                    }
+                    sc.classList.toggle('scrolled', sc.scrollLeft > 2);
+                });
+            });
+        }
+        window.addEventListener('resize', updateChampScrollHint);
+        document.addEventListener('scroll', e => {
+            const el = e.target;
+            if (el && el.classList && el.classList.contains('champ-scroll')) {
+                el.classList.toggle('scrolled', el.scrollLeft > 2);
+            }
+        }, true);
 
         async function toggleViewMode() {
             // Save the current search term before re-rendering
