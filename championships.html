@@ -933,8 +933,10 @@
             .champ-scroll td.title-cell .belt-icon-group { width: 44px; margin-right: 6px; }
             /* no forced minimum width, and slimmer number columns and headings */
             .champ-scroll > table { min-width: 0; }
-            .champ-scroll td.title-cell { min-width: 0; font-size: 12.8px; }
-            .champ-scroll > table > thead > tr > th { font-size: 0.74em; letter-spacing: 0; padding: 8px 6px; }
+            .champ-scroll td.title-cell { min-width: 0; }
+            .champ-scroll > table > thead > tr > th { font-size: 0.78em; letter-spacing: 0; padding: 8px 6px; }
+            /* number columns only as wide as they need; any spare width goes to Title */
+            .champ-scroll > table > thead > tr > th:not(.col-title):not(.col-rank) { width: 1%; }
             .champ-scroll > table > tbody > tr:not(.details-row) > td:not(.rank-cell):not(.title-cell) { padding: 8px 6px; }
             .champ-scroll > table > thead > tr > th.col-rank { padding: 8px 0; }
             .champ-scroll > table > thead > tr > th.col-title { padding-left: 4px; }
@@ -3703,7 +3705,7 @@
                                 <th tabindex="0" data-key-click class="sortable tt col-rank" style="text-align: center;" data-tt="${pastWeek ? `Ranking position in ${weekLabel}, based on championship rating.` : 'Current ranking position based on championship rating.'}" onclick="sortBy('rank', event)"># ${getSortArrow('rank')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt col-title" data-tt="Click any row to expand and see the champion, the previous three champions and detailed statistics. Click the row again, the ▲ arrow or Close to collapse it. On mobile, scroll right to see all stats." onclick="sortBy('title', event)">Title ${getSortArrow('title')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt" data-tt="${pastWeek ? `This championship's rating in ${weekLabel}.` : 'This is the current rating of this championship.'}" onclick="sortBy('rating', event)">${pastWeek ? 'Rating' : 'Current'} ${getSortArrow('rating')}</th>
-                                <th tabindex="0" data-key-click class="sortable tt" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
+                                <th tabindex="0" data-key-click class="sortable tt col-change" data-tt="This shows the change in ranking position compared to last week." onclick="sortBy('rankChange', event)"><span class="header-full">Δ Change</span><span class="header-short">Δ</span> ${getSortArrow('rankChange')}</th>
                                 ${viewMode === 'reign' ? `
                                 <th tabindex="0" data-key-click class="sortable tt" data-tt="The highest rating of this championship within the most recent reign." onclick="sortBy('peak', event)">Peak ${getSortArrow('peak')}</th>
                                 <th tabindex="0" data-key-click class="sortable tt extra-col" data-tt="The lowest rating of this championship within the most recent reign." onclick="sortBy('floor', event)">Floor ${getSortArrow('floor')}</th>
@@ -4012,9 +4014,25 @@
 
         // "Swipe to see more columns" only while the table is wider than the screen;
         // the thin divider after Title only once the table has been scrolled
+        // Phones: Title takes whatever width is spare, so #, Title, Current and
+        // Δ Change exactly fill the screen and Peak starts just past the edge
+        function fitChampColumnsToPhone(sc) {
+            const table = sc.querySelector(':scope > table');
+            if (!table) return;
+            table.style.width = '';
+            if (window.innerWidth > 600) return;
+            const ths = [...table.querySelectorAll(':scope > thead > tr > th')].filter(th => th.offsetParent);
+            const i = ths.findIndex(th => th.classList.contains('col-change'));
+            if (i < 0) return;
+            const after = ths.slice(i + 1).reduce((sum, th) => sum + th.getBoundingClientRect().width, 0);
+            const target = Math.round(sc.clientWidth + after);
+            if (target > table.getBoundingClientRect().width) table.style.width = target + 'px';
+        }
+
         function updateChampScrollHint() {
             requestAnimationFrame(() => {
                 document.querySelectorAll('.champ-scroll').forEach(sc => {
+                    fitChampColumnsToPhone(sc);
                     const hint = sc.previousElementSibling;
                     if (hint && hint.classList.contains('scroll-hint')) {
                         hint.hidden = sc.scrollWidth <= sc.clientWidth + 2;
