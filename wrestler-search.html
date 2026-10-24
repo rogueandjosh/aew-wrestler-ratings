@@ -880,6 +880,7 @@
         let allWrestlers = [];
         let filteredWrestlers = [];
         let teamMembersData = null;
+        const teamNameChanges = new Map();   // old team name → new team name
         let factionsData = null;
         let activeWrestlerNames = new Set();
         let currentSortField = 'name';
@@ -1120,6 +1121,22 @@
                 teamMembersData = { teams: {} };
             }
 
+            // Team name changes (old → new). team-members.json lists each team under
+            // its LATEST name, but Search also shows teams under older names
+            // (e.g. "Aussie Open", "Bailey & Knight"), so those follow the chain
+            // to the latest name to find their members.
+            try {
+                const ncResp = await fetch('name-changes.json');
+                if (ncResp.ok) {
+                    const nc = await ncResp.json();
+                    (nc.changes || []).forEach(c => {
+                        if (c && c.oldName && c.newName) teamNameChanges.set(c.oldName, c.newName);
+                    });
+                }
+            } catch (e) {
+                console.log('Name changes data not available');
+            }
+
             try {
                 const fResp = await fetch('factions.json');
                 if (fResp.ok) {
@@ -1255,6 +1272,16 @@
             const nameWithThe = 'The ' + teamName;
             members = teamMembersData.teams[nameWithThe];
             if (members && members.length >= 2) return members;
+
+            // Renamed team: follow the name changes to its latest name
+            let latest = teamName;
+            for (let i = 0; i < 10 && teamNameChanges.has(latest); i++) {
+                latest = teamNameChanges.get(latest);
+                for (const key of [latest, latest.replace(/^The\s+/i, ''), 'The ' + latest]) {
+                    members = teamMembersData.teams[key];
+                    if (members && members.length >= 2) return members;
+                }
+            }
 
             // Parse "Name1 & Name2" format directly
             if (teamName.includes(' & ')) {
