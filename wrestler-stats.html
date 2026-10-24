@@ -455,6 +455,24 @@
             display: flex;
         }
 
+        /* Stipulations: most common first; "Show all" lists them under the same group
+           headings as the Show Statistics page (STIPULATION_GROUPS in match-filters.js) */
+        #stipFilterOptions > * { order: -1; }
+        #stipFilterOptions > label[data-group] { order: var(--o1); }
+        #stipFilterOptions.expanded > label[data-group] { order: var(--o2); }
+        #stipFilterOptions .stip-group-head {
+            display: none;
+            order: var(--o2);
+            color: #a8a394;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-top: 4px;
+        }
+        #stipFilterOptions.expanded .stip-group-head { display: block; }
+        #stipFilterOptions .match-filter-show-all { order: 100000; }
+
         .match-filter-show-all {
             align-self: flex-start;
             margin-top: 4px;
@@ -1043,7 +1061,7 @@
                             <div class="match-filter-options" id="stakesFilterOptions"></div>
                         </div>
                         <div class="match-filter-group" id="stipFilterGroup">
-                            <div class="match-filter-group-title tt" data-tt="Similar variants are grouped together, e.g. every city's Street Fight counts as Street Fight. 'Any stipulation' ticks every stipulation at once.">Stipulation</div>
+                            <div class="match-filter-group-title tt" data-tt="Similar variants are grouped together, e.g. every city's Street Fight counts as Street Fight. 'Show all' lists them under the same groups as the Show Statistics page. 'Any stipulation' ticks every stipulation at once.">Stipulation</div>
                             <button type="button" class="match-filter-toggle" id="stipFilterToggle" aria-expanded="false" aria-controls="stipFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="stipFilterOptions"></div>
                         </div>
@@ -3274,9 +3292,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
         }
 
-        function filterCheckbox(facet, value, labelHtml, extraClass = '') {
+        function filterCheckbox(facet, value, labelHtml, extraClass = '', extraAttrs = '') {
             return `
-                <label class="${extraClass}" data-value="${escapeAttr(value)}">
+                <label class="${extraClass}" data-value="${escapeAttr(value)}"${extraAttrs}>
                     <input type="checkbox" checked data-facet="${facet}" value="${escapeAttr(value)}">
                     <span>${labelHtml} <span class="count"></span></span>
                 </label>`;
@@ -3312,8 +3330,20 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             let stipHtml = filterCheckbox('stip', MATCH_FILTER_ALL, '<strong>All</strong>');
             if (stipCounts['None']) stipHtml += filterCheckbox('stip', 'None', 'No stipulation');
             stipHtml += filterCheckbox('stip', MATCH_FILTER_ANY_STIP, 'Any stipulation', 'shortcut');
+            // "Show all" order: by group (same groups as shows.html), most common first within each
+            const groupNames = STIPULATION_GROUPS.map(gr => gr.group).concat(STIPULATION_OTHER_GROUP);
+            const groupOf = st => STIPULATION_GROUP_LOOKUP[st.toLowerCase()] || STIPULATION_OTHER_GROUP;
+            const groupedPos = {};
+            let pos = 0;
+            groupNames.forEach(gn => {
+                const inGroup = specificStips.filter(st => groupOf(st) === gn);
+                if (!inGroup.length) return;
+                stipHtml += `<div class="stip-group-head" style="--o2:${++pos}">${gn}</div>`;
+                inGroup.forEach(st => { groupedPos[st] = ++pos; });
+            });
             stipHtml += specificStips.map((g, i) =>
-                filterCheckbox('stip', g, g, i >= STIP_VISIBLE_DEFAULT ? 'stip-extra' : '')).join('');
+                filterCheckbox('stip', g, g, i >= STIP_VISIBLE_DEFAULT ? 'stip-extra' : '',
+                    ` data-group="${escapeAttr(groupOf(g))}" style="--o1:${i + 1};--o2:${groupedPos[g]}"`)).join('');
             if (specificStips.length > STIP_VISIBLE_DEFAULT) {
                 stipHtml += `<button type="button" class="match-filter-show-all" id="stipShowAll" aria-expanded="false">Show all (${specificStips.length})</button>`;
             }
