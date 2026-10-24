@@ -1037,6 +1037,11 @@
             transition: transform 0.2s;
         }
         tr.row-open .title-cell .row-chevron { transform: rotate(180deg); opacity: 1; }
+        /* Phones and tablets: titles wrap onto different numbers of lines, so
+           the ▼ sits at the right edge of the Title column and lines up on every row */
+        @media (max-width: 1024px) {
+            .champ-scroll td.title-cell .row-chevron { margin-left: auto; padding-left: 6px; flex-shrink: 0; }
+        }
 
         .details-grid {
             display: grid;
