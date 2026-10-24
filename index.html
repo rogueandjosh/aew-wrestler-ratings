@@ -1165,29 +1165,43 @@
         .stats-table th.s-stat, .stats-table td.s-stat,
         .stats-table th.s-week, .stats-table td.s-week   { width: 1%; }
 
-        /* Tablet and phone: #, photo and Name stay put on the left while the
-           numbers swipe, so you always know whose stats they are. These three
-           columns get exact widths so each knows where to stick. */
+        /* Every screen: #, photo and Name stay put on the left while the
+           numbers scroll sideways, so you always know whose stats they are.
+           # and photo get exact widths (per screen size below) so each column
+           knows where to stick. */
+        .stats-table td.s-rank, .stats-table td.s-photo, .stats-table td.s-name,
+        .stats-table th.s-rank, .stats-table th.s-photo, .stats-table th.s-name {
+            position: sticky; z-index: 2;
+        }
+        .stats-table td.s-rank, .stats-table td.s-photo, .stats-table td.s-name { background: #24263a; }
+        .stats-table th.s-rank, .stats-table th.s-photo, .stats-table th.s-name { background: #50492e; z-index: 4; }
+        /* the first column also covers the box's left padding, so numbers
+           scrolling underneath don't show in that gap; Name gets a soft
+           shadow on its right edge (table cells can't use box-shadow) */
+        .stats-table .s-rank::before,
+        .stats-table.no-rank .s-photo::before {
+            content: ''; position: absolute; top: 0; bottom: -1px; right: 100%; width: 30px;
+            background: #24263a; pointer-events: none;
+        }
+        .stats-table td.s-name::after {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 100%; width: 6px;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent); pointer-events: none;
+        }
+        .stats-table .s-rank { left: 0; }
+
+        /* Laptop */
+        @media (min-width: 1025px) {
+            .stats-table th.s-rank, .stats-table td.s-rank   { width: 54px; min-width: 54px; max-width: 54px; }
+            .stats-table th.s-photo, .stats-table td.s-photo { width: 150px; min-width: 150px; max-width: 150px; }
+            .stats-table th.s-name, .stats-table td.s-name   { width: auto; min-width: 160px; }   /* Name takes the spare space */
+            .stats-table .s-photo { left: 54px; }
+            .stats-table .s-name  { left: 204px; }
+            .stats-table.no-rank .s-photo { left: 0; }
+            .stats-table.no-rank .s-name  { left: 150px; }
+        }
+
+        /* Tablet (and the starting point for phones) */
         @media (max-width: 1024px) {
-            .stats-table td.s-rank, .stats-table td.s-photo, .stats-table td.s-name,
-            .stats-table th.s-rank, .stats-table th.s-photo, .stats-table th.s-name {
-                position: sticky; z-index: 2;
-            }
-            .stats-table td.s-rank, .stats-table td.s-photo, .stats-table td.s-name { background: #24263a; }
-            .stats-table th.s-rank, .stats-table th.s-photo, .stats-table th.s-name { background: #50492e; z-index: 4; }
-            /* the first column also covers the box's left padding, so numbers
-               scrolling underneath don't show in that gap; Name gets a soft
-               shadow on its right edge (table cells can't use box-shadow) */
-            .stats-table .s-rank::before,
-            .stats-table.no-rank .s-photo::before {
-                content: ''; position: absolute; top: 0; bottom: -1px; right: 100%; width: 30px;
-                background: #24263a; pointer-events: none;
-            }
-            .stats-table td.s-name::after {
-                content: ''; position: absolute; top: 0; bottom: 0; left: 100%; width: 6px;
-                background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent); pointer-events: none;
-            }
-            .stats-table .s-rank { left: 0; }
             .stats-table th.s-rank, .stats-table td.s-rank   { width: 48px; min-width: 48px; max-width: 48px; }
             .stats-table th.s-photo, .stats-table td.s-photo { width: 142px; min-width: 142px; max-width: 142px; }
             .stats-table th.s-name, .stats-table td.s-name   { min-width: 140px; max-width: 200px; overflow-wrap: anywhere; }
