@@ -1052,6 +1052,12 @@
         #locCheckboxes label { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; color: #ddd; font-size: 0.9em; }
         #locCheckboxes .loc-country { font-weight: 700; color: #ffd700; }
         #locCheckboxes .loc-state { padding-left: 32px; }
+        #locCheckboxes .loc-country-row { display: flex; align-items: center; }
+        #locCheckboxes .loc-country-row .loc-country { flex: 1; }
+        #locCheckboxes .loc-expand {
+            background: none; border: none; color: #ffd700; cursor: pointer;
+            font-size: 1em; padding: 6px 14px; line-height: 1;
+        }
         #locCheckboxes .loc-unknown { color: #aaa; font-weight: 400; border-top: 1px solid rgba(255,215,0,0.2); margin-top: 4px; padding-top: 8px; }
         #locCheckboxes input { accent-color: #ffd700; }
 
@@ -1521,17 +1527,21 @@
         }
 
         // ===========================================
-        // LOCATION FILTER — country, with US states under United States
+        // LOCATION FILTER — countries first; tap ▸ to open a country:
+        // United States lists its states, every other country its cities
         // ===========================================
         let selectedLocations = null;   // null = all; otherwise a Set of location keys
         const LOC_COUNTRY_NAMES = { USA: 'United States', UK: 'United Kingdom' };
+        const locCountryName = c => LOC_COUNTRY_NAMES[c] || c;
 
-        // "USA|Florida", "C|Canada" or "unknown" (no venue recorded yet)
+        // "USA|Florida", "C|UK|London" or "unknown" (no venue recorded yet)
         function locationOf(match) {
             const v = parseVenue((showDetails.shows[`${match.date}|${match.event}`] || [])[0]);
             if (!v) return 'unknown';
-            return v.country === 'USA' ? 'USA|' + (v.region || 'Other') : 'C|' + v.country;
+            return v.country === 'USA' ? 'USA|' + (v.region || 'Other') : `C|${v.country}|${v.city || 'Other'}`;
         }
+        const locGroupOf = key => key === 'unknown' ? null : key.startsWith('USA|') ? 'USA' : key.split('|')[1];
+        const locPlaceOf = key => key.startsWith('USA|') ? key.slice(4) : key.split('|').slice(2).join('|');
 
         function buildLocationFilter() {
             const counts = {};
@@ -1539,22 +1549,43 @@
                 const k = locationOf(m);
                 counts[k] = (counts[k] || 0) + 1;
             }));
-            const states = Object.keys(counts).filter(k => k.startsWith('USA|')).sort();
-            const countries = Object.keys(counts).filter(k => k.startsWith('C|')).sort((a, b) => counts[b] - counts[a]);
-            const box = id => `<input type="checkbox" checked ${id}>`;
+            // Countries: United States first, then the rest by number of matches
+            const groups = {};
+            Object.keys(counts).filter(k => k !== 'unknown').forEach(k => {
+                const g = locGroupOf(k);
+                (groups[g] = groups[g] || { places: [], total: 0 }).places.push(k);
+                groups[g].total += counts[k];
+            });
+            const order = Object.keys(groups).sort((x, y) => (y === 'USA') - (x === 'USA') || groups[y].total - groups[x].total);
             let html = '';
-            if (states.length) {
-                html += `<label class="loc-country">${box('data-loc-parent="USA"')} United States</label>`;
-                html += states.map(k => `<label class="loc-state">${box(`data-loc="${esc(k)}"`)} ${esc(k.slice(4))}</label>`).join('');
-            }
-            html += countries.map(k => `<label class="loc-country">${box(`data-loc="${esc(k)}"`)} ${esc(LOC_COUNTRY_NAMES[k.slice(2)] || k.slice(2))}</label>`).join('');
-            if (counts.unknown) html += `<label class="loc-country loc-unknown">${box('data-loc="unknown"')} Unknown</label>`;
+            order.forEach(g => {
+                const places = groups[g].places.sort((x, y) => locPlaceOf(x).localeCompare(locPlaceOf(y)));
+                html += `<div class="loc-group" data-group="${esc(g)}">
+                    <div class="loc-country-row">
+                        <label class="loc-country"><input type="checkbox" checked data-loc-parent="${esc(g)}"> ${esc(locCountryName(g))}</label>
+                        <button type="button" class="loc-expand" aria-expanded="false" aria-label="Show ${g === 'USA' ? 'states' : 'cities'} in ${esc(locCountryName(g))}">▸</button>
+                    </div>
+                    <div class="loc-places" hidden>
+                        ${places.map(k => `<label class="loc-state"><input type="checkbox" checked data-loc="${esc(k)}" data-group="${esc(g)}"> ${esc(locPlaceOf(k))}</label>`).join('')}
+                    </div>
+                </div>`;
+            });
+            if (counts.unknown) html += `<label class="loc-country loc-unknown"><input type="checkbox" checked data-loc="unknown"> Unknown</label>`;
             const wrap = document.getElementById('locCheckboxes');
             wrap.innerHTML = html;
             wrap.onchange = e => {
                 const parent = e.target.closest('[data-loc-parent]');
-                if (parent) wrap.querySelectorAll('[data-loc^="USA|"]').forEach(cb => { cb.checked = parent.checked; });
+                if (parent) wrap.querySelectorAll(`[data-loc][data-group="${CSS.escape(parent.dataset.locParent)}"]`).forEach(cb => { cb.checked = parent.checked; });
                 updateLocations();
+            };
+            wrap.onclick = e => {
+                const btn = e.target.closest('.loc-expand');
+                if (!btn) return;
+                e.stopPropagation();
+                const places = btn.closest('.loc-group').querySelector('.loc-places');
+                places.hidden = !places.hidden;
+                btn.setAttribute('aria-expanded', String(!places.hidden));
+                btn.textContent = places.hidden ? '▸' : '▾';
             };
             selectedLocations = null;
             updateLocationBtn();
@@ -1577,19 +1608,21 @@
         function updateLocationBtn() {
             const leaves = [...document.querySelectorAll('#locCheckboxes [data-loc]')];
             const ticked = leaves.filter(cb => cb.checked);
-            const usStates = leaves.filter(cb => cb.dataset.loc.startsWith('USA|'));
-            const usTicked = usStates.filter(cb => cb.checked);
-            const parent = document.querySelector('#locCheckboxes [data-loc-parent]');
-            if (parent) {
-                parent.checked = usStates.length > 0 && usTicked.length === usStates.length;
-                parent.indeterminate = usTicked.length > 0 && usTicked.length < usStates.length;
-            }
-            const label = cb => cb.parentElement.textContent.trim();
+            // Each country's tick box: ticked, empty, or a dash when only some places are ticked
+            const fullGroups = [];
+            document.querySelectorAll('#locCheckboxes [data-loc-parent]').forEach(p => {
+                const kids = leaves.filter(cb => cb.dataset.group === p.dataset.locParent);
+                const on = kids.filter(cb => cb.checked).length;
+                p.checked = on === kids.length;
+                p.indeterminate = on > 0 && on < kids.length;
+                if (on === kids.length) fullGroups.push(p.dataset.locParent);
+            });
             const btn = document.getElementById('locDropdownBtn');
+            const groupOfTicked = new Set(ticked.map(cb => cb.dataset.group || 'unknown'));
             if (ticked.length === leaves.length) btn.textContent = 'All Locations';
             else if (ticked.length === 0) btn.textContent = 'None';
-            else if (ticked.length === 1) btn.textContent = label(ticked[0]);
-            else if (usTicked.length === usStates.length && ticked.length === usStates.length) btn.textContent = 'United States';
+            else if (ticked.length === 1) btn.textContent = ticked[0].parentElement.textContent.trim();
+            else if (groupOfTicked.size === 1 && fullGroups.includes([...groupOfTicked][0])) btn.textContent = locCountryName([...groupOfTicked][0]);
             else btn.textContent = `${ticked.length} Locations`;
         }
 
