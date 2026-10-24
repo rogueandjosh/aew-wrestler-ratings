@@ -917,6 +917,19 @@
         .title-cell-inner { display: flex; align-items: center; }
         .scroll-hint { color: #b8b8b8; font-size: 0.8em; margin: 12px 0 6px; }
         .scroll-hint[hidden] { display: none; }
+        /* Phones: belt pictures in the table about a quarter smaller (all
+           kinds: photos, tag/trios groups and the drawn belts), so Title is
+           narrower and more numbers fit beside it. zoom shrinks the picture
+           and the space it takes, keeping every part in proportion. */
+        @media (max-width: 600px) {
+            /* only the outer picture box: belts inside a tag/trios group
+               must not shrink a second time */
+            .champ-scroll td.title-cell .title-image:not(.title-image-group .title-image),
+            .champ-scroll td.title-cell .title-image-group,
+            .champ-scroll td.title-cell .belt-icon:not(.belt-icon-group .belt-icon),
+            .champ-scroll td.title-cell .belt-icon-group { zoom: 0.72; }
+            .champ-scroll td.title-cell .title-cell-inner { gap: 2px; }
+        }
 
         /* Expandable Details Row */
         .details-row {
