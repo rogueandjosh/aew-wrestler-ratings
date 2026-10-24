@@ -2201,6 +2201,15 @@
                 if (c.newName === teamName && tryName(c.oldName)) return tryName(c.oldName);
                 if (c.oldName === teamName && tryName(c.newName)) return tryName(c.newName);
             }
+            // Renamed more than once: follow the chain to the latest name
+            let latest = teamName;
+            for (let hop = 0; hop < 10; hop++) {
+                const next = nameChangeList.find(c => c.oldName === latest);
+                if (!next) break;
+                latest = next.newName;
+                members = tryName(latest) || tryName(latest.replace(/^The\s+/i, '')) || tryName('The ' + latest);
+                if (members) return members;
+            }
 
             // "Name1 & Name2" (parentheses-aware)
             if (teamName.includes(' & ')) {

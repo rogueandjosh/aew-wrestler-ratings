@@ -5977,10 +5977,15 @@ if (tableEl) {
                     if (members && members.length >= 2) return members;
                 }
                 
-                // Check name changes (old→new)
-                if (nameChanges[teamName]) {
-                    members = teamMembersData.teams[nameChanges[teamName]];
-                    if (members && members.length >= 2) return members;
+                // Check name changes (old→new), following renamed-again teams to
+                // their latest name (e.g. The Inner Circle (Guevara & Jericho) → … → Le Sex Gods)
+                let latest = teamName;
+                for (let hop = 0; hop < 10 && nameChanges[latest]; hop++) {
+                    latest = nameChanges[latest];
+                    for (const key of [latest, latest.replace(/^The\s+/i, ''), 'The ' + latest]) {
+                        members = teamMembersData.teams[key];
+                        if (members && members.length >= 2) return members;
+                    }
                 }
             }
 
