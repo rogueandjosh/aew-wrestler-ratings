@@ -1067,6 +1067,10 @@
             .filter-row:not(#moreFilters) > div:last-child { grid-column: 1 / -1; }
             /* More filters: Format | Stakes, then Card Position | Stipulation */
             #moreFilters > div { grid-column: auto !important; }
+            /* menus in the right-hand column open leftwards so they stay on screen */
+            #moreFilters .filter-cell:nth-child(even) .facet-menu { left: auto !important; right: 0; }
+            #moreFilters .filter-cell:nth-child(odd) .facet-menu { left: 0 !important; right: auto; }
+            .facet-menu { max-width: calc(100vw - 40px); max-height: 60vh; overflow-y: auto; }
             #locDropdownBtn { width: 100%; min-width: 0 !important; font-size: 0.88em !important; padding: 9px 10px !important; }
             .loc-menu { left: 0; right: 0; }
         }
