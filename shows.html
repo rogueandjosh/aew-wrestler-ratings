@@ -460,6 +460,72 @@
             color: #ffd700;
         }
 
+        /* "More filters" — Format, Stakes and Card Position, folded away until wanted */
+        .more-filters-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-family: 'Overlock', cursive;
+            font-weight: bold;
+            font-size: 0.95em;
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+        .more-filters-toggle svg { transition: transform 0.2s; }
+        .more-filters-toggle.open svg { transform: rotate(180deg); }
+        .more-filters-toggle .mf-count { color: #a8a394; font-weight: normal; font-size: 0.9em; }
+        #moreFilters { display: none; margin-top: 12px; }
+        #moreFilters.open { display: flex; }
+        .facet-btn {
+            padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4);
+            border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;
+            min-width: 150px; text-align: left;
+        }
+        .facet-menu {
+            display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700;
+            border-radius: 5px; z-index: 100; min-width: 190px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;
+        }
+        .facet-menu label {
+            display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;
+        }
+        .facet-all-none { display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2); }
+        .facet-all-none button {
+            flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700;
+            font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;
+        }
+
+        /* One show: venue, show rating and a link to that week's rankings */
+        .scope-info {
+            display: none;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 6px 14px;
+            margin: -12px 0 22px;
+            color: #c8c8c8;
+            font-size: 0.92em;
+            text-align: center;
+        }
+        .scope-info.visible { display: flex; }
+        .scope-info strong { color: #ffd700; }
+        .scope-info a {
+            color: #ffd700;
+            text-decoration: none;
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .scope-info a:hover { background: rgba(255, 215, 0, 0.22); }
+        .bm-star { color: #ffd700; margin-left: 4px; }
+        .match-row-title-name { color: #ffd700; }
+
         .scope-subgroups {
             display: flex;
             flex-wrap: wrap;
@@ -722,9 +788,25 @@
                 font-size: 0.88em !important;
                 padding: 9px 10px !important;
             }
-            #divDropdownMenu {
+            #divDropdownMenu,
+            #moreFilters .filter-cell:nth-child(2) .facet-menu {
                 left: auto !important;
                 right: 0;
+            }
+            #moreFilters.open {
+                display: grid !important;
+            }
+            #moreFilters:not(.open) {
+                display: none !important;
+            }
+            #moreFilters > div:first-child {
+                grid-column: auto;
+            }
+            .facet-btn {
+                width: 100%;
+                min-width: 0 !important;
+                font-size: 0.88em !important;
+                padding: 9px 10px !important;
             }
 
             /* Shows dropdown full width, Year and Division side by side underneath */
@@ -801,7 +883,7 @@
                 color: #e0e0e0;
             }
 
-            /* Summary: two wide boxes, then three */
+            /* Summary: two rows of three */
             .stats-summary {
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -812,9 +894,6 @@
                 grid-column: span 2;
                 min-width: 0;
                 padding: 10px 4px;
-            }
-            #showsView .stats-summary .stat-box:nth-child(-n+2) {
-                grid-column: span 3;
             }
             .stat-number {
                 font-size: 1.35em;
@@ -970,6 +1049,8 @@
                     </div>
                 </div>
             </div>
+            <button type="button" class="more-filters-toggle" id="moreFiltersToggle" aria-expanded="false" aria-controls="moreFilters">More filters <span class="mf-count" id="moreFiltersCount"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="filter-row" id="moreFilters" style="gap: 24px; flex-wrap: wrap; align-items: flex-start;"></div>
         </section>
 
         <!-- Tab Navigation + Content (hidden until data loads) -->
@@ -1133,6 +1214,24 @@
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
         let teamMembersData = { teams: {} };
 
+        // Extra filters from match-filters.js: Format (match type), Stakes, Card Position
+        const FACETS = [
+            { key: 'format',  title: 'Format',        noun: 'Formats',   groups: () => FORMAT_GROUPS,        of: m => getFormatGroup(m.matchType),
+              tip: 'Singles, tag, trios, multi-person tags, multi-way matches or battle royals.' },
+            { key: 'stakes',  title: 'Stakes',        noun: 'Stakes',    groups: () => STAKES_GROUPS,        of: m => getStakesGroup(m.stakes),
+              tip: 'Title matches, contender and eliminator matches, tournament matches, other stakes, or none.' },
+            { key: 'cardPos', title: 'Card Position', noun: 'Positions', groups: () => CARD_POSITION_GROUPS, of: m => getCardPositionGroup(m.matchPos),
+              tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' }
+        ];
+        const facetOptions = {};          // facet key → options present in the data (fixed order)
+        const selectedFacets = {};        // facet key → Set of ticked options (null = all)
+
+        // show-details.json (built by a GitHub Action): venue, show rating, week, title names, Best Match winners
+        let showDetails = { shows: {}, titles: {}, bestMatches: [] };
+        let bestMatchIds = new Set();
+        let factionsData = { factions: [] };
+        let newestArchiveFile = null;      // the newest week is "current" on the rankings page
+
         // ===========================================
         // NAVIGATION
         // ===========================================
@@ -1204,6 +1303,85 @@
                 };
                 wrap.append(arrow(-1, '‹', 'Previous'), dropdown, arrow(1, '›', 'Next'));
             });
+        }
+
+        // Builds the Format / Stakes / Card Position dropdowns (empty until the data loads)
+        function buildFacetFilters() {
+            const row = document.getElementById('moreFilters');
+            row.innerHTML = FACETS.map(f => `
+                <div class="filter-cell">
+                    <h2 class="tt" data-tt="${esc(f.tip)}" style="cursor: help; margin-bottom: 10px;">${f.title}</h2>
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" class="facet-btn" id="${f.key}DropdownBtn">All ${f.noun}</button>
+                        <div class="facet-menu" id="${f.key}DropdownMenu">
+                            <div class="facet-all-none">
+                                <button type="button" data-facet-all="${f.key}" data-val="1">All</button>
+                                <button type="button" data-facet-all="${f.key}" data-val="0">None</button>
+                            </div>
+                            <div style="padding: 6px 0;" id="${f.key}Checkboxes"></div>
+                        </div>
+                    </div>
+                </div>`).join('');
+            row.addEventListener('change', e => {
+                const cb = e.target.closest('input[data-facet]');
+                if (cb) updateFacet(cb.dataset.facet);
+            });
+            row.addEventListener('click', e => {
+                const b = e.target.closest('[data-facet-all]');
+                if (!b) return;
+                document.querySelectorAll(`#${b.dataset.facetAll}Checkboxes input`).forEach(cb => { cb.checked = b.dataset.val === '1'; });
+                updateFacet(b.dataset.facetAll);
+            });
+            const toggle = document.getElementById('moreFiltersToggle');
+            toggle.addEventListener('click', () => {
+                const open = !row.classList.contains('open');
+                row.classList.toggle('open', open);
+                toggle.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', String(open));
+            });
+            FACETS.forEach(f => FILTER_STEPPERS.push({
+                btnId: `${f.key}DropdownBtn`, menu: `#${f.key}Checkboxes`, onChange: () => updateFacet(f.key), name: f.title.toLowerCase()
+            }));
+        }
+
+        // Once the wrestler files are in: list only the options that occur, in their usual order
+        function fillFacetFilters() {
+            FACETS.forEach(f => {
+                const present = new Set();
+                allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => present.add(f.of(m))));
+                const ordered = f.groups().filter(g => present.has(g)).concat([...present].filter(g => !f.groups().includes(g)).sort());
+                facetOptions[f.key] = ordered;
+                selectedFacets[f.key] = null;
+                document.getElementById(`${f.key}Checkboxes`).innerHTML = ordered.map(g =>
+                    `<label><input type="checkbox" data-facet="${f.key}" value="${esc(g)}" checked> ${esc(g)}</label>`).join('');
+                updateFacetBtn(f.key);
+            });
+        }
+
+        function updateFacet(key) {
+            const all = [...document.querySelectorAll(`#${key}Checkboxes input`)];
+            const ticked = all.filter(cb => cb.checked).map(cb => cb.value);
+            selectedFacets[key] = ticked.length === all.length ? null : new Set(ticked);
+            updateFacetBtn(key);
+            processAllData();
+            renderAllTabs();
+        }
+
+        function updateFacetBtn(key) {
+            const f = FACETS.find(x => x.key === key);
+            const all = document.querySelectorAll(`#${key}Checkboxes input`);
+            const ticked = [...document.querySelectorAll(`#${key}Checkboxes input:checked`)];
+            const btn = document.getElementById(`${key}DropdownBtn`);
+            if (ticked.length === all.length) btn.textContent = `All ${f.noun}`;
+            else if (ticked.length === 0) btn.textContent = 'None';
+            else if (ticked.length === 1) btn.textContent = ticked[0].value;
+            else btn.textContent = `${ticked.length} ${f.noun}`;
+            const set = FACETS.filter(x => selectedFacets[x.key]).length;
+            document.getElementById('moreFiltersCount').textContent = set ? `(${set} set)` : '';
+        }
+
+        function matchesFacets(match) {
+            return FACETS.every(f => !selectedFacets[f.key] || selectedFacets[f.key].has(f.of(match)));
         }
 
         function updateShowTypes() {
@@ -1382,7 +1560,7 @@
         // Team entries in the same match are grouped by their member set (a tag team's entry in a
         // trios match covers its whole trio). Each group is labelled with the name that best fits it:
         // a team whose known member count matches the group, otherwise the first name plus any extra members.
-        function getMatchTeams(entries) {
+        function getMatchTeams(entries, weekLabel = null) {
             const groups = new Map();
             entries.filter(e => e.isTeam && e.members.size > 0).forEach(t => {
                 const key = [...t.members].sort().join('|');
@@ -1392,7 +1570,7 @@
             return [...groups.values()].map(g => {
                 const scored = g.names.map(n => ({ name: n, known: findTeamMembersArray(n) }));
                 const pick = scored.find(x => x.known && x.known.length === g.members.size) || scored[0];
-                let label = pick.name;
+                let label = factionName(pick.name, weekLabel);
                 if (pick.known && pick.known.length < g.members.size) {
                     const knownSet = new Set(pick.known.map(normaliseName));
                     const extras = [...g.members].filter(x => !knownSet.has(x));
@@ -1402,11 +1580,80 @@
             });
         }
 
+        // ===== FACTION NAMES (same rules as index, wrestler-stats and best-match) =====
+        // Week labels compare by year, month and week; a month on its own ("Aug '19") counts as its first week
+        function compareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            if (week1 === 'current') return 1;
+            if (week2 === 'current') return -1;
+            const parse = w => {
+                const m = String(w || '').match(/(\w{3})\w*\s+'(\d+)(?:\s+Week\s+(\d+))?/);
+                if (!m) return null;
+                const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(m[1]) + 1;
+                return mo ? { y: 2000 + parseInt(m[2], 10), m: mo, w: parseInt(m[3] || '1', 10) } : null;
+            };
+            const a = parse(week1), b = parse(week2);
+            if (!a || !b) return 0;
+            return a.y !== b.y ? a.y - b.y : a.m !== b.m ? a.m - b.m : a.w - b.w;
+        }
+
+        const factionCache = new Map();
+        function factionName(teamName, weekLabel) {
+            if (!weekLabel || !factionsData.factions || !factionsData.factions.length) return teamName;
+            const key = teamName + '|' + weekLabel;
+            if (!factionCache.has(key)) factionCache.set(key, getFactionDisplayName(teamName, weekLabel, true));
+            return factionCache.get(key);
+        }
+
+        function getFactionDisplayName(teamName, weekLabel, ignoreDate = false) {
+            const candidates = [];
+            for (const faction of factionsData.factions) {
+                if (faction.forcedTeams && faction.forcedTeams.some(t => t.toLowerCase() === teamName.toLowerCase())) return faction.name;
+                const afterStart = compareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || compareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if ((faction.overrides || []).some(o => o.toLowerCase() === teamName.toLowerCase())) continue;
+
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (ignoreDate) {
+                        if (!former.leftDate || compareWeeks(former.leftDate, faction.dateFrom) > 0) activeMembers.push(former.name);
+                    } else if (compareWeeks(weekLabel, former.leftDate) < 0) {
+                        activeMembers.push(former.name);
+                    }
+                }
+                const teamMembersList = findTeamMembersArray(teamName) || [];
+                if (faction.replacePartialCombos && teamMembersList.length === 0) {
+                    const matched = activeMembers.filter(member => teamName.toLowerCase().includes(member.trim().split(/\s+/).pop().toLowerCase()));
+                    if (matched.length >= 2) candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+                    continue;
+                }
+                if (teamMembersList.length === 0) continue;
+                const inTeam = teamMembersList.filter(member => activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase()));
+                if (inTeam.length < 2) continue;
+                candidates.push({ faction, matchCount: inTeam.length, total: teamMembersList.length, activeMembers });
+            }
+            if (!candidates.length) return teamName;
+            candidates.sort((a, b) => {
+                const aAll = a.matchCount === a.total, bAll = b.matchCount === b.total;
+                if (aAll !== bAll) return aAll ? -1 : 1;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
+                return aEnded - bEnded;
+            });
+            const best = candidates[0];
+            if (best.faction.replacePartialCombos || best.matchCount === best.total) return best.faction.name;
+            const others = (findTeamMembersArray(teamName) || []).filter(member => !best.activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase()));
+            if (others.length) return `${best.faction.name} & ${others.map(m => m.trim().split(/\s+/).pop()).join(' & ')}`;
+            return teamName;
+        }
+
         // Builds "Team A vs Team B" for team matches using the team entries in the same match.
         // Falls back to individual names when no team entry covers a side.
         function getMatchupText(m) {
             const entries = matchIndex.get(m.matchKey) || [];
-            const teams = getMatchTeams(entries);
+            const teams = getMatchTeams(entries, (showDetails.shows[`${m.date}|${m.rawEvent}`] || [])[2] || null);
             const isTeamStyle = /tag|trios/i.test(m.matchType || '');
             const twoSided = TWO_SIDED_TEAM_TYPES.test(m.matchType || '');
 
@@ -1517,6 +1764,7 @@
                 wrestler.allMatches.forEach(match => {
                     if (!matchesYear(match)) return;
                     if (!matchesDivision(match)) return;
+                    if (!matchesFacets(match)) return;
 
                     const eventName = fixEventName(match.event);
 
@@ -1539,6 +1787,9 @@
 
                     const matchData = {
                         matchKey,
+                        id: match.id,
+                        rawEvent: match.event,
+                        matchPos: match.matchPos,
                         wrestler: normWrestler,
                         isTeam: !!wrestler.isTeam,
                         slug: wrestler.slug || createSlug(normWrestler),
@@ -1878,12 +2129,14 @@
         function buildScopeViewMarkup() {
             document.getElementById('showsView').innerHTML = `
                 <div class="scope-crumbs" id="scope-crumbs"></div>
+                <div class="scope-info" id="scope-info"></div>
                 <div class="stats-summary">
                     <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
                     <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
                     <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
                     <div class="stat-box tt" data-tt="How many separate shows (episodes or events) these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
                     <div class="stat-box tt" data-tt="How many wrestlers and teams appear. Tag and trios matches count the team; singles and multi-person matches count each wrestler."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
+                    <div class="stat-box tt" data-tt="How many of these matches won Best Match of the Week. They're marked with a ⭐ in the match list."><div class="stat-number" id="scope-best">--</div><div class="stat-label">⭐ Best Matches</div></div>
                 </div>
 
                 <div class="table-container" id="scope-grid-section">
@@ -1952,12 +2205,16 @@
         }
 
         function matchRowHTML(m, isLast) {
+            const star = bestMatchIds.has(Number(m.id))
+                ? '<span class="bm-star tt" data-tt="Best Match of the Week">⭐</span>' : '';
+            const title = m.id != null && showDetails.titles[m.id]
+                ? `<span class="match-row-title-name">🏆 ${esc(showDetails.titles[m.id])}</span> · ` : '';
             return `
                 <div class="match-row${isLast ? ' last' : ''}">
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
-                        <div class="match-row-title">${esc(getMatchupText(m))}</div>
-                        <div class="match-row-meta">${currentView === 'stips' && m.stipulation ? esc(m.stipulation) + ' · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
+                        <div class="match-row-title">${esc(getMatchupText(m))}${star}</div>
+                        <div class="match-row-meta">${title}${currentView === 'stips' && m.stipulation ? esc(m.stipulation) + ' · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
         }
@@ -2002,6 +2259,8 @@
             document.getElementById('scope-9plus').textContent = unique.filter(m => m.rating >= 9).length;
             document.getElementById('scope-shows').textContent = showCount;
             document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
+            document.getElementById('scope-best').textContent = unique.filter(m => bestMatchIds.has(Number(m.id))).length;
+            renderShowInfo(node, unique);
 
             // Rows for the next level down. In a Stipulation Matches group, every stipulation is listed straight away
             // and any subgroups appear as "Break down by" buttons above the list.
@@ -2093,6 +2352,39 @@
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
         }
 
+        // One show (an edition): venue, show rating and a link to that week's rankings
+        function renderShowInfo(node, unique) {
+            const el = document.getElementById('scope-info');
+            if (!el) return;
+            const first = unique[0];
+            if (currentView !== 'shows' || !node.isEdition || !first) {
+                el.classList.remove('visible');
+                el.innerHTML = '';
+                return;
+            }
+            const det = showDetails.shows[`${first.date}|${first.rawEvent}`] || [];
+            const [venue, showRating, weekLabel] = det;
+            const parts = [];
+            if (venue) parts.push(`<span class="tt" data-tt="Where the show took place">📍 ${esc(venue.replace(/;\s*/, ', '))}</span>`);
+            if (typeof showRating === 'number') parts.push(`<span class="tt" data-tt="The Cagematch community rating for the whole show">Show rating <strong>${showRating.toFixed(2)}</strong></span>`);
+            const file = weekFileFor(weekLabel);
+            if (file) {
+                const href = file === newestArchiveFile ? 'index.html' : `index.html#week=${encodeURIComponent('archive/' + file)}&division=mens`;
+                parts.push(`<a class="tt" data-tt="The wrestler rankings for ${esc(weekLabel)}, the week of this show" href="${href}">📊 Rankings after this show →</a>`);
+            }
+            el.innerHTML = parts.join('');
+            el.classList.toggle('visible', parts.length > 0);
+        }
+
+        // "Aug '21 Week 1" → "2021-08-week1.json"; the monthly "Aug '19" → "2019-08-week1.json"
+        function weekFileFor(label) {
+            const m = String(label || '').match(/^(\w{3})\w*\s+'(\d{2})(?:\s+Week\s+(\d+))?/);
+            if (!m) return null;
+            const mi = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(m[1]);
+            if (mi < 0) return null;
+            return `20${m[2]}-${String(mi + 1).padStart(2, '0')}-week${m[3] || 1}.json`;
+        }
+
         function renderAllTabs() {
             renderScopeView();
         }
@@ -2106,7 +2398,16 @@
             const loadingProgress = document.getElementById('loadingProgress');
             
             try {
-                await Promise.all([loadNameChanges(), loadTeamMembers()]);
+                const getJson = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+                const [, , details, factions, archiveIdx] = await Promise.all([
+                    loadNameChanges(), loadTeamMembers(),
+                    getJson('show-details.json'), getJson('factions.json'), getJson('archive/index.json')
+                ]);
+                if (details) showDetails = { shows: details.shows || {}, titles: details.titles || {}, bestMatches: details.bestMatches || [] };
+                bestMatchIds = new Set(showDetails.bestMatches.map(Number));
+                if (factions && factions.factions) factionsData = factions;
+                const realWeeks = archiveIdx && archiveIdx.weeks ? archiveIdx.weeks.filter(w => w.filename && w.filename !== 'archive-index.json') : [];
+                newestArchiveFile = realWeeks.length ? realWeeks[0].filename : null;
                 // Get list of all wrestlers from statistics.json
                 const statsData = await (await fetch('statistics.json')).json();
                 const allWrestlers = [];
@@ -2157,6 +2458,7 @@
                 
                 // Build year dropdown from actual data
                 buildYearDropdown();
+                fillFacetFilters();
                 findStipVariants();
 
                 // Process and render
@@ -2178,6 +2480,7 @@
         // ===========================================
         
         buildScopeViewMarkup();
+        buildFacetFilters();
         addFilterArrows();
 
         // Card, breadcrumb, back and "more events" clicks in the show view
@@ -2200,41 +2503,22 @@
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Shows dropdown toggle
-            document.getElementById('showDropdownBtn').addEventListener('click', e => {
-                e.stopPropagation();
-                const m = document.getElementById('showDropdownMenu');
-                document.getElementById('yearDropdownMenu').style.display = 'none';
-                document.getElementById('divDropdownMenu').style.display = 'none';
-                m.style.display = m.style.display === 'block' ? 'none' : 'block';
+            // Filter dropdowns: one open at a time, closed by clicking outside
+            const DROPDOWNS = [['showDropdownBtn', 'showDropdownMenu'], ['yearDropdownBtn', 'yearDropdownMenu'], ['divDropdownBtn', 'divDropdownMenu']]
+                .concat(FACETS.map(f => [`${f.key}DropdownBtn`, `${f.key}DropdownMenu`]));
+            DROPDOWNS.forEach(([btnId, menuId]) => {
+                document.getElementById(btnId).addEventListener('click', e => {
+                    e.stopPropagation();
+                    const m = document.getElementById(menuId);
+                    const open = m.style.display !== 'block';
+                    DROPDOWNS.forEach(([, other]) => { document.getElementById(other).style.display = 'none'; });
+                    m.style.display = open ? 'block' : 'none';
+                });
             });
-
-            // Year dropdown toggle
-            document.getElementById('yearDropdownBtn').addEventListener('click', e => {
-                e.stopPropagation();
-                const m = document.getElementById('yearDropdownMenu');
-                document.getElementById('divDropdownMenu').style.display = 'none';
-                document.getElementById('showDropdownMenu').style.display = 'none';
-                m.style.display = m.style.display === 'block' ? 'none' : 'block';
-            });
-
-            // Division dropdown toggle
-            document.getElementById('divDropdownBtn').addEventListener('click', e => {
-                e.stopPropagation();
-                const m = document.getElementById('divDropdownMenu');
-                document.getElementById('yearDropdownMenu').style.display = 'none';
-                document.getElementById('showDropdownMenu').style.display = 'none';
-                m.style.display = m.style.display === 'block' ? 'none' : 'block';
-            });
-
-            // Close dropdowns on outside click
             document.addEventListener('click', e => {
-                if (!e.target.closest('#showDropdownMenu') && !e.target.closest('#showDropdownBtn'))
-                    document.getElementById('showDropdownMenu').style.display = 'none';
-                if (!e.target.closest('#yearDropdownMenu') && !e.target.closest('#yearDropdownBtn'))
-                    document.getElementById('yearDropdownMenu').style.display = 'none';
-                if (!e.target.closest('#divDropdownMenu') && !e.target.closest('#divDropdownBtn'))
-                    document.getElementById('divDropdownMenu').style.display = 'none';
+                DROPDOWNS.forEach(([btnId, menuId]) => {
+                    if (!e.target.closest('#' + menuId) && !e.target.closest('#' + btnId)) document.getElementById(menuId).style.display = 'none';
+                });
             });
 
             // Hamburger menu

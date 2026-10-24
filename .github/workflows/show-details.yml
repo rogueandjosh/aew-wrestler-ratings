@@ -1,0 +1,45 @@
+name: Show details
+
+on:
+  push:
+    paths:
+      - 'archive/**'                  # the weekly upload (new week, new wrestler files)
+      - 'on-this-day-daily/**'        # venues and show ratings
+      - 'championship-matches.json'   # title names
+      - 'best-match-archive/**'       # Best Match of the Week
+      - 'scripts/build-show-details.mjs'
+  workflow_dispatch:                   # adds a "Run workflow" button for manual runs
+
+permissions:
+  contents: write
+
+concurrency:
+  group: show-details
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build show details for the Show Statistics page
+        run: node scripts/build-show-details.mjs
+
+      - name: Commit show-details.json if changed
+        run: |
+          if [ -z "$(git status --porcelain show-details.json)" ]; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
+          git add show-details.json
+          git commit -m "Show details: rebuild for the Show Statistics page"
+          git pull --rebase
+          git push
