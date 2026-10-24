@@ -1144,10 +1144,7 @@
 
             td, th { padding: 8px 4px !important; }
 
-            .wrestler-image > a > img, .wrestler-image > a > span > img { width: 55px !important; height: 55px !important; }
-            .tag-trios-row .wrestler-image div { gap: 1px !important; flex-wrap: nowrap !important; }
-            .tag-trios-row .wrestler-image a img { width: 32px !important; height: 32px !important; border-width: 1px !important; }
-            .tag-trios-row .wrestler-image div:has(a:nth-child(3)) a img { width: 21px !important; height: 21px !important; }
+            /* photo sizes: see "Photo sizes" below */
 
             .name { font-size: 0.85em; overflow-wrap: break-word; word-break: break-word; }
             .team-members { font-size: 0.64em; }
@@ -1161,7 +1158,9 @@
         .stats-table th, .stats-table td { white-space: nowrap; }
         .stats-table th.s-rank, .stats-table td.s-rank   { width: 1%; text-align: center; }
         .stats-table th.s-photo, .stats-table td.s-photo { width: 1%; }
-        .stats-table th.s-name, .stats-table td.s-name   { white-space: normal; min-width: 180px; }
+        /* Name: words wrap onto separate lines when space is short (Konosuke /
+           Takeshita), so the column only needs to be as wide as the longest word */
+        .stats-table th.s-name, .stats-table td.s-name   { white-space: normal; overflow-wrap: break-word; min-width: 0; }
         .stats-table th.s-stat, .stats-table td.s-stat,
         .stats-table th.s-week, .stats-table td.s-week   { width: 1%; }
 
@@ -1194,23 +1193,23 @@
         /* Laptop */
         @media (min-width: 1025px) {
             .stats-table th.s-rank, .stats-table td.s-rank   { width: 54px; min-width: 54px; max-width: 54px; }
-            .stats-table th.s-photo, .stats-table td.s-photo { width: 150px; min-width: 150px; max-width: 150px; }
-            .stats-table th.s-name, .stats-table td.s-name   { width: auto; min-width: 160px; }   /* Name takes the spare space */
+            .stats-table th.s-photo, .stats-table td.s-photo { width: 124px; min-width: 124px; max-width: 124px; }
+            .stats-table th.s-name, .stats-table td.s-name   { width: auto; min-width: 140px; }   /* Name takes any spare space */
             .stats-table .s-photo { left: 54px; }
-            .stats-table .s-name  { left: 204px; }
+            .stats-table .s-name  { left: 178px; }
             .stats-table.no-rank .s-photo { left: 0; }
-            .stats-table.no-rank .s-name  { left: 150px; }
+            .stats-table.no-rank .s-name  { left: 124px; }
         }
 
         /* Tablet (and the starting point for phones) */
         @media (max-width: 1024px) {
             .stats-table th.s-rank, .stats-table td.s-rank   { width: 48px; min-width: 48px; max-width: 48px; }
-            .stats-table th.s-photo, .stats-table td.s-photo { width: 142px; min-width: 142px; max-width: 142px; }
-            .stats-table th.s-name, .stats-table td.s-name   { min-width: 140px; max-width: 200px; overflow-wrap: anywhere; }
+            .stats-table th.s-photo, .stats-table td.s-photo { width: 124px; min-width: 124px; max-width: 124px; }
+            .stats-table th.s-name, .stats-table td.s-name   { width: auto; min-width: 120px; max-width: 200px; }
             .stats-table .s-photo { left: 48px; }
-            .stats-table .s-name  { left: 190px; }
+            .stats-table .s-name  { left: 172px; }
             .stats-table.no-rank .s-photo { left: 0; }
-            .stats-table.no-rank .s-name  { left: 142px; }
+            .stats-table.no-rank .s-name  { left: 124px; }
         }
 
         /* Phone: narrow columns */
@@ -1222,10 +1221,10 @@
                 width: 26px !important; min-width: 26px; max-width: 26px; padding: 8px 1px !important;
             }
             .stats-table th.s-photo, .stats-table td.s-photo {
-                width: 64px !important; min-width: 64px; max-width: 64px; padding: 4px 2px !important;
+                width: 68px !important; min-width: 68px; max-width: 68px; padding: 4px 2px !important;
             }
             .stats-table th.s-name, .stats-table td.s-name {
-                width: 112px !important; min-width: 112px; max-width: 112px; font-size: 0.85em;
+                width: auto !important; min-width: 96px; max-width: 112px; font-size: 0.85em;
             }
             .stats-table th.s-stat, .stats-table td.s-stat { min-width: 58px; text-align: center; }
             .stats-table td.s-week { text-align: center; line-height: 1.3; }
@@ -1233,9 +1232,31 @@
             .stats-table td.s-week .wk-month,
             .stats-table td.s-week .wk-num { display: block; }
             .stats-table .s-photo { left: 26px; }
-            .stats-table .s-name  { left: 90px; }
+            .stats-table .s-name  { left: 94px; }
             .stats-table.no-rank .s-photo { left: 0; }
-            .stats-table.no-rank .s-name  { left: 64px; }
+            .stats-table.no-rank .s-name  { left: 68px; }
+        }
+
+        /* ── Photo sizes (Weekly Rankings + All Wrestler Statistics) ──
+           One place for every table photo. Rows can't override these: the
+           sizes the scripts write into each <img> are replaced here.
+           Singles = one photo; team photos sit in a row inside a <div>;
+           trios = that row with three photos. */
+        table td.wrestler-image > a > img,
+        table td.wrestler-image > a > span > img,
+        table td.wrestler-image > img,
+        table td.wrestler-image > span > img          { width: 64px !important; height: 64px !important; }
+        table td.wrestler-image div img                { width: 44px !important; height: 44px !important; }
+        table td.wrestler-image div:has(> :nth-child(3)) img { width: 30px !important; height: 30px !important; }
+        table td.wrestler-image div { gap: 2px !important; flex-wrap: nowrap !important; }
+        @media (max-width: 600px) {
+            table td.wrestler-image > a > img,
+            table td.wrestler-image > a > span > img,
+            table td.wrestler-image > img,
+            table td.wrestler-image > span > img      { width: 44px !important; height: 44px !important; }
+            table td.wrestler-image div img            { width: 28px !important; height: 28px !important; border-width: 1px !important; }
+            table td.wrestler-image div:has(> :nth-child(3)) img { width: 21px !important; height: 21px !important; }
+            table td.wrestler-image div { gap: 1px !important; }
         }
 
         .change-up { color: #4ade80; }
@@ -6312,7 +6333,7 @@ if (tableEl) {
             document.getElementById('rankingsToggle').classList.remove('active');
             document.getElementById('statsToggle').classList.add('active');
 
-            document.getElementById('content').innerHTML = '<div class="loading">📊 Calculating statistics... This may take 5-10 seconds...</div>';
+            document.getElementById('content').innerHTML = '<div class="loading">📈 Calculating statistics... This may take 5-10 seconds...</div>';
 
             // Always load fresh stats data for the selected week
             try {
@@ -6546,7 +6567,7 @@ if (tableEl) {
         }
     });
 
-    document.getElementById('content').innerHTML = '<div class="loading">📊 Calculating statistics... This may take 5-10 seconds...</div>';
+    document.getElementById('content').innerHTML = '<div class="loading">📈 Calculating statistics... This may take 5-10 seconds...</div>';
 
     try {
         const select = document.getElementById('weekSelect');
