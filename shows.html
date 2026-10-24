@@ -1037,8 +1037,9 @@
             .show-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
             .show-type-tabs .stt-tab { width: 100%; padding: 10px 6px; font-size: 0.88em; }
             .show-type-tabs > .stt-tab[data-show-type="all"] { grid-column: 1 / -1; }
-            .show-type-tabs .stt-multi { display: block !important; grid-column: 1 / -1; }
-            .show-type-tabs #showDropdownMenu { left: 0; right: 0; }
+            /* five types + Select Multiple fill three full rows of two */
+            .show-type-tabs .stt-multi { display: block !important; }
+            .show-type-tabs #showDropdownMenu { left: auto; right: 0; min-width: 200px; }
         }
 
         /* Location filter menu: countries, with US states indented under United States */
@@ -1063,7 +1064,9 @@
         @media (max-width: 600px) {
             /* Year and Division side by side; Location full width underneath */
             .filter-row > div:first-child { grid-column: auto; }
-            .filter-row > div:last-child { grid-column: 1 / -1; }
+            .filter-row:not(#moreFilters) > div:last-child { grid-column: 1 / -1; }
+            /* More filters: Format | Stakes, then Card Position | Stipulation */
+            #moreFilters > div { grid-column: auto !important; }
             #locDropdownBtn { width: 100%; min-width: 0 !important; font-size: 0.88em !important; padding: 9px 10px !important; }
             .loc-menu { left: 0; right: 0; }
         }
@@ -1338,7 +1341,7 @@
               tip: 'Title matches, contender and eliminator matches, tournament matches, other stakes, or none.' },
             { key: 'cardPos', title: 'Card Position', noun: 'Positions', groups: () => CARD_POSITION_GROUPS, of: m => getCardPositionGroup(m.matchPos),
               tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' },
-            { key: 'stip',    title: 'Stipulation',   noun: 'Stipulations',
+            { key: 'stip',    title: 'Stipulation',   noun: 'Stips',   // short so "All Stips" fits on phones
               groups: () => STIPULATION_GROUPS.map(g => g.group).concat([STIPULATION_OTHER_GROUP, 'No Stipulation']),
               of: m => getStipulationGroup(m.matchStipulation) || 'No Stipulation',
               tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or No Stipulation. Same groups as on the wrestler pages.' }
