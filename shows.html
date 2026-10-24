@@ -1027,6 +1027,46 @@
             #yearDropdownBtn, #divDropdownBtn, .facet-btn { padding: 9px 6px !important; font-size: 0.82em !important; }
         }
 
+        /* ===== Show-type buttons (like the ranking divisions) ===== */
+        .show-type-tabs {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 18px;
+        }
+        .show-type-tabs .stt-tab { padding: 10px 18px; font-size: 0.95em; }
+        .show-type-tabs #showDropdownMenu { left: auto; right: 0; text-align: left; }
+        @media (max-width: 600px) {
+            .show-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+            .show-type-tabs .stt-tab { width: 100%; padding: 10px 6px; font-size: 0.88em; }
+            .show-type-tabs > .stt-tab[data-show-type="all"] { grid-column: 1 / -1; }
+            .show-type-tabs .stt-multi { display: block !important; grid-column: 1 / -1; }
+            .show-type-tabs #showDropdownMenu { left: 0; right: 0; }
+        }
+
+        /* Location filter menu: countries, with US states indented under United States */
+        .loc-menu {
+            position: absolute; top: 100%; left: 0; z-index: 100; margin-top: 4px;
+            min-width: 200px; max-height: 340px; overflow-y: auto;
+            background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        #locCheckboxes { padding: 6px 0; }
+        #locCheckboxes label { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; color: #ddd; font-size: 0.9em; }
+        #locCheckboxes .loc-country { font-weight: 700; color: #ffd700; }
+        #locCheckboxes .loc-state { padding-left: 32px; }
+        #locCheckboxes .loc-unknown { color: #aaa; font-weight: 400; border-top: 1px solid rgba(255,215,0,0.2); margin-top: 4px; padding-top: 8px; }
+        #locCheckboxes input { accent-color: #ffd700; }
+
+        /* The show-type buttons above already show the top level, so no lone "All Shows" crumb */
+        .scope-crumbs.at-root { display: none; }
+
+        /* Stipulation name on each match row */
+        .match-row-stip { color: #ffd700; opacity: 0.85; }
+
+        @media (max-width: 600px) {
+            /* Year and Division side by side; Location full width underneath */
+            .filter-row > div:first-child { grid-column: auto; }
+            .filter-row > div:last-child { grid-column: 1 / -1; }
+            #locDropdownBtn { width: 100%; min-width: 0 !important; font-size: 0.88em !important; padding: 9px 10px !important; }
+            .loc-menu { left: 0; right: 0; }
+        }
     </style>
     <link rel="stylesheet" href="header.css?v=1">
 </head>
@@ -1043,13 +1083,16 @@
             <p class="subtitle">How do wrestlers perform across different show types?</p>
         </header>
 
-        <!-- Filters -->
-        <section class="filter-section">
-            <div class="filter-row" style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
-                <div>
-                    <h2 class="tt" data-tt="Choose which show types to include: one, several, or All. The arrows step through them one at a time." style="cursor: help; margin-bottom: 10px;">Shows</h2>
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" id="showDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Shows</button>
+        <!-- Show types: one at a time (like the ranking divisions), All, or several via Select Multiple -->
+        <nav class="show-type-tabs" id="showTypeTabs" aria-label="Show type">
+            <button type="button" class="tab stt-tab active" data-show-type="all">All Shows</button>
+            <button type="button" class="tab stt-tab" data-show-type="weekly">Weekly TV</button>
+            <button type="button" class="tab stt-tab" data-show-type="ppv">PPVs</button>
+            <button type="button" class="tab stt-tab" data-show-type="tvspecial">TV Specials</button>
+            <button type="button" class="tab stt-tab" data-show-type="quarterly">Quarterly</button>
+            <button type="button" class="tab stt-tab" data-show-type="youtube">YouTube Specials</button>
+            <div class="stt-multi" style="position: relative; display: inline-block;">
+                        <button type="button" id="showDropdownBtn" class="tab stt-tab tt" data-tt="Tick several show types at once, e.g. PPVs and TV Specials together." aria-haspopup="true">Select Multiple ▾</button>
                         <div id="showDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
                             <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
                                 <button type="button" onclick="setAllShowTypes(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
@@ -1064,7 +1107,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+        </nav>
+
+        <!-- Filters -->
+        <section class="filter-section">
+            <div class="filter-row" style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
                 <div>
                     <h2 class="tt" data-tt="Pick one or more years, or keep All Years for all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
                     <div style="position: relative; display: inline-block;">
@@ -1095,6 +1142,19 @@
                                 <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
                                 <label class="tt" data-tt="Matches outside the five ranked divisions, such as mixed tags and big multi-person tags." style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="other" checked onchange="updateDivisions()"> Other</label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="tt" data-tt="Where the show took place: a country, or a US state under United States. Tick several to combine them. Shows with no venue recorded yet are under Unknown." style="cursor: help; margin-bottom: 10px;">Location</h2>
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" id="locDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Locations</button>
+                        <div id="locDropdownMenu" class="loc-menu" style="display: none;">
+                            <div class="facet-all-none">
+                                <button type="button" onclick="setAllLocations(true)">All</button>
+                                <button type="button" onclick="setAllLocations(false)">None</button>
+                            </div>
+                            <div id="locCheckboxes"></div>
                         </div>
                     </div>
                 </div>
@@ -1260,20 +1320,28 @@
         let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
         let matchListExpanded = false; // "Show all N matches" on long match lists
         const MATCH_LIST_PREVIEW = 10;
+        // Stipulations and Venues used to be tabs on this page. They are switched off
+        // (Location is now a filter) but all their code is kept, ready to become their
+        // own pages: set this to true to bring the tabs back exactly as they were.
+        const SHOW_VIEW_TABS = false;
         let currentView = 'shows';  // 'shows' (by show), 'stips' (by match type) or 'venues' (by place)
         let showAllPpvEvents = false;
         let matchIndex = new Map(); // matchKey -> participant entries (used to show team v team)
         let wrestlerInfo = {};      // normalised name -> { peakRating, isTeam }
         let teamMembersData = { teams: {} };
 
-        // Extra filters from match-filters.js: Format (match type), Stakes, Card Position
+        // Extra filters from match-filters.js: Format (match type), Stakes, Card Position, Stipulation
         const FACETS = [
             { key: 'format',  title: 'Format',        noun: 'Formats',   groups: () => FORMAT_GROUPS,        of: m => getFormatGroup(m.matchType),
               tip: 'Singles, tag, trios, multi-person tags, multi-way matches or battle royals.' },
             { key: 'stakes',  title: 'Stakes',        noun: 'Stakes',    groups: () => STAKES_GROUPS,        of: m => getStakesGroup(m.stakes),
               tip: 'Title matches, contender and eliminator matches, tournament matches, other stakes, or none.' },
             { key: 'cardPos', title: 'Card Position', noun: 'Positions', groups: () => CARD_POSITION_GROUPS, of: m => getCardPositionGroup(m.matchPos),
-              tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' }
+              tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' },
+            { key: 'stip',    title: 'Stipulation',   noun: 'Stipulations',
+              groups: () => STIPULATION_GROUPS.map(g => g.group).concat([STIPULATION_OTHER_GROUP, 'No Stipulation']),
+              of: m => getStipulationGroup(m.matchStipulation) || 'No Stipulation',
+              tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or No Stipulation. Same groups as on the wrestler pages.' }
         ];
         const facetOptions = {};          // facet key → options present in the data (fixed order)
         const selectedFacets = {};        // facet key → Set of ticked options (null = all)
@@ -1322,14 +1390,15 @@
         // ===========================================
 
         const FILTER_STEPPERS = [
-            { btnId: 'showDropdownBtn', menu: '#showDropdownMenu', onChange: () => updateShowTypes(), name: 'show type' },
             { btnId: 'yearDropdownBtn', menu: '#yearCheckboxes', onChange: () => updateYears(), name: 'year', oldestFirst: true },
-            { btnId: 'divDropdownBtn', menu: '#divDropdownMenu', onChange: () => updateDivisions(), name: 'division' }
+            { btnId: 'divDropdownBtn', menu: '#divDropdownMenu', onChange: () => updateDivisions(), name: 'division' },
+            // Location steps through the single places (each US state, each country, Unknown)
+            { btnId: 'locDropdownBtn', menu: '#locCheckboxes', inputs: '#locCheckboxes input[data-loc]', onChange: () => updateLocations(), name: 'location' }
         ];
 
         function stepFilter(index, dir) {
             const cfg = FILTER_STEPPERS[index];
-            const inputs = [...document.querySelectorAll(`${cfg.menu} input[type="checkbox"]`)];
+            const inputs = [...document.querySelectorAll(cfg.inputs || `${cfg.menu} input[type="checkbox"]`)];
             if (cfg.oldestFirst) inputs.reverse();   // years are listed newest first; › should go forward in time
             if (!inputs.length) return;
             const checked = inputs.filter(cb => cb.checked);
@@ -1440,7 +1509,81 @@
         }
 
         function matchesFacets(match) {
-            return FACETS.every(f => !selectedFacets[f.key] || selectedFacets[f.key].has(f.of(match)));
+            return FACETS.every(f => !selectedFacets[f.key] || selectedFacets[f.key].has(f.of(match)))
+                && (!selectedLocations || selectedLocations.has(locationOf(match)));
+        }
+
+        // ===========================================
+        // LOCATION FILTER — country, with US states under United States
+        // ===========================================
+        let selectedLocations = null;   // null = all; otherwise a Set of location keys
+        const LOC_COUNTRY_NAMES = { USA: 'United States', UK: 'United Kingdom' };
+
+        // "USA|Florida", "C|Canada" or "unknown" (no venue recorded yet)
+        function locationOf(match) {
+            const v = parseVenue((showDetails.shows[`${match.date}|${match.event}`] || [])[0]);
+            if (!v) return 'unknown';
+            return v.country === 'USA' ? 'USA|' + (v.region || 'Other') : 'C|' + v.country;
+        }
+
+        function buildLocationFilter() {
+            const counts = {};
+            allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => {
+                const k = locationOf(m);
+                counts[k] = (counts[k] || 0) + 1;
+            }));
+            const states = Object.keys(counts).filter(k => k.startsWith('USA|')).sort();
+            const countries = Object.keys(counts).filter(k => k.startsWith('C|')).sort((a, b) => counts[b] - counts[a]);
+            const box = id => `<input type="checkbox" checked ${id}>`;
+            let html = '';
+            if (states.length) {
+                html += `<label class="loc-country">${box('data-loc-parent="USA"')} United States</label>`;
+                html += states.map(k => `<label class="loc-state">${box(`data-loc="${esc(k)}"`)} ${esc(k.slice(4))}</label>`).join('');
+            }
+            html += countries.map(k => `<label class="loc-country">${box(`data-loc="${esc(k)}"`)} ${esc(LOC_COUNTRY_NAMES[k.slice(2)] || k.slice(2))}</label>`).join('');
+            if (counts.unknown) html += `<label class="loc-country loc-unknown">${box('data-loc="unknown"')} Unknown</label>`;
+            const wrap = document.getElementById('locCheckboxes');
+            wrap.innerHTML = html;
+            wrap.onchange = e => {
+                const parent = e.target.closest('[data-loc-parent]');
+                if (parent) wrap.querySelectorAll('[data-loc^="USA|"]').forEach(cb => { cb.checked = parent.checked; });
+                updateLocations();
+            };
+            selectedLocations = null;
+            updateLocationBtn();
+        }
+
+        function setAllLocations(val) {
+            document.querySelectorAll('#locCheckboxes input').forEach(cb => { cb.checked = val; cb.indeterminate = false; });
+            updateLocations();
+        }
+
+        function updateLocations() {
+            const leaves = [...document.querySelectorAll('#locCheckboxes [data-loc]')];
+            const ticked = leaves.filter(cb => cb.checked).map(cb => cb.dataset.loc);
+            selectedLocations = ticked.length === leaves.length ? null : new Set(ticked);
+            updateLocationBtn();
+            processAllData();
+            renderAllTabs();
+        }
+
+        function updateLocationBtn() {
+            const leaves = [...document.querySelectorAll('#locCheckboxes [data-loc]')];
+            const ticked = leaves.filter(cb => cb.checked);
+            const usStates = leaves.filter(cb => cb.dataset.loc.startsWith('USA|'));
+            const usTicked = usStates.filter(cb => cb.checked);
+            const parent = document.querySelector('#locCheckboxes [data-loc-parent]');
+            if (parent) {
+                parent.checked = usStates.length > 0 && usTicked.length === usStates.length;
+                parent.indeterminate = usTicked.length > 0 && usTicked.length < usStates.length;
+            }
+            const label = cb => cb.parentElement.textContent.trim();
+            const btn = document.getElementById('locDropdownBtn');
+            if (ticked.length === leaves.length) btn.textContent = 'All Locations';
+            else if (ticked.length === 0) btn.textContent = 'None';
+            else if (ticked.length === 1) btn.textContent = label(ticked[0]);
+            else if (usTicked.length === usStates.length && ticked.length === usStates.length) btn.textContent = 'United States';
+            else btn.textContent = `${ticked.length} Locations`;
         }
 
         function updateShowTypes() {
@@ -1456,15 +1599,30 @@
             updateShowTypes();
         }
 
+        // The show-type buttons light up to match the ticked show types:
+        // All Shows, a single type, or Select Multiple when it's a mix (or none)
         function updateShowBtn() {
             const btn = document.getElementById('showDropdownBtn');
             const all = document.querySelectorAll('#showDropdownMenu input');
             const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')];
-            if (checked.length === 0) btn.textContent = 'None';
-            else if (checked.length === all.length) btn.textContent = 'All Shows';
-            else if (checked.length === 1) btn.textContent = TAB_CONFIG[checked[0].value].label;
-            else btn.textContent = `${checked.length} Show Types`;
+            const active = checked.length === all.length ? 'all' : checked.length === 1 ? checked[0].value : 'multi';
+            document.querySelectorAll('#showTypeTabs [data-show-type]').forEach(b => {
+                const on = b.dataset.showType === active;
+                b.classList.toggle('active', on);
+                b.setAttribute('aria-pressed', String(on));
+            });
+            btn.classList.toggle('active', active === 'multi');
+            btn.textContent = active === 'multi' ? (checked.length ? `${checked.length} Types ▾` : 'None ▾') : 'Select Multiple ▾';
         }
+
+        document.getElementById('showTypeTabs').addEventListener('click', e => {
+            const b = e.target.closest('[data-show-type]');
+            if (!b) return;
+            const type = b.dataset.showType;
+            document.querySelectorAll('#showDropdownMenu input').forEach(cb => { cb.checked = type === 'all' || cb.value === type; });
+            document.getElementById('showDropdownMenu').style.display = 'none';
+            updateShowTypes();
+        });
 
         document.querySelectorAll('.view-switch-btn').forEach(b => b.addEventListener('click', () => {
             if (currentView === b.dataset.view) return;
@@ -2325,7 +2483,7 @@
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
                         <div class="match-row-title">${esc(getMatchupText(m))}${star}</div>
-                        <div class="match-row-meta">${title}${currentView === 'stips' && m.stipulation ? esc(m.stipulation) + ' · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
+                        <div class="match-row-meta">${title}${m.stipulation ? '<span class="match-row-stip">' + esc(m.stipulation) + '</span> · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
         }
@@ -2577,6 +2735,7 @@
                 // Build year dropdown from actual data
                 buildYearDropdown();
                 fillFacetFilters();
+                buildLocationFilter();
                 findStipVariants();
 
                 // Process and render
@@ -2600,6 +2759,7 @@
         buildScopeViewMarkup();
         buildFacetFilters();
         addFilterArrows();
+        if (!SHOW_VIEW_TABS) document.querySelectorAll('.view-switch').forEach(el => { el.style.display = 'none'; });
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
@@ -2622,7 +2782,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // Filter dropdowns: one open at a time, closed by clicking outside
-            const DROPDOWNS = [['showDropdownBtn', 'showDropdownMenu'], ['yearDropdownBtn', 'yearDropdownMenu'], ['divDropdownBtn', 'divDropdownMenu']]
+            const DROPDOWNS = [['showDropdownBtn', 'showDropdownMenu'], ['yearDropdownBtn', 'yearDropdownMenu'], ['divDropdownBtn', 'divDropdownMenu'], ['locDropdownBtn', 'locDropdownMenu']]
                 .concat(FACETS.map(f => [`${f.key}DropdownBtn`, `${f.key}DropdownMenu`]));
             DROPDOWNS.forEach(([btnId, menuId]) => {
                 document.getElementById(btnId).addEventListener('click', e => {
