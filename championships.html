@@ -1230,6 +1230,58 @@
             font-size: 0.85em;
         }
 
+        /* Inactive Titles and Dropped Out lists: every row lines up the same way.
+           The belt sits in a fixed-width slot, so every title name starts at
+           the same place; on phones the "Last ranked…" / "Was #…" line goes
+           underneath the name instead of squeezing beside it. */
+        .inactive-item.clickable,
+        .dropped-out-item.clickable {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            column-gap: 16px;
+        }
+        .inactive-title-name,
+        .dropped-title {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            align-items: center;
+            column-gap: 10px;
+        }
+        .inactive-title-name > :first-child,
+        .dropped-title > :first-child {
+            margin: 0 !important;
+            justify-self: center;
+        }
+        .inactive-info,
+        .dropped-info { text-align: right; white-space: nowrap; }
+        @media (max-width: 600px) {
+            /* belt on the left across both lines; name on top, info underneath */
+            .inactive-item.clickable,
+            .dropped-out-item.clickable {
+                grid-template-columns: 52px minmax(0, 1fr);
+                grid-auto-rows: auto;
+                column-gap: 10px;
+                row-gap: 3px;
+                align-content: center;
+            }
+            .inactive-title-name,
+            .dropped-title { display: contents; }
+            .inactive-title-name > :first-child,
+            .dropped-title > :first-child { grid-row: span 2; align-self: center; }
+            .inactive-info,
+            .dropped-info {
+                grid-column: 2;
+                text-align: left;
+                white-space: normal;
+            }
+            /* "Last ranked Jul '26 Week 4" on one line, "Rating 101.46" under it */
+            .inactive-info .info-wk,
+            .inactive-info .info-rt { display: block; white-space: nowrap; }
+            .inactive-info .info-sep { display: none; }
+            .inactive-info .info-rt::before { content: 'Rating '; }
+        }
+
         .dropped-out-section h3 {
             color: #ffd700;
             margin-bottom: 15px;
@@ -3890,7 +3942,7 @@
                                     <div class="inactive-item-wrapper">
                                         <div class="inactive-item clickable" role="button" tabindex="0" onclick="toggleDetails(${inactiveIndex})">
                                             <span class="inactive-title-name">${titleIcon}${title.title}</span>
-                                            <span class="inactive-info">${title.lastWeekLabel ? `Last ranked ${title.lastWeekLabel}${title.rating ? ` • ${formatRating(applyBoost(title.rating, title.title))}` : ''}` : ''}</span>
+                                            <span class="inactive-info">${title.lastWeekLabel ? `<span class="info-wk">Last ranked ${title.lastWeekLabel}</span>${title.rating ? `<span class="info-sep"> • </span><span class="info-rt">${formatRating(applyBoost(title.rating, title.title))}</span>` : ''}` : ''}</span>
                                         </div>
                                         <div class="dropped-details ${isExpanded ? 'expanded' : ''}" id="details-${inactiveIndex}">
                                             ${detailsCloseTop(inactiveIndex)}
