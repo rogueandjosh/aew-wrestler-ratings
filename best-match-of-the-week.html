@@ -35,6 +35,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="tooltip-box.css?v=1">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -262,81 +263,6 @@
         }
 
         .tt:not(th):not(td) { position: relative; display: inline-block; }
-
-        #ttBox {
-            display: none;
-            position: fixed;
-            background: #1a1a2e;
-            color: #e0e0e0;
-            border: 1px solid #ffd700;
-            border-radius: 6px;
-            padding: 7px 11px;
-            font-size: 0.78em;
-            white-space: normal;
-            width: 200px;
-            text-align: center;
-            pointer-events: none;
-            z-index: 99999;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-            line-height: 1.4;
-            transition: opacity 0.15s ease;
-        }
-
-        .tt:not(th):not(td)::after {
-            content: attr(data-tt);
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1a2e;
-            color: #e0e0e0;
-            border: 1px solid #ffd700;
-            border-radius: 6px;
-            padding: 7px 11px;
-            font-size: 0.78em;
-            font-weight: normal;
-            white-space: normal;
-            width: 200px;
-            text-align: center;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.4s;
-            z-index: 9999;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-            line-height: 1.4;
-        }
-        .tt.tt-below:not(th):not(td)::after { bottom: auto; top: calc(100% + 8px); }
-        .tt:not(th):not(td)::before {
-            content: '';
-            position: absolute;
-            bottom: calc(100% + 2px);
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #ffd700;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.4s;
-            z-index: 9999;
-        }
-        .tt.tt-below:not(th):not(td)::before {
-            bottom: auto;
-            top: calc(100% + 2px);
-            border-top-color: transparent;
-            border-bottom-color: #ffd700;
-        }
-        .tt.tt-left:not(th):not(td)::after { left: 0; transform: none; }
-        .tt.tt-left:not(th):not(td)::before { left: 20px; transform: none; }
-        body.tooltips-on .tt:not(th):not(td):hover::after,
-        body.tooltips-on .tt:not(th):not(td):hover::before,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
-            opacity: 1;
-        }
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
-            transition: opacity 0.1s ease 0s;
-        }
 
         #tooltipToggle {
             background: none;
@@ -1420,85 +1346,7 @@
             showMoreBtn.style.display = rows.length > leaderboardDisplayCount ? 'block' : 'none';
         }
 
-        // ===== TOOLTIP TOGGLE =====
-        (function() {
-            let stored = null;
-            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
-            const on = stored === null ? true : stored === 'true';
-            if (on) document.body.classList.add('tooltips-on');
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        })();
-
-        function toggleTooltips() {
-            const on = document.body.classList.toggle('tooltips-on');
-            try { localStorage.setItem('aewTooltips', on); } catch (e) {}
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        }
-
-        const ttBox = document.getElementById('ttBox');
-        let ttTimer = null;
-        document.addEventListener('mouseover', function(e) {
-            const el = e.target.closest('th.tt, td.tt');
-            if (!el || !document.body.classList.contains('tooltips-on')) return;
-            const text = el.getAttribute('data-tt');
-            if (!text) return;
-            ttTimer = setTimeout(() => {
-                const rect = el.getBoundingClientRect();
-                ttBox.textContent = text;
-                ttBox.style.display = 'block';
-                const left = rect.left + rect.width / 2 - 100;
-                const top = rect.top - 70;
-                ttBox.style.left = Math.max(5, left) + 'px';
-                ttBox.style.top = Math.max(5, top) + 'px';
-            }, 400);
-        });
-        document.addEventListener('mouseout', function(e) {
-            const el = e.target.closest('th.tt, td.tt');
-            if (!el) return;
-            clearTimeout(ttTimer);
-            ttBox.style.display = 'none';
-        });
-
-        let ttTouchEl = null;
-        document.addEventListener('touchstart', function(e) {
-            if (!document.body.classList.contains('tooltips-on')) return;
-
-            const ttEl = e.target.closest('.tt:not(th):not(td)');
-            if (ttTouchEl && ttTouchEl !== ttEl) {
-                ttTouchEl.classList.remove('tt-touch-active');
-            }
-            if (ttEl) {
-                ttEl.classList.add('tt-touch-active');
-                ttTouchEl = ttEl;
-            } else {
-                ttTouchEl = null;
-            }
-
-            const tableEl = e.target.closest('th.tt, td.tt');
-            if (tableEl) {
-                const text = tableEl.getAttribute('data-tt');
-                if (text) {
-                    clearTimeout(ttTimer);
-                    const rect = tableEl.getBoundingClientRect();
-                    ttBox.textContent = text;
-                    ttBox.style.display = 'block';
-                    const left = rect.left + rect.width / 2 - 100;
-                    const top = rect.top - 70;
-                    ttBox.style.left = Math.max(5, left) + 'px';
-                    ttBox.style.top = Math.max(5, top) + 'px';
-                }
-            } else {
-                ttBox.style.display = 'none';
-            }
-        }, { passive: true });
+        // Tooltips (on/off, hover and tap) are handled by the shared tooltips.js
 
         init();
     </script>
@@ -1509,5 +1357,6 @@
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
+    <script src="tooltips.js?v=2"></script>
 </body>
 </html>

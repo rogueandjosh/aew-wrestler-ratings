@@ -34,6 +34,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="tooltip-box.css?v=1">
     <style>
         *, *::before, *::after {
             margin: 0;
@@ -1530,29 +1531,6 @@
             position: relative;
         }
 
-        #ttBox {
-            position: fixed;
-            background: #1a1a2e;
-            border: 2px solid #ffd700;
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: #e0e0e0;
-            font-size: 0.9em;
-            max-width: 280px;
-            z-index: 9999;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            line-height: 1.5;
-        }
-
-        #ttBox.visible {
-            opacity: 1;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
         #tooltipToggle {
             font-family: 'Overlock', 'Arial', sans-serif;
         }
@@ -1831,10 +1809,6 @@
                 grid-template-columns: 1fr;
             }
 
-            #ttBox {
-                max-width: calc(100vw - 20px);
-                font-size: 0.85em;
-            }
 
             /* Hide extra columns on mobile */
             .extra-col {
@@ -2488,9 +2462,6 @@
         let expandedRows = new Set();
         let rowKeys = [];   // row number → "main|Title", "dropped|Title" or "inactive|Title" for the current render
         function isRowOpen(i) { return expandedRows.has(rowKeys[i]); }
-        // Tooltips on/off — remembered across pages and visits (same 'aewTooltips' setting as the rest of the site)
-        let tooltipsEnabled = true;
-        try { tooltipsEnabled = localStorage.getItem('aewTooltips') !== 'false'; } catch (e) {} // storage can be blocked by the browser
         let isNavigating = false;
         let currentSort = { column: 'rank', direction: 'asc' };
         let viewMode = 'reign'; // 'reign' or 'alltime'
@@ -3068,7 +3039,6 @@
                 await checkIfCurrentMatchesMostRecent();
                 await loadWeekSummaries();
                 await loadChampionshipData(weekValueFromHash());
-                setupTooltips();
                 window.addEventListener('hashchange', () => {
                     const value = weekValueFromHash();
                     if (value !== currentWeekValue) loadChampionshipData(value);
@@ -3298,94 +3268,7 @@
             `;
         }
 
-        // ===== TOOLTIP SYSTEM =====
-        function setupTooltips() {
-            const ttBox = document.getElementById('ttBox');
-            
-            document.addEventListener('mouseover', function(e) {
-                const ttEl = e.target.closest('.tt');
-                if (ttEl && tooltipsEnabled && ttEl.dataset.tt) {
-                    ttBox.textContent = ttEl.dataset.tt;
-                    ttBox.classList.add('visible');
-                    positionTooltip(e, ttBox);
-                }
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                if (ttBox.classList.contains('visible')) {
-                    positionTooltip(e, ttBox);
-                }
-            });
-
-            document.addEventListener('mouseout', function(e) {
-                const ttEl = e.target.closest('.tt');
-                if (ttEl) {
-                    ttBox.classList.remove('visible');
-                }
-            });
-
-            // Mobile: tap anywhere to dismiss tooltip
-            document.addEventListener('click', function(e) {
-                const ttEl = e.target.closest('.tt');
-                if (ttBox.classList.contains('visible') && !ttEl) {
-                    ttBox.classList.remove('visible');
-                }
-            });
-
-            // Mobile: tap the tooltip box itself to dismiss
-            ttBox.addEventListener('click', function(e) {
-                ttBox.classList.remove('visible');
-            });
-        }
-
-        function positionTooltip(e, ttBox) {
-            const padding = 15;
-            let x = e.clientX + padding;
-            let y = e.clientY + padding;
-
-            const rect = ttBox.getBoundingClientRect();
-            
-            // Prevent overflow on right
-            if (x + rect.width > window.innerWidth) {
-                x = e.clientX - rect.width - padding;
-            }
-            // Prevent overflow on left
-            if (x < 5) {
-                x = 5;
-            }
-            // Prevent overflow on bottom
-            if (y + rect.height > window.innerHeight) {
-                y = e.clientY - rect.height - padding;
-            }
-            // Prevent overflow on top
-            if (y < 5) {
-                y = 5;
-            }
-
-            ttBox.style.left = x + 'px';
-            ttBox.style.top = y + 'px';
-        }
-
-        function toggleTooltips() {
-            tooltipsEnabled = !tooltipsEnabled;
-            try { localStorage.setItem('aewTooltips', tooltipsEnabled); } catch (e) {}
-            updateTooltipButton();
-        }
-
-        function updateTooltipButton() {
-            const btn = document.getElementById('tooltipToggle');
-            if (!btn) return;
-            if (tooltipsEnabled) {
-                btn.textContent = '💡 Tooltips ON';
-                btn.classList.add('active');
-            } else {
-                btn.textContent = '💡 Tooltips OFF';
-                btn.classList.remove('active');
-                const box = document.getElementById('ttBox');
-                if (box) box.classList.remove('visible');
-            }
-        }
-        document.addEventListener('DOMContentLoaded', updateTooltipButton);
+        // Tooltips (on/off, hover and tap) are handled by the shared tooltips.js
 
         // ===== DATA LOADING =====
         let skipFirstArchiveWeek = false; // True if current matches most recent archive
@@ -5069,5 +4952,6 @@
         <p>Current champions sourced from <a href="https://en.wikipedia.org/wiki/List_of_current_champions_in_All_Elite_Wrestling" target="_blank" style="color: #ffd700; text-decoration: none;">Wikipedia</a> under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a>.</p>
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
+    <script src="tooltips.js?v=2"></script>
 </body>
 </html>

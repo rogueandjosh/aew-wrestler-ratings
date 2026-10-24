@@ -1,0 +1,48 @@
+/* ===== SHARED TOOLTIP BOX =====
+   The one floating tooltip box used on every page. tooltips.js positions it so it always
+   stays on screen. Pages using the full shared styling load tooltips.css (which imports this);
+   pages with their own layout rules load just this file. */
+#ttBox {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border: 1px solid #ffd700;
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: normal;
+    white-space: normal;
+    width: max-content;
+    max-width: 260px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 99999;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    line-height: 1.4;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+#ttBox.visible { opacity: 1; }
+
+/* Arrow pointing at the element (side and position set by tooltips.js) */
+#ttBox::after {
+    content: '';
+    position: absolute;
+    left: var(--tt-arrow-x, 50%);
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+}
+#ttBox[data-side="above"]::after { top: 100%; border-top-color: #ffd700; }
+#ttBox[data-side="below"]::after { bottom: 100%; border-bottom-color: #ffd700; }
+
+/* Once tooltips.js is running, switch off any older CSS-only tooltips a page still carries.
+   Table cells are left alone: their ::after is used for sort arrows. */
+body.tt-js .tt:not(th):not(td)::after,
+body.tt-js .tt:not(th):not(td)::before {
+    content: none !important;
+    display: none !important;
+}

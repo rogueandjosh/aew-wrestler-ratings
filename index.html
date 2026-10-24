@@ -37,6 +37,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="tooltip-box.css?v=1">
     <style>
         @font-face {
         font-family: 'Mokoto';
@@ -1635,83 +1636,6 @@
             position: relative;
             display: inline-block;
         }
-        /* JS-powered tooltip div */
-        #ttBox {
-            display: none;
-            position: fixed;
-            background: #1a1a2e;
-            color: #e0e0e0;
-            border: 1px solid #ffd700;
-            border-radius: 6px;
-            padding: 7px 11px;
-            font-size: 0.78em;
-            white-space: normal;
-            width: 200px;
-            text-align: center;
-            pointer-events: none;
-            z-index: 99999;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-            line-height: 1.4;
-            transition: opacity 0.15s ease;
-        }
-        /* CSS tooltips only for non-table elements (buttons etc) */
-        .tt:not(th):not(td)::after {
-            content: attr(data-tt);
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1a2e;
-            color: #e0e0e0;
-            border: 1px solid #ffd700;
-            border-radius: 6px;
-            padding: 7px 11px;
-            font-size: 0.78em;
-            font-weight: normal;
-            white-space: normal;
-            width: 200px;
-            text-align: center;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.4s;
-            z-index: 9999;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-            line-height: 1.4;
-        }
-        .tt.tt-below:not(th):not(td)::after {
-            bottom: auto;
-            top: calc(100% + 8px);
-        }
-        .tt:not(th):not(td)::before {
-            content: '';
-            position: absolute;
-            bottom: calc(100% + 2px);
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #ffd700;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.4s;
-            z-index: 9999;
-        }
-        .tt.tt-below:not(th):not(td)::before {
-            bottom: auto;
-            top: calc(100% + 2px);
-            border-top-color: transparent;
-            border-bottom-color: #ffd700;
-        }
-        body.tooltips-on .tt:not(th):not(td):hover::after,
-        body.tooltips-on .tt:not(th):not(td):hover::before,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
-            opacity: 1;
-        }
-        /* Touch-triggered tooltips appear instantly (no hover delay) since a tap is already deliberate */
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::after,
-        body.tooltips-on .tt:not(th):not(td).tt-touch-active::before {
-            transition: opacity 0.1s ease 0s;
-        }
         #tooltipToggle {
             background: none;
             border: 1px solid rgba(136,136,136,0.5);
@@ -2782,92 +2706,7 @@
             }
         }
 
-        // ===== TOOLTIP TOGGLE =====
-        (function() {
-            let stored = null;
-            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
-            const on = stored === null ? true : stored === 'true';
-            if (on) document.body.classList.add('tooltips-on');
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        })();
-
-        function toggleTooltips() {
-            const on = document.body.classList.toggle('tooltips-on');
-            try { localStorage.setItem('aewTooltips', on); } catch (e) {}
-            const btn = document.getElementById('tooltipToggle');
-            if (btn) {
-                btn.textContent = on ? '💡 Tooltips ON' : '💡 Tooltips OFF';
-                btn.classList.toggle('active', on);
-            }
-        }
-
-        // JS-powered tooltips for table headers (CSS ::after doesn't work inside tables)
-        const ttBox = document.getElementById('ttBox');
-        let ttTimer = null;
-        document.addEventListener('mouseover', function(e) {
-            const el = e.target.closest('th.tt, td.tt');
-            if (!el || !document.body.classList.contains('tooltips-on')) return;
-            const text = el.getAttribute('data-tt');
-            if (!text) return;
-            ttTimer = setTimeout(() => {
-                const rect = el.getBoundingClientRect();
-                ttBox.textContent = text;
-                ttBox.style.display = 'block';
-                const left = rect.left + rect.width / 2 - 100; // centre 200px box
-                const top = rect.top - 70; // above the header
-                ttBox.style.left = Math.max(5, left) + 'px';
-                ttBox.style.top = Math.max(5, top) + 'px';
-            }, 400);
-        });
-        document.addEventListener('mouseout', function(e) {
-            const el = e.target.closest('th.tt, td.tt');
-            if (!el) return;
-            clearTimeout(ttTimer);
-            ttBox.style.display = 'none';
-        });
-
-        // Touch handling: mobile browsers only fire :hover on tap (after the fact),
-        // which reads as "needs a click first". touchstart fires the instant a finger
-        // lands, so we mirror hover behavior there — the tap/click itself still fires
-        // normally afterward since we never call preventDefault.
-        let ttTouchEl = null;
-        document.addEventListener('touchstart', function(e) {
-            if (!document.body.classList.contains('tooltips-on')) return;
-
-            // CSS-pseudo tooltip system (buttons, labels, etc.)
-            const ttEl = e.target.closest('.tt:not(th):not(td)');
-            if (ttTouchEl && ttTouchEl !== ttEl) {
-                ttTouchEl.classList.remove('tt-touch-active');
-            }
-            if (ttEl) {
-                ttEl.classList.add('tt-touch-active');
-                ttTouchEl = ttEl;
-            } else {
-                ttTouchEl = null;
-            }
-
-            // JS-box tooltip system (table headers)
-            const tableEl = e.target.closest('th.tt, td.tt');
-            if (tableEl) {
-                const text = tableEl.getAttribute('data-tt');
-                if (text) {
-                    clearTimeout(ttTimer);
-                    const rect = tableEl.getBoundingClientRect();
-                    ttBox.textContent = text;
-                    ttBox.style.display = 'block';
-                    const left = rect.left + rect.width / 2 - 100;
-                    const top = rect.top - 70;
-                    ttBox.style.left = Math.max(5, left) + 'px';
-                    ttBox.style.top = Math.max(5, top) + 'px';
-                }
-            } else {
-                ttBox.style.display = 'none';
-            }
-        }, { passive: true });
+        // Tooltips (on/off, hover and tap) are handled by the shared tooltips.js
 
         // Toggle showing all wrestlers vs top N
         function toggleShowAll(division) {
@@ -8119,5 +7958,6 @@ document.addEventListener('keydown', function (e) {
     }
 });
 </script>
+    <script src="tooltips.js?v=2"></script>
 </body>
 </html>
