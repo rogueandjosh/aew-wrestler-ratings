@@ -4298,8 +4298,10 @@ let visibleColumns = {
 
             // Load weekly analysis via updateAnalysisBanner (includes stale week check)
             updateAnalysisBanner('current', analysisOpenState);
+            window.__currentWeekLoaded = true;   // a week in the address can be restored now
         })
         .catch(error => {
+            window.__currentWeekLoaded = true;
             document.getElementById('content').innerHTML = '<div class="error">Error loading rankings data. Please try again later.</div>';
             console.error('Error loading data:', error);
         });
@@ -4747,9 +4749,18 @@ let visibleColumns = {
             input.blur();
         }
         
-        // Restore state from URL hash (when returning from wrestler stats)
-        setTimeout(() => {
+        // Restore state from URL hash (when returning from wrestler stats, or a link
+        // from Show Statistics / Championships). Waits for the week list to load first —
+        // a fixed delay wasn't always long enough on a phone, so the page fell back to
+        // the current week.
+        (function restoreFromHashWhenReady(tries = 0) {
             const hash = window.location.hash.substring(1);
+            if (!hash) return;
+            const ready = archiveIndex && getValidArchiveWeeks().length > 0 && window.__currentWeekLoaded;
+            if (!ready && tries < 100) {
+                setTimeout(() => restoreFromHashWhenReady(tries + 1), 150);
+                return;
+            }
             if (hash) {
                 const params = new URLSearchParams(hash);
                 const returnWeek = params.get('week');
@@ -4783,7 +4794,7 @@ let visibleColumns = {
                     history.replaceState(null, '', window.location.pathname);
                 }
             }
-        }, 500); // Increased delay to ensure everything is loaded
+        })();
         
         // Track when year filter changes (not month filter)
         let lastYearFilter = '';
