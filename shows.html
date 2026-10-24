@@ -1346,9 +1346,9 @@
             { key: 'cardPos', title: 'Card Position', noun: 'Positions', groups: () => CARD_POSITION_GROUPS, of: m => getCardPositionGroup(m.matchPos),
               tip: 'Where the match was on the card: the main event, the opener, or elsewhere (Other).' },
             { key: 'stip',    title: 'Stipulation',   noun: 'Stips',   // short so "All Stips" fits on phones
-              groups: () => STIPULATION_GROUPS.map(g => g.group).concat([STIPULATION_OTHER_GROUP, 'No Stipulation']),
-              of: m => getStipulationGroup(m.matchStipulation) || 'No Stipulation',
-              tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or No Stipulation. Same groups as on the wrestler pages.' }
+              groups: () => ['None'].concat(STIPULATION_GROUPS.map(g => g.group), [STIPULATION_OTHER_GROUP]),
+              of: m => getStipulationGroup(m.matchStipulation) || 'None',
+              tip: 'Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights & Brawls, or None for regular matches. Same groups as on the wrestler pages.' }
         ];
         const facetOptions = {};          // facet key → options present in the data (fixed order)
         const selectedFacets = {};        // facet key → Set of ticked options (null = all)
@@ -1509,7 +1509,7 @@
             const btn = document.getElementById(`${key}DropdownBtn`);
             if (ticked.length === all.length) btn.textContent = `All ${f.noun}`;
             else if (ticked.length === 0) btn.textContent = 'None';
-            else if (ticked.length === 1) btn.textContent = ticked[0].value;
+            else if (ticked.length === 1) btn.textContent = key === 'stip' && ticked[0].value === 'None' ? 'No Stips' : ticked[0].value;   // not to be confused with nothing ticked
             else btn.textContent = `${ticked.length} ${f.noun}`;
             const set = FACETS.filter(x => selectedFacets[x.key]).length;
             document.getElementById('moreFiltersCount').textContent = set ? `(${set} set)` : '';
