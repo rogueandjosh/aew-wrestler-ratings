@@ -957,40 +957,118 @@
                 margin-top: 2px;
             }
         }
+        /* ===== Header: same gold box as the other pages ===== */
+        header.ewr-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            border-bottom: 2px solid #ffd700;
+            position: relative;
+        }
+        header.ewr-header h1 { color: #ffd700; font-size: 2.2em; margin: 30px 0 8px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
+        header.ewr-header h1 a { color: inherit; text-decoration: none; }
+        header.ewr-header .subtitle { color: #b8b8b8; font-size: 1em; }
+        header.ewr-header .nav-buttons {
+            position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; margin: 0;
+        }
+        header.ewr-header .back-link {
+            background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px;
+            border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9em; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 5px; font-family: inherit; transition: all 0.3s ease;
+        }
+        header.ewr-header .back-link:hover { background: rgba(255, 215, 0, 0.3); transform: translateY(-2px); }
+        header.ewr-header #tooltipToggle {
+            position: absolute; top: 15px; right: 15px; background: none; border: 1px solid rgba(255, 215, 0, 0.4);
+            cursor: pointer; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; color: #ffd700;
+            font-family: inherit; margin: 0; transition: all 0.2s;
+        }
+        header.ewr-header #tooltipToggle:not(.active) { color: #666; border-color: #444; }
+        @media (max-width: 768px) {
+            header.ewr-header { padding: 15px 20px; padding-top: 60px; }
+            header.ewr-header h1 { font-size: 1.6em; margin-top: 0; }
+            header.ewr-header .nav-buttons { top: 10px; left: 10px; }
+            header.ewr-header .back-link { padding: 6px 12px; font-size: 0.85em; }
+            header.ewr-header #tooltipToggle { top: 12px; right: 10px; }
+            header.ewr-header .subtitle { font-size: 0.85em; }
+        }
+
+        /* ===== Filter arrows: round gold chevrons, as in the week selectors ===== */
+        .filter-arrow {
+            width: 30px; height: 30px; min-width: 30px; padding: 0 !important; border-radius: 50%;
+            border: 1.5px solid rgba(255, 215, 0, 0.55); background: transparent; color: #ffd700;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 1em; margin: 0 4px;
+        }
+        .filter-arrow:hover { border-color: #ffd700; background: rgba(255, 215, 0, 0.15); }
+
+        /* ===== View switch: one of three ===== */
+        .view-switch {
+            display: flex; max-width: 520px; margin: 0 auto 22px; border: 2px solid #ffd700; border-radius: 10px;
+            overflow: hidden; background: rgba(255, 255, 255, 0.04);
+        }
+        .view-switch-btn {
+            flex: 1 1 0; background: none; border: none; border-left: 1px solid rgba(255, 215, 0, 0.35);
+            color: #c8c8c8; font-family: inherit; font-weight: bold; font-size: 0.95em; padding: 10px 6px;
+            cursor: pointer; white-space: nowrap; transition: background 0.2s, color 0.2s;
+        }
+        .view-switch-btn:first-child { border-left: none; }
+        .view-switch-btn.active { background: #ffd700; color: #1a1a2e; }
+        @media (hover: hover) { .view-switch-btn:not(.active):hover { background: rgba(255, 215, 0, 0.15); color: #ffd700; } }
+
+        /* ===== Slim stats panel ===== */
+        #showsView .stats-summary {
+            display: grid !important; grid-template-columns: repeat(6, 1fr); gap: 0 !important;
+            border: 1px solid rgba(255, 215, 0, 0.45); border-radius: 10px; background: rgba(255, 255, 255, 0.04);
+            margin: 0 0 24px !important; overflow: hidden;
+        }
+        #showsView .stats-summary .stat-box {
+            border: none; border-left: 1px solid rgba(255, 215, 0, 0.2); border-radius: 0; background: none;
+            min-width: 0 !important; padding: 10px 6px !important; grid-column: auto !important;
+        }
+        #showsView .stats-summary .stat-box:first-child { border-left: none; }
+        #showsView .stats-summary .stat-number { font-size: 1.35em !important; }
+        #showsView .stats-summary .stat-label { font-size: 0.75em !important; margin-top: 2px; }
+        @media (max-width: 600px) {
+            #showsView .stats-summary { grid-template-columns: repeat(3, 1fr); }
+            #showsView .stats-summary .stat-box:nth-child(4) { border-left: none; }
+            #showsView .stats-summary .stat-box:nth-child(n+4) { border-top: 1px solid rgba(255, 215, 0, 0.2); }
+            #showsView .stats-summary .stat-number { font-size: 1.15em !important; }
+        }
+
+        /* ===== Top Performers: Matches and Best on every screen; scrolls sideways if needed ===== */
+        .lb-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .lb-table { min-width: 440px; }
+        .lb-num { text-align: center; }
+        .lb-table .lb-short { display: none; }
+        @media (max-width: 600px) {
+            .lb-table { min-width: 340px; }
+            .lb-table th, .lb-table td { padding: 8px 5px !important; }
+            .lb-table th:first-child { width: 28px !important; }
+            .lb-table .lb-long { display: none; }
+            .lb-table .lb-short { display: inline; }
+            /* Filter arrows a little smaller so the dropdowns keep their width */
+            .filter-arrow { width: 26px; height: 26px; min-width: 26px; margin: 0 2px; }
+            #yearDropdownBtn, #divDropdownBtn, .facet-btn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        }
+        @media (max-width: 380px) {
+            #yearDropdownBtn, #divDropdownBtn, .facet-btn { padding: 9px 6px !important; font-size: 0.82em !important; }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
-        <header>
-            <!-- Hamburger menu in top-right corner -->
-            <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
-                <button id="otherMenuBtn" style="padding: 10px; background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px; color: #ffd700; cursor: pointer; font-size: 1.5em; line-height: 1; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
-                    ☰
-                </button>
-                <div id="otherMenuDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: #1a1a2e; border: 2px solid #ffd700; border-radius: 5px; min-width: 180px; z-index: 1001; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <a href="index.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🏠 Rankings</a>
-                    <a href="index.html#about" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">ℹ️ About</a>
-                    <a href="championships.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🏆 Championships</a>
-                    <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🥊 Compare Wrestlers</a>
-                    <a href="wrestler-search.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">🔍 Wrestler Search</a>
-                    <a href="shows.html" class="active" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em; background: rgba(255,215,0,0.15); font-weight: 700;">📺 Show Stats</a>
-                    <a href="updates.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">📋 Updates</a>
-                </div>
+        <header class="ewr-header">
+            <div class="nav-buttons">
+                <button type="button" onclick="goBack()" class="back-link">← Back</button>
+                <a href="index.html" class="back-link">🏠 Home</a>
             </div>
-            <h1 style="cursor: pointer;" onclick="window.location.href='shows.html'" title="Reset to default">📺 Show Statistics</h1>
+            <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
+            <h1><a href="shows.html" title="Reset to default">📺 Show Statistics</a></h1>
             <p class="subtitle">How do wrestlers perform across different show types?</p>
-            <div class="nav-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; align-items: center; flex-wrap: wrap;">
-                <button onclick="goBack()" class="back-link" style="cursor: pointer; background: none;">
-                    ← Back
-                </button>
-                <a href="index.html" class="back-link">
-                    🏠 Home
-                </a>
-                <button id="tooltipToggle" class="back-link active" onclick="toggleTooltips()" style="cursor: pointer; background: none;" title="Turn the extra info boxes on or off">
-                    💡 Tooltips ON
-                </button>
-            </div>
         </header>
 
         <!-- Filters -->
@@ -1055,9 +1133,10 @@
 
         <!-- Tab Navigation + Content (hidden until data loads) -->
         <div id="tabsWrapper">
-        <div class="view-options">
-            <button class="tab view-option-btn tt tt-below" id="stipsToggle" data-tt="Only matches with a stipulation, grouped by type. Uses the same Shows, Year and Division filters. Click again to go back.">🪜 Stipulation Matches</button>
-            <button class="tab view-option-btn tt tt-below" id="venuesToggle" data-tt="Matches by where the show took place: country, then state or region, city and arena. Uses the same filters. Click again to go back.">📍 Venues</button>
+        <div class="view-switch" role="tablist" aria-label="View">
+            <button type="button" role="tab" class="view-switch-btn active tt tt-below" data-view="shows" aria-selected="true" data-tt="Matches by show: show type, then show, then each edition.">📺 Shows</button>
+            <button type="button" role="tab" class="view-switch-btn tt tt-below" data-view="stips" id="stipsToggle" aria-selected="false" data-tt="Only matches with a stipulation, grouped by type. Uses the same filters.">🪜 Stipulations</button>
+            <button type="button" role="tab" class="view-switch-btn tt tt-below" data-view="venues" id="venuesToggle" aria-selected="false" data-tt="Matches by where the show took place: country, then state or region, city and arena. Uses the same filters.">📍 Venues</button>
         </div>
 
         <!-- Loading State -->
@@ -1255,8 +1334,11 @@
         // Stipulation Matches is an on/off view: clicking it again returns to the show view.
         // Both views use the same filters and the same page layout.
         function updateViewButtons() {
-            document.getElementById('stipsToggle').classList.toggle('active', currentView === 'stips');
-            document.getElementById('venuesToggle').classList.toggle('active', currentView === 'venues');
+            document.querySelectorAll('.view-switch-btn').forEach(b => {
+                const on = b.dataset.view === currentView;
+                b.classList.toggle('active', on);
+                b.setAttribute('aria-selected', String(on));
+            });
         }
 
         // ===========================================
@@ -1269,13 +1351,14 @@
 
         const FILTER_STEPPERS = [
             { btnId: 'showDropdownBtn', menu: '#showDropdownMenu', onChange: () => updateShowTypes(), name: 'show type' },
-            { btnId: 'yearDropdownBtn', menu: '#yearCheckboxes', onChange: () => updateYears(), name: 'year' },
+            { btnId: 'yearDropdownBtn', menu: '#yearCheckboxes', onChange: () => updateYears(), name: 'year', oldestFirst: true },
             { btnId: 'divDropdownBtn', menu: '#divDropdownMenu', onChange: () => updateDivisions(), name: 'division' }
         ];
 
         function stepFilter(index, dir) {
             const cfg = FILTER_STEPPERS[index];
             const inputs = [...document.querySelectorAll(`${cfg.menu} input[type="checkbox"]`)];
+            if (cfg.oldestFirst) inputs.reverse();   // years are listed newest first; › should go forward in time
             if (!inputs.length) return;
             const checked = inputs.filter(cb => cb.checked);
             // Position 0 = All; 1..n = a single option. A mixed selection counts as All.
@@ -1296,10 +1379,12 @@
                     const b = document.createElement('button');
                     b.type = 'button';
                     b.className = 'filter-arrow';
-                    b.textContent = symbol;
+                    b.innerHTML = symbol === '‹'
+                        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
+                        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
                     b.setAttribute('aria-label', `${label} ${cfg.name}`);
                     b.classList.add('tt');
-                    b.dataset.tt = `${label} ${cfg.name}`;
+                    b.dataset.tt = cfg.oldestFirst ? (dir > 0 ? 'Next year (from All: 2019)' : 'Previous year (from All: the latest)') : `${label} ${cfg.name}`;
                     b.addEventListener('click', () => stepFilter(i, dir));
                     return b;
                 };
@@ -1409,16 +1494,12 @@
             else btn.textContent = `${checked.length} Show Types`;
         }
 
-        document.getElementById('stipsToggle').addEventListener('click', () => {
-            currentView = currentView === 'stips' ? 'shows' : 'stips';
+        document.querySelectorAll('.view-switch-btn').forEach(b => b.addEventListener('click', () => {
+            if (currentView === b.dataset.view) return;
+            currentView = b.dataset.view;
             updateViewButtons();
             renderScopeView();
-        });
-        document.getElementById('venuesToggle').addEventListener('click', () => {
-            currentView = currentView === 'venues' ? 'shows' : 'venues';
-            updateViewButtons();
-            renderScopeView();
-        });
+        }));
 
         // ===========================================
         // YEAR FILTER
@@ -2031,8 +2112,8 @@
                 ${leaderboardPhotoCell(w.name)}
                 <td class="name"><a href="wrestler-stats.html?wrestler=${w.slug}">${esc(w.name)}</a></td>
                 <td class="${getRatingClass(w.avg)}" style="font-weight: bold;">${w.avg.toFixed(2)}</td>
-                <td class="hide-mobile">${w.matches}</td>
-                <td class="hide-mobile ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
+                <td class="lb-num">${w.matches}</td>
+                <td class="lb-num ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
             `).join('') || '<tr><td colspan="6" style="text-align: center; color: #888;">No data available</td></tr>';
         }
 
@@ -2205,8 +2286,8 @@
 
                 <div class="table-container">
                     <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
-                    <table><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th>Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection">Avg Rating</th><th class="hide-mobile tt" data-tt="Matches in this selection">Matches</th><th class="hide-mobile tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
-                    <tbody id="scope-leaderboard"></tbody></table>
+                    <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th>Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
+                    <tbody id="scope-leaderboard"></tbody></table></div>
                 </div>`;
         }
 
@@ -2577,17 +2658,6 @@
                 });
             });
 
-            // Hamburger menu
-            document.getElementById('otherMenuBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                const dropdown = document.getElementById('otherMenuDropdown');
-                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            });
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#otherMenuBtn') && !e.target.closest('#otherMenuDropdown')) {
-                    document.getElementById('otherMenuDropdown').style.display = 'none';
-                }
-            });
         });
     </script>
 </body>
