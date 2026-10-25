@@ -635,6 +635,20 @@
             border: 2px solid #ffd700;
         }
 
+        .recent-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 4px;
+            margin-bottom: 8px;
+        }
+
+        .recent-num {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
         .match-rating-badge {
             padding: 8px 12px;
             border-radius: 6px;
@@ -695,9 +709,23 @@
 
         .match-info-col {
             flex: 1;
+            min-width: 0;
             font-size: 0.85em;
             color: #999;
             text-align: right;
+            line-height: 1.3;
+        }
+
+        /* Show name on its own line, year (and ⭐) underneath */
+        .match-info-col .mi-event {
+            display: block;
+            color: #bbb;
+        }
+
+        .match-info-col .mi-year {
+            display: block;
+            font-size: 0.9em;
+            color: #888;
         }
 
         .chart-box {
@@ -970,13 +998,41 @@
                 white-space: nowrap;
             }
 
+            /* Recent Match Ratings: neat 5 × 2 grid, number above each rating */
             .recent-matches-list {
                 padding: 10px;
+                display: grid;
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 10px 6px;
+                position: relative;
+            }
+
+            .recent-item {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 2px;
+                margin: 0;
+                text-align: center;
+            }
+
+            .recent-num {
+                font-size: 0.75em;
             }
 
             .match-rating-badge {
-                padding: 6px 8px;
+                padding: 6px 2px;
                 font-size: 0.95em;
+                text-align: center;
+            }
+
+            /* Its details open across the full width of the box, below the badge */
+            .recent-matches-list .match-details {
+                position: absolute !important;
+                left: 10px;
+                right: 10px;
+                width: auto !important;
+                text-align: left;
             }
 
             .match-details {
@@ -3005,8 +3061,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     : '';
 
                 return `
-                    <div style="display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 8px;">
-                        <span style="color: #ffd700; font-weight: bold; font-size: 0.85em;">${index + 1}.</span>
+                    <div class="recent-item">
+                        <span class="recent-num">${index + 1}.</span>
                         <div>
                             <div class="match-rating-badge ${ratingClass}" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                                 ${m.rating.toFixed(2)}${bestMatchStar}
@@ -3063,7 +3119,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${formatEventName(m)} • ${m.year}${bestMatchStar}</div>
+                        <div class="match-info-col"><span class="mi-event">${formatEventName(m)}</span><span class="mi-year">${m.year}${bestMatchStar}</span></div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
                         ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
@@ -3105,7 +3161,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     <div class="match-row" onclick="toggleMatchDetails('${matchId}')" style="cursor: pointer;">
                         <span style="color: #ffd700; font-weight: bold; margin-right: 8px; font-size: 0.9em;">${index + 1}.</span>
                         <div class="match-rating-col ${ratingClass}">${m.rating.toFixed(2)}</div>
-                        <div class="match-info-col">${formatEventName(m)} • ${m.year}${bestMatchStar}</div>
+                        <div class="match-info-col"><span class="mi-event">${formatEventName(m)}</span><span class="mi-year">${m.year}${bestMatchStar}</span></div>
                     </div>
                     <div id="${matchId}" class="match-details" style="display: none; margin: 5px 0 10px 0; padding: 12px; background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700; font-size: 0.9em;">
                         ${wasBestMatch ? `<div style="color: #ffd700; font-weight: bold; margin-bottom: 6px;">⭐ Best Match of the Week</div>` : ''}
@@ -3138,6 +3194,12 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         function toggleMatchDetails(matchId) {
             const details = document.getElementById(matchId);
             if (details) {
+                // Recent Match Ratings: one box open at a time (on phones it
+                // opens across the full width, so two would overlap)
+                if (details.style.display === 'none' && details.closest('.recent-matches-list')) {
+                    details.closest('.recent-matches-list').querySelectorAll('.match-details')
+                        .forEach(d => { if (d !== details) d.style.display = 'none'; });
+                }
                 if (details.style.display === 'none') {
                     details.style.display = 'block';
                 } else {
