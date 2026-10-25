@@ -588,6 +588,17 @@
             border: 2px solid #ffd700;
         }
 
+        /* Axis labels */
+        .dist-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.75em;
+        }
+
+        .dist-narrow { display: none; }
+
         .bar-item {
             display: flex;
             align-items: center;
@@ -955,6 +966,24 @@
             /* Phones: upright columns side by side — count on top, range underneath */
             .distribution-bars {
                 padding: 10px 8px 8px;
+            }
+
+            .dist-wide { display: none; }
+            .dist-narrow { display: block; }
+
+            .dist-head {
+                justify-content: center;
+                margin-bottom: 6px;
+            }
+
+            .dist-foot {
+                text-align: center;
+                margin-top: 6px;
+                color: #aaa;
+                font-size: 0.72em;
+            }
+
+            .dist-cols {
                 display: flex;
                 align-items: stretch;
                 gap: 4px;
@@ -2983,7 +3012,16 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 `;
             }).join('');
             
-            document.getElementById('distributionBars').innerHTML = barsHtml;
+            // Axis labels: laptop shows a header row over the bars; phones show
+            // "Number of matches" above the columns and the rating range below
+            document.getElementById('distributionBars').innerHTML = `
+                <div class="dist-head">
+                    <span class="dist-wide">Match rating (out of 10)</span>
+                    <span class="dist-wide">Matches</span>
+                    <span class="dist-narrow">Number of matches</span>
+                </div>
+                <div class="dist-cols">${barsHtml}</div>
+                <div class="dist-foot dist-narrow">Match rating (out of 10)</div>`;
         }
 
         // Helper function to get team members - uses team-members.json
