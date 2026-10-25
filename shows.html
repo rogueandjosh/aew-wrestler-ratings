@@ -1883,19 +1883,21 @@
                 const teamMembersList = findTeamMembersArray(teamName) || [];
                 if (faction.replacePartialCombos && teamMembersList.length === 0) {
                     const matched = activeMembers.filter(member => teamName.toLowerCase().includes(member.trim().split(/\s+/).pop().toLowerCase()));
-                    if (matched.length >= 2) candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+                    if (matched.length >= 2) candidates.push({ faction, matchCount: matched.length, total: matched.length, formerHits: matched.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, activeMembers });
                     continue;
                 }
                 if (teamMembersList.length === 0) continue;
                 const inTeam = teamMembersList.filter(member => activeMembers.some(fm => fm.toLowerCase() === member.toLowerCase()));
                 if (inTeam.length < 2) continue;
-                candidates.push({ faction, matchCount: inTeam.length, total: teamMembersList.length, activeMembers });
+                candidates.push({ faction, matchCount: inTeam.length, total: teamMembersList.length, formerHits: inTeam.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, activeMembers });
             }
             if (!candidates.length) return teamName;
             candidates.sort((a, b) => {
                 const aAll = a.matchCount === a.total, bAll = b.matchCount === b.total;
                 if (aAll !== bAll) return aAll ? -1 : 1;
                 if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                // Tie: prefer the faction the members currently belong to over one they've left
+                if (a.formerHits !== b.formerHits) return a.formerHits - b.formerHits;
                 const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
                 const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
                 return aEnded - bEnded;

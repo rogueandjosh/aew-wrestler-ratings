@@ -6067,7 +6067,7 @@ if (tableEl) {
                 return teamName.toLowerCase().includes(surname);
             });
             if (matched.length >= 2) {
-                candidates.push({ faction, matchCount: matched.length, total: matched.length, activeMembers });
+                candidates.push({ faction, matchCount: matched.length, total: matched.length, formerHits: matched.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, activeMembers });
             }
             continue;
         }
@@ -6080,7 +6080,7 @@ if (tableEl) {
 
         if (factionMembersInTeam.length < 2) continue;
 
-        candidates.push({ faction, matchCount: factionMembersInTeam.length, total: teamMembersList.length, activeMembers });
+        candidates.push({ faction, matchCount: factionMembersInTeam.length, total: teamMembersList.length, formerHits: factionMembersInTeam.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, activeMembers });
     }
 
     if (candidates.length === 0) return teamName;
@@ -6091,6 +6091,8 @@ if (tableEl) {
         if (aAllMatch && !bAllMatch) return -1;
         if (!aAllMatch && bAllMatch) return 1;
         if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+        // Tie: prefer the faction the members currently belong to over one they've left
+        if (a.formerHits !== b.formerHits) return a.formerHits - b.formerHits;
         const aEnded = a.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
         const bEnded = b.faction.dateTo !== 'Current' ? (ignoreDate ? 1 : 0) : (ignoreDate ? 0 : 1);
         return aEnded - bEnded;
