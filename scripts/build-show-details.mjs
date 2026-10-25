@@ -1,7 +1,8 @@
 // Builds show-details.json for the Show Statistics page (shows.html) from data already on GitHub:
 //   shows        "YYYY-MM-DD|Event" → [venue, showRating, weekLabel]
-//                venue and show rating come from the On This Day files (any match on a show gives
-//                the whole show), the week label from the weekly archive's date ranges
+//                venue from each match's `location` (Data column BG, in the wrestler stats export),
+//                falling back to the On This Day files; show rating from the On This Day files
+//                (any match on a show gives the whole show); week label from the archive's date ranges
 //   titles       match id → championship name (joined from championship-matches.json by year,
 //                rating and competitors)
 //   bestMatches  match ids that won Best Match of the Week (best-match-archive)
@@ -39,6 +40,7 @@ export async function main() {
         for (const m of d.allMatches || []) {
             if (m.id === null || m.id === undefined) continue;
             const rec = matches.get(m.id) || { date: m.date, event: m.event, rating: m.rating, stakes: m.stakes, people: new Set() };
+            if (!rec.location && m.location) rec.location = String(m.location).trim();   // Data column BG, once the export has it
             rec.people.add(low(d.name));
             for (const k of ['versus', 'opponents', 'partners']) (m[k] || []).forEach(n => rec.people.add(low(n)));
             matches.set(m.id, rec);
@@ -99,7 +101,8 @@ export async function main() {
     for (const [id, m] of matches) {
         const key = showKey(m);
         const s = shows[key] || (shows[key] = [null, null, weekFor(m.date)]);
-        if (!s[0] && venueById.has(id)) s[0] = venueById.get(id);
+        if (!s[0] && m.location) s[0] = m.location;                 // venue from the wrestler stats export (preferred)
+        if (!s[0] && venueById.has(id)) s[0] = venueById.get(id);   // otherwise from the On This Day files
         if (s[1] === null && showRatingById.has(id)) s[1] = showRatingById.get(id);
     }
 

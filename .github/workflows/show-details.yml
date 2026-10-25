@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'archive/**'                  # the weekly upload (new week, new wrestler files)
+      - 'wrestlers/**'                # wrestler files (venues come from their matches)
       - 'on-this-day-daily/**'        # venues and show ratings
       - 'championship-matches.json'   # title names
       - 'best-match-archive/**'       # Best Match of the Week
