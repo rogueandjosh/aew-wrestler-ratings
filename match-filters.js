@@ -193,7 +193,40 @@ function matchPassesFilters(match, state, exceptFacet = null) {
     // been UNticked (null = none), so a newly chosen show type arrives with
     // all its shows ticked.
     if (exceptFacet !== 'show' && state.showExcluded && state.showExcluded.has(getShowKey(match))) return false;
+    // Location works the same way (stores the UNticked places)
+    if (exceptFacet !== 'location' && state.locExcluded && state.locExcluded.has(getLocationKey(match))) return false;
     return true;
+}
+
+// ---------------------------------------------------------------------------
+// LOCATION — from the match's venue, e.g.
+//   "Addition Financial Arena; Orlando, Florida"   → USA, Florida
+//   "Wembley Stadium; London, England (UK)"        → UK, London
+// Key: "USA|Florida", "C|UK|London", or "unknown" when no venue is recorded.
+// (Same reading of the venue text as the Show Statistics page.)
+// ---------------------------------------------------------------------------
+const MF_COUNTRY_NAMES = { USA: 'United States', UK: 'United Kingdom' };
+const MF_NON_US_WITHOUT_BRACKETS = ['Bahamas'];
+
+function mfParseVenue(text) {
+    if (!text) return null;
+    const parts = text.split(' & ');
+    const v = parts.length > 1 && parts.every(p => p.includes(';')) ? parts[0] : text;   // shows split across two venues
+    const [arena, rest = ''] = v.split(';').map(x => x.trim());
+    let place = rest, country = 'USA';
+    const bracket = rest.match(/^(.*)\(([^)]+)\)\s*$/);
+    if (bracket) { place = bracket[1].trim(); country = bracket[2].trim(); }
+    let city = place, region = '';
+    const comma = place.lastIndexOf(',');
+    if (comma >= 0) { city = place.slice(0, comma).trim(); region = place.slice(comma + 1).trim(); }
+    if (!bracket && MF_NON_US_WITHOUT_BRACKETS.includes(region)) { country = region; region = ''; }
+    return { arena, city, region, country };
+}
+
+function getLocationKey(match) {
+    const v = mfParseVenue((match.location || '').toString().trim());
+    if (!v) return 'unknown';
+    return v.country === 'USA' ? 'USA|' + (v.region || 'Other') : `C|${v.country}|${v.city || 'Other'}`;
 }
 
 // Count how many of a wrestler's matches fall in each group — used to build
