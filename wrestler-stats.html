@@ -250,6 +250,22 @@
             color: #1a1a2e;
         }
 
+        .year-btn:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        .year-hint {
+            margin: 8px 0 0;
+            text-align: center;
+            color: #999;
+            font-size: 0.78em;
+        }
+
+        .year-hint[hidden] {
+            display: none;
+        }
+
         /* Match Filters panel — checkbox groups follow the Best Match archive's
            Division filter (All + individual boxes, gold accent, two-way sync) */
         .match-filters {
@@ -1166,7 +1182,7 @@
             </div>
 
             <div class="year-filter">
-                <h2 class="tt" data-tt="All statistics will adjust to the year selected. Keep this at 'ALL' to see most recent and all statistics." style="cursor: help;">Filter by Year</h2>
+                <h2 class="tt" data-tt="Tap a year to see just that year. Tap more years to combine them (e.g. 2021, 2023 and 2025); tap a picked year again to remove it. ALL shows the whole career and the current rating." style="cursor: help;">Filter by Year</h2>
                 <div class="year-buttons">
                     <button class="year-btn active" data-year="ALL">ALL</button>
                     <button class="year-btn" data-year="2026">2026</button>
@@ -1178,6 +1194,7 @@
                     <button class="year-btn" data-year="2020">2020</button>
                     <button class="year-btn" data-year="2019">2019</button>
                 </div>
+                <p class="year-hint" id="yearHint" hidden>Tap more years to combine them · ALL to reset</p>
             </div>
 
             <div class="stats-grid" id="statsGrid"></div>
@@ -1197,7 +1214,7 @@
 
             <!-- Match Filters (apply to the match sections below, not the rating stats above) -->
             <div class="section" id="matchFiltersSection" style="display: none;">
-                <div class="section-title tt" data-tt="Narrow the match sections below by format, stakes, stipulation, show type or card position. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the year filter." style="cursor: help;">🎯 Match Filters</div>
+                <div class="section-title tt" data-tt="Narrow the match sections below by format, stakes, stipulation, show type or card position. These work alongside the year filter. Ratings, ranks and the line graph above are weekly figures across all matches, so they only change with the years picked above." style="cursor: help;">🎯 Match Filters</div>
                 <div class="match-filters">
                     <div class="match-filters-grid">
                         <div class="match-filter-group" id="formatFilterGroup">
@@ -1874,7 +1891,27 @@
                 allNameChanges = [];
             }
         }
-        let currentYear = 'ALL';
+        // Years picked in the year filter: null = ALL, otherwise a Set of
+        // numbers (one or more years, combined)
+        let selectedYears = null;
+
+        const isAllYears = () => selectedYears === null;
+        const inSelectedYears = y => selectedYears === null || selectedYears.has(Number(y));
+        const latestSelectedYear = () => Math.max(...selectedYears);
+
+        // "2025", "2021–2023", "2021, 2023 and 2025", "2019–2021 and 2024"
+        function formatYearList(years) {
+            const sorted = [...years].map(Number).sort((a, b) => a - b);
+            const parts = [];
+            sorted.forEach(y => {
+                const last = parts[parts.length - 1];
+                if (last && y === last[1] + 1) last[1] = y;
+                else parts.push([y, y]);
+            });
+            const words = parts.map(([a, b]) => a === b ? `${a}` : `${a}–${b}`);
+            return words.length === 1 ? words[0] : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+        }
+        const selectedYearsText = () => isAllYears() ? '' : formatYearList(selectedYears);
         let matchFilterState = { format: null, stakes: null, stip: null, showType: null, cardPos: null, showExcluded: null, locExcluded: null };
         let ratingChart = null;
         let chartScaleFixed = false;
@@ -2737,27 +2774,50 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             list.innerHTML = html;
         }
 
+        // Year buttons toggle: from ALL, a year picks just that year; more
+        // years add to it; a picked year again removes it; ALL (or removing
+        // the last one, or picking every year) goes back to ALL.
         function setupYearButtons() {
-            const buttons = document.querySelectorAll('.year-btn');
-            const urlYear = new URLSearchParams(window.location.search).get('year');
+            const buttons = [...document.querySelectorAll('.year-btn')];
+            const available = [];
             buttons.forEach(btn => {
                 const year = btn.dataset.year;
-                if (year !== 'ALL' && !wrestlerData.statsByYear[year]) {
-                    btn.style.display = 'none';
-                } else if (urlYear && year === urlYear) {
-                    buttons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentYear = year;
-                }
+                if (year !== 'ALL' && !wrestlerData.statsByYear[year]) btn.style.display = 'none';
+                else if (year !== 'ALL') available.push(Number(year));
+            });
 
+            // ?year=2025 or ?year=2021,2023,2025
+            const urlYears = (new URLSearchParams(window.location.search).get('year') || '')
+                .split(',').map(Number).filter(y => available.includes(y));
+            selectedYears = urlYears.length && urlYears.length < available.length ? new Set(urlYears) : null;
+
+            buttons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    buttons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentYear = year;
+                    const year = btn.dataset.year;
+                    if (year === 'ALL') {
+                        selectedYears = null;
+                    } else {
+                        const y = Number(year);
+                        const next = new Set(selectedYears || []);
+                        if (next.has(y)) next.delete(y); else next.add(y);
+                        selectedYears = next.size === 0 || next.size === available.length ? null : next;
+                    }
+                    refreshYearButtons();
                     syncFiltersToUrl();
                     updateAllSections();
                 });
             });
+            refreshYearButtons();
+        }
+
+        function refreshYearButtons() {
+            document.querySelectorAll('.year-btn').forEach(btn => {
+                const on = btn.dataset.year === 'ALL' ? isAllYears() : (!isAllYears() && selectedYears.has(Number(btn.dataset.year)));
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-pressed', on);
+            });
+            const hint = document.getElementById('yearHint');
+            if (hint) hint.hidden = isAllYears();
         }
 
         function updateAllSections() {
@@ -2767,7 +2827,10 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         }
 
         function updateStatsGrid() {
-            const stats = wrestlerData.statsByYear[currentYear] || wrestlerData.statsByYear['ALL'];
+            const matchesForYears = isAllYears()
+                ? (wrestlerData.statsByYear['ALL'] || {}).totalMatches ?? (wrestlerData.allMatches || []).length
+                : getYearMatches().length;
+            const yearsText = selectedYearsText();
             const grid = document.getElementById('statsGrid');
             
             // PEAK RATING - Filter ratingHistory by year
@@ -2778,11 +2841,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 let filteredHistory = wrestlerData.ratingHistory;
                 
                 // Filter by year if not ALL
-                if (currentYear !== 'ALL') {
-                    filteredHistory = wrestlerData.ratingHistory.filter(snap => {
-                        const snapDate = new Date(snap.date);
-                        return snapDate.getFullYear() === parseInt(currentYear);
-                    });
+                if (!isAllYears()) {
+                    filteredHistory = wrestlerData.ratingHistory.filter(snap => inSelectedYears(new Date(snap.date).getFullYear()));
                 }
                 
                 // Find highest rating from history
@@ -2802,11 +2862,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 let filteredHistory = wrestlerData.ratingHistory;
                 
                 // Filter by year if not ALL
-                if (currentYear !== 'ALL') {
-                    filteredHistory = wrestlerData.ratingHistory.filter(snap => {
-                        const snapDate = new Date(snap.date);
-                        return snapDate.getFullYear() === parseInt(currentYear);
-                    });
+                if (!isAllYears()) {
+                    filteredHistory = wrestlerData.ratingHistory.filter(snap => inSelectedYears(new Date(snap.date).getFullYear()));
                 }
                 
                 // Find highest rank (lowest number) and count weeks at #1
@@ -2829,11 +2886,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             if (wrestlerData.ratingHistory && wrestlerData.ratingHistory.length > 0) {
                 let filteredHistory = wrestlerData.ratingHistory;
 
-                if (currentYear !== 'ALL') {
-                    filteredHistory = wrestlerData.ratingHistory.filter(snap => {
-                        const snapDate = new Date(snap.date);
-                        return snapDate.getFullYear() === parseInt(currentYear);
-                    });
+                if (!isAllYears()) {
+                    filteredHistory = wrestlerData.ratingHistory.filter(snap => inSelectedYears(new Date(snap.date).getFullYear()));
                 }
 
                 const ratedSnaps = filteredHistory.filter(snap => typeof snap.rating === 'number');
@@ -2846,7 +2900,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             // CURRENT RATING/RANK
             let displayRating, displayRank, displaySubtext;
             
-            if (currentYear === 'ALL') {
+            if (isAllYears()) {
                 // Check if wrestler is currently active
                 const isActive = wrestlerData.currentRating && wrestlerData.currentRating > 0;
                 
@@ -2885,7 +2939,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     displaySubtext = 'Status';
                 }
             } else {
-                const yearEnd = getYearEndRating(currentYear);
+                // Last rating of the latest year picked
+                const yearEnd = getYearEndRating(latestSelectedYear());
                 displayRating = yearEnd.rating?.toFixed(2) || 'N/A';
                 displayRank = yearEnd.rank ? `#${yearEnd.rank}` : 'Inactive';
                 // "Last Rating" rather than "End {year}" — this is whatever
@@ -2894,7 +2949,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 // (e.g. an October appearance for a wrestler inactive the
                 // rest of the year). Showing the actual month makes that
                 // honest rather than implying a fixed Dec 31 snapshot.
-                displaySubtext = yearEnd.date ? `Last Rating (${formatDateShort(yearEnd.date)})` : `${currentYear}`;
+                displaySubtext = yearEnd.date ? `Last Rating (${formatDateShort(yearEnd.date)})` : `${latestSelectedYear()}`;
             }
             
             // Format peak rating
@@ -2908,7 +2963,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 if (highestRankForYear === 1 && weeksAtNumber1 > 0) {
                     highestRankSubtext = `${weeksAtNumber1} week${weeksAtNumber1 > 1 ? 's' : ''} at #1`;
                 } else {
-                    highestRankSubtext = currentYear === 'ALL' ? 'Career best' : `Best in ${currentYear}`;
+                    highestRankSubtext = isAllYears() ? 'Career best' : `Best in ${yearsText}`;
                 }
             } else {
                 highestRankValue = 'N/A';
@@ -2921,7 +2976,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             // is a historical fact and shouldn't show as inactive just
             // because the wrestler happens to be inactive today.
             // NOTE: isCurrentlyActive above is declared inside the
-            // `if (currentYear === 'ALL')` block, so it doesn't exist at
+            // `if (isAllYears())` block, so it doesn't exist at
             // all when a specific year is selected — re-deriving it here
             // independently avoids a ReferenceError in that code path.
             let statsGridIsCurrentlyActive = false;
@@ -2937,10 +2992,10 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                     }
                 }
             }
-            const currentRatingNumeric = (currentYear === 'ALL')
+            const currentRatingNumeric = isAllYears()
                 ? (typeof wrestlerData.currentRating === 'number' ? wrestlerData.currentRating : null)
-                : (getYearEndRating(currentYear).rating ?? null);
-            const currentRatingIsActive = (currentYear === 'ALL') ? statsGridIsCurrentlyActive : true;
+                : (getYearEndRating(latestSelectedYear()).rating ?? null);
+            const currentRatingIsActive = isAllYears() ? statsGridIsCurrentlyActive : true;
             const currentRatingTier = getTierColour(currentRatingNumeric, currentRatingIsActive);
             const currentRatingTierColour = currentRatingTier.tier === 'platinum' ? '#c9a0ff' : currentRatingTier.solid;
 
@@ -2961,15 +3016,15 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const cards = [
                 { label: 'Current Rating', value: displayRating, subtext: `${displaySubtext}${displayRank ? ' • ' + displayRank : ''}`, tierColour: currentRatingTierColour },
                 { label: 'Peak', value: peakRatingValue, subtext: peakSubtext, tierColour: peakTierColour },
-                { label: 'Floor', value: floorValue, subtext: currentYear === 'ALL' ? 'Career low' : `Lowest in ${currentYear}`, tierColour: floorTierColour },
-                { label: 'Average', value: averageValue, subtext: currentYear === 'ALL' ? 'Career average' : `Average in ${currentYear}`, tierColour: averageTierColour },
+                { label: 'Floor', value: floorValue, subtext: isAllYears() ? 'Career low' : `Lowest in ${yearsText}`, tierColour: floorTierColour },
+                { label: 'Average', value: averageValue, subtext: isAllYears() ? 'Career average' : `Average in ${yearsText}`, tierColour: averageTierColour },
                 { label: 'Highest Rank', value: highestRankValue, subtext: highestRankSubtext },
-                { label: 'Weeks at #1', value: weeksAtNumber1, subtext: currentYear === 'ALL' ? 'Career' : currentYear, tierColour: weeksAtNumber1 > 0 ? '#ffd700' : undefined },
-                { label: 'Matches', value: stats.totalMatches, subtext: currentYear === 'ALL' ? 'Career' : currentYear },
+                { label: 'Weeks at #1', value: weeksAtNumber1, subtext: isAllYears() ? 'Career' : yearsText, tierColour: weeksAtNumber1 > 0 ? '#ffd700' : undefined },
+                { label: 'Matches', value: matchesForYears, subtext: isAllYears() ? 'Career' : yearsText },
                 { label: 'First Week', value: getFirstWeek(), subtext: 'Debut' },
                 { label: 'Last Week', value: getLastWeek(), subtext: getLastWeekSubtext() },
-                { label: 'Weeks', value: getWeeksForYear(currentYear), subtext: 'In rankings' },
-                { label: 'Top 10', value: getTop10WeeksForYear(currentYear), subtext: `${getTop20WeeksForYear(currentYear)} in Top 20` },
+                { label: 'Weeks', value: getWeeksForYears(), subtext: 'In rankings' },
+                { label: 'Top 10', value: getTopWeeksForYears(10), subtext: `${getTopWeeksForYears(20)} in Top 20` },
                 { label: 'Best Matches', value: bestMatchTotalCount, subtext: '⭐ All-time', tierColour: bestMatchTotalCount > 0 ? '#ffd700' : undefined }
             ];
 
@@ -3262,11 +3317,8 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const ctx = document.getElementById('ratingChart').getContext('2d');
             
             let historyData = wrestlerData.ratingHistory;
-            if (currentYear !== 'ALL') {
-                historyData = historyData.filter(h => {
-                    const year = new Date(h.date).getFullYear();
-                    return year === parseInt(currentYear);
-                });
+            if (!isAllYears()) {
+                historyData = historyData.filter(h => inSelectedYears(new Date(h.date).getFullYear()));
             }
 
             const monthlyData = aggregateByMonth(historyData);
@@ -3434,10 +3486,10 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
         // Matches for the selected year only (ignores match filters) — the
         // baseline the match filter summary counts against.
         function getYearMatches() {
-            if (currentYear === 'ALL') {
+            if (isAllYears()) {
                 return wrestlerData.allMatches;
             }
-            return wrestlerData.allMatches.filter(m => m.year === parseInt(currentYear));
+            return wrestlerData.allMatches.filter(m => inSelectedYears(m.year));
         }
 
         // Year filter + match filters. Every match-based section (distribution,
@@ -4092,9 +4144,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             // (location keys contain "|", so they're joined with ~)
             if (matchFilterState.locExcluded) params.set('locEx', [...matchFilterState.locExcluded].join('~'));
             else params.delete('locEx');
-            if (currentYear && currentYear !== 'ALL') params.set('year', currentYear);
+            if (!isAllYears()) params.set('year', [...selectedYears].sort((a, b) => a - b).join(','));
             else params.delete('year');
-            history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
+            history.replaceState(null, '', `${window.location.pathname}?${params.toString().replace(/%2C/g, ',')}${window.location.hash}`);
         }
 
         // Faceted counts: each section is counted against the year plus the
@@ -4128,7 +4180,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             const base = getYearMatches();
             const filtered = getFilteredMatches();
-            const yearText = currentYear === 'ALL' ? '' : ` in ${currentYear}`;
+            const yearText = isAllYears() ? '' : ` in ${selectedYearsText()}`;
             const summary = document.getElementById('matchFiltersSummary');
 
             if (filtered.length === 0) {
@@ -4171,37 +4223,16 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             return { rating: lastApp.rating, rank: lastApp.rank, date: lastApp.date };
         }
 
-        function getWeeksForYear(year) {
-            if (year === 'ALL') return wrestlerData.totalWeeks;
-            
-            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
-                const appYear = new Date(h.date).getFullYear();
-                return appYear === parseInt(year);
-            });
-            
-            return yearWeeks.length;
+        // Weeks in the rankings / in the top 10 or 20, across the years picked
+        function getWeeksForYears() {
+            if (isAllYears()) return wrestlerData.totalWeeks;
+            return wrestlerData.ratingHistory.filter(h => inSelectedYears(new Date(h.date).getFullYear())).length;
         }
 
-        function getTop10WeeksForYear(year) {
-            if (year === 'ALL') return wrestlerData.weeksInTop10;
-            
-            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
-                const appYear = new Date(h.date).getFullYear();
-                return appYear === parseInt(year) && h.rank && h.rank <= 10;
-            });
-            
-            return yearWeeks.length;
-        }
-
-        function getTop20WeeksForYear(year) {
-            if (year === 'ALL') return wrestlerData.weeksInTop20;
-            
-            const yearWeeks = wrestlerData.ratingHistory.filter(h => {
-                const appYear = new Date(h.date).getFullYear();
-                return appYear === parseInt(year) && h.rank && h.rank <= 20;
-            });
-            
-            return yearWeeks.length;
+        function getTopWeeksForYears(limit) {
+            if (isAllYears()) return limit === 10 ? wrestlerData.weeksInTop10 : wrestlerData.weeksInTop20;
+            return wrestlerData.ratingHistory.filter(h =>
+                inSelectedYears(new Date(h.date).getFullYear()) && h.rank && h.rank <= limit).length;
         }
 
         function getFirstWeek() {
