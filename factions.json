@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Oct 20, 2026",
+  "lastUpdated": "Oct 27, 2026",
   "factions": [
     {
       "name": "Don Callis Family",
@@ -15,7 +15,6 @@
         "Hechicero",
         "Kazuchika Okada",
         "Wardlow",
-        "Andrade El Idolo",
         "El Clon",
         "Jake Doyle",
         "Volador Jr",
@@ -54,6 +53,10 @@
         {
           "name": "Rush",
           "leftDate": "Dec '24 Week 2"
+        },
+        {
+          "name": "Andrade El Idolo",
+          "leftDate": "Oct '26 Week 3"
         }
       ],
       "replacePartialCombos": false,
@@ -96,12 +99,7 @@
         "Gabe Kidd"
       ],
       "overrides": [],
-      "formerMembers": [
-        {
-          "name": "Bryan Danielson",
-          "leftDate": "Apr '22 Week 1"
-        }
-      ],
+      "formerMembers": [],
       "replacePartialCombos": false,
       "forcedTeams": []
     },
@@ -156,12 +154,16 @@
       "dateFrom": "Feb '26 Week 3",
       "dateTo": "Current",
       "members": [
-        "Gabe Kidd",
         "Clark Connors",
         "David Finlay"
       ],
       "overrides": [],
-      "formerMembers": [],
+      "formerMembers": [
+        {
+          "name": "Gabe Kidd",
+          "leftDate": "Oct '26 Week 4"
+        }
+      ],
       "replacePartialCombos": true,
       "forcedTeams": []
     },
@@ -170,7 +172,8 @@
       "dateFrom": "Jan '24 Week 1",
       "dateTo": "Current",
       "members": [
-        "Shane Taylor, Lee Moriarty",
+        "Shane Taylor",
+        "Lee Moriarty",
         "Carlie Bravo",
         "Shawn Dean",
         "Anthony Ogogo"
@@ -187,7 +190,7 @@
     {
       "name": "Bang Bang Gang",
       "dateFrom": "Jan '24 Week 1",
-      "dateTo": "Current",
+      "dateTo": "Oct '26 Week 4",
       "members": [
         "Jay White",
         "Juice Robinson",
@@ -197,13 +200,13 @@
       ],
       "overrides": [
         "The Gunns",
-        "The Gunn Club, The Gunn Club (Trio)"
+        "The Gunn Club",
+        "The Gunn Club (Trio)",
+        "Gunn Club & Caster"
       ],
       "formerMembers": [],
       "replacePartialCombos": false,
-      "forcedTeams": [
-        "Bullet Club Gold"
-      ]
+      "forcedTeams": []
     },
     {
       "name": "The Rascalz",
@@ -406,11 +409,9 @@
       "members": [
         "Chuck Taylor",
         "Trent",
-        "Trent Beretta",
         "Orange Cassidy",
         "Rocky Romero",
-        "Danhausen",
-        "Wheeler Yuta"
+        "Danhausen"
       ],
       "overrides": [
         "Roppongi Vice",
@@ -428,8 +429,9 @@
       ],
       "replacePartialCombos": true,
       "forcedTeams": [
-        "Romero & Taylor, Cassidy, Romero & Taylor, Cassidy & Taylor & Yuta",
-        "Roppongi Vice",
+        "Romero & Taylor",
+        "Cassidy, Romero & Taylor",
+        "Cassidy & Taylor & Yuta",
         "Best Friends & Romero",
         "CHAOS",
         "Cassidy & Taylor",
@@ -449,6 +451,28 @@
       "overrides": [],
       "formerMembers": [],
       "replacePartialCombos": true,
+      "forcedTeams": []
+    },
+    {
+      "name": "The Cut",
+      "dateFrom": "Oct '26 Week 4",
+      "dateTo": "Current",
+      "members": [
+        "Jay White",
+        "Juice Robinson",
+        "Austin Gunn",
+        "Colten Gunn",
+        "Ace Austin",
+        "David Finlay",
+        "Clark Connors"
+      ],
+      "overrides": [
+        "The Gunns",
+        "The Dogs (Connors & Finlay)",
+        "Gunn Club & Caster"
+      ],
+      "formerMembers": [],
+      "replacePartialCombos": false,
       "forcedTeams": []
     }
   ]
