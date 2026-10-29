@@ -3218,14 +3218,25 @@
             }
         }
 
+        // Time away, largest units first: "3 years and 9 months", "1 year, 1 month and 3 weeks",
+        // "1 month and 2 weeks", "3 weeks". Zero parts are left out; leftover days round to
+        // the nearest week, and 4+ leftover weeks count as another month.
         function formatWeeksAwayFriendly(weeks) {
-            if (typeof weeks !== 'number') return '';
-            const months = Math.round(weeks / 4.345);
-            const years = Math.floor(months / 12);
-            const remMonths = months % 12;
-            if (years === 0) return `${months} month${months === 1 ? '' : 's'}`;
-            if (remMonths === 0) return `${years} year${years === 1 ? '' : 's'}`;
-            return `${years} year${years === 1 ? '' : 's'} and ${remMonths} month${remMonths === 1 ? '' : 's'}`;
+            if (typeof weeks !== 'number' || !(weeks > 0)) return '';
+            const WEEKS_PER_YEAR = 52.18, WEEKS_PER_MONTH = 4.345;
+            let years = Math.floor(weeks / WEEKS_PER_YEAR);
+            let rest = weeks - years * WEEKS_PER_YEAR;
+            let months = Math.floor(rest / WEEKS_PER_MONTH);
+            let wks = Math.round(rest - months * WEEKS_PER_MONTH);
+            if (wks >= 4) { months++; wks = 0; }
+            if (months >= 12) { years++; months -= 12; }
+            const part = (n, unit) => `${n} ${unit}${n === 1 ? '' : 's'}`;
+            const parts = [];
+            if (years) parts.push(part(years, 'year'));
+            if (months) parts.push(part(months, 'month'));
+            if (wks) parts.push(part(wks, 'week'));
+            if (!parts.length) return part(Math.max(1, Math.round(weeks)), 'week');
+            return parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
         }
 
         // Hyperlinks a single competitor entry (individual OR team name, exactly as it
@@ -3412,9 +3423,14 @@
         }
 
         // Combines whichever of these genuinely apply into one readable "Other Notes"
-        // line — title changes/defenses, debuts, returns, milestones, name changes.
+        // line — title changes/defenses, title milestones, debuts, returns, match
+        // milestones, name changes, first title shots. Reads the list fields written by
+        // the FlavorWorkbench (debuts, returns, matchMilestones, nameChanges,
+        // wrestlerTitleMilestones) and falls back to the older single fields.
         function buildOtherNotes(details) {
             const notes = [];
+            const possessive = name => /s$/i.test(name) ? `${name}'` : `${name}'s`;
+            const listOr = (list, single) => (Array.isArray(list) && list.length ? list : (single ? [single] : []));
 
             if (details.titleChanged === true) {
                 notes.push(typeof details.streak === 'number'
@@ -3424,22 +3440,46 @@
                 notes.push(`${ordinalNumber(details.streak + 1)} successful title defense`);
             }
 
-            if (details.debutType) {
-                const label = String(details.debutType).charAt(0).toUpperCase() + String(details.debutType).slice(1);
-                notes.push(`${label} debut`);
+            // The title's own milestone, e.g. "40th AEW World Heavyweight Title match"
+            if (typeof details.titleMatchNumber === 'number' && details.title) {
+                notes.push(`${ordinalNumber(details.titleMatchNumber)} ${details.title} match`);
             }
+            // A wrestler's milestone with this title, e.g. "MJF's 10th AEW World Heavyweight Title match"
+            (Array.isArray(details.wrestlerTitleMilestones) ? details.wrestlerTitleMilestones : []).forEach(m => {
+                if (m && m.wrestler && typeof m.count === 'number') {
+                    notes.push(`${possessive(m.wrestler)} ${ordinalNumber(m.count)} ${details.title ? details.title + ' match' : 'title match'}`);
+                }
+            });
 
-            if (typeof details.weeksAway === 'number') {
-                notes.push(`Returning after ${formatWeeksAwayFriendly(details.weeksAway)} away`);
-            }
+            // Debuts, grouped by type: "AEW debuts: Isiah Kassidy, Marq Quen; Tag team debut: Private Party"
+            const debuts = listOr(details.debuts, details.debutType ? { name: details.name || '', type: details.debutType } : null);
+            const debutLabel = { singles: 'AEW debut', tag: 'Tag team debut', trio: 'Trios debut' };
+            const byType = {};
+            debuts.forEach(d => { const t = String(d.type || ''); (byType[t] = byType[t] || []).push(d.name ? stripBracketedText(d.name) : ''); });
+            Object.keys(byType).forEach(t => {
+                const base = debutLabel[t] || `${t.charAt(0).toUpperCase()}${t.slice(1)} debut`;
+                const names = byType[t].filter(Boolean);
+                if (!names.length) notes.push(base);
+                else notes.push(`${base}${names.length > 1 ? 's' : ''}: ${names.join(', ')}`);
+            });
 
-            if (typeof details.matchCount === 'number') {
-                notes.push(`${ordinalNumber(details.matchCount)} AEW match`);
-            }
+            // Returns: "David Finlay returns after 3 years and 9 months"
+            listOr(details.returns, typeof details.weeksAway === 'number' ? { name: details.name || '', weeksAway: details.weeksAway } : null)
+                .forEach(r => {
+                    const away = formatWeeksAwayFriendly(r.weeksAway);
+                    if (!away) return;
+                    notes.push(r.name ? `${r.name} returns after ${away}` : `Returning after ${away} away`);
+                });
 
-            if (details.oldName && details.newName) {
-                notes.push(`Name change: ${details.oldName} \u2192 ${details.newName}`);
-            }
+            // AEW match milestones: "Jack Perry's 50th AEW match"
+            listOr(details.matchMilestones, typeof details.matchCount === 'number' ? { name: details.name || '', count: details.matchCount } : null)
+                .forEach(m => {
+                    if (typeof m.count !== 'number') return;
+                    notes.push(m.name ? `${possessive(m.name)} ${ordinalNumber(m.count)} AEW match` : `${ordinalNumber(m.count)} AEW match`);
+                });
+
+            listOr(details.nameChanges, details.oldName && details.newName ? { oldName: details.oldName, newName: details.newName } : null)
+                .forEach(n => notes.push(`Name change: ${n.oldName} \u2192 ${n.newName}`));
 
             if (details.newTitleCompetitors && details.newTitleCompetitors.length > 0) {
                 notes.push(`First title opportunity for ${details.newTitleCompetitors.join(', ')}`);
