@@ -255,44 +255,45 @@
             outline-offset: 2px;
         }
 
-        /* Single | Multiple switch under the year buttons */
+        /* Single | Multiple switch under the year buttons — same look as
+           the year buttons, joined into one pair */
         .year-mode {
             display: flex;
             justify-content: center;
-            width: fit-content;
-            margin: 10px auto 0;
-            border: 1px solid rgba(255, 215, 0, 0.5);
-            border-radius: 5px;
-            overflow: hidden;
+            margin: 12px auto 0;
         }
 
         .year-mode-btn {
-            padding: 3px 12px;
-            background: none;
-            border: none;
-            color: #bbb;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.75em;
+            padding: 5px 14px;
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 5px 0 0 5px;
             cursor: pointer;
+            font-weight: bold;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.78em;
+            transition: all 0.3s;
         }
 
         .year-mode-btn + .year-mode-btn {
-            border-left: 1px solid rgba(255, 215, 0, 0.5);
+            margin-left: -2px;
+            border-radius: 0 5px 5px 0;
         }
 
         .year-mode-btn:hover {
-            color: #ffd700;
+            background-color: rgba(255, 215, 0, 0.2);
         }
 
         .year-mode-btn.active {
-            background: rgba(255, 215, 0, 0.25);
-            color: #ffd700;
-            font-weight: bold;
+            background-color: #ffd700;
+            color: #1a1a2e;
         }
 
         .year-mode-btn:focus-visible {
             outline: 2px solid #fff;
-            outline-offset: -2px;
+            outline-offset: 2px;
+            position: relative;
         }
 
         /* Multiple mode: picked years get a tick */
@@ -924,6 +925,11 @@
             .year-btn {
                 padding: 5px 10px;
                 font-size: 0.78em;
+            }
+
+            .year-mode-btn {
+                padding: 4px 12px;
+                font-size: 0.72em;
             }
 
             .match-filters {
