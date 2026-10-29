@@ -255,15 +255,49 @@
             outline-offset: 2px;
         }
 
-        .year-hint {
-            margin: 8px 0 0;
-            text-align: center;
-            color: #999;
-            font-size: 0.78em;
+        /* Single | Multiple switch under the year buttons */
+        .year-mode {
+            display: flex;
+            justify-content: center;
+            width: fit-content;
+            margin: 10px auto 0;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        .year-hint[hidden] {
-            display: none;
+        .year-mode-btn {
+            padding: 3px 12px;
+            background: none;
+            border: none;
+            color: #bbb;
+            font-family: 'Overlock', 'Arial', sans-serif;
+            font-size: 0.75em;
+            cursor: pointer;
+        }
+
+        .year-mode-btn + .year-mode-btn {
+            border-left: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .year-mode-btn:hover {
+            color: #ffd700;
+        }
+
+        .year-mode-btn.active {
+            background: rgba(255, 215, 0, 0.25);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .year-mode-btn:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: -2px;
+        }
+
+        /* Multiple mode: picked years get a tick */
+        .year-buttons.multi .year-btn.active:not([data-year="ALL"])::before {
+            content: '✓ ';
         }
 
         /* Match Filters panel — checkbox groups follow the Best Match archive's
@@ -1182,7 +1216,7 @@
             </div>
 
             <div class="year-filter">
-                <h2 class="tt" data-tt="Tap a year to see just that year. Tap more years to combine them (e.g. 2021, 2023 and 2025); tap a picked year again to remove it. ALL shows the whole career and the current rating." style="cursor: help;">Filter by Year</h2>
+                <h2 class="tt" data-tt="Tap a year to see just that year, or ALL for the whole career and the current rating. Switch to Multiple below to combine several years (e.g. 2021, 2023 and 2025)." style="cursor: help;">Filter by Year</h2>
                 <div class="year-buttons">
                     <button class="year-btn active" data-year="ALL">ALL</button>
                     <button class="year-btn" data-year="2026">2026</button>
@@ -1194,7 +1228,10 @@
                     <button class="year-btn" data-year="2020">2020</button>
                     <button class="year-btn" data-year="2019">2019</button>
                 </div>
-                <p class="year-hint" id="yearHint" hidden>Tap more years to combine them · ALL to reset</p>
+                <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="Single: tap a year to see just that year. Multiple: tap several years to combine them (e.g. 2021, 2023 and 2025); tap a picked year again to remove it.">
+                    <button type="button" class="year-mode-btn active" data-mode="single" aria-pressed="true">Single</button>
+                    <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
+                </div>
             </div>
 
             <div class="stats-grid" id="statsGrid"></div>
@@ -2774,9 +2811,11 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             list.innerHTML = html;
         }
 
-        // Year buttons toggle: from ALL, a year picks just that year; more
-        // years add to it; a picked year again removes it; ALL (or removing
-        // the last one, or picking every year) goes back to ALL.
+        // Year buttons. Single mode (default): a year shows just that year.
+        // Multiple mode: taps add/remove years; ALL (or removing the last
+        // one, or picking every year) goes back to ALL.
+        let yearMode = 'single';
+
         function setupYearButtons() {
             const buttons = [...document.querySelectorAll('.year-btn')];
             const available = [];
@@ -2786,25 +2825,46 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 else if (year !== 'ALL') available.push(Number(year));
             });
 
-            // ?year=2025 or ?year=2021,2023,2025
+            // ?year=2025 or ?year=2021,2023,2025 (several years open in Multiple mode)
             const urlYears = (new URLSearchParams(window.location.search).get('year') || '')
                 .split(',').map(Number).filter(y => available.includes(y));
             selectedYears = urlYears.length && urlYears.length < available.length ? new Set(urlYears) : null;
+            if (urlYears.length > 1) yearMode = 'multi';
+
+            const changed = () => {
+                refreshYearButtons();
+                syncFiltersToUrl();
+                updateAllSections();
+            };
 
             buttons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const year = btn.dataset.year;
                     if (year === 'ALL') {
                         selectedYears = null;
+                    } else if (yearMode === 'single') {
+                        selectedYears = available.length > 1 ? new Set([Number(year)]) : null;
                     } else {
                         const y = Number(year);
                         const next = new Set(selectedYears || []);
                         if (next.has(y)) next.delete(y); else next.add(y);
                         selectedYears = next.size === 0 || next.size === available.length ? null : next;
                     }
-                    refreshYearButtons();
-                    syncFiltersToUrl();
-                    updateAllSections();
+                    changed();
+                });
+            });
+
+            // Single | Multiple. Back to Single keeps only the latest picked year.
+            document.querySelectorAll('.year-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.dataset.mode === yearMode) return;
+                    yearMode = btn.dataset.mode;
+                    if (yearMode === 'single' && selectedYears && selectedYears.size > 1) {
+                        selectedYears = new Set([latestSelectedYear()]);
+                        changed();
+                    } else {
+                        refreshYearButtons();
+                    }
                 });
             });
             refreshYearButtons();
@@ -2816,8 +2876,12 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 btn.classList.toggle('active', on);
                 btn.setAttribute('aria-pressed', on);
             });
-            const hint = document.getElementById('yearHint');
-            if (hint) hint.hidden = isAllYears();
+            document.querySelector('.year-buttons').classList.toggle('multi', yearMode === 'multi');
+            document.querySelectorAll('.year-mode-btn').forEach(btn => {
+                const on = btn.dataset.mode === yearMode;
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-pressed', on);
+            });
         }
 
         function updateAllSections() {
