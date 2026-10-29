@@ -255,31 +255,33 @@
             outline-offset: 2px;
         }
 
-        /* Single | Multiple switch under the year buttons — same look as
-           the year buttons, joined into one pair */
-        .year-mode {
+        /* ALL | Single | Multiple: one joined pill above the years, same look
+           as the year buttons. Exactly one is lit: ALL when no year is picked,
+           otherwise the current mode. */
+        /* (.year-filter prefix beats the shared .tt inline-block rule) */
+        .year-filter .year-mode {
             display: flex;
             justify-content: center;
-            margin: 12px auto 0;
+            width: fit-content;
+            margin: 0 auto 10px;
         }
 
         .year-mode-btn {
-            padding: 5px 14px;
+            padding: 6px 14px;
             background-color: rgba(255, 215, 0, 0.1);
             color: #ffd700;
             border: 2px solid #ffd700;
-            border-radius: 5px 0 0 5px;
+            border-radius: 0;
             cursor: pointer;
             font-weight: bold;
             font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.78em;
+            font-size: 0.85em;
             transition: all 0.3s;
         }
 
-        .year-mode-btn + .year-mode-btn {
-            margin-left: -2px;
-            border-radius: 0 5px 5px 0;
-        }
+        .year-mode-btn:first-child { border-radius: 5px 0 0 5px; }
+        .year-mode-btn:last-child { border-radius: 0 5px 5px 0; }
+        .year-mode-btn + .year-mode-btn { margin-left: -2px; }
 
         .year-mode-btn:hover {
             background-color: rgba(255, 215, 0, 0.2);
@@ -297,7 +299,7 @@
         }
 
         /* Multiple mode: picked years get a tick */
-        .year-buttons.multi .year-btn.active:not([data-year="ALL"])::before {
+        .year-buttons.multi .year-btn.active::before {
             content: '✓ ';
         }
 
@@ -928,8 +930,8 @@
             }
 
             .year-mode-btn {
-                padding: 4px 12px;
-                font-size: 0.72em;
+                padding: 5px 12px;
+                font-size: 0.78em;
             }
 
             .match-filters {
@@ -1222,9 +1224,13 @@
             </div>
 
             <div class="year-filter">
-                <h2 class="tt" data-tt="Tap a year to see just that year, or ALL for the whole career and the current rating. Switch to Multiple below to combine several years (e.g. 2021, 2023 and 2025)." style="cursor: help;">Filter by Year</h2>
+                <h2 class="tt" data-tt="ALL shows the whole career and the current rating. Single: tap a year to see just that year. Multiple: tap several years to combine them (e.g. 2021, 2023 and 2025)." style="cursor: help;">Filter by Year</h2>
+                <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="ALL: whole career. Single: one year at a time. Multiple: tap several years to combine them; tap a picked year again to remove it.">
+                    <button type="button" class="year-mode-btn active" data-mode="all" aria-pressed="true">ALL</button>
+                    <button type="button" class="year-mode-btn" data-mode="single" aria-pressed="false">Single</button>
+                    <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
+                </div>
                 <div class="year-buttons">
-                    <button class="year-btn active" data-year="ALL">ALL</button>
                     <button class="year-btn" data-year="2026">2026</button>
                     <button class="year-btn" data-year="2025">2025</button>
                     <button class="year-btn" data-year="2024">2024</button>
@@ -1233,10 +1239,6 @@
                     <button class="year-btn" data-year="2021">2021</button>
                     <button class="year-btn" data-year="2020">2020</button>
                     <button class="year-btn" data-year="2019">2019</button>
-                </div>
-                <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="Single: tap a year to see just that year. Multiple: tap several years to combine them (e.g. 2021, 2023 and 2025); tap a picked year again to remove it.">
-                    <button type="button" class="year-mode-btn active" data-mode="single" aria-pressed="true">Single</button>
-                    <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
                 </div>
             </div>
 
@@ -2817,24 +2819,27 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             list.innerHTML = html;
         }
 
-        // Year buttons. Single mode (default): a year shows just that year.
-        // Multiple mode: taps add/remove years; ALL (or removing the last
-        // one, or picking every year) goes back to ALL.
+        // Year filter: ALL | Single | Multiple, then the year buttons.
+        // ALL = whole career (no year picked). Single (the default once a year
+        // is tapped): a tap shows just that year. Multiple: taps add/remove
+        // years; removing the last one, or picking every year, goes back to ALL.
+        // Choosing Single or Multiple from ALL starts on the latest year.
         let yearMode = 'single';
 
         function setupYearButtons() {
             const buttons = [...document.querySelectorAll('.year-btn')];
             const available = [];
             buttons.forEach(btn => {
-                const year = btn.dataset.year;
-                if (year !== 'ALL' && !wrestlerData.statsByYear[year]) btn.style.display = 'none';
-                else if (year !== 'ALL') available.push(Number(year));
+                const year = Number(btn.dataset.year);
+                if (!wrestlerData.statsByYear[year]) btn.style.display = 'none';
+                else available.push(year);
             });
+            const asSelection = years => years.length === 0 || years.length >= available.length ? null : new Set(years);
 
-            // ?year=2025 or ?year=2021,2023,2025 (several years open in Multiple mode)
+            // ?year=2025 or ?year=2021,2023,2025 (several years open in Multiple)
             const urlYears = (new URLSearchParams(window.location.search).get('year') || '')
                 .split(',').map(Number).filter(y => available.includes(y));
-            selectedYears = urlYears.length && urlYears.length < available.length ? new Set(urlYears) : null;
+            selectedYears = asSelection(urlYears);
             if (urlYears.length > 1) yearMode = 'multi';
 
             const changed = () => {
@@ -2845,32 +2850,33 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
             buttons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const year = btn.dataset.year;
-                    if (year === 'ALL') {
-                        selectedYears = null;
-                    } else if (yearMode === 'single') {
-                        selectedYears = available.length > 1 ? new Set([Number(year)]) : null;
+                    const y = Number(btn.dataset.year);
+                    if (yearMode === 'single' || isAllYears()) {
+                        selectedYears = asSelection([y]);
                     } else {
-                        const y = Number(year);
-                        const next = new Set(selectedYears || []);
+                        const next = new Set(selectedYears);
                         if (next.has(y)) next.delete(y); else next.add(y);
-                        selectedYears = next.size === 0 || next.size === available.length ? null : next;
+                        selectedYears = asSelection([...next]);
                     }
                     changed();
                 });
             });
 
-            // Single | Multiple. Back to Single keeps only the latest picked year.
             document.querySelectorAll('.year-mode-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    if (btn.dataset.mode === yearMode) return;
-                    yearMode = btn.dataset.mode;
-                    if (yearMode === 'single' && selectedYears && selectedYears.size > 1) {
-                        selectedYears = new Set([latestSelectedYear()]);
-                        changed();
+                    const mode = btn.dataset.mode;
+                    if (mode === 'all') {
+                        if (isAllYears()) return;
+                        selectedYears = null;
+                    } else if (isAllYears()) {
+                        yearMode = mode;
+                        selectedYears = asSelection([Math.max(...available)]);
                     } else {
-                        refreshYearButtons();
+                        if (mode === yearMode) return;
+                        yearMode = mode;
+                        if (mode === 'single' && selectedYears.size > 1) selectedYears = new Set([latestSelectedYear()]);
                     }
+                    changed();
                 });
             });
             refreshYearButtons();
@@ -2878,13 +2884,14 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         function refreshYearButtons() {
             document.querySelectorAll('.year-btn').forEach(btn => {
-                const on = btn.dataset.year === 'ALL' ? isAllYears() : (!isAllYears() && selectedYears.has(Number(btn.dataset.year)));
+                const on = !isAllYears() && selectedYears.has(Number(btn.dataset.year));
                 btn.classList.toggle('active', on);
                 btn.setAttribute('aria-pressed', on);
             });
-            document.querySelector('.year-buttons').classList.toggle('multi', yearMode === 'multi');
+            document.querySelector('.year-buttons').classList.toggle('multi', yearMode === 'multi' && !isAllYears());
+            const lit = isAllYears() ? 'all' : yearMode;
             document.querySelectorAll('.year-mode-btn').forEach(btn => {
-                const on = btn.dataset.mode === yearMode;
+                const on = btn.dataset.mode === lit;
                 btn.classList.toggle('active', on);
                 btn.setAttribute('aria-pressed', on);
             });
