@@ -3218,17 +3218,23 @@
             }
         }
 
-        // Time away, largest units first: "3 years and 9 months", "1 year, 1 month and 3 weeks",
-        // "1 month and 2 weeks", "3 weeks". Zero parts are left out; leftover days round to
-        // the nearest week, and 4+ leftover weeks count as another month.
+        // Time away, largest units first. A year or more: years and months, rounded to the
+        // nearest month ("1 year and 6 months"). Under a year: months and weeks ("1 month and
+        // 2 weeks", "3 weeks"), where 4+ leftover weeks count as another month.
         function formatWeeksAwayFriendly(weeks) {
             if (typeof weeks !== 'number' || !(weeks > 0)) return '';
             const WEEKS_PER_YEAR = 52.18, WEEKS_PER_MONTH = 4.345;
             let years = Math.floor(weeks / WEEKS_PER_YEAR);
             let rest = weeks - years * WEEKS_PER_YEAR;
-            let months = Math.floor(rest / WEEKS_PER_MONTH);
-            let wks = Math.round(rest - months * WEEKS_PER_MONTH);
-            if (wks >= 4) { months++; wks = 0; }
+            let months, wks;
+            if (years > 0) {
+                months = Math.round(rest / WEEKS_PER_MONTH);
+                wks = 0;
+            } else {
+                months = Math.floor(rest / WEEKS_PER_MONTH);
+                wks = Math.round(rest - months * WEEKS_PER_MONTH);
+                if (wks >= 4) { months++; wks = 0; }
+            }
             if (months >= 12) { years++; months -= 12; }
             const part = (n, unit) => `${n} ${unit}${n === 1 ? '' : 's'}`;
             const parts = [];
