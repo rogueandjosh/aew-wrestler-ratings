@@ -7,7 +7,8 @@
 //     (class "tt-below" makes below the first choice)
 //   - its width shrinks on narrow screens
 // Mouse: appears after a short pause on hover. Touch: appears on tap and
-// fades after a few seconds; the tap itself still works as normal.
+// fades after a few seconds; the tap itself still works as normal. Tapping
+// the tooltip itself, the same element again, or anywhere else closes it.
 
 (function () {
     const SHOW_DELAY_MS = 400;     // hover pause before a tooltip appears
@@ -80,6 +81,7 @@
         if (box) {
             box.classList.remove('visible');
             box.style.display = 'none';
+            box.style.pointerEvents = '';
         }
     }
 
@@ -132,12 +134,27 @@
         });
 
         // Touch: show straight away on tap; tapping anywhere else hides it
+        // Touch: show straight away on tap. Tapping the tooltip itself, the
+        // same element again, or anywhere else closes it.
         document.addEventListener('touchstart', function (e) {
             lastTouchTime = Date.now();
+            if (box && e.target === box) {                        // tapped the tooltip:
+                // fade it now, but keep it catching the tap for a moment so
+                // the tap doesn't land on whatever sits underneath
+                clearTimeout(hideTimer);
+                currentEl = null;
+                box.classList.remove('visible');
+                hideTimer = setTimeout(hide, 400);
+                return;
+            }
             const el = findTarget(e.target);
-            if (!el) { hide(); return; }
+            if (!el) { hide(); return; }                          // tapped somewhere else
+            if (el === currentEl) { hide(); return; }             // tapped the same element again
             clearTimeout(hideTimer);
             show(el);
+            // While a tapped tooltip is up it catches taps, so tapping it closes
+            // it instead of pressing whatever sits underneath
+            if (box) box.style.pointerEvents = 'auto';
             hideTimer = setTimeout(hide, TOUCH_HIDE_MS);
         }, { passive: true });
 
