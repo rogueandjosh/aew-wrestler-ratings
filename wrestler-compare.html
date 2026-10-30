@@ -839,8 +839,11 @@
         .cmp-n3 th.cmp-corner { width: 28%; }
         .cmp-table th, .cmp-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .cmp-who { text-align: center; vertical-align: top; padding-bottom: 12px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; }
-        .cmp-corner { border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; text-align: left; vertical-align: top; }
-        .cmp-corner-title { color: #ffd700; font-size: 1.15em; font-weight: bold; line-height: 1.25; }
+        .cmp-corner { border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; text-align: left; vertical-align: middle; }
+        .cmp-corner-title.cmp-corner-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+            color: #ffd700; font-size: 1.25em; font-weight: bold; line-height: 1.2; letter-spacing: 0.3px; }
+        .cmp-corner-emoji { font-size: 1.3em; margin-bottom: 4px; }
+        .cmp-who { padding-top: 2px !important; }
         .cmp-perf { padding-top: 14px; }
         .cmp-custom-row { text-align: center; margin-top: 14px; }
         .cmp-custom-btn {
@@ -886,6 +889,8 @@
         /* Neutral colours (not red/green, which read as ratings or active/inactive) */
         .h2h-side.vs { background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.5); }
         .h2h-side.with { background: rgba(140, 170, 255, 0.14); color: #a9bcff; border: 1px solid rgba(140, 170, 255, 0.45); }
+        .h2h-side.unknown { background: rgba(255, 255, 255, 0.06); color: #aaa; border: 1px dashed rgba(255, 255, 255, 0.3); }
+        .h2h-unknown-note { color: #999; }
         .h2h-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .h2h-event { color: #e0e0e0; font-size: 0.92em; }
         .h2h-meta { color: #999; font-size: 0.78em; }
@@ -904,7 +909,7 @@
             .cmp-table th.cmp-corner { width: 30%; }
             .cmp-n3 th.cmp-corner { width: 25%; }
             .cmp-label { font-size: 0.78em; line-height: 1.25; }
-            .cmp-corner-title { font-size: 0.95em; }
+            .cmp-corner-title.cmp-corner-title { font-size: 1.02em; }
             .cmp-custom-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .cmp-val { font-size: 0.85em; }
             .cmp-who .wrestler-photo { width: 44px; height: 44px; }
@@ -1017,7 +1022,7 @@
                 </div>
 
                 <div class="stats-table-container" id="h2hContainer">
-                    <h2 class="tt" data-tt="Every match they were both in, split into when they faced each other and when they were on the same side. Follows the year filter.">🤝 Head to Head</h2>
+                    <h2 class="tt" data-tt="Every match they were both in. vs = they faced each other, with = same side, same = in the same match but the sides aren't recorded (some big multi-person tags). Follows the year filter.">🤝 Head to Head</h2>
                     <div id="h2h"></div>
                 </div>
 
@@ -1552,7 +1557,7 @@
                 return `<tr><th scope="row" class="cmp-label"><span class="tt" data-tt="${escapeHtml(row.tip)}">${row.label}</span></th>${cells}</tr>`;
             }).join('');
             return `<div class="cmp-table-wrap"><table class="cmp-table cmp-n${data.length}">
-                <thead><tr><th class="cmp-corner"><span class="cmp-corner-title tt" data-tt="Every stat side by side. The best value in each row is shown in bold gold. Tap a name to open their wrestler stats. Use Customize Stats below to choose the rows.">📊 Performance Comparison</span></th>${head}</tr></thead>
+                <thead><tr><th class="cmp-corner"><span class="cmp-corner-title tt" data-tt="Every stat side by side. The best value in each row is shown in bold gold. Tap a name to open their wrestler stats. Use Customize Stats below to choose the rows."><span class="cmp-corner-emoji">📊</span><span>Performance</span><span>Comparison</span></span></th>${head}</tr></thead>
                 <tbody>${rows}</tbody></table></div>`;
         }
 
@@ -1564,15 +1569,50 @@
             return names;
         }
 
-        // For each match A and B were both in: did B stand across from A
-        // (versus) or alongside A (partner / same team)?
+        // ---- Which side were they on? Only says 'vs' or 'with' when the data
+        // proves it; otherwise 'unknown' ("same match, sides not recorded").
+        //  - with: one lists the other as a partner, or is a member of their team
+        //  - vs:   an every-man-for-himself match (singles, 3/4/6/8 Way, Multi Man…)
+        //  - vs:   a team match where one of them has their whole side recorded
+        //          (e.g. a Tag Team match with their partner listed) and the other
+        //          isn't on it
+        //  - unknown: e.g. a 10 Man Tag where neither side is fully recorded
+        //    (the sheet only stores official tag/trio partners)
+        const FREE_FOR_ALL = /^(one on one|\d+ way|multi man|multi woman)$/i;
+        function sideSize(matchType) {
+            const t = (matchType || '').trim();
+            if (/handicap/i.test(t)) return null;                 // uneven sides
+            const n = t.match(/^(\d+) (man|woman|person) tag$/i);
+            if (n) return Number(n[1]) / 2;
+            if (/trios/i.test(t)) return 3;                       // Trios, Mixed / 3 Way / 4 Way / Multi Trios
+            if (/tag/i.test(t)) return 2;                         // Tag Team, Mixed Tag, 3 Way / 4 Way / Multi Tag
+            return null;
+        }
+
+        // One wrestler's view of a match: who is definitely on their side, and is that side complete?
+        function sideFrom(entry, data) {
+            const own = namesFor(data);
+            const side = new Set([...own, ...(entry.partners || [])]);
+            const people = (data.isTeam ? (findTeamMembers(data.name) || []).length : 1) + (entry.partners || []).length;
+            const size = sideSize(entry.matchType);
+            return { side, complete: size !== null && people >= size };
+        }
+
+        function matchSide(aEntry, a, bEntry, b) {
+            const aNames = namesFor(a), bNames = namesFor(b);
+            const has = (set, names) => [...names].some(n => set.has(n));
+            const A = sideFrom(aEntry, a), B = sideFrom(bEntry, b);
+            if (has(A.side, bNames) || has(B.side, aNames)) return 'with';
+            if (FREE_FOR_ALL.test((aEntry.matchType || '').trim())) return 'vs';
+            if (A.complete || B.complete) return 'vs';
+            return 'unknown';
+        }
+
         function sharedMatches(a, b) {
-            const bIds = new Set((b.allMatches || []).map(m => m.id));
-            const bNames = namesFor(b);
-            const hit = list => (list || []).some(n => bNames.has(n));
+            const bById = new Map((b.allMatches || []).map(m => [m.id, m]));
             return (a.allMatches || [])
-                .filter(m => bIds.has(m.id) && (!selectedYears || selectedYears.has(m.year)))
-                .map(m => ({ ...m, side: hit(m.versus) ? 'vs' : (hit(m.partners) || hit(m.opponents) ? 'with' : 'vs') }))
+                .filter(m => bById.has(m.id) && (!selectedYears || selectedYears.has(m.year)))
+                .map(m => ({ ...m, side: matchSide(m, a, bById.get(m.id), b) }))
                 .sort((x, y) => (y.date || '').localeCompare(x.date || ''));
         }
 
@@ -1587,15 +1627,17 @@
                 const shared = sharedMatches(a, b);
                 const vs = shared.filter(m => m.side === 'vs');
                 const wi = shared.filter(m => m.side === 'with');
+                const un = shared.filter(m => m.side === 'unknown');
                 const title = `<div class="h2h-title">${escapeHtml(a.name)} <span>+</span> ${escapeHtml(b.name)}</div>`;
                 if (!shared.length) return `<div class="h2h-pair">${title}<p class="h2h-none">Never in the same match${yt}.</p></div>`;
                 const summary = [
                     vs.length ? `Faced each other <strong>${vs.length}</strong> time${vs.length > 1 ? 's' : ''} · average <strong>${avg(vs)}</strong>` : '',
-                    wi.length ? `On the same side <strong>${wi.length}</strong> time${wi.length > 1 ? 's' : ''} · average <strong>${avg(wi)}</strong>` : ''
+                    wi.length ? `On the same side <strong>${wi.length}</strong> time${wi.length > 1 ? 's' : ''} · average <strong>${avg(wi)}</strong>` : '',
+                    un.length ? `<span class="h2h-unknown-note">Also in the same match <strong>${un.length}</strong> time${un.length > 1 ? 's' : ''} where the sides aren't recorded</span>` : ''
                 ].filter(Boolean).join('<br>');
                 const rows = shared.map((m, k) => `
                     <li class="h2h-match${k >= 5 ? ' h2h-extra' : ''}">
-                        <span class="h2h-side ${m.side}">${m.side === 'vs' ? 'vs' : 'with'}</span>
+                        <span class="h2h-side ${m.side}"${m.side === 'unknown' ? ' title="Same match — the sides are not recorded for this one"' : ''}>${m.side === 'vs' ? 'vs' : m.side === 'with' ? 'with' : 'same'}</span>
                         <span class="h2h-info"><span class="h2h-event">${escapeHtml(m.event || m.show || '')}${bmIds.has(m.id) ? ' <span title="Best Match of the Week">⭐</span>' : ''}</span>
                             <span class="h2h-meta">${[fmtDate(m.date),
                                 m.matchType === 'One on One' ? 'Singles' : (m.matchType || ''),
