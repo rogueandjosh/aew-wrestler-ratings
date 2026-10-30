@@ -1022,7 +1022,7 @@
                 </div>
 
                 <div class="stats-table-container" id="h2hContainer">
-                    <h2 class="tt" data-tt="Every match they were both in. vs = they faced each other, with = same side, same = in the same match but the sides aren't recorded (some big multi-person tags). Follows the year filter.">🤝 Head to Head</h2>
+                    <h2 class="tt" data-tt="Every match they were both in. vs = they faced each other, with = same side, same = in the same match, but the sides aren't recorded. This is usually a big multi-person tag that doesn't count towards a division. Follows the year filter.">🤝 Head to Head</h2>
                     <div id="h2h"></div>
                 </div>
 
@@ -1633,11 +1633,11 @@
                 const summary = [
                     vs.length ? `Faced each other <strong>${vs.length}</strong> time${vs.length > 1 ? 's' : ''} · average <strong>${avg(vs)}</strong>` : '',
                     wi.length ? `On the same side <strong>${wi.length}</strong> time${wi.length > 1 ? 's' : ''} · average <strong>${avg(wi)}</strong>` : '',
-                    un.length ? `<span class="h2h-unknown-note">Also in the same match <strong>${un.length}</strong> time${un.length > 1 ? 's' : ''} where the sides aren't recorded</span>` : ''
+                    un.length ? `<span class="h2h-unknown-note">Also in the same match <strong>${un.length}</strong> time${un.length > 1 ? 's' : ''} where the sides aren't recorded (usually big multi-person tags that don't count towards a division)</span>` : ''
                 ].filter(Boolean).join('<br>');
                 const rows = shared.map((m, k) => `
                     <li class="h2h-match${k >= 5 ? ' h2h-extra' : ''}">
-                        <span class="h2h-side ${m.side}"${m.side === 'unknown' ? ' title="Same match — the sides are not recorded for this one"' : ''}>${m.side === 'vs' ? 'vs' : m.side === 'with' ? 'with' : 'same'}</span>
+                        <span class="h2h-side ${m.side}"${m.side === 'unknown' ? ' title="Same match, but the sides aren&#39;t recorded. Usually a big multi-person tag that doesn&#39;t count towards a division."' : ''}>${m.side === 'vs' ? 'vs' : m.side === 'with' ? 'with' : 'same'}</span>
                         <span class="h2h-info"><span class="h2h-event">${escapeHtml(m.event || m.show || '')}${bmIds.has(m.id) ? ' <span title="Best Match of the Week">⭐</span>' : ''}</span>
                             <span class="h2h-meta">${[fmtDate(m.date),
                                 m.matchType === 'One on One' ? 'Singles' : (m.matchType || ''),
