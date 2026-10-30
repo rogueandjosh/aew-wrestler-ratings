@@ -205,13 +205,62 @@
         #archiveTable .col-wrestlers { width: 32%; }
         #archiveTable .col-show { width: 20%; }
 
-        #leaderboardTable .col-rank { width: 5%; }
-        #leaderboardTable .col-photo { width: 13%; }
-        #leaderboardTable .col-name { width: 20%; }
-        #leaderboardTable .col-divisions { width: 16%; }
-        #leaderboardTable .col-count { width: 15%; }
-        #leaderboardTable .col-total-matches { width: 15%; }
-        #leaderboardTable .col-percentage { width: 16%; }
+        /* ===== LEADERBOARD =====
+           #, photo and Name stay pinned on the left when the table is swiped
+           (solid backgrounds so nothing shows through; a divider appears once
+           swiped). Photo sizes follow the home page: singles 64 / tag 44 /
+           trios 30, phones 44 / 28 / 21, in a fixed-height slot so every row
+           is the same height. On laptop/tablet the table scrolls inside its
+           own box so the column headings stay visible. */
+        #leaderboardTable { table-layout: auto; }
+        #leaderboardTable th, #leaderboardTable td { white-space: nowrap; }
+        #leaderboardTable .col-rank { width: 50px; min-width: 50px; max-width: 50px; }
+        #leaderboardTable .col-photo { width: 110px; min-width: 110px; max-width: 110px; }
+        #leaderboardTable .col-name { white-space: normal; min-width: 140px; }
+        #leaderboardTable .col-rank,
+        #leaderboardTable .col-photo,
+        #leaderboardTable .col-name {
+            position: sticky;
+            z-index: 2;
+            background: #24263a;
+        }
+        #leaderboardTable th.col-rank,
+        #leaderboardTable th.col-photo,
+        #leaderboardTable th.col-name { background: #50492e; z-index: 4; }
+        #leaderboardTable .col-rank { left: 0; }
+        #leaderboardTable .col-photo { left: 50px; }
+        #leaderboardTable .col-name { left: 160px; }
+        #leaderboardTable td { background: #24263a; }
+        #leaderboardTable tr:hover td { background: #2b2b3b; }
+        #leaderboardTable th:not(.col-rank):not(.col-photo):not(.col-name) { background: #50492e; }
+        .lb-scroll.scrolled #leaderboardTable .col-name { box-shadow: inset -2px 0 0 rgba(255, 215, 0, 0.6); }
+
+        .lb-photos {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+            justify-content: center;
+            height: 64px;
+        }
+        .lb-photos img {
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .lb-photos.single img { width: 64px; height: 64px; }
+        .lb-photos.tag img { width: 44px; height: 44px; }
+        .lb-photos.trio img { width: 30px; height: 30px; }
+        #leaderboardTable td.col-photo { padding: 5px 6px !important; }
+
+        @media (min-width: 701px) {
+            .lb-scroll { max-height: 75vh; overflow: auto; }
+            #leaderboardTable thead th { position: sticky; top: 0; z-index: 3; }
+            #leaderboardTable thead th.col-rank,
+            #leaderboardTable thead th.col-photo,
+            #leaderboardTable thead th.col-name { z-index: 5; }
+        }
+        #lbScrollHint[hidden] { display: none !important; }
         th {
             background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
@@ -248,7 +297,16 @@
             table { font-size: 0.85em; }
             .scroll-hint { display: block; }
             #archiveTable { min-width: 900px; }
-            #leaderboardTable { min-width: 750px; }
+            #leaderboardTab .section-card { padding: 14px 10px; }
+            #leaderboardTable th, #leaderboardTable td { padding: 8px 6px; }
+            #leaderboardTable .col-rank { width: 30px; min-width: 30px; max-width: 30px; }
+            #leaderboardTable .col-photo { width: 72px; min-width: 72px; max-width: 72px; left: 30px; }
+            #leaderboardTable .col-name { left: 102px; min-width: 100px; max-width: 130px; }
+            #leaderboardTable td.col-photo { padding: 4px 3px !important; }
+            .lb-photos { height: 44px; }
+            .lb-photos.single img { width: 44px; height: 44px; }
+            .lb-photos.tag img { width: 28px; height: 28px; }
+            .lb-photos.trio img { width: 21px; height: 21px; }
             #archiveFiltersToggle { display: block !important; }
             #archiveFiltersPanel { display: none; }
             #archiveFiltersPanel.expanded { display: block; }
@@ -418,8 +476,8 @@
                     <label class="tt" data-tt="Filter by division. All are selected by default — untick any to narrow the leaderboard.">Division</label>
                     <div class="division-checkboxes" id="leaderboardDivisionFilters"></div>
                 </div>
-                <p class="scroll-hint">↔️ Swipe to see more columns</p>
-                <div class="table-scroll">
+                <p class="scroll-hint" id="lbScrollHint" hidden>↔️ Swipe to see more columns</p>
+                <div class="table-scroll lb-scroll" id="lbScroll">
                     <table id="leaderboardTable">
                         <thead>
                             <tr id="leaderboardTableHeaderRow">
@@ -430,7 +488,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show by default — click to reveal the full leaderboard." style="display: none;">Show All</button>
+                <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show by default (25 on phones) — click to reveal the full leaderboard." style="display: none;">Show All</button>
             </div>
         </div>
         </main>
@@ -623,7 +681,7 @@
             document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
             document.getElementById('archiveTab').style.display = tab === 'archive' ? 'block' : 'none';
             document.getElementById('leaderboardTab').style.display = tab === 'leaderboard' ? 'block' : 'none';
-            if (tab === 'leaderboard') ensureRostersLoaded();
+            if (tab === 'leaderboard') { ensureRostersLoaded(); updateLeaderboardScrollUI(); }
         }
 
         // The leaderboard needs every week's full roster (~370 files), so only
@@ -762,30 +820,33 @@
         // ratings at all.
         function buildLeaderboardImageCell(name) {
             const members = findTeamMembersArrayShared(name, teamMembersData, nameChangesMap) || [];
-            const borderStyle = 'border:2px solid #ffd700;border-radius:50%;object-fit:cover;';
-
+            const img = (person, initials) => {
+                const fallback = createInitialsCircle(initials, 64);
+                return `<img src="images/wrestlers/${createSlug(person)}.jpg" alt="${person}" loading="lazy" onerror="this.onerror=null;this.src='${fallback}';">`;
+            };
             if (members.length === 3) {
-                const imgs = members.map(m => {
-                    const slug = createSlug(m);
-                    const fallback = createInitialsCircle(generateTrioInitial(m), 35);
-                    return `<img src="images/wrestlers/${slug}.jpg" alt="${m}" style="width:35px;height:35px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
-                }).join('');
-                return `<div style="display:flex;gap:2px;justify-content:center;">${imgs}</div>`;
+                return `<div class="lb-photos trio">${members.map(m => img(m, generateTrioInitial(m))).join('')}</div>`;
             }
-
             if (members.length === 2) {
-                const imgs = members.map(m => {
-                    const slug = createSlug(m);
-                    const fallback = createInitialsCircle(generateTagInitials(m), 50);
-                    return `<img src="images/wrestlers/${slug}.jpg" alt="${m}" style="width:50px;height:50px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
-                }).join('');
-                return `<div style="display:flex;gap:2px;justify-content:center;">${imgs}</div>`;
+                return `<div class="lb-photos tag">${members.map(m => img(m, generateTagInitials(m))).join('')}</div>`;
             }
-
-            const slug = createSlug(name);
-            const fallback = createInitialsCircle(generateInitials(name), 60);
-            return `<img src="images/wrestlers/${slug}.jpg" alt="${name}" style="width:60px;height:60px;${borderStyle}" onerror="this.onerror=null;this.src='${fallback}';">`;
+            return `<div class="lb-photos single">${img(name, generateInitials(name))}</div>`;
         }
+
+        // Swipe hint only when the leaderboard is wider than its box; the
+        // divider beside Name only once it has been swiped
+        function updateLeaderboardScrollUI() {
+            const box = document.getElementById('lbScroll');
+            const hint = document.getElementById('lbScrollHint');
+            if (!box || !hint) return;
+            hint.hidden = box.scrollWidth <= box.clientWidth + 1;
+            box.classList.toggle('scrolled', box.scrollLeft > 0);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const box = document.getElementById('lbScroll');
+            if (box) box.addEventListener('scroll', updateLeaderboardScrollUI, { passive: true });
+            window.addEventListener('resize', updateLeaderboardScrollUI);
+        });
 
         function getDivisionDisplayLabel(raw) {
             return raw === 'Tag' ? "Men's Tag" : raw;
@@ -852,7 +913,8 @@
 
 
         let leaderboardSearchTerm = '';
-        let leaderboardDisplayCount = 50;
+        const LEADERBOARD_START_COUNT = window.innerWidth <= 700 ? 25 : 50;   // phones show 25 before "Show All"
+        let leaderboardDisplayCount = LEADERBOARD_START_COUNT;
         let leaderboardSortColumn = 'count';
         let leaderboardSortDirection = 'desc';
         let leaderboardRows = [];
@@ -1322,6 +1384,7 @@
             if (rows.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No data available for this filter.</td></tr>';
                 showMoreBtn.style.display = 'none';
+                updateLeaderboardScrollUI();
                 return;
             }
 
@@ -1344,6 +1407,7 @@
             }).join('');
 
             showMoreBtn.style.display = rows.length > leaderboardDisplayCount ? 'block' : 'none';
+            updateLeaderboardScrollUI();
         }
 
         // Tooltips (on/off, hover and tap) are handled by the shared tooltips.js
