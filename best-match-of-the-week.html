@@ -326,6 +326,7 @@
 
         /* Phones: one card per match */
         .bm-cards { display: flex; flex-direction: column; gap: 8px; }
+        .bm-card.tt { display: block; }   /* the shared .tt rule makes it inline-block */
         .bm-card {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 215, 0, 0.25);
@@ -447,7 +448,7 @@
         </p>
 
         <div class="tabs">
-            <button class="tab active tt tt-left" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded, with filters for year, division, match type, and stipulation." onclick="switchTab('archive')">📋 Archive</button>
+            <button class="tab active tt tt-left" data-tab="archive" data-tt="Browse every Best Match of the Week ever recorded. Filter by year, division, format, stipulation and stakes, or search for a wrestler. Tap a week to open that week's rankings on the main page, or a name to open their wrestler stats." onclick="switchTab('archive')">📋 Archive</button>
             <button class="tab tt" data-tab="leaderboard" data-tt="See which wrestlers and teams have featured in the most Best Matches of the Week, all-time. Only those with 2 or more appearances are shown." onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
         </div>
 
@@ -458,7 +459,7 @@
                     <button id="archiveFiltersToggle" onclick="toggleArchiveFilters()">
                         <span class="ar-ft-icon">🔍 </span>Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
                     </button>
-                    <select id="archiveSortSelect" class="tt" aria-label="Sort matches" data-tt="Sort the matches: newest or oldest first, or by rating." onchange="onArchiveSortSelect(this.value)">
+                    <select id="archiveSortSelect" class="tt" aria-label="Sort matches" data-tt="Sort the matches: newest or oldest first, or highest or lowest rated." onchange="onArchiveSortSelect(this.value)">
                         <option value="date|desc">Newest</option>
                         <option value="date|asc">Oldest</option>
                         <option value="rating|desc">Top rated</option>
@@ -473,7 +474,7 @@
                             <div class="match-filter-options" id="arYearOptions"></div>
                         </div>
                         <div class="match-filter-group" id="arDivisionGroup">
-                            <div class="match-filter-group-title tt" data-tt="Tick one or more divisions. None is for matches with no division (e.g. mixed or non-ranked matches).">Division</div>
+                            <div class="match-filter-group-title tt" data-tt="Tick one or more divisions (Men's, Women's, Men's Tag, Trios…). None is for matches with no division, e.g. mixed or unranked matches.">Division</div>
                             <button type="button" class="match-filter-toggle" id="arDivisionToggle" aria-expanded="false" aria-controls="arDivisionOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="arDivisionOptions"></div>
                         </div>
@@ -494,7 +495,7 @@
                         </div>
 
                         <div class="filter-item bm-search match-filter-group">
-                            <label for="archiveWrestlerSearch" class="match-filter-group-title tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
+                            <label for="archiveWrestlerSearch" class="match-filter-group-title tt" data-tt="Type a wrestler or team name to show only the matches they were in. Tap ✕ to clear it.">Search Wrestler</label>
                             <div class="wrestler-search-wrap">
                                 <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Omega" oninput="onArchiveSearchInput()" autocomplete="off">
                                 <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -505,7 +506,7 @@
                 </div>
 
                 <div class="ar-columns-row" style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-                    <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Wrestlers, and Rating are always visible.">
+                    <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Rating and Wrestlers are always visible.">
                         ⚙️ Customize Columns
                     </button>
                 </div>
@@ -538,7 +539,7 @@
                     </div>
                 </div>
 
-                <p class="ar-summary" id="archiveSummary"></p>
+                <p class="ar-summary tt" id="archiveSummary" data-tt="How many Best Matches fit your filters, and their average rating. Tap a week to open that week's rankings on the main page (on the match's division), or a name to open their wrestler stats."></p>
                 <p class="scroll-hint" id="arScrollHint" hidden>↔️ Swipe to see more columns</p>
                 <div class="bm-cards" id="archiveCards" hidden></div>
                 <div class="table-scroll ar-scroll" id="arScroll">
@@ -552,13 +553,14 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="show-more-btn tt" id="showMoreBtn" onclick="expandArchive()" data-tt="Only the most recent 30 results show by default — click to reveal the rest." style="display: none;">Show More</button>
+                <button class="show-more-btn tt" id="showMoreBtn" onclick="expandArchive()" data-tt="Only the first 30 matches show at first — tap to reveal the rest." style="display: none;">Show More</button>
             </div>
 
             <div class="section-card explanation-text">
                 <div class="section-title">What is Best Match of the Week?</div>
                 <p>Each week, every match from that week's shows is compared by its Cagematch.net community rating — the highest-rated match becomes that week's <strong style="color:#ffd700;">Best Match of the Week</strong>.</p>
                 <p>You'll also see this indicated with a gold <strong style="color:#ffd700; font-size:1.2em;">*</strong> next to the relevant wrestler(s) or team(s) on the <a href="index.html">main rankings pages</a> — click it for a quick popup with the match details. And on the <strong>All Wrestler Statistics</strong> view, the <strong style="color:#ffd700;">⭐</strong> column shows a running total of how many times each wrestler or team has featured in a Best Match, cumulative up to whichever week you have selected.</p>
+                <p>In the <strong>Archive</strong>, tap a week to open the rankings for that week on the main page (on that match's division), or tap a wrestler's name to open their stats.</p>
                 <p>The <strong>Leaderboard</strong> tab only includes wrestlers and teams with 2 or more Best Match appearances, to keep the list focused on genuinely repeat performers rather than one-off entries.</p>
             </div>
         </div>
@@ -568,7 +570,7 @@
                 <div class="section-title tt" data-tt="Only wrestlers and teams with 2 or more Best Match appearances are shown.">Top Wrestlers &amp; Teams by Best Match Appearances</div>
                 <div class="filters-row">
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
-                        <label for="leaderboardWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to filter the leaderboard to just them.">Search Wrestler</label>
+                        <label for="leaderboardWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to show only them. Tap ✕ to clear it.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
                             <input type="text" id="leaderboardWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onLeaderboardSearchInput()" autocomplete="off">
                             <button type="button" id="leaderboardWrestlerSearchClear" class="wrestler-search-clear" onclick="clearLeaderboardSearch()" style="display: none;" aria-label="Clear search">✕</button>
@@ -594,7 +596,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show by default (25 on phones) — click to reveal the full leaderboard." style="display: none;">Show All</button>
+                <button class="show-more-btn tt" id="leaderboardShowMoreBtn" onclick="expandLeaderboard()" data-tt="Only the top 50 show at first (25 on phones) — tap to reveal the full leaderboard." style="display: none;">Show All</button>
             </div>
         </div>
         </main>
@@ -989,14 +991,14 @@
         function renderArchiveTableHeader() {
             const headerRow = document.getElementById('archiveTableHeaderRow');
             const cells = {
-                week: visibleColumns.week ? `<th tabindex="0" data-key-click class="sortable col-week" onclick="sortArchive('date')">Week</th>` : '',
-                show: `<th tabindex="0" data-key-click class="sortable col-show" onclick="sortArchive('show')">Show</th>`,
+                week: visibleColumns.week ? `<th tabindex="0" data-key-click class="sortable tt col-week" onclick="sortArchive('date')" data-tt="The week this was the Best Match. Tap a week to open that week's rankings on the main page, on the match's division.">Week</th>` : '',
+                show: `<th tabindex="0" data-key-click class="sortable tt col-show" onclick="sortArchive('show')" data-tt="The show the match was on, with the special's name where it had one.">Show</th>`,
                 rating: `<th tabindex="0" data-key-click class="sortable tt col-rating" onclick="sortArchive('rating')" data-tt="The Cagematch.net community rating for this match — the highest rating that week made it Best Match of the Week.">Rating</th>`,
-                wrestlers: `<th tabindex="0" data-key-click class="sortable col-wrestlers" onclick="sortArchive('wrestlers')">Wrestlers</th>`,
+                wrestlers: `<th tabindex="0" data-key-click class="sortable tt col-wrestlers" onclick="sortArchive('wrestlers')" data-tt="Everyone in the match. Tap a name to open their wrestler stats.">Wrestlers</th>`,
                 division: visibleColumns.division ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('division')" data-tt="Which of the five tracked divisions this match belonged to.">Division</th>` : '',
-                matchType: visibleColumns.matchType ? `<th tabindex="0" data-key-click class="sortable" onclick="sortArchive('matchType')">Match Type</th>` : '',
+                matchType: visibleColumns.matchType ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('matchType')" data-tt="The type of match, e.g. Singles, Tag Team, Trios or a multi-way.">Match Type</th>` : '',
                 stipulation: visibleColumns.stipulation ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('stipulation')" data-tt="Similar stipulation variants are grouped together, e.g. all Street Fight matches regardless of naming.">Stipulation</th>` : '',
-                stakes: visibleColumns.stakes ? `<th tabindex="0" data-key-click class="sortable" onclick="sortArchive('stakes')">Stakes</th>` : ''
+                stakes: visibleColumns.stakes ? `<th tabindex="0" data-key-click class="sortable tt" onclick="sortArchive('stakes')" data-tt="What was on the line, e.g. a title or a tournament spot.">Stakes</th>` : ''
             };
 
             // Base order everywhere; on mobile, Division moves to the far
@@ -1314,7 +1316,7 @@
                     stip && stip.toLowerCase() !== 'none' ? stip : '',
                     e.stakes && e.stakes !== 'None' ? e.stakes : ''
                 ].filter(Boolean).join(' · ');
-                return `<div class="bm-card">
+                return `<div class="bm-card tt" data-tt="Tap the week to open that week's rankings on the main page, or a name to open their wrestler stats.">
                     <div class="bm-top">${weekHtml}<span class="bm-rating">${(e.rating || 0).toFixed(2)}</span></div>
                     <div class="bm-show">${formatBestMatchShow(e.show) || ''}</div>
                     <div class="bm-wrestlers">${wrestlers}</div>
@@ -1516,7 +1518,7 @@
             const cells = {
                 rank: `<th class="rank-cell col-rank">#</th>`,
                 photo: `<th class="col-photo" aria-label="Photo"></th>`,
-                name: `<th tabindex="0" data-key-click class="sortable col-name" onclick="sortLeaderboard('name')">Name</th>`,
+                name: `<th tabindex="0" data-key-click class="sortable tt col-name" onclick="sortLeaderboard('name')" data-tt="Tap a name to open their wrestler stats.">Name</th>`,
                 divisions: `<th tabindex="0" data-key-click class="sortable tt col-divisions" onclick="sortLeaderboard('divisions')" data-tt="Every division this wrestler or team has earned a Best Match credit in.">Division</th>`,
                 count: `<th tabindex="0" data-key-click class="sortable tt col-count" onclick="sortLeaderboard('count')" data-tt="Total number of times this wrestler or team has featured in that week's Best Match of the Week. Only those with 2 or more appearances are shown here.">⭐</th>`,
                 totalMatches: `<th tabindex="0" data-key-click class="sortable tt col-total-matches" onclick="sortLeaderboard('totalMatches')" data-tt="Total career matches for this wrestler or team, across all divisions.">Matches</th>`,
