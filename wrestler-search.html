@@ -571,6 +571,22 @@
         }
 
         /* No results */
+        .show-more-results {
+            display: block;
+            margin: 20px auto 0;
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        .show-more-results:hover { background: rgba(255, 215, 0, 0.3); }
+        .show-more-results[hidden] { display: none; }
+
         .no-results {
             text-align: center;
             padding: 60px 20px;
@@ -866,6 +882,7 @@
             <div id="resultsGrid" class="results-grid">
                 <div class="loading">Loading wrestlers...</div>
             </div>
+            <button type="button" id="showMoreResults" class="show-more-results" hidden>Show more</button>
         </div>
     </div>
 
@@ -1572,6 +1589,7 @@
                 return sortDir === 'desc' ? valB - valA : valA - valB;
             });
 
+            resultsShown = RESULTS_PAGE;   // a new search/filter/sort starts from the top 40
             renderResults();
         }
 
@@ -1694,18 +1712,34 @@
         }
 
         // Render results grid
+        // 40 cards at a time; "Show more" adds the next 40. Filters, search and
+        // sort still cover everyone (they reset the page back to the first 40).
+        const RESULTS_PAGE = 40;
+        let resultsShown = RESULTS_PAGE;
+        document.addEventListener('click', e => {
+            if (e.target.id !== 'showMoreResults') return;
+            resultsShown += RESULTS_PAGE;
+            renderResults();
+        });
+
         function renderResults() {
             const grid = document.getElementById('resultsGrid');
             const countEl = document.getElementById('resultsCount');
+            const moreBtn = document.getElementById('showMoreResults');
 
             countEl.textContent = getResultCountText(filteredWrestlers);
 
             if (filteredWrestlers.length === 0) {
                 grid.innerHTML = '<div class="no-results">No wrestlers found matching your criteria.</div>';
+                moreBtn.hidden = true;
                 return;
             }
 
-            grid.innerHTML = filteredWrestlers.map(w => {
+            const left = filteredWrestlers.length - resultsShown;
+            moreBtn.hidden = left <= 0;
+            moreBtn.textContent = `Show more (${left} more)`;
+
+            grid.innerHTML = filteredWrestlers.slice(0, resultsShown).map(w => {
                 const stats = getDisplayStats(w);
                 const isTeamDiv = isTeam(w.division);
 

@@ -123,6 +123,15 @@
         }
         .back-link:hover { background: rgba(255,215,0,0.15); }
 
+        .update-card.older-update { display: none; }
+        body.show-older .update-card.older-update { display: block; }
+        .show-older-updates {
+            display: block; margin: 10px auto 30px; background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-family: inherit; font-size: 1em;
+        }
+        .show-older-updates:hover { background: rgba(255, 215, 0, 0.3); }
+
         .updates-list {
             display: flex;
             flex-direction: column;
@@ -990,6 +999,30 @@
         if (firstDate && el) {
             el.textContent = `Last Updated: ${firstDate.textContent}`;
         }
+
+        // Older updates fold away: cards from the newest two months show, the
+        // rest sit behind "Show older updates" (new cards at the top need nothing extra)
+        (function foldOlderUpdates() {
+            const cards = [...document.querySelectorAll('.updates-list .update-card')];
+            const monthOf = card => {
+                const d = new Date((card.querySelector('.update-date') || {}).textContent || '');
+                return isNaN(d) ? null : d.getFullYear() * 12 + d.getMonth();
+            };
+            const newest = cards.map(monthOf).find(m => m !== null);
+            if (newest == null) return;
+            const older = cards.filter(c => { const m = monthOf(c); return m !== null && m < newest - 1; });
+            if (!older.length) return;
+            older.forEach(c => c.classList.add('older-update'));
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'show-older-updates';
+            btn.textContent = `Show older updates (${older.length})`;
+            btn.addEventListener('click', () => {
+                const open = document.body.classList.toggle('show-older');
+                btn.textContent = open ? 'Hide older updates' : `Show older updates (${older.length})`;
+            });
+            document.querySelector('.updates-list').after(btn);
+        })();
 
         // Tooltips for each card's date and tag, so new cards get them automatically
         const TAG_TIPS = {

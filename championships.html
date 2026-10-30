@@ -2784,7 +2784,7 @@
                     for (let i = 0; i < count; i++) {
                         imagesHtml += `
                             <span class="title-image ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
-                                <img src="images/championships/${slug}.png" 
+                                <img src="images/championships/${slug}.${TITLE_IMAGE_JPG_ONLY.has(slug) ? 'jpg' : 'png'}" 
                                      alt="${title}"
                                      onerror="handleTitleImageError(this)">
                             </span>
@@ -2795,7 +2795,7 @@
                     // Single image
                     return `
                         <span class="title-image ${sizeClass} ${zoomClass}" data-fallback="belt" data-plate="${plateClass}" data-strap="${strapClass}" data-shape="${shapeClass}" data-color="${config.color}" data-initials="${config.initials}" data-text-dark="${config.textDark || false}" data-slug="${slug}">
-                            <img src="images/championships/${slug}.png" 
+                            <img src="images/championships/${slug}.${TITLE_IMAGE_JPG_ONLY.has(slug) ? 'jpg' : 'png'}" 
                                  alt="${title}"
                                  onerror="handleTitleImageError(this)">
                         </span>
@@ -2903,6 +2903,10 @@
             }
         }
         
+        // Belts that only have a .jpg image, so they don't ask for a .png first.
+        // (Add a slug here when a new belt image is saved as .jpg only.)
+        const TITLE_IMAGE_JPG_ONLY = new Set(["aaa-tag-team-titles", "aew-continental-title", "aew-unified-title", "aew-womens-world-tag-titles", "iwgp-global-heavyweight-title"]);
+
         function handleTitleImageError(img) {
             const parent = img.parentElement;
             const currentSrc = img.src;

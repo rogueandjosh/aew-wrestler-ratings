@@ -1759,8 +1759,24 @@ if (!foundInCurrentRankings && !foundInDroppedOut) {
             }
         }
 
-        // Helper function to check if team JSON file exists (reuse from displayTeamAffiliations)
+        // Does a stats file exist for this slug? Checked against wrestlers/index.json
+        // (loaded once) instead of asking for each file, so pairings that never
+        // became a ranked team don't each cost a wasted request. Falls back to
+        // asking for the file if the index can't be read.
+        let wrestlerSlugSet = null;
+        function loadWrestlerSlugSet() {
+            if (!wrestlerSlugSet) {
+                wrestlerSlugSet = fetch('wrestlers/index.json')
+                    .then(r => r.ok ? r.json() : null)
+                    .then(list => Array.isArray(list) ? new Set(list.map(w => w.slug)) : null)
+                    .catch(() => null);
+            }
+            return wrestlerSlugSet;
+        }
+
         async function checkTeamFileExists(teamSlug) {
+            const slugs = await loadWrestlerSlugSet();
+            if (slugs) return slugs.has(teamSlug);
             try {
                 const response = await fetch(`wrestlers/${teamSlug}.json`, { method: 'HEAD' });
                 return response.ok;
@@ -3246,8 +3262,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 const container = document.getElementById(`${facet}FilterOptions`);
                 let text;
                 if (selected === null) {
-                    const allCount = container.querySelector(`label[data-value="${MATCH_FILTER_ALL}"] .count`);
-                    text = `All ${allCount ? allCount.textContent : ''}`.trim();
+                    text = 'All';   // plain "All", like Best Match and Compare (counts stay in the list)
                 } else if (selected.size === 0) {
                     text = 'None selected';
                 } else {
@@ -3480,7 +3495,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const toggle = document.getElementById('showFilterToggle');
             let text;
             if (!excluded) {
-                text = `All (${base.length})`;
+                text = 'All';
             } else {
                 const chosen = [...box.querySelectorAll('label[data-full]')]
                     .filter(l => !excluded.has(l.dataset.keys)).map(l => l.dataset.full);
@@ -3619,7 +3634,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             const toggle = document.getElementById('locationFilterToggle');
             let text;
             if (!excluded) {
-                text = `All (${base.length})`;
+                text = 'All';
             } else {
                 // Whole countries by name, otherwise the ticked places
                 const names = [];
