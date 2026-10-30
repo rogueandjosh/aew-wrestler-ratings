@@ -261,6 +261,65 @@
             #leaderboardTable thead th.col-name { z-index: 5; }
         }
         #lbScrollHint[hidden] { display: none !important; }
+
+        /* ===== ARCHIVE ===== */
+        .ar-phone-bar { display: none; gap: 8px; margin-bottom: 15px; }
+        #archiveFiltersToggle {
+            flex: 1;
+            background: rgba(255,215,0,0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: left;
+            font-family: inherit;
+        }
+        #archiveSortSelect {
+            flex: none;
+            width: auto;
+            background: rgba(255,215,0,0.15);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        #archiveSortSelect option { background: #1a1a2e; color: #e0e0e0; }
+        .ar-summary { color: #ccc; font-size: 0.9em; margin: 0 0 10px; }
+        .ar-summary strong { color: #ffd700; }
+        #arScrollHint[hidden], #archiveCards[hidden], #arScroll[hidden] { display: none !important; }
+        .ar-week-link { color: #e0e0e0; text-decoration: none; border-bottom: 1px dotted rgba(255,215,0,0.6); }
+        .ar-week-link:hover { color: #ffd700; }
+        .ar-none { color: #666; }
+
+        /* Laptop/tablet: the table scrolls in its own box so the headings stay visible */
+        @media (min-width: 701px) {
+            .ar-scroll { max-height: 75vh; overflow: auto; }
+            #archiveTable thead th { position: sticky; top: 0; z-index: 2; background: #50492e; }
+        }
+        @media (min-width: 701px) and (max-width: 1024px) {
+            #archiveTable th, #archiveTable td { padding: 9px 7px; }
+            #archiveTable th { white-space: normal; }
+        }
+
+        /* Phones: one card per match */
+        .bm-cards { display: flex; flex-direction: column; gap: 8px; }
+        .bm-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .bm-top { display: flex; align-items: baseline; gap: 6px; }
+        .bm-week { color: #ffd700; font-weight: bold; font-size: 0.9em; text-decoration: none; white-space: nowrap; }
+        .bm-show { color: #ccc; font-size: 0.85em; flex: 1; min-width: 0; }
+        .bm-rating { color: #6bcf7f; font-weight: bold; font-size: 1.05em; margin-left: auto; }
+        .bm-wrestlers { margin-top: 4px; font-size: 0.92em; line-height: 1.45; }
+        .bm-wrestlers a { color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700; }
+        .bm-meta { margin-top: 3px; color: #999; font-size: 0.78em; }
         /* Phone photo sizes: same breakpoint (600px), sizes, 1px team borders
            and 1px gap as the home page's "Photo sizes" block */
         @media (max-width: 600px) {
@@ -304,7 +363,6 @@
             h1 { font-size: 1.6em; }
             table { font-size: 0.85em; }
             .scroll-hint { display: block; }
-            #archiveTable { min-width: 900px; }
             #leaderboardTab .section-card { padding: 14px 10px; }
             #leaderboardTable th, #leaderboardTable td { padding: 8px 6px; }
             #leaderboardTable .col-rank { width: 30px; min-width: 30px; max-width: 30px; }
@@ -312,7 +370,9 @@
             #leaderboardTable .col-name { left: 102px; min-width: 100px; max-width: 130px; }
             #leaderboardTable td.col-photo { padding: 4px 3px !important; }
 
-            #archiveFiltersToggle { display: block !important; }
+            .ar-phone-bar { display: flex !important; }
+            .ar-columns-row, #columnSelector { display: none !important; }
+            #archiveTab .section-card:first-child { padding: 14px 10px; }
             #archiveFiltersPanel { display: none; }
             #archiveFiltersPanel.expanded { display: block; }
             #archiveTable .col-week { width: 14% !important; }
@@ -371,9 +431,18 @@
 
         <div id="archiveTab">
             <div class="section-card">
-                <button id="archiveFiltersToggle" onclick="toggleArchiveFilters()" style="display: none; width: 100%; background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; text-align: left;">
-                    🔍 Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
-                </button>
+                <!-- Phones: Filters & Search and Sort side by side -->
+                <div class="ar-phone-bar">
+                    <button id="archiveFiltersToggle" onclick="toggleArchiveFilters()">
+                        🔍 Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
+                    </button>
+                    <select id="archiveSortSelect" class="tt" aria-label="Sort matches" data-tt="Sort the matches: newest or oldest first, or by rating." onchange="onArchiveSortSelect(this.value)">
+                        <option value="date|desc">Newest</option>
+                        <option value="date|asc">Oldest</option>
+                        <option value="rating|desc">Top rated</option>
+                        <option value="rating|asc">Lowest rated</option>
+                    </select>
+                </div>
                 <div id="archiveFiltersPanel">
                 <div class="filters-row">
                     <div class="filter-item">
@@ -383,7 +452,7 @@
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label for="matchTypeFilter" class="tt" data-tt="Filter by the type of match, e.g. One on One, Tag Team, Trios.">Match Type</label>
+                        <label for="matchTypeFilter" class="tt" data-tt="Filter by the type of match, e.g. Singles, Tag Team, Trios.">Match Type</label>
                         <select id="matchTypeFilter" onchange="renderArchiveTable()">
                             <option value="">All</option>
                         </select>
@@ -408,7 +477,7 @@
                 </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                <div class="ar-columns-row" style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
                     <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Wrestlers, and Rating are always visible.">
                         ⚙️ Customize Columns
                     </button>
@@ -442,8 +511,10 @@
                     </div>
                 </div>
 
-                <p class="scroll-hint">↔️ Swipe to see more columns</p>
-                <div class="table-scroll">
+                <p class="ar-summary" id="archiveSummary"></p>
+                <p class="scroll-hint" id="arScrollHint" hidden>↔️ Swipe to see more columns</p>
+                <div class="bm-cards" id="archiveCards" hidden></div>
+                <div class="table-scroll ar-scroll" id="arScroll">
                     <table id="archiveTable">
                         <thead>
                             <tr id="archiveTableHeaderRow">
@@ -933,6 +1004,7 @@
                 const fetchPromises = indexData.map(entry =>
                     fetch(`best-match-archive/${entry.file}`)
                         .then(r => r.ok ? r.json() : null)
+                        .then(d => { if (d) d.__file = entry.file; return d; })   // same name as the weekly archive file
                         .catch(() => null)
                 );
                 const results = await Promise.all(fetchPromises);
@@ -1059,10 +1131,12 @@
             });
 
             const matchTypeSelect = document.getElementById('matchTypeFilter');
-            [...matchTypes].sort().forEach(m => {
+            const typeCounts = {};
+            allEntries.forEach(e => { if (e.matchType) typeCounts[e.matchType] = (typeCounts[e.matchType] || 0) + 1; });
+            [...matchTypes].sort((a, b) => typeCounts[b] - typeCounts[a] || displayMatchType(a).localeCompare(displayMatchType(b))).forEach(m => {   // most common first
                 const opt = document.createElement('option');
                 opt.value = m;
-                opt.textContent = m;
+                opt.textContent = displayMatchType(m);
                 matchTypeSelect.appendChild(opt);
             });
 
@@ -1168,8 +1242,79 @@
             renderArchiveTable();
         }
 
+        // Display wording only (data keeps "One on One")
+        const displayMatchType = t => t === 'One on One' ? 'Singles' : t;
+
+        // Rankings for that week on the home page, opened on the match's division
+        const BM_DIVISION_SLUGS = { "Men's": 'mens', "Women's": 'womens', 'Tag': 'menstag', "Women's Tag": 'womenstag', 'Trios': 'trios' };
+        function weekRankingsLink(e) {
+            if (!e.__file) return null;
+            return `index.html#week=${encodeURIComponent('archive/' + e.__file)}&division=${BM_DIVISION_SLUGS[e.division] || 'mens'}`;
+        }
+
+        function onArchiveSortSelect(value) {
+            const [col, dir] = value.split('|');
+            currentSortColumn = col;
+            currentSortDirection = dir;
+            archiveDisplayCount = 30;
+            renderArchiveTable();
+        }
+
+        // "42 of 371 matches · average 8.61"
+        function updateArchiveSummary(filtered) {
+            const el = document.getElementById('archiveSummary');
+            if (!el) return;
+            if (!filtered.length) { el.textContent = ''; return; }
+            const avg = filtered.reduce((sum, e) => sum + (e.rating || 0), 0) / filtered.length;
+            const count = filtered.length === allEntries.length
+                ? `<strong>${filtered.length}</strong> matches`
+                : `<strong>${filtered.length}</strong> of ${allEntries.length} matches`;
+            el.innerHTML = `${count} · average <strong>${avg.toFixed(2)}</strong>`;
+        }
+
+        // Swipe hint only when the table is wider than its box
+        function updateArchiveScrollHint() {
+            const box = document.getElementById('arScroll');
+            const hint = document.getElementById('arScrollHint');
+            if (!box || !hint) return;
+            hint.hidden = box.hidden || box.scrollWidth <= box.clientWidth + 4;   // ignore a pixel or two of rounding
+        }
+        window.addEventListener('resize', updateArchiveScrollHint);
+        // Crossing the phone width switches between cards and the table
+        window.matchMedia('(max-width: 700px)').addEventListener('change', () => {
+            if (allEntries.length) renderArchiveTable();
+        });
+
+        function renderArchiveCards(toDisplay) {
+            return toDisplay.map(e => {
+                const link = weekRankingsLink(e);
+                const week = e.week || e.date || '';
+                const weekHtml = link ? `<a class="bm-week" href="${link}">${week}</a>` : `<span class="bm-week">${week}</span>`;
+                const wrestlers = (e.wrestlers || []).map(name =>
+                    `<a href="wrestler-stats.html?wrestler=${createSlug(name)}">${name}</a>`).join(', ');
+                const stip = normalizeStipulation(e.stipulation);
+                const division = e.division && e.division !== 'None' ? getDivisionDisplayLabel(e.division) : '';
+                const meta = [
+                    displayMatchType(e.matchType),
+                    division !== displayMatchType(e.matchType) ? division : '',   // no "Trios · Trios"
+                    stip && stip.toLowerCase() !== 'none' ? stip : '',
+                    e.stakes && e.stakes !== 'None' ? e.stakes : ''
+                ].filter(Boolean).join(' · ');
+                return `<div class="bm-card">
+                    <div class="bm-top">${weekHtml}<span class="bm-show">${formatBestMatchShow(e.show) || ''}</span><span class="bm-rating">${(e.rating || 0).toFixed(2)}</span></div>
+                    <div class="bm-wrestlers">${wrestlers}</div>
+                    ${meta ? `<div class="bm-meta">${meta}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
         function renderArchiveTable() {
             renderArchiveTableHeader();
+            const sortSelect = document.getElementById('archiveSortSelect');
+            if (sortSelect) {
+                const v = `${currentSortColumn}|${currentSortDirection}`;
+                if ([...sortSelect.options].some(o => o.value === v)) sortSelect.value = v;
+            }
             const visibleCount = 3 + Object.values(visibleColumns).filter(Boolean).length;
             const filtered = getFilteredEntries();
 
@@ -1200,13 +1345,30 @@
             const tbody = document.getElementById('archiveTableBody');
             const showMoreBtn = document.getElementById('showMoreBtn');
 
+            const cardsBox = document.getElementById('archiveCards');
+            const tableBox = document.getElementById('arScroll');
+            const useCards = isMobileView();
+            cardsBox.hidden = !useCards;
+            tableBox.hidden = useCards;
+            updateArchiveSummary(filtered);
+
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="${visibleCount}" class="empty-state">No matches found for this filter.</td></tr>`;
+                cardsBox.innerHTML = `<div class="empty-state">No matches found for this filter.</div>`;
                 showMoreBtn.style.display = 'none';
+                updateArchiveScrollHint();
                 return;
             }
 
             const toDisplay = filtered.slice(0, archiveDisplayCount);
+            if (useCards) {
+                cardsBox.innerHTML = renderArchiveCards(toDisplay);
+                tbody.innerHTML = '';
+                showMoreBtn.style.display = filtered.length > archiveDisplayCount ? 'block' : 'none';
+                updateArchiveScrollHint();
+                return;
+            }
+            cardsBox.innerHTML = '';
 
             tbody.innerHTML = toDisplay.map(e => {
                 const wrestlersHtml = (e.wrestlers || []).map(name =>
@@ -1218,13 +1380,13 @@
                     : 'N/A';
 
                 const cells = {
-                    week: visibleColumns.week ? `<td class="col-week">${e.week || dateStr}</td>` : '',
+                    week: visibleColumns.week ? `<td class="col-week">${weekRankingsLink(e) ? `<a class="ar-week-link" href="${weekRankingsLink(e)}" title="Open the rankings for this week">${e.week || dateStr}</a>` : (e.week || dateStr)}</td>` : '',
                     show: `<td class="col-show">${formatBestMatchShow(e.show) || 'N/A'}</td>`,
                     rating: `<td class="rating-cell col-rating">${(e.rating || 0).toFixed(2)}</td>`,
                     wrestlers: `<td class="col-wrestlers">${wrestlersHtml}</td>`,
                     division: visibleColumns.division ? `<td>${getDivisionDisplayLabel(e.division) || 'N/A'}</td>` : '',
-                    matchType: visibleColumns.matchType ? `<td>${e.matchType || 'N/A'}</td>` : '',
-                    stipulation: visibleColumns.stipulation ? `<td>${normalizeStipulation(e.stipulation) || 'N/A'}</td>` : '',
+                    matchType: visibleColumns.matchType ? `<td>${displayMatchType(e.matchType) || 'N/A'}</td>` : '',
+                    stipulation: visibleColumns.stipulation ? `<td>${(() => { const st = normalizeStipulation(e.stipulation); return !st || st.toLowerCase() === 'none' ? '<span class="ar-none">–</span>' : st; })()}</td>` : '',
                     stakes: visibleColumns.stakes ? `<td>${e.stakes || 'N/A'}</td>` : ''
                 };
 
@@ -1234,6 +1396,7 @@
             }).join('');
 
             showMoreBtn.style.display = filtered.length > archiveDisplayCount ? 'block' : 'none';
+            updateArchiveScrollHint();
         }
 
         function renderLeaderboard() {
