@@ -261,6 +261,9 @@
             #leaderboardTable thead th.col-name { z-index: 5; }
         }
         #lbScrollHint[hidden] { display: none !important; }
+        @media (max-width: 375px) {
+            .ar-ft-icon { display: none; }   /* very narrow phones: the label fits without the icon */
+        }
 
         /* ===== ARCHIVE ===== */
         /* Filters: years (shared picker), then the tick-list boxes, then search */
@@ -278,9 +281,11 @@
         }
         .bm-reset-row { text-align: center; margin-bottom: 12px; }
         .bm-reset-row:has(> button[style*="none"]) { display: none; }
-        .ar-phone-bar { display: none; gap: 8px; margin-bottom: 15px; }
+        /* Phones: two equal boxes, lined up with the 2-column filter grid below */
+        .ar-phone-bar { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 15px; }
         #archiveFiltersToggle {
-            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
             background: rgba(255,215,0,0.15);
             border: 2px solid #ffd700;
             color: #ffd700;
@@ -292,8 +297,7 @@
             font-family: inherit;
         }
         #archiveSortSelect {
-            flex: none;
-            width: auto;
+            width: 100%;
             background: rgba(255,215,0,0.15);
             border: 2px solid #ffd700;
             color: #ffd700;
@@ -385,7 +389,9 @@
             #leaderboardTable .col-name { left: 102px; min-width: 100px; max-width: 130px; }
             #leaderboardTable td.col-photo { padding: 4px 3px !important; }
 
-            .ar-phone-bar { display: flex !important; }
+            .ar-phone-bar { display: grid !important; }
+            #archiveFiltersToggle, #archiveSortSelect { font-size: 0.85em; }
+            #archiveFiltersToggle { padding: 10px 9px; text-align: center; }
             .ar-columns-row, #columnSelector { display: none !important; }
             #archiveTab .section-card:first-child { padding: 14px 10px; }
             #archiveFiltersPanel { display: none; }
@@ -450,7 +456,7 @@
                 <!-- Phones: Filters & Search and Sort side by side -->
                 <div class="ar-phone-bar">
                     <button id="archiveFiltersToggle" onclick="toggleArchiveFilters()">
-                        🔍 Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
+                        <span class="ar-ft-icon">🔍 </span>Filters &amp; Search <span id="archiveFiltersToggleArrow">▼</span>
                     </button>
                     <select id="archiveSortSelect" class="tt" aria-label="Sort matches" data-tt="Sort the matches: newest or oldest first, or by rating." onchange="onArchiveSortSelect(this.value)">
                         <option value="date|desc">Newest</option>
@@ -599,7 +605,7 @@
 
     <script src="best-match-shared.js?v=2"></script>
     <script src="match-filters.js?v=7"></script>
-    <script src="filter-ui.js?v=1"></script>
+    <script src="filter-ui.js?v=2"></script>
     <script>
         let allEntries = [];
         let nameChangesData = null;
@@ -1107,6 +1113,7 @@
                 archiveFacets[facet] = FilterUI.checkboxFacet(document.getElementById(ARCHIVE_FACET_GROUPS[facet]), {
                     options: options[facet],
                     initial,
+                    showTotal: false,
                     onChange: onArchiveFiltersChanged
                 });
             });
@@ -1116,6 +1123,7 @@
             // Leaderboard: Division box (several can be ticked)
             lbDivisionFacet = FilterUI.checkboxFacet(document.getElementById('lbDivisionGroup'), {
                 options: ALL_DIVISIONS.map(d => ({ value: d, label: getDivisionDisplayLabel(d) })),
+                showTotal: false,
                 onChange: () => renderLeaderboard()
             });
             FilterUI.setupDropdowns([document.getElementById('lbDivisionGroup')]);
