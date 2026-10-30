@@ -264,15 +264,18 @@
 
         /* ===== ARCHIVE ===== */
         /* Filters: years (shared picker), then the tick-list boxes, then search */
-        .bm-years { margin-bottom: 14px; }
-        .bm-years-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-        .bm-years-head .match-filter-group-title { margin: 0; }
-        .bm-years .year-mode.year-mode { margin: 0; }
-        .bm-years .year-buttons { justify-content: flex-start; }
         .bm-filter-grid { margin-bottom: 14px; }
         .lb-filter-grid { max-width: 320px; margin-bottom: 18px; }
-        .bm-search { margin-bottom: 10px; }
+        /* Search sits in the grid as the last box, same height as the others */
+        .bm-search { gap: 0; }
         .bm-search .wrestler-search-wrap { width: 100%; }
+        .bm-search > label.match-filter-group-title { font-size: 0.85em; margin-bottom: 5px; }
+        .bm-filter-grid { align-items: end; }
+        .bm-search input { width: 100%; box-sizing: border-box; height: 36px; padding: 0 30px 0 12px; font-size: 0.9em; }
+        @media (max-width: 768px) {
+            .bm-search > label.match-filter-group-title { font-size: 0.8em; margin-bottom: 4px; }
+            .bm-search input { height: 33px; padding: 0 28px 0 9px; font-size: 0.85em; }
+        }
         .bm-reset-row { text-align: center; margin-bottom: 12px; }
         .bm-reset-row:has(> button[style*="none"]) { display: none; }
         .ar-phone-bar { display: none; gap: 8px; margin-bottom: 15px; }
@@ -457,19 +460,17 @@
                     </select>
                 </div>
                 <div id="archiveFiltersPanel">
-                    <!-- Years: same ALL | Single | Multiple picker as Wrestler Stats (filter-ui.js) -->
-                    <div class="bm-years" id="archiveYears">
-                        <div class="bm-years-head">
-                            <span class="match-filter-group-title tt" data-tt="ALL shows every year. Single: tap a year to see just that year. Multiple: tap several years to combine them; tap a picked year again to remove it.">Year</span>
-                            <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="ALL: every year. Single: one year at a time. Multiple: tap several years to combine them.">
-                                <button type="button" class="year-mode-btn active" data-mode="all" aria-pressed="true">ALL</button>
-                                <button type="button" class="year-mode-btn" data-mode="single" aria-pressed="false">Single</button>
-                                <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
-                            </div>
-                        </div>
-                        <div class="year-buttons" id="archiveYearButtons"></div>
-                    </div>
                     <div class="match-filters-grid bm-filter-grid" id="archiveFilterGrid">
+                        <div class="match-filter-group" id="arYearGroup">
+                            <div class="match-filter-group-title tt" data-tt="All years by default. Untick All, then tick one year — or several to combine them.">Year</div>
+                            <button type="button" class="match-filter-toggle" id="arYearToggle" aria-expanded="false" aria-controls="arYearOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="arYearOptions"></div>
+                        </div>
+                        <div class="match-filter-group" id="arDivisionGroup">
+                            <div class="match-filter-group-title tt" data-tt="Tick one or more divisions. None is for matches with no division (e.g. mixed or non-ranked matches).">Division</div>
+                            <button type="button" class="match-filter-toggle" id="arDivisionToggle" aria-expanded="false" aria-controls="arDivisionOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="arDivisionOptions"></div>
+                        </div>
                         <div class="match-filter-group" id="arFormatGroup">
                             <div class="match-filter-group-title tt" data-tt="Singles, tag, trios, bigger tag matches, multi-way matches, or battle royals and gauntlets. Tick as many as you like.">Format</div>
                             <button type="button" class="match-filter-toggle" id="arFormatToggle" aria-expanded="false" aria-controls="arFormatOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
@@ -485,17 +486,13 @@
                             <button type="button" class="match-filter-toggle" id="arStakesToggle" aria-expanded="false" aria-controls="arStakesOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="arStakesOptions"></div>
                         </div>
-                        <div class="match-filter-group" id="arDivisionGroup">
-                            <div class="match-filter-group-title tt" data-tt="Tick one or more divisions. None is for matches with no division (e.g. mixed or non-ranked matches).">Division</div>
-                            <button type="button" class="match-filter-toggle" id="arDivisionToggle" aria-expanded="false" aria-controls="arDivisionOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
-                            <div class="match-filter-options" id="arDivisionOptions"></div>
-                        </div>
-                    </div>
-                    <div class="filter-item bm-search">
-                        <label for="archiveWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
-                        <div class="wrestler-search-wrap">
-                            <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onArchiveSearchInput()" autocomplete="off">
-                            <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
+
+                        <div class="filter-item bm-search match-filter-group">
+                            <label for="archiveWrestlerSearch" class="match-filter-group-title tt" data-tt="Type a wrestler or team name to filter the archive to matches they were involved in.">Search Wrestler</label>
+                            <div class="wrestler-search-wrap">
+                                <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Omega" oninput="onArchiveSearchInput()" autocomplete="off">
+                                <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
+                            </div>
                         </div>
                     </div>
                     <div class="bm-reset-row"><button type="button" class="match-filters-reset" id="archiveReset" onclick="resetArchiveFilters()" style="display: none;">Clear filters</button></div>
@@ -1066,43 +1063,34 @@
 
         // ---------------------------------------------------------------
         // ARCHIVE FILTERS — the same controls as Wrestler Stats (filter-ui.js):
-        // ALL | Single | Multiple years, and tick-list boxes for Format,
-        // Stipulation, Stakes and Division (several can be ticked in each).
+        // tick-list boxes for Year, Division, Format, Stipulation and Stakes
+        // (several can be ticked in each).
         // Counts in each box reflect the other boxes' choices. Kept in the
         // address, e.g. ?year=2024,2025&format=Singles&division=Men's|Tag
         // ---------------------------------------------------------------
-        let archiveYears = null;          // null = all years, else Set of years
         const archiveFacets = {};          // format / stip / stakes / division → FilterUI box
         let lbDivisionFacet = null;
 
         const ARCHIVE_FACET_FNS = {
+            year: e => (e.date || '').slice(0, 4),
             format: e => getFormatGroup(e.matchType),
             stip: e => normalizeMatchStipulation(e.stipulation),
             stakes: e => getStakesGroup(e.stakes),
             division: e => e.division || 'None'
         };
-        const ARCHIVE_FACET_GROUPS = { format: 'arFormatGroup', stip: 'arStipGroup', stakes: 'arStakesGroup', division: 'arDivisionGroup' };
+        const ARCHIVE_FACET_GROUPS = { year: 'arYearGroup', format: 'arFormatGroup', stip: 'arStipGroup', stakes: 'arStakesGroup', division: 'arDivisionGroup' };
 
         function setupArchiveFilters() {
             const params = new URLSearchParams(window.location.search);
-            const fromUrl = key => params.has(key) ? new Set(params.get(key) === '' ? [] : params.get(key).split('|')) : null;
+            // (years are joined with commas in the address, everything else with |)
+            const fromUrl = key => params.has(key) ? new Set(params.get(key) === '' ? [] : params.get(key).split(key === 'year' ? ',' : '|')) : null;
 
-            // Years (newest first)
-            const years = [...new Set(allEntries.map(e => Number((e.date || '').slice(0, 4))).filter(Boolean))].sort((a, b) => b - a);
-            document.getElementById('archiveYearButtons').innerHTML =
-                years.map(y => `<button type="button" class="year-btn" data-year="${y}" aria-pressed="false">${y}</button>`).join('');
-            const picker = FilterUI.yearPicker(document.getElementById('archiveYears'), {
-                available: years,
-                initial: (params.get('year') || '').split(',').map(Number),
-                onChange: sel => { archiveYears = sel; onArchiveFiltersChanged(); }
-            });
-            archiveYears = picker.selected;
-            window.__archiveYearPicker = picker;
 
             // Options each box lists: only groups that appear in the archive, in a fixed order
             const counts = facet => countBy(allEntries, ARCHIVE_FACET_FNS[facet]);
-            const fc = counts('format'), sc = counts('stip'), kc = counts('stakes'), dc = counts('division');
+            const fc = counts('format'), sc = counts('stip'), kc = counts('stakes'), dc = counts('division'), yc = counts('year');
             const options = {
+                year: Object.keys(yc).sort((a, b) => b - a).map(y => ({ value: y, label: y })),   // newest first
                 format: FORMAT_GROUPS.filter(g => fc[g]).map(g => ({ value: g, label: g })),
                 stip: (sc['None'] ? [{ value: 'None', label: 'No stipulation' }] : []).concat(
                     Object.keys(sc).filter(k => k !== 'None').sort((a, b) => sc[b] - sc[a] || a.localeCompare(b)).map(k => ({ value: k, label: k }))),
@@ -1139,8 +1127,6 @@
         }
 
         function resetArchiveFilters() {
-            if (window.__archiveYearPicker) window.__archiveYearPicker.reset();
-            archiveYears = null;
             Object.values(archiveFacets).forEach(f => f.set(null));
             const input = document.getElementById('archiveWrestlerSearch');
             input.value = '';
@@ -1151,7 +1137,6 @@
 
         // except: skip one box's own choice, for that box's counts
         function archivePasses(e, except = null) {
-            if (archiveYears && !archiveYears.has(Number((e.date || '').slice(0, 4)))) return false;
             for (const facet in archiveFacets) {
                 if (facet === except) continue;
                 const sel = archiveFacets[facet].selected;
@@ -1174,17 +1159,15 @@
                 const base = allEntries.filter(e => archivePasses(e, facet));
                 archiveFacets[facet].setCounts(countBy(base, ARCHIVE_FACET_FNS[facet]), base.length);
             }
-            const anySet = !!archiveYears || !!archiveSearchTerm || Object.values(archiveFacets).some(f => f.selected !== null);
+            const anySet = !!archiveSearchTerm || Object.values(archiveFacets).some(f => f.selected !== null);
             const reset = document.getElementById('archiveReset');
             if (reset) reset.style.display = anySet ? '' : 'none';
 
             const params = new URLSearchParams(window.location.search);
-            if (archiveYears) params.set('year', [...archiveYears].sort((a, b) => a - b).join(','));
-            else params.delete('year');
             for (const facet in archiveFacets) {
                 const sel = archiveFacets[facet].selected;
                 if (sel === null) params.delete(facet);
-                else params.set(facet, [...sel].join('|'));
+                else params.set(facet, facet === 'year' ? [...sel].sort().join(',') : [...sel].join('|'));
             }
             const q = params.toString().replace(/%2C/g, ',').replace(/%7C/g, '|').replace(/%27/g, "'");
             history.replaceState(null, '', `${window.location.pathname}${q ? '?' + q : ''}${window.location.hash}`);
