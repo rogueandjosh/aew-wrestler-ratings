@@ -42,5 +42,12 @@ jobs:
           git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
           git add show-details.json
           git commit -m "Show details: rebuild for the Show Statistics page"
-          git pull --rebase
-          git push
+          # Uploads can push many commits in a row (e.g. one per On This Day
+          # file), so a push can be beaten by a newer commit. Retry a few times.
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase && git push && exit 0
+            echo "Push beaten by a newer commit, retrying ($i)..."
+            sleep $((i * 5))
+          done
+          echo "Could not push after 6 tries"
+          exit 1
