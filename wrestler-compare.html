@@ -799,8 +799,9 @@
         .cmp-div-btn:hover { background: rgba(255, 215, 0, 0.2); }
         .cmp-div-btn.active { background: #ffd700; color: #1a1a2e; }
         .cmp-div-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-        #cmpYears .year-mode.year-mode { margin: 0 0 8px; }
-        #cmpYears .year-buttons { justify-content: flex-start; }
+        .cmp-year-grid { max-width: 260px; grid-template-columns: 1fr !important; }
+        .cmp-year-grid .match-filter-group-title.cmp-h { font-size: 1.05em; margin-bottom: 8px; }
+        .cmp-year-grid .match-filter-options { width: auto !important; left: 0 !important; right: 0 !important; }
 
         .cmp-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
         .cmp-pick-label { display: block; color: #ffd700; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; }
@@ -928,14 +929,15 @@
                     </div>
                 </div>
 
-                <div class="cmp-block year-filter-lite" id="cmpYears">
-                    <h2 class="cmp-h tt" data-tt="ALL compares whole careers and current ratings. Single: tap a year to compare just that year. Multiple: tap several years to combine them (e.g. 2024 and 2025).">Year</h2>
-                    <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="ALL: whole careers. Single: one year at a time. Multiple: tap several years to combine them.">
-                        <button type="button" class="year-mode-btn active" data-mode="all" aria-pressed="true">ALL</button>
-                        <button type="button" class="year-mode-btn" data-mode="single" aria-pressed="false">Single</button>
-                        <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
+                <!-- Year: the same tick-list box as Best Match of the Week (filter-ui.js) -->
+                <div class="cmp-block">
+                    <div class="match-filters-grid cmp-year-grid">
+                        <div class="match-filter-group" id="cmpYearGroup">
+                            <div class="match-filter-group-title cmp-h tt" data-tt="All years by default, comparing whole careers and current ratings. Untick All, then tick one year — or several to combine them.">Year</div>
+                            <button type="button" class="match-filter-toggle" id="cmpYearToggle" aria-expanded="false" aria-controls="cmpYearOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                            <div class="match-filter-options" id="cmpYearOptions"></div>
+                        </div>
                     </div>
-                    <div class="year-buttons" id="cmpYearButtons"></div>
                 </div>
 
                 <div class="cmp-block">
@@ -1152,22 +1154,24 @@
             pickOptions.sort((a, b) => a.name.localeCompare(b.name));
         }
 
+        // Year box: All by default; untick All and tick one or more years
         function setupYears() {
             const latest = Math.max(new Date().getFullYear(), 2019);
             const years = [];
-            for (let y = latest; y >= 2019; y--) years.push(y);
-            document.getElementById('cmpYearButtons').innerHTML =
-                years.map(y => `<button type="button" class="year-btn" data-year="${y}" aria-pressed="false">${y}</button>`).join('');
-            const urlYears = (new URLSearchParams(window.location.search).get('year') || '').split(',').map(Number);
-            const picker = FilterUI.yearPicker(document.getElementById('cmpYears'), {
-                available: years,
-                initial: urlYears,
+            for (let y = latest; y >= 2019; y--) years.push(String(y));
+            const fromUrl = (new URLSearchParams(window.location.search).get('year') || '').split(',').filter(y => years.includes(y));
+            const facet = FilterUI.checkboxFacet(document.getElementById('cmpYearGroup'), {
+                options: years.map(y => ({ value: y, label: y })),
+                initial: fromUrl.length && fromUrl.length < years.length ? new Set(fromUrl) : null,
+                showTotal: false,
+                showCounts: false,
                 onChange: sel => {
-                    selectedYears = sel;
+                    selectedYears = sel ? new Set([...sel].map(Number)) : null;
                     if (document.getElementById('resultsSection').classList.contains('active')) compareWrestlers();
                 }
             });
-            selectedYears = picker.selected;
+            selectedYears = facet.selected ? new Set([...facet.selected].map(Number)) : null;
+            FilterUI.setupDropdowns([document.getElementById('cmpYearGroup')]);
         }
 
         function setupEventListeners() {
