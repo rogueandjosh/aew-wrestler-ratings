@@ -839,7 +839,21 @@
         .cmp-n3 th.cmp-corner { width: 28%; }
         .cmp-table th, .cmp-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .cmp-who { text-align: center; vertical-align: top; padding-bottom: 12px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; }
-        .cmp-corner { border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; }
+        .cmp-corner { border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important; text-align: left; vertical-align: top; }
+        .cmp-corner-title { color: #ffd700; font-size: 1.15em; font-weight: bold; line-height: 1.25; }
+        .cmp-perf { padding-top: 14px; }
+        .cmp-custom-row { text-align: center; margin-top: 14px; }
+        .cmp-custom-btn {
+            background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; border-radius: 5px;
+            padding: 7px 16px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 0.9em;
+        }
+        .cmp-custom-btn:hover { background: rgba(255, 215, 0, 0.25); }
+        .cmp-custom-panel { margin-top: 12px; padding: 12px 14px; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 8px; background: rgba(255, 255, 255, 0.03); }
+        .cmp-custom-panel[hidden] { display: none; }
+        .cmp-custom-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 14px; }
+        .cmp-custom-grid label { display: flex; align-items: center; gap: 7px; color: #e0e0e0; font-size: 0.9em; cursor: pointer; }
+        .cmp-custom-grid input { accent-color: #ffd700; }
+        .cmp-custom-reset { display: block; margin: 12px auto 0; background: none; border: 1px solid #ffd700; color: #ffd700; border-radius: 5px; padding: 5px 14px; cursor: pointer; font-family: inherit; font-size: 0.85em; }
         .cmp-who > * { display: block; margin: 0 auto; }
         .cmp-who-photo { display: flex !important; justify-content: center; text-decoration: none; margin-bottom: 6px !important; }
         .cmp-who .wrestler-photo { width: 56px; height: 56px; }
@@ -869,12 +883,13 @@
         .h2h-more { display: block; margin: 8px auto 0; background: none; border: 1px solid #ffd700; color: #ffd700; border-radius: 5px; padding: 5px 14px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 0.85em; }
         .h2h-match { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 7px 10px; }
         .h2h-side { flex: none; width: 40px; text-align: center; font-size: 0.75em; font-weight: bold; border-radius: 4px; padding: 2px 0; }
-        .h2h-side.vs { background: rgba(255, 107, 107, 0.18); color: #ff8a8a; }
-        .h2h-side.with { background: rgba(107, 207, 127, 0.18); color: #6bcf7f; }
+        /* Neutral colours (not red/green, which read as ratings or active/inactive) */
+        .h2h-side.vs { background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.5); }
+        .h2h-side.with { background: rgba(140, 170, 255, 0.14); color: #a9bcff; border: 1px solid rgba(140, 170, 255, 0.45); }
         .h2h-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .h2h-event { color: #e0e0e0; font-size: 0.92em; }
         .h2h-meta { color: #999; font-size: 0.78em; }
-        .h2h-rating { flex: none; color: #6bcf7f; font-weight: bold; }
+        .h2h-rating { flex: none; color: #e0e0e0; font-weight: bold; }
 
         @media (max-width: 768px) {
             .cmp-choose { padding: 14px 12px; }
@@ -889,6 +904,8 @@
             .cmp-table th.cmp-corner { width: 30%; }
             .cmp-n3 th.cmp-corner { width: 25%; }
             .cmp-label { font-size: 0.78em; line-height: 1.25; }
+            .cmp-corner-title { font-size: 0.95em; }
+            .cmp-custom-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .cmp-val { font-size: 0.85em; }
             .cmp-who .wrestler-photo { width: 44px; height: 44px; }
             .cmp-who .team-photos.tag-photos .wrestler-photo { width: 28px; height: 28px; }
@@ -991,9 +1008,12 @@
 
             <!-- Results -->
             <section id="resultsSection" class="results-section">
-                <div class="stats-table-container">
-                    <h2 class="tt" data-tt="Every stat side by side. The best value in each row is shown in bold gold. Tap a name to open their wrestler stats.">📊 Performance Comparison</h2>
+                <div class="stats-table-container cmp-perf">
                     <div id="statsTable"></div>
+                    <div class="cmp-custom-row">
+                        <button type="button" class="cmp-custom-btn tt" id="cmpCustomBtn" aria-expanded="false" aria-controls="cmpCustomPanel" data-tt="Choose which stats the table shows. Your choice is remembered on this device.">⚙️ Customize Stats</button>
+                    </div>
+                    <div class="cmp-custom-panel" id="cmpCustomPanel" hidden></div>
                 </div>
 
                 <div class="stats-table-container" id="h2hContainer">
@@ -1182,6 +1202,7 @@
             document.getElementById('compareBtn').addEventListener('click', compareWrestlers);
             document.getElementById('clearBtn').addEventListener('click', clearSelection);
             document.getElementById('copyLinkBtn').addEventListener('click', copyShareLink);
+            setupCustomStats();
         }
 
         function setDivision(div) {
@@ -1366,6 +1387,7 @@
                 const [data] = await Promise.all([Promise.all(slugs.map(loadWrestlerData)), loadCurrentRankings(), loadBestMatches()]);
                 lastCompared = data;
                 const stats = data.map(computeStats);
+                lastStats = stats;
                 statsDiv.innerHTML = buildStatsTable(data, stats);
                 document.getElementById('h2h').innerHTML = buildHeadToHead(data);
                 createComparisonChart(data);
@@ -1448,6 +1470,58 @@
             ];
         }
 
+        // ---------- Customize Stats ----------
+        // Fewer rows to start; tick more in Customize Stats. Remembered on this device.
+        const DEFAULT_STATS = ['rating', 'rank', 'peak', 'average', 'bestRank', 'weeksAt1', 'matches', 'avgMatch', 'bestMatches'];
+        const STATS_KEY = 'ewrCompareStats';
+        let visibleStats = new Set(DEFAULT_STATS);
+        try {
+            const saved = JSON.parse(localStorage.getItem(STATS_KEY) || 'null');
+            if (Array.isArray(saved) && saved.length) visibleStats = new Set(saved);
+        } catch (e) {}
+        let lastStats = null;
+
+        function saveVisibleStats() {
+            try { localStorage.setItem(STATS_KEY, JSON.stringify([...visibleStats])); } catch (e) {}
+        }
+
+        function renderCustomPanel() {
+            const panel = document.getElementById('cmpCustomPanel');
+            panel.innerHTML = `<div class="cmp-custom-grid">${statRows().map(r => `
+                <label><input type="checkbox" value="${r.key}"${visibleStats.has(r.key) ? ' checked' : ''}> ${r.label}</label>`).join('')}</div>
+                <button type="button" class="cmp-custom-reset">Reset to default</button>`;
+        }
+
+        function setupCustomStats() {
+            const btn = document.getElementById('cmpCustomBtn');
+            const panel = document.getElementById('cmpCustomPanel');
+            btn.addEventListener('click', () => {
+                const opening = panel.hidden;
+                if (opening) renderCustomPanel();
+                panel.hidden = !opening;
+                btn.setAttribute('aria-expanded', opening);
+            });
+            panel.addEventListener('change', e => {
+                if (!e.target.matches('input[type="checkbox"]')) return;
+                if (e.target.checked) visibleStats.add(e.target.value);
+                else if (visibleStats.size > 1) visibleStats.delete(e.target.value);
+                else e.target.checked = true;            // keep at least one row
+                saveVisibleStats();
+                redrawTable();
+            });
+            panel.addEventListener('click', e => {
+                if (!e.target.closest('.cmp-custom-reset')) return;
+                visibleStats = new Set(DEFAULT_STATS);
+                saveVisibleStats();
+                renderCustomPanel();
+                redrawTable();
+            });
+        }
+
+        function redrawTable() {
+            if (lastCompared && lastStats) document.getElementById('statsTable').innerHTML = buildStatsTable(lastCompared, lastStats);
+        }
+
         function formatStat(v, fmt) {
             if (v === null || v === undefined || v === '') return '–';
             if (fmt === 'rating' || fmt === 'match') return Number(v).toFixed(2);
@@ -1467,7 +1541,7 @@
                     <span class="status-badge ${st.active ? 'active' : 'inactive'}">${st.active ? 'Active' : 'Inactive'}</span>
                 </th>`;
             }).join('');
-            const rows = statRows().map(row => {
+            const rows = statRows().filter(row => visibleStats.has(row.key)).map(row => {
                 const vals = stats.map(s => s[row.key]);
                 let best = null;
                 const nums = vals.filter(v => typeof v === 'number');
@@ -1478,7 +1552,7 @@
                 return `<tr><th scope="row" class="cmp-label"><span class="tt" data-tt="${escapeHtml(row.tip)}">${row.label}</span></th>${cells}</tr>`;
             }).join('');
             return `<div class="cmp-table-wrap"><table class="cmp-table cmp-n${data.length}">
-                <thead><tr><th class="cmp-corner"></th>${head}</tr></thead>
+                <thead><tr><th class="cmp-corner"><span class="cmp-corner-title tt" data-tt="Every stat side by side. The best value in each row is shown in bold gold. Tap a name to open their wrestler stats. Use Customize Stats below to choose the rows.">📊 Performance Comparison</span></th>${head}</tr></thead>
                 <tbody>${rows}</tbody></table></div>`;
         }
 
@@ -1523,7 +1597,10 @@
                     <li class="h2h-match${k >= 5 ? ' h2h-extra' : ''}">
                         <span class="h2h-side ${m.side}">${m.side === 'vs' ? 'vs' : 'with'}</span>
                         <span class="h2h-info"><span class="h2h-event">${escapeHtml(m.event || m.show || '')}${bmIds.has(m.id) ? ' <span title="Best Match of the Week">⭐</span>' : ''}</span>
-                            <span class="h2h-meta">${fmtDate(m.date)} · ${escapeHtml(m.matchType === 'One on One' ? 'Singles' : (m.matchType || ''))}</span></span>
+                            <span class="h2h-meta">${[fmtDate(m.date),
+                                m.matchType === 'One on One' ? 'Singles' : (m.matchType || ''),
+                                m.matchStipulation && m.matchStipulation !== 'None' ? m.matchStipulation : '',
+                                m.stakes && m.stakes !== 'None' ? m.stakes : ''].filter(Boolean).map(escapeHtml).join(' · ')}</span></span>
                         <span class="h2h-rating">${typeof m.rating === 'number' ? m.rating.toFixed(2) : '–'}</span>
                     </li>`).join('');
                 const more = shared.length > 5
