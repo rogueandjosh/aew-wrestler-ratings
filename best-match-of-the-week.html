@@ -261,6 +261,14 @@
             #leaderboardTable thead th.col-name { z-index: 5; }
         }
         #lbScrollHint[hidden] { display: none !important; }
+        /* Phone photo sizes: same breakpoint (600px), sizes, 1px team borders
+           and 1px gap as the home page's "Photo sizes" block */
+        @media (max-width: 600px) {
+            .lb-photos { height: 44px; gap: 1px; }
+            .lb-photos.single img { width: 44px; height: 44px; }
+            .lb-photos.tag img { width: 28px; height: 28px; border-width: 1px; }
+            .lb-photos.trio img { width: 21px; height: 21px; border-width: 1px; }
+        }
         th {
             background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
@@ -303,10 +311,7 @@
             #leaderboardTable .col-photo { width: 72px; min-width: 72px; max-width: 72px; left: 30px; }
             #leaderboardTable .col-name { left: 102px; min-width: 100px; max-width: 130px; }
             #leaderboardTable td.col-photo { padding: 4px 3px !important; }
-            .lb-photos { height: 44px; }
-            .lb-photos.single img { width: 44px; height: 44px; }
-            .lb-photos.tag img { width: 28px; height: 28px; }
-            .lb-photos.trio img { width: 21px; height: 21px; }
+
             #archiveFiltersToggle { display: block !important; }
             #archiveFiltersPanel { display: none; }
             #archiveFiltersPanel.expanded { display: block; }
