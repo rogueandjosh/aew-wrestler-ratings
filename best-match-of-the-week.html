@@ -605,7 +605,7 @@
 
     <script src="best-match-shared.js?v=2"></script>
     <script src="match-filters.js?v=7"></script>
-    <script src="filter-ui.js?v=2"></script>
+    <script src="filter-ui.js?v=3"></script>
     <script>
         let allEntries = [];
         let nameChangesData = null;
@@ -1114,6 +1114,7 @@
                     options: options[facet],
                     initial,
                     showTotal: false,
+                    showCounts: facet !== 'year',   // year list reads cleaner without counts
                     onChange: onArchiveFiltersChanged
                 });
             });

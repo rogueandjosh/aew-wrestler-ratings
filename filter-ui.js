@@ -144,7 +144,8 @@
     // greys out options at 0; leave it out for a box without counts.
     // ------------------------------------------------------------------
     // showTotal: false keeps the closed box as plain "All" (counts stay in the list)
-    function checkboxFacet(group, { options, onChange = () => {}, initial = null, showTotal = true }) {
+    // showCounts: false leaves out the "(n)" beside each option (options at 0 still grey out)
+    function checkboxFacet(group, { options, onChange = () => {}, initial = null, showTotal = true, showCounts = true }) {
         const list = group.querySelector('.match-filter-options');
         const toggle = group.querySelector('.match-filter-toggle');
         const esc = v => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -198,7 +199,7 @@
                 list.querySelectorAll('label[data-value]').forEach(label => {
                     const v = label.dataset.value;
                     const n = v === ALL ? all : (counts[v] || 0);
-                    label.querySelector('.count').textContent = `(${n})`;
+                    label.querySelector('.count').textContent = showCounts ? `(${n})` : '';
                     label.classList.toggle('is-zero', n === 0);
                 });
                 refreshToggle();
