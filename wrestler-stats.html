@@ -45,11 +45,13 @@
     <script src="best-match-shared.js?v=2" defer></script>
     <!-- Bump ?v= whenever match-filters.js changes, so browsers/Cloudflare fetch the new copy -->
     <script src="match-filters.js?v=7" defer></script>
+    <script src="filter-ui.js?v=1" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+    <link rel="stylesheet" href="filter-ui.css?v=1">
     <style>
         * {
             margin: 0;
@@ -221,371 +223,6 @@
             font-size: 1.1em;
         }
 
-        .year-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .year-btn {
-            padding: 6px 14px;
-            background-color: rgba(255, 215, 0, 0.1);
-            color: #ffd700;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.85em;
-        }
-
-        .year-btn:hover {
-            background-color: rgba(255, 215, 0, 0.2);
-        }
-
-        .year-btn.active {
-            background-color: #ffd700;
-            color: #1a1a2e;
-        }
-
-        .year-btn:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-        }
-
-        /* ALL | Single | Multiple: one joined pill above the years, same look
-           as the year buttons. Exactly one is lit: ALL when no year is picked,
-           otherwise the current mode. */
-        /* (.year-filter prefix beats the shared .tt inline-block rule) */
-        .year-filter .year-mode {
-            display: flex;
-            justify-content: center;
-            width: fit-content;
-            margin: 0 auto 10px;
-        }
-
-        .year-mode-btn {
-            padding: 6px 14px;
-            background-color: rgba(255, 215, 0, 0.1);
-            color: #ffd700;
-            border: 2px solid #ffd700;
-            border-radius: 0;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.85em;
-            transition: all 0.3s;
-        }
-
-        .year-mode-btn:first-child { border-radius: 5px 0 0 5px; }
-        .year-mode-btn:last-child { border-radius: 0 5px 5px 0; }
-        .year-mode-btn + .year-mode-btn { margin-left: -2px; }
-
-        .year-mode-btn:hover {
-            background-color: rgba(255, 215, 0, 0.2);
-        }
-
-        .year-mode-btn.active {
-            background-color: #ffd700;
-            color: #1a1a2e;
-        }
-
-        .year-mode-btn:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-            position: relative;
-        }
-
-        /* Multiple mode: picked years get a tick */
-        .year-buttons.multi .year-btn.active::before {
-            content: '✓ ';
-        }
-
-        /* Match Filters panel — checkbox groups follow the Best Match archive's
-           Division filter (All + individual boxes, gold accent, two-way sync) */
-        .match-filters {
-            background: rgba(255, 215, 0, 0.05);
-            border: 2px solid #ffd700;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .match-filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 18px;
-        }
-
-        .match-filter-group {
-            position: relative;
-        }
-
-        .match-filter-group-title {
-            color: #ffd700;
-            font-size: 0.85em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        /* Closed state: looks like the archive's gold-bordered selects */
-        .match-filter-toggle {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #ffd700;
-            color: #e0e0e0;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .match-filter-toggle .toggle-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .match-filter-toggle .toggle-arrow {
-            flex-shrink: 0;
-            font-size: 0.75em;
-            transition: transform 0.2s;
-        }
-
-        .match-filter-toggle[aria-expanded="true"] .toggle-arrow {
-            transform: rotate(180deg);
-        }
-
-        .match-filter-toggle.is-set {
-            background: rgba(255, 215, 0, 0.2);
-            color: #ffd700;
-            font-weight: bold;
-        }
-
-        .match-filter-toggle:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-        }
-
-        /* Open state: checkbox list drops down over the content below */
-        .match-filter-options {
-            display: none;
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            z-index: 50;
-            flex-direction: column;
-            gap: 6px;
-            padding: 12px;
-            background: #1a1a2e;
-            border: 2px solid #ffd700;
-            border-radius: 8px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
-            max-height: 360px;
-            overflow-y: auto;
-        }
-
-        .match-filter-group.open .match-filter-options {
-            display: flex;
-        }
-
-        .match-filter-options label {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            color: #e0e0e0;
-            font-size: 0.9em;
-            cursor: pointer;
-            line-height: 1.2;
-        }
-
-        .match-filter-options input[type="checkbox"] {
-            accent-color: #ffd700;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .match-filter-options input[type="checkbox"]:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-        }
-
-        .match-filter-options .count {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .match-filter-options label.is-zero {
-            opacity: 0.4;
-        }
-
-        .match-filter-options .shortcut {
-            padding-bottom: 6px;
-            margin-bottom: 2px;
-            border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
-        }
-
-        /* The Show list holds longer names, so it opens wider than its button,
-           extending to the left so it stays on screen */
-        #showFilterOptions {
-            left: auto;
-            min-width: 280px;
-        }
-
-        /* Show filter tree: type headings → families (All In) → places → years */
-        .match-filter-options .lvl-1 { padding-left: 20px; }
-        .match-filter-options .lvl-2 { padding-left: 40px; }
-        .match-filter-options .lvl-3 { padding-left: 60px; }
-
-        .match-filter-options .show-group > span {
-            font-weight: bold;
-        }
-
-        .match-filter-options .show-row {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .match-filter-options .show-row label {
-            flex: 1;
-        }
-
-        .match-filter-options .show-children {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .match-filter-options .show-children[hidden] {
-            display: none;
-        }
-
-        .match-filter-options .show-expand,
-        .match-filter-options .show-expand-spacer {
-            width: 18px;
-            flex-shrink: 0;
-        }
-
-        .match-filter-options .show-expand {
-            background: none;
-            border: none;
-            padding: 0;
-            color: #ffd700;
-            cursor: pointer;
-            font-size: 0.8em;
-            line-height: 1;
-            transition: transform 0.15s;
-        }
-
-        .match-filter-options .show-expand[aria-expanded="true"] {
-            transform: rotate(90deg);
-        }
-
-        .match-filter-options .show-expand:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-        }
-
-        .match-filter-options .type-heading {
-            color: #ffd700;
-            margin-top: 4px;
-        }
-
-        .match-filter-options .stip-extra {
-            display: none;
-        }
-
-        .match-filter-options.expanded .stip-extra {
-            display: flex;
-        }
-
-        /* Stipulations: most common first; "Show all" lists them under the same group
-           headings as the Show Statistics page (STIPULATION_GROUPS in match-filters.js) */
-        #stipFilterOptions > * { order: -1; }
-        #stipFilterOptions > label[data-group] { order: var(--o1); }
-        #stipFilterOptions.expanded > label[data-group] { order: var(--o2); }
-        #stipFilterOptions .stip-group-head {
-            display: none;
-            order: var(--o2);
-            color: #a8a394;
-            font-size: 0.75em;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-top: 4px;
-        }
-        #stipFilterOptions.expanded .stip-group-head { display: block; }
-        #stipFilterOptions .match-filter-show-all { order: 100000; }
-
-        .match-filter-show-all {
-            align-self: flex-start;
-            margin-top: 4px;
-            padding: 3px 0;
-            background: none;
-            border: none;
-            color: #ffd700;
-            cursor: pointer;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.85em;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        .match-filters-footer {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .match-filters-reset {
-            padding: 6px 14px;
-            background: none;
-            color: #ffd700;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: 'Overlock', 'Arial', sans-serif;
-            font-size: 0.85em;
-        }
-
-        .match-filters-reset:hover {
-            background-color: rgba(255, 215, 0, 0.2);
-        }
-
-        .match-filters-reset:focus-visible,
-        .match-filter-show-all:focus-visible {
-            outline: 2px solid #fff;
-            outline-offset: 2px;
-        }
-
-        .match-filters-summary {
-            color: #ccc;
-            font-size: 0.9em;
-            text-align: center;
-        }
-
-        .match-filters-summary strong {
-            color: #ffd700;
-        }
-
-        .match-filters-empty {
-            color: #999;
-            font-style: italic;
-            padding: 10px 0;
-        }
 
         .stats-grid {
             display: grid;
@@ -924,67 +561,6 @@
                 margin-bottom: 8px;
             }
 
-            .year-btn {
-                padding: 5px 10px;
-                font-size: 0.78em;
-            }
-
-            .year-mode-btn {
-                padding: 5px 12px;
-                font-size: 0.78em;
-            }
-
-            .match-filters {
-                padding: 10px;
-            }
-
-            /* Filters 2 per row; each list opens across the full width of
-               the box (left column opens rightwards, right column leftwards) */
-            .match-filters-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px 10px;
-            }
-
-            .match-filter-group-title {
-                font-size: 0.8em;
-                margin-bottom: 4px;
-            }
-
-            .match-filter-toggle {
-                padding: 7px 9px;
-                font-size: 0.85em;
-            }
-
-            .match-filter-options,
-            #showFilterOptions {
-                left: 0;
-                right: auto;
-                min-width: 0;
-                width: calc(200% + 10px);
-                max-height: 60vh;
-            }
-
-            .match-filter-group.col-right .match-filter-options {
-                left: auto;
-                right: 0;
-            }
-
-            /* Summary filling the gap beside an odd last filter */
-            .match-filters-summary.in-grid {
-                align-self: end;
-                padding-bottom: 4px;
-                font-size: 0.8em;
-                line-height: 1.35;
-            }
-
-            .match-filters-footer {
-                margin-top: 12px;
-            }
-
-            .match-filters-footer:empty,
-            .match-filters-footer:not(:has(.match-filters-summary)):has(.match-filters-reset[style*="none"]) {
-                display: none;
-            }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -2819,82 +2395,23 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             list.innerHTML = html;
         }
 
-        // Year filter: ALL | Single | Multiple, then the year buttons.
-        // ALL = whole career (no year picked). Single (the default once a year
-        // is tapped): a tap shows just that year. Multiple: taps add/remove
-        // years; removing the last one, or picking every year, goes back to ALL.
-        // Choosing Single or Multiple from ALL starts on the latest year.
-        let yearMode = 'single';
-
+        // Year filter: ALL | Single | Multiple, then the year buttons — the
+        // shared picker in filter-ui.js (same as Best Match of the Week).
         function setupYearButtons() {
-            const buttons = [...document.querySelectorAll('.year-btn')];
-            const available = [];
-            buttons.forEach(btn => {
-                const year = Number(btn.dataset.year);
-                if (!wrestlerData.statsByYear[year]) btn.style.display = 'none';
-                else available.push(year);
-            });
-            const asSelection = years => years.length === 0 || years.length >= available.length ? null : new Set(years);
-
+            const available = [...document.querySelectorAll('.year-btn')]
+                .map(b => Number(b.dataset.year)).filter(y => wrestlerData.statsByYear[y]);
             // ?year=2025 or ?year=2021,2023,2025 (several years open in Multiple)
-            const urlYears = (new URLSearchParams(window.location.search).get('year') || '')
-                .split(',').map(Number).filter(y => available.includes(y));
-            selectedYears = asSelection(urlYears);
-            if (urlYears.length > 1) yearMode = 'multi';
-
-            const changed = () => {
-                refreshYearButtons();
-                syncFiltersToUrl();
-                updateAllSections();
-            };
-
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const y = Number(btn.dataset.year);
-                    if (yearMode === 'single' || isAllYears()) {
-                        selectedYears = asSelection([y]);
-                    } else {
-                        const next = new Set(selectedYears);
-                        if (next.has(y)) next.delete(y); else next.add(y);
-                        selectedYears = asSelection([...next]);
-                    }
-                    changed();
-                });
+            const urlYears = (new URLSearchParams(window.location.search).get('year') || '').split(',').map(Number);
+            const picker = FilterUI.yearPicker(document.querySelector('.year-filter'), {
+                available,
+                initial: urlYears,
+                onChange: years => {
+                    selectedYears = years;
+                    syncFiltersToUrl();
+                    updateAllSections();
+                }
             });
-
-            document.querySelectorAll('.year-mode-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const mode = btn.dataset.mode;
-                    if (mode === 'all') {
-                        if (isAllYears()) return;
-                        selectedYears = null;
-                    } else if (isAllYears()) {
-                        yearMode = mode;
-                        selectedYears = asSelection([Math.max(...available)]);
-                    } else {
-                        if (mode === yearMode) return;
-                        yearMode = mode;
-                        if (mode === 'single' && selectedYears.size > 1) selectedYears = new Set([latestSelectedYear()]);
-                    }
-                    changed();
-                });
-            });
-            refreshYearButtons();
-        }
-
-        function refreshYearButtons() {
-            document.querySelectorAll('.year-btn').forEach(btn => {
-                const on = !isAllYears() && selectedYears.has(Number(btn.dataset.year));
-                btn.classList.toggle('active', on);
-                btn.setAttribute('aria-pressed', on);
-            });
-            document.querySelector('.year-buttons').classList.toggle('multi', yearMode === 'multi' && !isAllYears());
-            const lit = isAllYears() ? 'all' : yearMode;
-            document.querySelectorAll('.year-mode-btn').forEach(btn => {
-                const on = btn.dataset.mode === lit;
-                btn.classList.toggle('active', on);
-                btn.setAttribute('aria-pressed', on);
-            });
+            selectedYears = picker.selected;
         }
 
         function updateAllSections() {
@@ -3714,39 +3231,9 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
 
         // Each section is a dropdown: the button shows the current choice and
         // opens the checkbox list. Only one is open at a time; clicking
-        // outside or pressing Escape closes it.
+        // outside or pressing Escape closes it (shared, filter-ui.js).
         function setupMatchFilterDropdowns() {
-            const groups = Object.keys(MATCH_FACETS).concat('show', 'location').map(f => document.getElementById(`${f}FilterGroup`));
-
-            function closeAll(except = null) {
-                groups.forEach(g => {
-                    if (g === except) return;
-                    g.classList.remove('open');
-                    g.querySelector('.match-filter-toggle').setAttribute('aria-expanded', 'false');
-                });
-            }
-
-            groups.forEach(group => {
-                const toggle = group.querySelector('.match-filter-toggle');
-                toggle.addEventListener('click', () => {
-                    const opening = !group.classList.contains('open');
-                    closeAll(group);
-                    group.classList.toggle('open', opening);
-                    toggle.setAttribute('aria-expanded', opening);
-                });
-            });
-
-            document.addEventListener('click', e => {
-                if (!e.target.closest('.match-filter-group')) closeAll();
-            });
-            document.addEventListener('keydown', e => {
-                if (e.key !== 'Escape') return;
-                const open = groups.find(g => g.classList.contains('open'));
-                if (open) {
-                    closeAll();
-                    open.querySelector('.match-filter-toggle').focus();
-                }
-            });
+            FilterUI.setupDropdowns(Object.keys(MATCH_FACETS).concat('show', 'location').map(f => document.getElementById(`${f}FilterGroup`)));
         }
 
         // Button text: "All (97)", the ticked names if one or two, "3 selected",

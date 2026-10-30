@@ -1,0 +1,436 @@
+/* ===== SHARED FILTER STYLES =====
+   Used by wrestler-stats.html and best-match-of-the-week.html (with filter-ui.js).
+   - Years: ALL | Single | Multiple pill (.year-mode) + year buttons (.year-buttons)
+   - Tick-list boxes: .match-filters-grid > .match-filter-group (title, toggle
+     button, .match-filter-options list), 2 per row on phones
+   Change the look here and both pages follow. Bump ?v= in both pages. */
+
+.year-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.year-btn {
+    padding: 6px 14px;
+    background-color: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-family: 'Overlock', 'Arial', sans-serif;
+    font-size: 0.85em;
+}
+
+.year-btn:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.year-btn.active {
+    background-color: #ffd700;
+    color: #1a1a2e;
+}
+
+.year-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* ALL | Single | Multiple: one joined pill above the years, same look
+   as the year buttons. Exactly one is lit: ALL when no year is picked,
+   otherwise the current mode. */
+/* (doubled class beats the shared .tt inline-block rule) */
+.year-mode.year-mode {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto 10px;
+}
+
+.year-mode-btn {
+    padding: 6px 14px;
+    background-color: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    border-radius: 0;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Overlock', 'Arial', sans-serif;
+    font-size: 0.85em;
+    transition: all 0.3s;
+}
+
+.year-mode-btn:first-child { border-radius: 5px 0 0 5px; }
+.year-mode-btn:last-child { border-radius: 0 5px 5px 0; }
+.year-mode-btn + .year-mode-btn { margin-left: -2px; }
+
+.year-mode-btn:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.year-mode-btn.active {
+    background-color: #ffd700;
+    color: #1a1a2e;
+}
+
+.year-mode-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    position: relative;
+}
+
+/* Multiple mode: picked years get a tick */
+.year-buttons.multi .year-btn.active::before {
+    content: '✓ ';
+}
+
+/* Match Filters panel — checkbox groups follow the Best Match archive's
+   Division filter (All + individual boxes, gold accent, two-way sync) */
+.match-filters {
+    background: rgba(255, 215, 0, 0.05);
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.match-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 18px;
+}
+
+.match-filter-group {
+    position: relative;
+}
+
+.match-filter-group-title {
+    color: #ffd700;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Closed state: looks like the archive's gold-bordered selects */
+.match-filter-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #ffd700;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-family: 'Overlock', 'Arial', sans-serif;
+    cursor: pointer;
+    text-align: left;
+}
+
+.match-filter-toggle .toggle-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.match-filter-toggle .toggle-arrow {
+    flex-shrink: 0;
+    font-size: 0.75em;
+    transition: transform 0.2s;
+}
+
+.match-filter-toggle[aria-expanded="true"] .toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.match-filter-toggle.is-set {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.match-filter-toggle:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Open state: checkbox list drops down over the content below */
+.match-filter-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    background: #1a1a2e;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.match-filter-group.open .match-filter-options {
+    display: flex;
+}
+
+.match-filter-options label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #e0e0e0;
+    font-size: 0.9em;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.match-filter-options input[type="checkbox"] {
+    accent-color: #ffd700;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.match-filter-options input[type="checkbox"]:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.match-filter-options .count {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.match-filter-options label.is-zero {
+    opacity: 0.4;
+}
+
+.match-filter-options .shortcut {
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+    border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
+}
+
+/* The Show list holds longer names, so it opens wider than its button,
+   extending to the left so it stays on screen */
+#showFilterOptions {
+    left: auto;
+    min-width: 280px;
+}
+
+/* Show filter tree: type headings → families (All In) → places → years */
+.match-filter-options .lvl-1 { padding-left: 20px; }
+.match-filter-options .lvl-2 { padding-left: 40px; }
+.match-filter-options .lvl-3 { padding-left: 60px; }
+
+.match-filter-options .show-group > span {
+    font-weight: bold;
+}
+
+.match-filter-options .show-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.match-filter-options .show-row label {
+    flex: 1;
+}
+
+.match-filter-options .show-children {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.match-filter-options .show-children[hidden] {
+    display: none;
+}
+
+.match-filter-options .show-expand,
+.match-filter-options .show-expand-spacer {
+    width: 18px;
+    flex-shrink: 0;
+}
+
+.match-filter-options .show-expand {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #ffd700;
+    cursor: pointer;
+    font-size: 0.8em;
+    line-height: 1;
+    transition: transform 0.15s;
+}
+
+.match-filter-options .show-expand[aria-expanded="true"] {
+    transform: rotate(90deg);
+}
+
+.match-filter-options .show-expand:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.match-filter-options .type-heading {
+    color: #ffd700;
+    margin-top: 4px;
+}
+
+.match-filter-options .stip-extra {
+    display: none;
+}
+
+.match-filter-options.expanded .stip-extra {
+    display: flex;
+}
+
+/* Stipulations: most common first; "Show all" lists them under the same group
+   headings as the Show Statistics page (STIPULATION_GROUPS in match-filters.js) */
+#stipFilterOptions > * { order: -1; }
+#stipFilterOptions > label[data-group] { order: var(--o1); }
+#stipFilterOptions.expanded > label[data-group] { order: var(--o2); }
+#stipFilterOptions .stip-group-head {
+    display: none;
+    order: var(--o2);
+    color: #a8a394;
+    font-size: 0.75em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 4px;
+}
+#stipFilterOptions.expanded .stip-group-head { display: block; }
+#stipFilterOptions .match-filter-show-all { order: 100000; }
+
+.match-filter-show-all {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 3px 0;
+    background: none;
+    border: none;
+    color: #ffd700;
+    cursor: pointer;
+    font-family: 'Overlock', 'Arial', sans-serif;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.match-filters-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.match-filters-reset {
+    padding: 6px 14px;
+    background: none;
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Overlock', 'Arial', sans-serif;
+    font-size: 0.85em;
+}
+
+.match-filters-reset:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.match-filters-reset:focus-visible,
+.match-filter-show-all:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.match-filters-summary {
+    color: #ccc;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.match-filters-summary strong {
+    color: #ffd700;
+}
+
+.match-filters-empty {
+    color: #999;
+    font-style: italic;
+    padding: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .year-btn {
+        padding: 5px 10px;
+        font-size: 0.78em;
+    }
+
+    .year-mode-btn {
+        padding: 5px 12px;
+        font-size: 0.78em;
+    }
+
+    .match-filters {
+        padding: 10px;
+    }
+
+    /* Filters 2 per row; each list opens across the full width of
+       the box (left column opens rightwards, right column leftwards) */
+    .match-filters-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 10px;
+    }
+
+    .match-filter-group-title {
+        font-size: 0.8em;
+        margin-bottom: 4px;
+    }
+
+    .match-filter-toggle {
+        padding: 7px 9px;
+        font-size: 0.85em;
+    }
+
+    .match-filter-options,
+    #showFilterOptions {
+        left: 0;
+        right: auto;
+        min-width: 0;
+        width: calc(200% + 10px);
+        max-height: 60vh;
+    }
+
+    .match-filter-group.col-right .match-filter-options {
+        left: auto;
+        right: 0;
+    }
+
+    /* Summary filling the gap beside an odd last filter */
+    .match-filters-summary.in-grid {
+        align-self: end;
+        padding-bottom: 4px;
+        font-size: 0.8em;
+        line-height: 1.35;
+    }
+
+    .match-filters-footer {
+        margin-top: 12px;
+    }
+
+    .match-filters-footer:empty,
+    .match-filters-footer:not(:has(.match-filters-summary)):has(.match-filters-reset[style*="none"]) {
+        display: none;
+    }
+}
