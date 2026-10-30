@@ -34,6 +34,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="tooltips.css?v=2">
+    <link rel="stylesheet" href="filter-ui.css?v=1">
+    <script src="best-match-shared.js?v=2" defer></script>
+    <script src="filter-ui.js?v=3" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
     <style>
@@ -509,9 +512,7 @@
         /* Mobile: Hide 3rd wrestler and optimize for 2 side-by-side */
 @media (max-width: 768px) {
     /* Hide third wrestler dropdown */
-    .wrestler-selectors .wrestler-selector-row:nth-child(3) {
-        display: none;
-    }
+    /* (third wrestler now shown on phones too) */
     
     /* Force exactly 2 columns */
     .comparison-grid {
@@ -784,6 +785,114 @@
     }
 }
 
+
+        /* ===== CHOOSE PANEL ===== */
+        .cmp-choose { padding: 20px 22px; }
+        .cmp-block { margin-bottom: 18px; }
+        .cmp-h.cmp-h { display: block; color: #ffd700; font-size: 1.05em; margin: 0 0 8px; }
+        .cmp-divs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+        .cmp-div-btn {
+            padding: 8px 6px; background: rgba(255, 215, 0, 0.1); color: #ffd700;
+            border: 2px solid #ffd700; border-radius: 5px; cursor: pointer;
+            font-family: 'Overlock', 'Arial', sans-serif; font-weight: bold; font-size: 0.85em;
+        }
+        .cmp-div-btn:hover { background: rgba(255, 215, 0, 0.2); }
+        .cmp-div-btn.active { background: #ffd700; color: #1a1a2e; }
+        .cmp-div-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        #cmpYears .year-mode.year-mode { margin: 0 0 8px; }
+        #cmpYears .year-buttons { justify-content: flex-start; }
+
+        .cmp-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .cmp-pick-label { display: block; color: #ffd700; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; }
+        .cmp-pick-row { display: flex; gap: 6px; align-items: stretch; }
+        .cmp-combo { position: relative; flex: 1; min-width: 0; }
+        .cmp-combo input {
+            width: 100%; box-sizing: border-box; height: 40px; padding: 0 30px 0 10px;
+            background: rgba(255, 255, 255, 0.1); border: 2px solid #ffd700; border-radius: 5px;
+            color: #e0e0e0; font-family: 'Overlock', 'Arial', sans-serif; font-size: 0.95em;
+        }
+        .cmp-combo input::placeholder { color: #888; }
+        .cmp-combo input:focus { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }
+        .cmp-clear {
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+            width: 22px; height: 22px; border-radius: 50%; border: none; cursor: pointer;
+            background: rgba(255, 215, 0, 0.2); color: #ffd700; font-size: 12px; line-height: 22px; padding: 0;
+        }
+        .cmp-clear[hidden] { display: none; }
+        .cmp-list {
+            position: absolute; z-index: 60; left: 0; right: 0; top: calc(100% + 4px);
+            max-height: 260px; overflow-y: auto; margin: 0; padding: 4px 0; list-style: none;
+            background: #1a1a2e; border: 2px solid #ffd700; border-radius: 8px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        }
+        .cmp-list[hidden] { display: none; }
+        .cmp-list li { padding: 7px 12px; color: #e0e0e0; cursor: pointer; font-size: 0.92em; }
+        .cmp-list li:hover, .cmp-list li.active { background: rgba(255, 215, 0, 0.18); color: #ffd700; }
+        .cmp-list li.cmp-none { color: #888; cursor: default; font-style: italic; }
+        .cmp-pick-row .random-btn { flex: none; width: 42px; height: 40px; }
+        .cmp-choose .info-message { margin: 4px 0 12px; }
+
+        /* ===== SIDE-BY-SIDE TABLE ===== */
+        .cmp-table-wrap { overflow-x: auto; }
+        .cmp-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .cmp-table th.cmp-corner { width: 34%; }
+        .cmp-n3 th.cmp-corner { width: 28%; }
+        .cmp-table th, .cmp-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .cmp-who { text-align: center; vertical-align: top; padding-bottom: 12px !important; border-bottom: 2px solid rgba(255, 215, 0, 0.3) !important; }
+        .cmp-who > * { display: block; margin: 0 auto; }
+        .cmp-who-photo { display: flex !important; justify-content: center; text-decoration: none; margin-bottom: 6px !important; }
+        .cmp-who .wrestler-photo { width: 56px; height: 56px; }
+        .cmp-who .team-photos { width: auto; flex-wrap: nowrap; }
+        .cmp-who .team-photos.tag-photos .wrestler-photo { width: 38px; height: 38px; }
+        .cmp-who .team-photos.trios-photos .wrestler-photo { width: 28px; height: 28px; }
+        .cmp-who-name { color: #ffd700; font-weight: bold; text-decoration: none; border-bottom: 1px dotted #ffd700; display: inline-block !important; line-height: 1.25; }
+        .cmp-who-div { color: #999; font-size: 0.8em; font-weight: normal; margin-top: 3px !important; }
+        .cmp-who .status-badge { display: inline-block !important; margin-top: 5px !important; }
+        .cmp-label { text-align: left; color: #b8b8b8; font-weight: normal; font-size: 0.9em; }
+        .cmp-val { text-align: center; color: #e0e0e0; font-weight: bold; }
+        .cmp-val.best { color: #ffd700; background: rgba(255, 215, 0, 0.16); box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.55); border-radius: 6px; }
+        .cmp-table tbody tr:hover th, .cmp-table tbody tr:hover td:not(.best) { background: rgba(255, 215, 0, 0.05); }
+
+        /* ===== HEAD TO HEAD ===== */
+        .h2h-pair { padding: 12px 0; border-bottom: 1px solid rgba(255, 215, 0, 0.15); }
+        .h2h-pair:last-child { border-bottom: none; }
+        .h2h-title { color: #ffd700; font-weight: bold; margin-bottom: 4px; }
+        .h2h-title span { color: #999; font-weight: normal; }
+        .h2h-summary { color: #ccc; font-size: 0.9em; margin: 0 0 8px; line-height: 1.5; }
+        .h2h-summary strong { color: #ffd700; }
+        .h2h-none { color: #888; font-style: italic; margin: 0; }
+        .h2h-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+        .h2h-list .h2h-match.h2h-extra { display: none; }
+        .h2h-list.expanded .h2h-match.h2h-extra { display: flex; }
+        .h2h-more { display: block; margin: 8px auto 0; background: none; border: 1px solid #ffd700; color: #ffd700; border-radius: 5px; padding: 5px 14px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 0.85em; }
+        .h2h-match { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 7px 10px; }
+        .h2h-side { flex: none; width: 40px; text-align: center; font-size: 0.75em; font-weight: bold; border-radius: 4px; padding: 2px 0; }
+        .h2h-side.vs { background: rgba(255, 107, 107, 0.18); color: #ff8a8a; }
+        .h2h-side.with { background: rgba(107, 207, 127, 0.18); color: #6bcf7f; }
+        .h2h-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .h2h-event { color: #e0e0e0; font-size: 0.92em; }
+        .h2h-meta { color: #999; font-size: 0.78em; }
+        .h2h-rating { flex: none; color: #6bcf7f; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .cmp-choose { padding: 14px 12px; }
+            .cmp-divs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+            .cmp-div-btn { font-size: 0.8em; padding: 7px 4px; }
+            .cmp-picks { grid-template-columns: 1fr; gap: 10px; }
+            .cmp-choose .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .cmp-choose .action-buttons #compareBtn { grid-column: 1 / -1; }
+            .cmp-choose .action-buttons .btn { width: 100%; padding: 10px 8px; font-size: 1em; }
+            .cmp-table th, .cmp-table td { padding: 7px 4px; }
+            .cmp-table th.cmp-corner { width: 30%; }
+            .cmp-n3 th.cmp-corner { width: 25%; }
+            .cmp-label { font-size: 0.78em; line-height: 1.25; }
+            .cmp-val { font-size: 0.85em; }
+            .cmp-who .wrestler-photo { width: 44px; height: 44px; }
+            .cmp-who .team-photos.tag-photos .wrestler-photo { width: 28px; height: 28px; }
+            .cmp-who .team-photos.trios-photos .wrestler-photo { width: 21px; height: 21px; }
+            .cmp-who-name { font-size: 0.8em; }
+            .cmp-who-div { font-size: 0.7em; }
+            .cmp-who .status-badge { font-size: 0.65em; }
+        }
     </style>
     <link rel="stylesheet" href="header.css?v=1">
 </head>
@@ -802,93 +911,72 @@
         </header>
 
         <main>
-            <!-- Division Selection -->
-            <section class="division-section">
-                <h2 class="tt" data-tt="Choose which division to compare wrestlers from. Select 'All Divisions' to compare across different divisions." style="cursor: help;">Select Division</h2>
-                <div class="division-options">
-                    <div class="division-option">
-                        <input type="radio" id="div-mens" name="division" value="mens" checked>
-                        <label for="div-mens">Men</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="div-womens" name="division" value="womens">
-                        <label for="div-womens">Women</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="div-menstag" name="division" value="menstag">
-                        <label for="div-menstag">Men's Tag Teams</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="div-womenstag" name="division" value="womenstag">
-                        <label for="div-womenstag">Women's Tag Teams</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="div-trios" name="division" value="trios">
-                        <label for="div-trios">Trios</label>
-                    </div>
-                    <div class="division-option">
-                        <input type="radio" id="div-all" name="division" value="all">
-                        <label for="div-all">All Divisions</label>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Year Filter -->
-            <section class="division-section">
-                <h2 class="tt" data-tt="Filter all statistics to a specific year, or keep at 'ALL' to see career statistics." style="cursor: help;">Select Year</h2>
-                <select id="yearFilter" aria-label="Select year" style="width: 100%; padding: 12px; font-size: 1em; font-family: 'Overlock', cursive; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 5px; color: #fff; cursor: pointer;">
-                    <option value="ALL">All Years</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                </select>
-            </section>
-
-            <!-- Wrestler Selection -->
-            <section class="selection-section">
-                <h2 id="selectionHeading" class="tt" data-tt="Select two wrestlers to compare side by side. On larger screens a third can also be added." style="cursor: help;">Select Wrestlers to Compare</h2>
-                <div id="loadingMessage" class="loading" style="display: none;">
-                    Loading wrestler data
-                </div>
-                <div id="errorMessage" class="error" style="display: none;"></div>
-                
-                <div id="wrestlerSelectors" class="wrestler-selectors">
-                    <div class="wrestler-selector-row">
-                        <div class="wrestler-selector">
-                            <label for="wrestler1" id="label1">Wrestler 1</label>
-                            <select id="wrestler1">
-                                <option value="" id="placeholder1">-- Select Wrestler --</option>
-                            </select>
-                        </div>
-                        <button class="random-btn" onclick="randomWrestler(1)" title="Random wrestler">🎲</button>
-                    </div>
-                    <div class="wrestler-selector-row">
-                        <div class="wrestler-selector">
-                            <label for="wrestler2" id="label2">Wrestler 2</label>
-                            <select id="wrestler2">
-                                <option value="" id="placeholder2">-- Select Wrestler --</option>
-                            </select>
-                        </div>
-                        <button class="random-btn" onclick="randomWrestler(2)" title="Random wrestler">🎲</button>
-                    </div>
-                    <div class="wrestler-selector-row">
-                        <div class="wrestler-selector">
-                            <label for="wrestler3" id="label3">Wrestler 3 (Optional)</label>
-                            <select id="wrestler3">
-                                <option value="" id="placeholder3">-- Select Wrestler --</option>
-                            </select>
-                        </div>
-                        <button class="random-btn" onclick="randomWrestler(3)" title="Random wrestler">🎲</button>
+            <!-- Choose: division, years and up to three wrestlers in one panel -->
+            <section class="division-section cmp-choose">
+                <div class="cmp-block">
+                    <h2 class="cmp-h tt" data-tt="Choose which division to compare from. All Divisions lets you compare across divisions, e.g. a wrestler with a tag team.">Division</h2>
+                    <div class="cmp-divs" role="group" aria-label="Division">
+                        <button type="button" class="cmp-div-btn active" data-div="mens" aria-pressed="true">Men</button>
+                        <button type="button" class="cmp-div-btn" data-div="womens" aria-pressed="false">Women</button>
+                        <button type="button" class="cmp-div-btn" data-div="menstag" aria-pressed="false">Men's Tag</button>
+                        <button type="button" class="cmp-div-btn" data-div="womenstag" aria-pressed="false">Women's Tag</button>
+                        <button type="button" class="cmp-div-btn" data-div="trios" aria-pressed="false">Trios</button>
+                        <button type="button" class="cmp-div-btn" data-div="all" aria-pressed="false">All Divisions</button>
                     </div>
                 </div>
 
-                <p class="info-message" id="infoMessage">Select at least 2 wrestlers to compare</p>
+                <div class="cmp-block year-filter-lite" id="cmpYears">
+                    <h2 class="cmp-h tt" data-tt="ALL compares whole careers and current ratings. Single: tap a year to compare just that year. Multiple: tap several years to combine them (e.g. 2024 and 2025).">Year</h2>
+                    <div class="year-mode tt" role="group" aria-label="Year selection" data-tt="ALL: whole careers. Single: one year at a time. Multiple: tap several years to combine them.">
+                        <button type="button" class="year-mode-btn active" data-mode="all" aria-pressed="true">ALL</button>
+                        <button type="button" class="year-mode-btn" data-mode="single" aria-pressed="false">Single</button>
+                        <button type="button" class="year-mode-btn" data-mode="multi" aria-pressed="false">Multiple</button>
+                    </div>
+                    <div class="year-buttons" id="cmpYearButtons"></div>
+                </div>
 
+                <div class="cmp-block">
+                    <h2 id="selectionHeading" class="cmp-h tt" data-tt="Type a name and pick from the list, or tap 🎲 for a random one (keep tapping to cycle). Two are needed; a third is optional.">Wrestlers</h2>
+                    <div id="loadingMessage" class="loading" style="display: none;">Loading wrestler data</div>
+                    <div id="errorMessage" class="error" style="display: none;"></div>
+                    <div class="cmp-picks">
+                        <div class="cmp-pick" data-slot="1">
+                            <label class="cmp-pick-label" for="pick1" id="label1">Wrestler 1</label>
+                            <div class="cmp-pick-row">
+                                <div class="cmp-combo">
+                                    <input id="pick1" type="text" autocomplete="off" spellcheck="false" placeholder="Type a name…" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="list1">
+                                    <button type="button" class="cmp-clear" data-slot="1" aria-label="Clear" hidden>✕</button>
+                                    <ul class="cmp-list" id="list1" role="listbox" hidden></ul>
+                                </div>
+                                <button type="button" class="random-btn" data-slot="1" title="Random pick (tap again to cycle)" aria-label="Random pick">🎲</button>
+                            </div>
+                        </div>
+                        <div class="cmp-pick" data-slot="2">
+                            <label class="cmp-pick-label" for="pick2" id="label2">Wrestler 2</label>
+                            <div class="cmp-pick-row">
+                                <div class="cmp-combo">
+                                    <input id="pick2" type="text" autocomplete="off" spellcheck="false" placeholder="Type a name…" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="list2">
+                                    <button type="button" class="cmp-clear" data-slot="2" aria-label="Clear" hidden>✕</button>
+                                    <ul class="cmp-list" id="list2" role="listbox" hidden></ul>
+                                </div>
+                                <button type="button" class="random-btn" data-slot="2" title="Random pick (tap again to cycle)" aria-label="Random pick">🎲</button>
+                            </div>
+                        </div>
+                        <div class="cmp-pick" data-slot="3">
+                            <label class="cmp-pick-label" for="pick3" id="label3">Wrestler 3 (optional)</label>
+                            <div class="cmp-pick-row">
+                                <div class="cmp-combo">
+                                    <input id="pick3" type="text" autocomplete="off" spellcheck="false" placeholder="Type a name…" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="list3">
+                                    <button type="button" class="cmp-clear" data-slot="3" aria-label="Clear" hidden>✕</button>
+                                    <ul class="cmp-list" id="list3" role="listbox" hidden></ul>
+                                </div>
+                                <button type="button" class="random-btn" data-slot="3" title="Random pick (tap again to cycle)" aria-label="Random pick">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="info-message" id="infoMessage">Pick at least 2 wrestlers to compare</p>
                 <div class="action-buttons">
                     <button id="compareBtn" class="btn btn-primary" disabled>Compare Wrestlers</button>
                     <button id="clearBtn" class="btn btn-secondary">Clear All</button>
@@ -896,17 +984,20 @@
                 </div>
             </section>
 
-            <!-- Results Section (Hidden until comparison is made) -->
+            <!-- Results -->
             <section id="resultsSection" class="results-section">
                 <div class="stats-table-container">
-                    <h2>📊 Performance Comparison</h2>
-                    <div id="statsTable">
-                        <!-- Stats table will be inserted here in Phase 2 -->
-                    </div>
+                    <h2 class="tt" data-tt="Every stat side by side. The best value in each row is highlighted in gold. Tap a name to open their wrestler stats.">📊 Performance Comparison</h2>
+                    <div id="statsTable"></div>
+                </div>
+
+                <div class="stats-table-container" id="h2hContainer">
+                    <h2 class="tt" data-tt="Every match they were both in, split into when they faced each other and when they were on the same side. Follows the year filter.">🤝 Head to Head</h2>
+                    <div id="h2h"></div>
                 </div>
 
                 <div class="graph-container">
-                    <h2 class="tt" data-tt="This line graph shows the change in each wrestler's rating over time. Changing the year filter will adjust the graph accordingly." style="cursor: help;">📈 Rating History</h2>
+                    <h2 class="tt" data-tt="Each wrestler's rating month by month. A gap in a line means they were out of the rankings then. Follows the year filter.">📈 Rating History</h2>
                     <div id="graphCanvas">
                         <canvas id="comparisonChart"></canvas>
                     </div>
@@ -916,23 +1007,32 @@
     </div>
 
     <script>
-        // Global variables
+        // ====================================================================
+        // WRESTLER COMPARE
+        // Choose panel: division buttons, the shared year picker (filter-ui.js)
+        // and three type-to-search boxes (🎲 picks at random; keep tapping to
+        // cycle). Results: one side-by-side table (best value per row in gold),
+        // head to head, and the rating history chart. Link keeps
+        // ?division=&wrestlers=a,b,c&year=2024,2025
+        // ====================================================================
         let statisticsData = null;
         let selectedDivision = 'mens';
-        let selectedYear = 'ALL';
+        let selectedYears = null;          // null = ALL, else a Set of years
         let comparisonChart = null;
         let allTeamMembers = null;
         let allNameChanges = null;
+        let currentRankingsData = null;
+        let bestMatchEntries = null;       // Best Match of the Week archive (loaded once)
+        let pickOptions = [];              // [{ name, division, slug, label }]
+        const picks = { 1: null, 2: null, 3: null };
+        let lastCompared = null;           // wrestler data from the last comparison
+        const TEAM_DIVS = ['menstag', 'womenstag', 'trios'];
 
-        // Initialize page
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadStatisticsData();
-            await loadTeamData();
+            await Promise.all([loadStatisticsData(), loadTeamData()]);
+            setupYears();
             setupEventListeners();
             checkURLParams();
-            // Populate Last Updated from current-rankings.json on page load —
-            // loadCurrentRankings() is only called when Compare is pressed,
-            // so we fetch the date independently here so it shows immediately.
             fetch('current-rankings.json')
                 .then(r => r.ok ? r.json() : null)
                 .then(data => {
@@ -944,13 +1044,10 @@
                 .catch(() => {});
         });
 
-        // Load team-members.json and name-changes.json for team photo lookups
+        // ---------- data ----------
         async function loadTeamData() {
             try {
-                const [teamRes, nameRes] = await Promise.all([
-                    fetch('team-members.json'),
-                    fetch('name-changes.json')
-                ]);
+                const [teamRes, nameRes] = await Promise.all([fetch('team-members.json'), fetch('name-changes.json')]);
                 if (teamRes.ok) allTeamMembers = await teamRes.json();
                 if (nameRes.ok) allNameChanges = await nameRes.json();
             } catch (error) {
@@ -958,25 +1055,16 @@
             }
         }
 
-        // Load statistics.json to get wrestler lists
         async function loadStatisticsData() {
             const loadingMsg = document.getElementById('loadingMessage');
             const errorMsg = document.getElementById('errorMessage');
-            
             try {
                 loadingMsg.style.display = 'block';
                 const response = await fetch('statistics.json');
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load statistics data');
-                }
-                
+                if (!response.ok) throw new Error('Failed to load statistics data');
                 statisticsData = await response.json();
                 loadingMsg.style.display = 'none';
-                
-                // Populate dropdowns with initial division (mens)
-                populateWrestlerDropdowns();
-                
+                buildPickOptions();
             } catch (error) {
                 console.error('Error loading statistics:', error);
                 loadingMsg.style.display = 'none';
@@ -985,668 +1073,500 @@
             }
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            updateSelectionLabels(selectedDivision); // Set initial labels based on default division
-            // Division radio buttons
-            document.querySelectorAll('input[name="division"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    selectedDivision = e.target.value;
-                    updateSelectionLabels(selectedDivision);
-                    populateWrestlerDropdowns();
-                    validateSelection();
-                });
-            });
+        async function loadWrestlerData(slug) {
+            const response = await fetch(`wrestlers/${slug}.json`);
+            if (response.ok) return await response.json();
+            throw new Error(`Could not load data for ${slug}`);
+        }
 
-            // Year dropdown
-            document.getElementById('yearFilter').addEventListener('change', (e) => {
-                selectedYear = e.target.value;
-                // If comparison is already displayed, refresh it
-                if (document.getElementById('resultsSection').classList.contains('active')) {
-                    compareWrestlers();
+        async function loadCurrentRankings() {
+            if (currentRankingsData) return currentRankingsData;
+            try {
+                const response = await fetch('current-rankings.json');
+                if (response.ok) currentRankingsData = await response.json();
+            } catch (error) {
+                console.error('Could not load current rankings:', error);
+            }
+            return currentRankingsData;
+        }
+
+        async function loadBestMatches() {
+            if (bestMatchEntries) return bestMatchEntries;
+            try {
+                const index = await (await fetch('best-match-archive/index.json')).json();
+                const results = await Promise.all(index.map(e =>
+                    fetch(`best-match-archive/${e.file}`).then(r => r.ok ? r.json() : null).catch(() => null)));
+                bestMatchEntries = results.filter(Boolean);
+            } catch (e) {
+                bestMatchEntries = [];
+            }
+            return bestMatchEntries;
+        }
+
+        function getActualCurrentData(wrestlerName, division) {
+            if (!currentRankingsData) return { isRanked: false, rating: null, rank: null };
+            const divKey = divisionKey(division);
+            const found = (currentRankingsData[divKey] || []).find(w => w.name === wrestlerName);
+            return found ? { isRanked: true, rating: found.rating, rank: found.rank } : { isRanked: false, rating: null, rank: null };
+        }
+
+        // "Men", "Men Tag", "Men's Tag", "Women Tag", "Trios"… → mens / menstag / …
+        function divisionKey(division) {
+            const d = String(division || '');
+            if (/trio/i.test(d)) return 'trios';
+            if (/women/i.test(d)) return /tag/i.test(d) ? 'womenstag' : 'womens';
+            if (/tag/i.test(d)) return 'menstag';
+            return { mens: 'mens', womens: 'womens', menstag: 'menstag', womenstag: 'womenstag', trios: 'trios' }[d] || 'mens';
+        }
+
+        function getDivisionLabel(div) {
+            return { mens: 'Men', womens: 'Women', menstag: "Men's Tag", womenstag: "Women's Tag", trios: 'Trios' }[divisionKey(div)] || div;
+        }
+
+        function createSlug(name) {
+            if (typeof name !== 'string') return '';
+            return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
+        }
+
+        function getWrestlerStatsUrl(name) {
+            return `wrestler-stats.html?wrestler=${createSlug(name)}`;
+        }
+
+        const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+        // ---------- choose panel ----------
+        function buildPickOptions() {
+            if (!statisticsData) return;
+            const divs = selectedDivision === 'all' ? ['mens', 'womens', 'menstag', 'womenstag', 'trios'] : [selectedDivision];
+            pickOptions = [];
+            divs.forEach(div => (statisticsData[div] || [])
+                .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
+                .forEach(w => pickOptions.push({
+                    name: w.name, division: div, slug: createSlug(w.name),
+                    label: selectedDivision === 'all' ? `${w.name} (${getDivisionLabel(div)})` : w.name
+                })));
+            pickOptions.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        function setupYears() {
+            const latest = Math.max(new Date().getFullYear(), 2019);
+            const years = [];
+            for (let y = latest; y >= 2019; y--) years.push(y);
+            document.getElementById('cmpYearButtons').innerHTML =
+                years.map(y => `<button type="button" class="year-btn" data-year="${y}" aria-pressed="false">${y}</button>`).join('');
+            const urlYears = (new URLSearchParams(window.location.search).get('year') || '').split(',').map(Number);
+            const picker = FilterUI.yearPicker(document.getElementById('cmpYears'), {
+                available: years,
+                initial: urlYears,
+                onChange: sel => {
+                    selectedYears = sel;
+                    if (document.getElementById('resultsSection').classList.contains('active')) compareWrestlers();
                 }
             });
+            selectedYears = picker.selected;
+        }
 
-            // Wrestler dropdowns
-            ['wrestler1', 'wrestler2', 'wrestler3'].forEach(id => {
-                document.getElementById(id).addEventListener('change', validateSelection);
-            });
-
-            // Compare button
+        function setupEventListeners() {
+            updateSelectionLabels();
+            document.querySelectorAll('.cmp-div-btn').forEach(btn => btn.addEventListener('click', () => setDivision(btn.dataset.div)));
+            [1, 2, 3].forEach(setupCombo);
+            document.querySelectorAll('.random-btn').forEach(btn => btn.addEventListener('click', () => randomWrestler(Number(btn.dataset.slot))));
             document.getElementById('compareBtn').addEventListener('click', compareWrestlers);
-
-            // Clear button
             document.getElementById('clearBtn').addEventListener('click', clearSelection);
-
-            // Copy link button
             document.getElementById('copyLinkBtn').addEventListener('click', copyShareLink);
         }
 
-        // Update labels/headings/placeholders based on whether division uses wrestlers or teams
-        function updateSelectionLabels(division) {
-            const isTeamDivision = ['menstag', 'womenstag', 'trios'].includes(division);
-            const word = isTeamDivision ? 'Team' : 'Wrestler';
-            const wordLower = word.toLowerCase();
-
-            document.getElementById('selectionHeading').textContent = `Select ${word}s to Compare`;
-            document.getElementById('label1').textContent = `${word} 1`;
-            document.getElementById('label2').textContent = `${word} 2`;
-            document.getElementById('label3').textContent = `${word} 3 (Optional)`;
-            document.getElementById('infoMessage').textContent = `Select at least 2 ${wordLower}s to compare`;
-            document.getElementById('compareBtn').textContent = `Compare ${word}s`;
-
-            // Update placeholder options in dropdowns
+        function setDivision(div) {
+            selectedDivision = div;
+            document.querySelectorAll('.cmp-div-btn').forEach(b => {
+                const on = b.dataset.div === div;
+                b.classList.toggle('active', on);
+                b.setAttribute('aria-pressed', on);
+            });
+            buildPickOptions();
+            // Keep picks that are still in the list
             [1, 2, 3].forEach(n => {
-                const placeholder = document.getElementById(`placeholder${n}`);
-                if (placeholder) placeholder.textContent = `-- Select ${word} --`;
+                if (!picks[n]) return;
+                const still = pickOptions.find(o => o.slug === picks[n].slug);
+                setPick(n, still || null);
             });
+            updateSelectionLabels();
+            validateSelection();
         }
 
-        // Populate wrestler dropdowns based on selected division
-        function populateWrestlerDropdowns() {
-            if (!statisticsData) return;
+        function updateSelectionLabels() {
+            const word = TEAM_DIVS.includes(selectedDivision) ? 'Team' : 'Wrestler';
+            document.getElementById('selectionHeading').textContent = `${word}s`;
+            [1, 2, 3].forEach(n => {
+                document.getElementById(`label${n}`).textContent = `${word} ${n}${n === 3 ? ' (optional)' : ''}`;
+            });
+            document.getElementById('infoMessage').textContent = `Pick at least 2 ${word.toLowerCase()}s to compare`;
+            document.getElementById('compareBtn').textContent = `Compare ${word}s`;
+        }
 
-            const dropdowns = ['wrestler1', 'wrestler2', 'wrestler3'];
-            let wrestlers = [];
+        function setPick(n, option) {
+            picks[n] = option;
+            const input = document.getElementById(`pick${n}`);
+            input.value = option ? option.label : '';
+            document.querySelector(`.cmp-clear[data-slot="${n}"]`).hidden = !option;
+        }
 
-            if (selectedDivision === 'all') {
-                // Combine all divisions
-                const divisions = ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
-                divisions.forEach(div => {
-                    if (statisticsData[div]) {
-                        statisticsData[div]
-                            .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
-                            .forEach(w => {
-                                wrestlers.push({
-                                    name: w.name,
-                                    division: div
-                                });
-                            });
-                    }
-                });
-            } else {
-                // Single division
-                if (statisticsData[selectedDivision]) {
-                    wrestlers = statisticsData[selectedDivision]
-                        .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
-                        .map(w => ({
-                            name: w.name,
-                            division: selectedDivision
-                        }));
+        // Type-to-search box: names containing what's typed (names starting
+        // with it first). Arrow keys + Enter, or tap. Leaving the box without
+        // choosing puts back the current pick.
+        function setupCombo(n) {
+            const input = document.getElementById(`pick${n}`);
+            const list = document.getElementById(`list${n}`);
+            const clear = document.querySelector(`.cmp-clear[data-slot="${n}"]`);
+            let shown = [];
+            let active = -1;
+
+            function render() {
+                const q = input.value.trim().toLowerCase();
+                const current = picks[n] && input.value === picks[n].label;
+                const taken = new Set([1, 2, 3].filter(k => k !== n && picks[k]).map(k => picks[k].slug));
+                let opts = pickOptions.filter(o => !taken.has(o.slug));
+                if (q && !current) {
+                    opts = opts.filter(o => o.name.toLowerCase().includes(q))
+                        .sort((a, b) => (b.name.toLowerCase().startsWith(q)) - (a.name.toLowerCase().startsWith(q)) || a.name.localeCompare(b.name));
                 }
+                shown = opts.slice(0, 80);
+                active = -1;
+                list.innerHTML = shown.length
+                    ? shown.map((o, i) => `<li role="option" data-i="${i}">${escapeHtml(o.label)}</li>`).join('')
+                    : `<li class="cmp-none">No matches</li>`;
+                list.hidden = false;
+                input.setAttribute('aria-expanded', 'true');
             }
-
-            // Sort alphabetically
-            wrestlers.sort((a, b) => {
-                const nameA = typeof a.name === 'string' ? a.name : '';
-                const nameB = typeof b.name === 'string' ? b.name : '';
-                return nameA.localeCompare(nameB);
-            });
-
-            // Populate each dropdown
-            dropdowns.forEach(dropdownId => {
-                const select = document.getElementById(dropdownId);
-                const currentValue = select.value;
-                
-                const isTeamDiv = ['menstag', 'womenstag', 'trios'].includes(selectedDivision);
-                const placeholderWord = isTeamDiv ? 'Team' : 'Wrestler';
-                select.innerHTML = `<option value="">-- Select ${placeholderWord} --</option>`;
-
-                wrestlers.forEach(wrestler => {
-                    const option = document.createElement('option');
-                    option.value = createSlug(wrestler.name);
-    
-                    // Show division label for "All Divisions" mode
-                    if (selectedDivision === 'all') {
-                        const divLabel = getDivisionLabel(wrestler.division);
-                        option.textContent = `${wrestler.name} (${divLabel})`;
-                    } else {
-                        option.textContent = wrestler.name;
-                    }
-                    
-                    option.dataset.name = wrestler.name;
-                    option.dataset.division = wrestler.division;
-                    select.appendChild(option);
-                });
-
-                // Restore previous selection if still available
-                if (currentValue) {
-                    const optionExists = Array.from(select.options).some(opt => opt.value === currentValue);
-                    if (optionExists) {
-                        select.value = currentValue;
-                    }
-                }
-            });
-        }
-
-        // Create slug from wrestler name
-function createSlug(name) {
-    if (typeof name !== 'string') {
-        return '';
-    }
-    return name.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-}
-
-        // Generate URL to wrestler stats page
-        function getWrestlerStatsUrl(name) {
-            const slug = createSlug(name);
-            return `wrestler-stats.html?wrestler=${slug}`;
-        }
-        
-        // Get human-readable division label
-        function getDivisionLabel(div) {
-            const labels = {
-                'mens': 'Men',
-                'womens': 'Women',
-                'menstag': "Men's Tag",
-                'womenstag': "Women's Tag",
-                'trios': 'Trios'
-            };
-            return labels[div] || div;
-        }
-
-        // Random wrestler picker
-        function randomWrestler(dropdownNum) {
-            const select = document.getElementById(`wrestler${dropdownNum}`);
-            const options = Array.from(select.options).filter(opt => opt.value !== '');
-            
-            if (options.length > 0) {
-                const randomIndex = Math.floor(Math.random() * options.length);
-                select.value = options[randomIndex].value;
+            function close() {
+                list.hidden = true;
+                input.setAttribute('aria-expanded', 'false');
+            }
+            function choose(i) {
+                if (!shown[i]) return;
+                setPick(n, shown[i]);
+                close();
                 validateSelection();
             }
-        }
-
-        // Validate selection and enable/disable compare button
-        function validateSelection() {
-            const wrestler1 = document.getElementById('wrestler1').value;
-            const wrestler2 = document.getElementById('wrestler2').value;
-            const compareBtn = document.getElementById('compareBtn');
-
-            // Need at least 2 wrestlers selected
-            const isValid = wrestler1 && wrestler2;
-            compareBtn.disabled = !isValid;
-        }
-
-        // Compare wrestlers (Phase 2 implementation)
-        async function compareWrestlers() {
-            const wrestler1 = document.getElementById('wrestler1').value;
-            const wrestler2 = document.getElementById('wrestler2').value;
-            const wrestler3 = document.getElementById('wrestler3').value;
-
-            console.log('Comparing:', { wrestler1, wrestler2, wrestler3 });
-
-            // Show results section
-            document.getElementById('resultsSection').classList.add('active');
-            document.getElementById('copyLinkBtn').style.display = 'inline-block';
-
-            // Update URL
-            updateURL();
-
-            // PHASE 2: Fetch wrestler data and build stats table
-            const statsTableDiv = document.getElementById('statsTable');
-            statsTableDiv.innerHTML = '<div class="loading">Loading wrestler data</div>';
-
-            try {
-                // Get selected wrestler slugs
-                const selectedWrestlers = [wrestler1, wrestler2, wrestler3].filter(w => w);
-                
-                // Load data for each wrestler
-                const wrestlerDataPromises = selectedWrestlers.map(slug => loadWrestlerData(slug));
-                const wrestlerData = await Promise.all(wrestlerDataPromises);
-
-                await loadCurrentRankings();
-
-
-                // Build comparison table
-                statsTableDiv.innerHTML = buildStatsTable(wrestlerData);
-
-                // Match header heights across cards on mobile
-                setTimeout(() => {
-                    if (window.innerWidth <= 768) {
-                        const headers = document.querySelectorAll('.wrestler-header-card');
-                        let maxHeight = 0;
-                        headers.forEach(h => {
-                            h.style.minHeight = 'auto';
-                            maxHeight = Math.max(maxHeight, h.offsetHeight);
-                        });
-                        headers.forEach(h => h.style.minHeight = maxHeight + 'px');
-                    }
-                }, 50);
-
-                // Phase 3: Build line graph
-                createComparisonChart(wrestlerData);
-
-            } catch (error) {
-                console.error('Error loading wrestler data:', error);
-                statsTableDiv.innerHTML = `<div class="error">Error loading wrestler data: ${error.message}</div>`;
+            function highlight(i) {
+                const items = [...list.querySelectorAll('li[data-i]')];
+                if (!items.length) return;
+                active = (i + items.length) % items.length;
+                items.forEach((li, k) => li.classList.toggle('active', k === active));
+                items[active].scrollIntoView({ block: 'nearest' });
             }
+
+            input.addEventListener('focus', () => { input.select(); render(); });
+            input.addEventListener('input', render);
+            input.addEventListener('keydown', e => {
+                if (e.key === 'ArrowDown') { e.preventDefault(); if (list.hidden) render(); highlight(active + 1); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(active - 1); }
+                else if (e.key === 'Enter') { e.preventDefault(); choose(active >= 0 ? active : 0); input.blur(); }
+                else if (e.key === 'Escape') { close(); input.blur(); }
+            });
+            // mousedown (not click) so it fires before the box loses focus
+            list.addEventListener('mousedown', e => {
+                const li = e.target.closest('li[data-i]');
+                if (li) { e.preventDefault(); choose(Number(li.dataset.i)); input.blur(); }
+            });
+            input.addEventListener('blur', () => setTimeout(() => {
+                close();
+                input.value = picks[n] ? picks[n].label : '';
+            }, 150));
+            clear.addEventListener('click', () => { setPick(n, null); validateSelection(); });
         }
 
-        // Clear all selections
+        // 🎲: a random wrestler not already picked; tap again to cycle
+        function randomWrestler(n) {
+            const taken = new Set([1, 2, 3].filter(k => k !== n && picks[k]).map(k => picks[k].slug));
+            const opts = pickOptions.filter(o => !taken.has(o.slug) && (!picks[n] || o.slug !== picks[n].slug));
+            if (!opts.length) return;
+            setPick(n, opts[Math.floor(Math.random() * opts.length)]);
+            validateSelection();
+        }
+
+        function validateSelection() {
+            const ok = !!(picks[1] && picks[2]);
+            document.getElementById('compareBtn').disabled = !ok;
+            document.getElementById('infoMessage').style.display = ok ? 'none' : '';
+        }
+
         function clearSelection() {
-            document.getElementById('wrestler1').value = '';
-            document.getElementById('wrestler2').value = '';
-            document.getElementById('wrestler3').value = '';
+            [1, 2, 3].forEach(n => setPick(n, null));
             document.getElementById('resultsSection').classList.remove('active');
             document.getElementById('copyLinkBtn').style.display = 'none';
             validateSelection();
-            
-            // Clear URL
             window.history.pushState({}, '', 'wrestler-compare.html');
         }
 
-        // Update URL with current selection
         function updateURL() {
-            const wrestler1 = document.getElementById('wrestler1').value;
-            const wrestler2 = document.getElementById('wrestler2').value;
-            const wrestler3 = document.getElementById('wrestler3').value;
-
             const params = new URLSearchParams();
             params.set('division', selectedDivision);
-            
-            const wrestlers = [wrestler1, wrestler2, wrestler3].filter(w => w);
-            if (wrestlers.length > 0) {
-                params.set('wrestlers', wrestlers.join(','));
-            }
-
-            const newURL = `${window.location.pathname}?${params.toString()}`;
-            window.history.pushState({}, '', newURL);
+            const slugs = [1, 2, 3].map(n => picks[n] && picks[n].slug).filter(Boolean);
+            if (slugs.length) params.set('wrestlers', slugs.join(','));
+            if (selectedYears) params.set('year', [...selectedYears].sort((a, b) => a - b).join(','));
+            window.history.replaceState({}, '', `${window.location.pathname}?${params.toString().replace(/%2C/g, ',')}`);
         }
 
-        // Copy shareable link to clipboard
         async function copyShareLink() {
-            const url = window.location.href;
-            
             try {
-                await navigator.clipboard.writeText(url);
-                
-                // Visual feedback
+                await navigator.clipboard.writeText(window.location.href);
                 const btn = document.getElementById('copyLinkBtn');
-                const originalText = btn.textContent;
+                const original = btn.textContent;
                 btn.textContent = '✓ Copied!';
-                btn.style.background = 'rgba(40, 167, 69, 0.3)';
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 2000);
-                
+                setTimeout(() => { btn.textContent = original; }, 2000);
             } catch (error) {
                 console.error('Failed to copy link:', error);
-                alert('Failed to copy link. Please copy manually from the address bar.');
             }
         }
 
-        // ===== PHASE 2 FUNCTIONS =====
-        
-        // Load individual wrestler data
-        async function loadWrestlerData(slug) {
+        function checkURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const division = params.get('division');
+            const wrestlers = params.get('wrestlers');
+            if (!division || !wrestlers) return;
+            if (document.querySelector(`.cmp-div-btn[data-div="${division}"]`)) setDivision(division);
+            wrestlers.split(',').slice(0, 3).forEach((slug, i) => {
+                const opt = pickOptions.find(o => o.slug === slug);
+                if (opt) setPick(i + 1, opt);
+            });
+            validateSelection();
+            if (!document.getElementById('compareBtn').disabled) compareWrestlers();
+        }
+
+        // ---------- comparing ----------
+        const weekYear = h => parseInt((h.week || '').match(/'(\d+)/)?.[1]) + 2000;
+        const yearsText = () => {
+            if (!selectedYears) return '';
+            const ys = [...selectedYears].sort((a, b) => a - b);
+            const parts = [];
+            ys.forEach(y => { const l = parts[parts.length - 1]; if (l && y === l[1] + 1) l[1] = y; else parts.push([y, y]); });
+            const w = parts.map(([a, b]) => a === b ? `${a}` : `${a}–${b}`);
+            return w.length === 1 ? w[0] : `${w.slice(0, -1).join(', ')} and ${w[w.length - 1]}`;
+        };
+
+        async function compareWrestlers() {
+            const slugs = [1, 2, 3].map(n => picks[n] && picks[n].slug).filter(Boolean);
+            if (slugs.length < 2) return;
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('copyLinkBtn').style.display = 'inline-block';
+            updateURL();
+            const statsDiv = document.getElementById('statsTable');
+            statsDiv.innerHTML = '<div class="loading">Loading wrestler data</div>';
             try {
-                // Try individual wrestler file first
-                const response = await fetch(`wrestlers/${slug}.json`);
-                if (response.ok) {
-                    return await response.json();
-                }
-                throw new Error(`Wrestler file not found: ${slug}`);
+                const [data] = await Promise.all([Promise.all(slugs.map(loadWrestlerData)), loadCurrentRankings(), loadBestMatches()]);
+                lastCompared = data;
+                const stats = data.map(computeStats);
+                statsDiv.innerHTML = buildStatsTable(data, stats);
+                document.getElementById('h2h').innerHTML = buildHeadToHead(data);
+                createComparisonChart(data);
             } catch (error) {
-                console.error(`Error loading ${slug}:`, error);
-                // Fallback: use statistics.json data
-                if (statisticsData) {
-                    for (const division in statisticsData) {
-                        const wrestler = statisticsData[division].find(w => 
-                            createSlug(w.name) === slug
-                        );
-                        if (wrestler) {
-                            wrestler.division = division;
-                            return wrestler;
-                        }
-                    }
-                }
-                throw new Error(`Could not load data for ${slug}`);
+                console.error('Error loading wrestler data:', error);
+                statsDiv.innerHTML = `<div class="error">Error loading wrestler data: ${error.message}</div>`;
             }
         }
 
-        // Build stats comparison table HTML
-        function buildStatsTable(wrestlerData) {
-            return `
-                <div class="comparison-grid">
-                    ${wrestlerData.map(data => createWrestlerCard(data)).join('')}
-                </div>
-            `;
+        function nameChangesMap() {
+            const arr = Array.isArray(allNameChanges) ? allNameChanges : (allNameChanges?.changes || []);
+            const map = {};
+            arr.forEach(c => { if (c.oldName && c.newName) map[c.oldName] = c.newName; });
+            return map;
         }
 
-        // Calculate floor rating from rating history
-function calculateFloorRating(data) {
-    if (data.floorRating) return data.floorRating;
-    if (data.floor) return data.floor;
-    if (data.ratingHistory && data.ratingHistory.length > 0) {
-        return Math.min(...data.ratingHistory.map(h => h.rating));
-    }
-    return 0;
-}
+        function computeStats(data) {
+            const now = getActualCurrentData(data.name, data.division);
+            const hist = (data.ratingHistory || []).filter(h => !selectedYears || selectedYears.has(weekYear(h)));
+            const matches = (data.allMatches || []).filter(m => !selectedYears || selectedYears.has(m.year));
+            const ratings = hist.map(h => h.rating).filter(r => typeof r === 'number');
+            const ranks = hist.map(h => h.rank).filter(r => r > 0);
+            const mRatings = matches.map(m => m.rating).filter(r => typeof r === 'number');
+            const peakIdx = ratings.length ? hist.findIndex(h => h.rating === Math.max(...ratings)) : -1;
+            const last = hist[hist.length - 1];
 
-// Count weeks at #1 from rating history
-function calculateWeeksAtOne(data) {
-    if (data.weeksAtNumber1) return data.weeksAtNumber1;
-    if (data.ratingHistory && data.ratingHistory.length > 0) {
-        return data.ratingHistory.filter(h => h.rank === 1).length;
-    }
-    return 0;
-}
+            // Best Matches of the Week, credited the same way as Wrestler Stats
+            const divKey = divisionKey(data.division);
+            const map = nameChangesMap();
+            const bestMatches = (bestMatchEntries || []).filter(e =>
+                (!selectedYears || selectedYears.has(Number((e.date || '').slice(0, 4)))) &&
+                isCreditedForBestMatch(divKey, data.name, e, allTeamMembers, map)).length;
 
-        // Check if wrestler is in current rankings
-let currentRankingsData = null;
+            const all = !selectedYears;
+            return {
+                active: all ? now.isRanked : hist.length > 0,
+                rating: all ? (now.isRanked ? now.rating : null) : (last ? last.rating : null),
+                rank: all ? (now.isRanked ? now.rank : null) : (last ? last.rank : null),
+                lastWeek: last ? last.week : null,
+                peak: ratings.length ? Math.max(...ratings) : null,
+                peakWeek: peakIdx >= 0 ? hist[peakIdx].week : null,
+                floor: ratings.length ? Math.min(...ratings) : null,
+                average: ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null,
+                bestRank: ranks.length ? Math.min(...ranks) : null,
+                weeksAt1: hist.filter(h => h.rank === 1).length,
+                weeks: hist.length,
+                top10: hist.filter(h => h.rank && h.rank <= 10).length,
+                top20: hist.filter(h => h.rank && h.rank <= 20).length,
+                matches: matches.length,
+                avgMatch: mRatings.length ? mRatings.reduce((a, b) => a + b, 0) / mRatings.length : null,
+                highest: mRatings.length ? Math.max(...mRatings) : null,
+                lowest: mRatings.length ? Math.min(...mRatings) : null,
+                bestMatches
+            };
+        }
 
-async function loadCurrentRankings() {
-    if (!currentRankingsData) {
-        try {
-            const response = await fetch('current-rankings.json');
-            if (response.ok) {
-                currentRankingsData = await response.json();
-                if (currentRankingsData.lastUpdated) {
-                    const el = document.getElementById('lastUpdated');
-                    if (el) el.textContent = `Last Updated: ${currentRankingsData.lastUpdated}`;
+        // better: 'high' / 'low' decides which value is highlighted; null = none
+        function statRows() {
+            const all = !selectedYears;
+            const yt = yearsText();
+            return [
+                { key: 'rating', label: all ? 'Current Rating' : 'Last Rating', better: 'high', fmt: 'rating',
+                  tip: all ? 'Their rating in this week\'s rankings. Inactive if they are not currently ranked.' : `Their last rating in ${yt}.` },
+                { key: 'rank', label: all ? 'Current Rank' : 'Last Rank', better: 'low', fmt: 'rank',
+                  tip: all ? 'Their position in this week\'s rankings.' : `Their last ranking position in ${yt}.` },
+                { key: 'peak', label: 'Peak Rating', better: 'high', fmt: 'rating', tip: 'The highest rating they have reached' + (all ? '.' : ` in ${yt}.`) },
+                { key: 'floor', label: 'Floor Rating', better: 'high', fmt: 'rating', tip: 'The lowest rating they have dropped to while ranked' + (all ? '.' : ` in ${yt}.`) },
+                { key: 'average', label: 'Average Rating', better: 'high', fmt: 'rating', tip: 'Their average weekly rating across every week they were ranked.' },
+                { key: 'bestRank', label: 'Best Rank', better: 'low', fmt: 'rank', tip: 'The highest position they have reached in the weekly rankings.' },
+                { key: 'weeksAt1', label: 'Weeks at #1', better: 'high', fmt: 'int', tip: 'How many weeks they were ranked number 1.' },
+                { key: 'top10', label: 'Weeks in Top 10', better: 'high', fmt: 'int', tip: 'How many weeks they were ranked in the top 10.' },
+                { key: 'top20', label: 'Weeks in Top 20', better: 'high', fmt: 'int', tip: 'How many weeks they were ranked in the top 20.' },
+                { key: 'weeks', label: 'Weeks Ranked', better: 'high', fmt: 'int', tip: 'How many weeks they have appeared in the rankings.' },
+                { key: 'matches', label: 'Matches', better: 'high', fmt: 'int', tip: 'Counting matches from Cagematch.net.' },
+                { key: 'avgMatch', label: 'Average Match', better: 'high', fmt: 'match', tip: 'The average Cagematch rating of their matches.' },
+                { key: 'highest', label: 'Highest Match', better: 'high', fmt: 'match', tip: 'Their highest-rated single match.' },
+                { key: 'lowest', label: 'Lowest Match', better: 'high', fmt: 'match', tip: 'Their lowest-rated single match (the higher, the better here).' },
+                { key: 'bestMatches', label: 'Best Matches ⭐', better: 'high', fmt: 'int', tip: 'How many times they were in that week\'s Best Match of the Week.' },
+                { key: 'peakWeek', label: 'Peak Week', better: null, fmt: 'text', tip: 'The week they reached their peak rating.' }
+            ];
+        }
+
+        function formatStat(v, fmt) {
+            if (v === null || v === undefined || v === '') return '–';
+            if (fmt === 'rating' || fmt === 'match') return Number(v).toFixed(2);
+            if (fmt === 'rank') return `#${v}`;
+            if (fmt === 'int') return Number(v).toLocaleString('en-US');
+            return escapeHtml(v);
+        }
+
+        function buildStatsTable(data, stats) {
+            const head = data.map((d, i) => {
+                const st = stats[i];
+                const photo = getPhotoHTML(d, st.rating, st.active);
+                return `<th scope="col" class="cmp-who">
+                    <a href="${getWrestlerStatsUrl(d.name)}" class="cmp-who-photo">${photo}</a>
+                    <a href="${getWrestlerStatsUrl(d.name)}" class="cmp-who-name">${escapeHtml(d.name)}</a>
+                    <span class="cmp-who-div">${getDivisionLabel(d.division)}</span>
+                    <span class="status-badge ${st.active ? 'active' : 'inactive'}">${st.active ? 'Active' : 'Inactive'}</span>
+                </th>`;
+            }).join('');
+            const rows = statRows().map(row => {
+                const vals = stats.map(s => s[row.key]);
+                let best = null;
+                const nums = vals.filter(v => typeof v === 'number');
+                if (row.better && nums.length >= 2 && new Set(nums).size > 1) {
+                    best = row.better === 'high' ? Math.max(...nums) : Math.min(...nums);
                 }
-            }
-        } catch (error) {
-            console.error('Could not load current rankings:', error);
+                const cells = vals.map(v => `<td class="cmp-val${best !== null && v === best ? ' best' : ''}">${formatStat(v, row.fmt)}</td>`).join('');
+                return `<tr><th scope="row" class="cmp-label"><span class="tt" data-tt="${escapeHtml(row.tip)}">${row.label}</span></th>${cells}</tr>`;
+            }).join('');
+            return `<div class="cmp-table-wrap"><table class="cmp-table cmp-n${data.length}">
+                <thead><tr><th class="cmp-corner"></th>${head}</tr></thead>
+                <tbody>${rows}</tbody></table></div>`;
         }
-    }
-    return currentRankingsData;
-}
 
-// Check if wrestler is in current rankings and get their actual current data
-function getActualCurrentData(wrestlerName, division) {
-    if (!currentRankingsData) return { isRanked: false, rating: null, rank: null };
-    
-    // Convert division name to key format (if needed)
-    const divisionMap = {
-        'Men': 'mens',
-        'Women': 'womens',
-        'Men Tag': 'menstag',
-        "Men's Tag": 'menstag',
-        'Women Tag': 'womenstag',
-        "Women's Tag": 'womenstag',
-        'Trios': 'trios'
-    };
-    
-    const divKey = divisionMap[division] || division;
-    const divisionData = currentRankingsData[divKey];
-    
-    if (divisionData) {
-        const found = divisionData.find(w => w.name === wrestlerName);
-        if (found) {
-            return { isRanked: true, rating: found.rating, rank: found.rank };
+        // ---------- head to head ----------
+        // Every name that stands for this wrestler/team in a match listing
+        function namesFor(data) {
+            const names = new Set([data.name, ...(data.formerNames || [])]);
+            (findTeamMembers(data.name) || []).forEach(m => names.add(m));
+            return names;
         }
-    }
-    
-    return { isRanked: false, rating: null, rank: null };
-}
 
-        // Helper: Find team members using team-members.json with fallbacks
+        // For each match A and B were both in: did B stand across from A
+        // (versus) or alongside A (partner / same team)?
+        function sharedMatches(a, b) {
+            const bIds = new Set((b.allMatches || []).map(m => m.id));
+            const bNames = namesFor(b);
+            const hit = list => (list || []).some(n => bNames.has(n));
+            return (a.allMatches || [])
+                .filter(m => bIds.has(m.id) && (!selectedYears || selectedYears.has(m.year)))
+                .map(m => ({ ...m, side: hit(m.versus) ? 'vs' : (hit(m.partners) || hit(m.opponents) ? 'with' : 'vs') }))
+                .sort((x, y) => (y.date || '').localeCompare(x.date || ''));
+        }
+
+        function buildHeadToHead(data) {
+            const bmIds = new Set((bestMatchEntries || []).map(e => e.id));
+            const avg = list => list.length ? (list.reduce((s, m) => s + m.rating, 0) / list.length).toFixed(2) : null;
+            const fmtDate = d => { const [y, m, dd] = (d || '').split('-'); return d ? `${Number(dd)}.${Number(m)}.${y}` : ''; };
+            const pairs = [];
+            for (let i = 0; i < data.length; i++) for (let j = i + 1; j < data.length; j++) pairs.push([data[i], data[j]]);
+            const yt = selectedYears ? ` in ${yearsText()}` : '';
+            return pairs.map(([a, b]) => {
+                const shared = sharedMatches(a, b);
+                const vs = shared.filter(m => m.side === 'vs');
+                const wi = shared.filter(m => m.side === 'with');
+                const title = `<div class="h2h-title">${escapeHtml(a.name)} <span>+</span> ${escapeHtml(b.name)}</div>`;
+                if (!shared.length) return `<div class="h2h-pair">${title}<p class="h2h-none">Never in the same match${yt}.</p></div>`;
+                const summary = [
+                    vs.length ? `Faced each other <strong>${vs.length}</strong> time${vs.length > 1 ? 's' : ''} · average <strong>${avg(vs)}</strong>` : '',
+                    wi.length ? `On the same side <strong>${wi.length}</strong> time${wi.length > 1 ? 's' : ''} · average <strong>${avg(wi)}</strong>` : ''
+                ].filter(Boolean).join('<br>');
+                const rows = shared.map((m, k) => `
+                    <li class="h2h-match${k >= 5 ? ' h2h-extra' : ''}">
+                        <span class="h2h-side ${m.side}">${m.side === 'vs' ? 'vs' : 'with'}</span>
+                        <span class="h2h-info"><span class="h2h-event">${escapeHtml(m.event || m.show || '')}${bmIds.has(m.id) ? ' <span title="Best Match of the Week">⭐</span>' : ''}</span>
+                            <span class="h2h-meta">${fmtDate(m.date)} · ${escapeHtml(m.matchType === 'One on One' ? 'Singles' : (m.matchType || ''))}</span></span>
+                        <span class="h2h-rating">${typeof m.rating === 'number' ? m.rating.toFixed(2) : '–'}</span>
+                    </li>`).join('');
+                const more = shared.length > 5
+                    ? `<button type="button" class="h2h-more" onclick="const l=this.previousElementSibling;const on=l.classList.toggle('expanded');this.textContent=on?'Show fewer':'Show all (${shared.length})';">Show all (${shared.length})</button>` : '';
+                return `<div class="h2h-pair">${title}<p class="h2h-summary">${summary}</p><ul class="h2h-list">${rows}</ul>${more}</div>`;
+            }).join('');
+        }
+
+        // ---------- photos ----------
         function findTeamMembers(teamName) {
-            // Direct lookup
-            let members = allTeamMembers?.teams?.[teamName];
-            if (members && members.length >= 2) return members;
-
-            // Try without "The" prefix
-            const nameWithoutThe = teamName.replace(/^The\s+/i, '');
-            members = allTeamMembers?.teams?.[nameWithoutThe];
-            if (members && members.length >= 2) return members;
-
-            // Try with "The" prefix
-            members = allTeamMembers?.teams?.['The ' + teamName];
-            if (members && members.length >= 2) return members;
-
-            // Check name-changes.json (old name → new name)
-            if (allNameChanges && Array.isArray(allNameChanges)) {
-                const nameChange = allNameChanges.find(c => c.oldName === teamName);
-                if (nameChange && nameChange.newName) {
-                    members = allTeamMembers?.teams?.[nameChange.newName];
-                    if (members && members.length >= 2) return members;
-                }
-                // Also try new name → old name
-                const reverseChange = allNameChanges.find(c => c.newName === teamName);
-                if (reverseChange && reverseChange.oldName) {
-                    members = allTeamMembers?.teams?.[reverseChange.oldName];
-                    if (members && members.length >= 2) return members;
-                }
+            const teams = allTeamMembers?.teams || {};
+            for (const n of [teamName, teamName.replace(/^The\s+/i, ''), 'The ' + teamName]) {
+                if (teams[n] && teams[n].length >= 2) return teams[n];
             }
-
-            // Last resort: parse "Name1 & Name2" or "Name1, Name2 & Name3" directly
-            if (teamName.includes(' & ') || teamName.includes(', ')) {
-                const parts = teamName.split(/[,&]/).map(n => n.trim()).filter(n => n);
-                if (parts.length >= 2) return parts;
+            const changes = Array.isArray(allNameChanges) ? allNameChanges : (allNameChanges?.changes || []);
+            // Team lists are keyed by the latest name: follow renames forward
+            let name = teamName;
+            for (let hop = 0; hop < 10; hop++) {
+                const next = changes.find(c => c.oldName === name);
+                if (!next || !next.newName) break;
+                name = next.newName;
+                if (teams[name] && teams[name].length >= 2) return teams[name];
             }
-
             return null;
         }
 
-        // Generate photo HTML - single photo for singles, multiple for teams
         function getPhotoHTML(data, currentRating, isActive) {
             const tierBorder = getTierBorderStyle(currentRating, isActive, 2);
-            const isTag = data.division === 'Men Tag' || data.division === 'Women Tag' ||
-                          data.division === "Men's Tag" || data.division === "Women's Tag";
-            const isTrios = data.division === 'Trios';
-
-            // Singles wrestler - single photo
-            if (!data.isTeam && !isTag && !isTrios) {
-                const initials = getInitials(data.name);
-                const slug = createSlug(data.name);
-                return `<div class="wrestler-photo" style="${tierBorder}">
-                    <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
+            const isTeam = data.isTeam || TEAM_DIVS.includes(divisionKey(data.division));
+            const one = (name, extra = '') => {
+                const initials = getInitials(name);
+                return `<div class="wrestler-photo"${extra} style="${tierBorder}">
+                    <img src="images/wrestlers/${createSlug(name)}.jpg" alt="${escapeHtml(name)}" loading="lazy" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
                 </div>`;
-            }
-
-            // Team - look up members from team-members.json
-            const members = findTeamMembers(data.name);
-
-            // If no members found, show single photo with team initials
-            if (!members || members.length < 2) {
-                const initials = getInitials(data.name);
-                const slug = createSlug(data.name);
-                return `<div class="wrestler-photo" style="${tierBorder}">
-                    <img src="images/wrestlers/${slug}.jpg" alt="${data.name}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
-                </div>`;
-            }
-
-            const photoClass = (isTrios || members.length >= 3) ? 'trios-photos' : 'tag-photos';
-            const photos = members.map(member => {
-                const slug = createSlug(member);
-                const initials = getInitials(member);
-                return `<div class="wrestler-photo" style="${tierBorder}">
-                    <img src="images/wrestlers/${slug}.jpg" alt="${member}" onerror="this.style.display='none'; this.parentElement.textContent='${initials}';">
-                </div>`;
-            }).join('');
-
-            return `<div class="team-photos ${photoClass}">${photos}</div>`;
+            };
+            const members = isTeam ? findTeamMembers(data.name) : null;
+            if (!members || members.length < 2) return one(data.name);
+            const cls = members.length >= 3 ? 'trios-photos' : 'tag-photos';
+            return `<div class="team-photos ${cls}">${members.map(m => one(m)).join('')}</div>`;
         }
 
-        // Create individual wrestler card
-        function createWrestlerCard(data) {
-            // photoHTML built below after currentRating and isCurrentlyRanked are declared
-
-            // Calculate stats safely with fallbacks
-const lastAppearanceWeek = data.ratingHistory?.[data.ratingHistory.length - 1]?.week;
-const actualCurrentData = getActualCurrentData(data.name, data.division);
-const isCurrentlyRanked = actualCurrentData.isRanked;
-
-// Filter data by selected year
-let filteredHistory = data.ratingHistory || [];
-if (selectedYear !== 'ALL') {
-    const targetYear = parseInt(selectedYear);
-    filteredHistory = filteredHistory.filter(h => {
-        const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
-        return weekYear === targetYear;
-    });
-}
-
-// Calculate stats based on filtered history
-const currentRating = selectedYear === 'ALL' 
-    ? (isCurrentlyRanked ? actualCurrentData.rating : 'N/A')
-    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rating : 'N/A');
-
-// Now both currentRating and isCurrentlyRanked are declared — safe to build photo HTML
-const photoHTML = getPhotoHTML(data, currentRating, selectedYear === 'ALL' ? isCurrentlyRanked : true);
-
-const currentRank = selectedYear === 'ALL'
-    ? (isCurrentlyRanked ? actualCurrentData.rank : 'N/A')
-    : (filteredHistory.length > 0 ? filteredHistory[filteredHistory.length - 1].rank : 'N/A');
-
-const peakRating = filteredHistory.length > 0
-    ? Math.max(...filteredHistory.map(h => h.rating))
-    : (selectedYear === 'ALL' ? (data.peakRating || data.peak || 0) : 'N/A');
-
-const floorRating = filteredHistory.length > 0
-    ? Math.min(...filteredHistory.map(h => h.rating))
-    : (selectedYear === 'ALL' ? calculateFloorRating(data) : 'N/A');
-
-const avgRating = filteredHistory.length > 0
-    ? (filteredHistory.reduce((sum, h) => sum + h.rating, 0) / filteredHistory.length).toFixed(2)
-    : (selectedYear === 'ALL' 
-        ? (data.ratingHistory && data.ratingHistory.length > 0
-            ? (data.ratingHistory.reduce((sum, h) => sum + h.rating, 0) / data.ratingHistory.length).toFixed(2)
-            : (data.average || 0).toFixed(2))
-        : 'N/A');
-
-const peakRank = filteredHistory.length > 0
-    ? Math.min(...filteredHistory.map(h => h.rank))
-    : (selectedYear === 'ALL' 
-        ? (data.peakRank || (data.ranks && data.ranks.length > 0 ? Math.min(...data.ranks) : data.currentRank) || '-')
-        : 'N/A'); // Changed from '-' to 'N/A'
-
-const weeksAtOne = filteredHistory.length > 0
-    ? filteredHistory.filter(h => h.rank === 1).length
-    : (selectedYear === 'ALL' ? calculateWeeksAtOne(data) : 0);
-
-const totalWeeks = filteredHistory.length > 0
-    ? filteredHistory.length
-    : (selectedYear === 'ALL' ? (data.totalWeeks || data.totalWeeksRanked || 0) : 0);
-
-// Total matches from statsByYear if available
-const totalMatches = selectedYear !== 'ALL' && data.statsByYear && data.statsByYear[selectedYear]
-    ? data.statsByYear[selectedYear].totalMatches
-    : (selectedYear === 'ALL' ? (data.totalMatches || 0) : 0);
-
-// Active/Inactive status
-const showAsActive = selectedYear === 'ALL' ? isCurrentlyRanked : (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].rank > 0);
-
-// Calculate highest/lowest match for selected year
-// Calculate highest/lowest match for selected year
-let highestMatch = 'N/A';
-let lowestMatch = 'N/A';
-
-if (selectedYear === 'ALL') {
-    highestMatch = (data.bestMatches && data.bestMatches[0]) ? data.bestMatches[0].rating : 'N/A';
-    lowestMatch = (data.statsByYear && data.statsByYear.ALL) ? data.statsByYear.ALL.lowestRating : 'N/A';
-} else if (data.statsByYear && data.statsByYear[selectedYear]) {
-    // Use the year-specific stats directly
-    highestMatch = data.statsByYear[selectedYear].highestRating || 'N/A';
-    lowestMatch = data.statsByYear[selectedYear].lowestRating || 'N/A';
-}
-
-            return `
-                <div class="wrestler-card">
-                    <div class="wrestler-header-card">
-                        <a href="${getWrestlerStatsUrl(data.name)}" style="text-decoration: none; display: contents;">
-                        ${photoHTML}
-                        </a>
-                        <div>
-                            <div class="wrestler-name-card">
-                                <a href="${getWrestlerStatsUrl(data.name)}" style="color: #ffd700; text-decoration: none; border-bottom: 1px dotted #ffd700;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd700'">
-                                ${data.name}
-                                </a>
-                                <span class="status-badge ${showAsActive ? 'active' : 'inactive'}">
-                                    ${showAsActive ? 'Active' : 'Inactive'}
-                                </span>
-                            </div>
-                            <div style="color: #999; font-size: 0.85em;">${getDivisionLabel(data.division)}</div>
-                        </div>
-                    </div>
-                    <div class="stats-list">
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The current rating for this wrestler.">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rating</span>
-                            <span class="stat-value-card highlight ${currentRating !== 'N/A' ? getRatingClass(typeof currentRating === 'number' ? currentRating : parseFloat(currentRating)) : ''}">${currentRating !== 'N/A' ? (typeof currentRating === 'number' ? currentRating.toFixed(2) : currentRating) : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                        <span class="stat-label-card tt" data-tt="The current ranking position for this wrestler.">${selectedYear === 'ALL' ? 'Current' : 'Year-End'} Rank</span>
-                        <span class="stat-value-card">${currentRank !== 'N/A' ? '#' + currentRank : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The highest rating this wrestler has achieved in the rankings.">Peak Rating</span>
-                            <span class="stat-value-card">${peakRating !== 'N/A' ? peakRating.toFixed(2) : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The lowest rating this wrestler has reached in the rankings.">Floor Rating</span>
-                            <span class="stat-value-card">${floorRating !== 'N/A' ? floorRating.toFixed(2) : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The average rating — all weeks this wrestler has been in the rankings count towards this.">Average Rating</span>
-                            <span class="stat-value-card">${avgRating}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The number of weeks this wrestler has appeared in the rankings.">Total Weeks</span>
-                            <span class="stat-value-card">${formatNumber(totalWeeks)}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The number of counting matches from Cagematch.net.">Total Matches</span>
-                            <span class="stat-value-card">${formatNumber(totalMatches)}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The highest ranked position this wrestler has reached in the weekly rankings.">Best Rank</span>
-                            <span class="stat-value-card">${peakRank !== 'N/A' ? '#' + peakRank : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="Only a certain number of wrestlers have been ranked at number 1.">Weeks at #1</span>
-                            <span class="stat-value-card ${weeksAtOne > 0 ? 'good' : ''}">${weeksAtOne}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The highest single match rating this wrestler has received.">Highest Match</span>
-                            <span class="stat-value-card ${highestMatch !== 'N/A' ? 'good' : ''}">${highestMatch !== 'N/A' ? highestMatch.toFixed(2) : 'N/A'}</span>
-                        </div>
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The lowest single match rating this wrestler has received.">Lowest Match</span>
-                             <span class="stat-value-card ${lowestMatch !== 'N/A' ? 'poor' : ''}">${lowestMatch !== 'N/A' ? lowestMatch.toFixed(2) : 'N/A'}</span>
-                        </div>
-                        ${selectedYear === 'ALL' && data.peakRatingWeek ? `
-                        <div class="stat-row-card">
-                            <span class="stat-label-card tt" data-tt="The week where this wrestler had their highest rating.">Peak Week</span>
-                            <span class="stat-value-card" style="font-size: 0.85em;">${data.peakRatingWeek}</span>
-                        </div>
-                        ` : ''}
-                        </div>
-                </div>
-            `;
-        }
-
-        // Helper: Get initials from name
         function getInitials(name) {
             if (!name) return '?';
             const words = name.trim().split(' ');
             if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
-            return words.map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            return words.map(w => w[0]).join('').substring(0, 2).toUpperCase().replace(/'/g, '');
         }
 
-        // Helper: Get rating color class
-        function getRatingClass(rating) {
-            if (rating >= 100) return 'good';
-            if (rating >= 95) return 'average';
-            return 'poor';
-        }
-
-        // ============================================
-        // TIER RING SYSTEM
-        // Ring on current rating, border only.
-        // ============================================
-
+        // TIER RING SYSTEM — ring on current rating, border only
         function getTierColour(rating, isActive = true) {
             if (isActive === false) return { tier: 'inactive', solid: '#6b6860' };
-            if (rating == null || isNaN(rating) || rating === 'N/A') return { tier: 'navy', solid: '#5b7fc7' };
+            if (rating == null || isNaN(rating)) return { tier: 'navy', solid: '#5b7fc7' };
             if (rating >= 150) return { tier: 'platinum' };
             if (rating >= 140) return { tier: 'gold', solid: '#ffd700' };
             if (rating >= 130) return { tier: 'silver', solid: '#c0c0c0' };
@@ -1660,265 +1580,99 @@ if (selectedYear === 'ALL') {
             return `border: ${borderWidth}px solid ${tier.solid};`;
         }
 
-        // Helper: Format number with commas
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // ---------- chart ----------
+        // One point per month (average of that month's weeks). The month axis
+        // runs without gaps, so a wrestler out of the rankings shows as a break.
+        function monthlyAverages(history) {
+            const map = {};
+            history.forEach(h => {
+                const m = (h.week || '').match(/^([A-Za-z]{3}) '(\d{2})/);
+                if (!m || typeof h.rating !== 'number') return;
+                const year = 2000 + Number(m[2]);
+                const month = new Date(`${m[1]} 1, ${year}`).getMonth();
+                const key = year * 12 + month;
+                (map[key] = map[key] || []).push(h.rating);
+            });
+            return map;
         }
 
-        // ===== PHASE 3: CHART FUNCTIONS =====
-        
-        function aggregateByMonth(historyData) {
-    const monthlyMap = {};
-    
-    historyData.forEach(snapshot => {
-        // Use the week label to determine month, not the date
-        // Example: "Jan '26 Week 1" -> extract "Jan '26"
-        const weekLabel = snapshot.week;
-        const monthMatch = weekLabel.match(/^([A-Za-z]{3}) '(\d{2})/);
-        
-        if (monthMatch) {
-            const monthStr = monthMatch[1]; // "Jan"
-            const yearStr = monthMatch[2];  // "26"
-            const monthKey = `20${yearStr}-${monthStr}`; // "2026-Jan"
-            
-            if (!monthlyMap[monthKey]) {
-                // Create a proper date for sorting (first day of that month)
-                const monthNum = new Date(`${monthStr} 1, 20${yearStr}`).getMonth();
-                const sortDate = new Date(2000 + parseInt(yearStr), monthNum, 1);
-                
-                monthlyMap[monthKey] = {
-                    ratings: [],
-                    date: sortDate,
-                    label: `${monthStr} ${yearStr}`
-                };
-            }
-            monthlyMap[monthKey].ratings.push(snapshot.rating);
-        }
-    });
-    
-    // Exclude current incomplete month to prevent phantom data points
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    
-    return Object.keys(monthlyMap)
-        .sort((a, b) => monthlyMap[a].date - monthlyMap[b].date)
-        .map(key => ({
-            label: monthlyMap[key].label,
-            rating: monthlyMap[key].ratings.reduce((a, b) => a + b, 0) / monthlyMap[key].ratings.length,
-            date: monthlyMap[key].date
-        }))
-        .filter(m => {
-            return !(m.date.getFullYear() === currentYear && m.date.getMonth() === currentMonth);
-        });
-}
-
-        // Create comparison chart
-        function createComparisonChart(wrestlerDataArray) {
+        function createComparisonChart(dataArray) {
             const ctx = document.getElementById('comparisonChart').getContext('2d');
-            
-            // Destroy existing chart
-            if (comparisonChart) {
-                comparisonChart.destroy();
+            if (comparisonChart) comparisonChart.destroy();
+            const colors = ['#ffd700', '#00e5ff', '#ff8c00'];
+            const phone = window.innerWidth <= 768;
+            const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            const perWrestler = dataArray.map(d =>
+                monthlyAverages((d.ratingHistory || []).filter(h => !selectedYears || selectedYears.has(weekYear(h)))));
+            const keys = perWrestler.flatMap(m => Object.keys(m).map(Number));
+            if (!keys.length) { comparisonChart = null; return; }
+            let axis = [];
+            for (let k = Math.min(...keys); k <= Math.max(...keys); k++) {
+                if (!selectedYears || selectedYears.has(Math.floor(k / 12))) axis.push(k);
             }
+            const labels = axis.map(k => `${MONTHS[k % 12]} '${String(Math.floor(k / 12)).slice(-2)}`);
 
-            // Colors for up to 3 wrestlers
-            const colors = [
-                { border: '#ffd700', bg: 'rgba(255, 215, 0, 0.1)' },  // Gold
-                { border: '#00ffff', bg: 'rgba(0, 255, 255, 0.1)' },  // Cyan
-                { border: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)' }   // Orange
-            ];
-
-            // Collect all month data with proper date objects for sorting
-            const allMonthsMap = new Map();
-            
-            // Create datasets for each wrestler
-            const datasets = wrestlerDataArray.map((data, index) => {
-                let historyData = data.ratingHistory || [];
-                
-                // Filter by year if not ALL
-                if (selectedYear !== 'ALL' && historyData.length > 0) {
-                    const targetYear = parseInt(selectedYear);
-                    historyData = historyData.filter(h => {
-                        const weekYear = parseInt(h.week.match(/'(\d+)/)?.[1]) + 2000;
-                        return weekYear === targetYear;
-                    });
-                }
-
-                const monthlyData = aggregateByMonth(historyData);
-                
-                // Store all months with their date objects for proper sorting
-                monthlyData.forEach(m => {
-                    const key = `${m.date.getFullYear()}-${String(m.date.getMonth() + 1).padStart(2, '0')}`;
-                    if (!allMonthsMap.has(key)) {
-                        allMonthsMap.set(key, { date: m.date, label: m.label });
-                    }
-                });
-
-                return {
-                    label: data.name,
-                    data: monthlyData,
-                    monthlyData: monthlyData, // Keep for mapping
-                    borderColor: colors[index].border,
-                    backgroundColor: colors[index].bg,
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 6,
-                    tension: 0.3,
-                    fill: false,
-                    spanGaps: true // Connect lines even with missing data
-                };
-            });
-
-            // Sort months chronologically by actual date
-            const sortedMonths = Array.from(allMonthsMap.entries())
-                .sort((a, b) => a[1].date - b[1].date)
-                .map(entry => entry[1].label);
-
-            // Reformat datasets to use sorted months with null for missing data
-            datasets.forEach(dataset => {
-                const monthDataMap = new Map();
-                dataset.monthlyData.forEach(m => {
-                    monthDataMap.set(m.label, m.rating);
-                });
-                
-                dataset.data = sortedMonths.map(label => {
-                    const rating = monthDataMap.get(label);
-                    return rating !== undefined ? rating : null;
-                });
-                
-                delete dataset.monthlyData; // Clean up temp data
-            });
+            const datasets = dataArray.map((d, i) => ({
+                label: d.name,
+                data: axis.map(k => {
+                    const r = perWrestler[i][k];
+                    return r ? r.reduce((a, b) => a + b, 0) / r.length : null;
+                }),
+                borderColor: colors[i],
+                backgroundColor: colors[i],
+                borderWidth: 2,
+                pointRadius: phone ? 0 : 1.5,
+                pointHoverRadius: 5,
+                tension: 0.25,
+                fill: false,
+                spanGaps: false
+            }));
 
             comparisonChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: sortedMonths,
-                    datasets: datasets
-                },
+                data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    aspectRatio: 2,
+                    aspectRatio: phone ? 1.15 : 2.2,
                     plugins: {
                         legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                color: '#ffd700',
-                                font: { size: 12 },
-                                padding: 15,
-                                usePointStyle: true
-                            }
+                            display: true, position: 'top',
+                            labels: { color: '#ffd700', font: { size: phone ? 11 : 12 }, boxWidth: 10, boxHeight: 10, padding: phone ? 10 : 15, usePointStyle: true }
                         },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#ffd700',
-                            bodyColor: '#fff',
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
-                                }
-                            }
+                            mode: 'index', intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)', titleColor: '#ffd700', bodyColor: '#fff',
+                            callbacks: { label: c => c.parsed.y == null ? null : `${c.dataset.label}: ${c.parsed.y.toFixed(2)}` }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: false,
-                            grid: {
-                                color: 'rgba(255, 215, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#e0e0e0',
-                                font: { size: 11 }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Rating',
-                                color: '#ffd700',
-                                font: { size: 12 }
-                            }
+                            grid: { color: 'rgba(255, 215, 0, 0.1)' },
+                            ticks: { color: '#e0e0e0', font: { size: phone ? 10 : 11 } }
                         },
                         x: {
-                            grid: {
-                                color: 'rgba(255, 215, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#e0e0e0',
-                                maxRotation: 45,
-                                minRotation: 45,
-                                font: { size: 10 }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Month',
-                                color: '#ffd700',
-                                font: { size: 12 }
-                            }
+                            grid: { color: 'rgba(255, 215, 0, 0.06)' },
+                            ticks: { color: '#e0e0e0', font: { size: phone ? 10 : 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: phone ? 5 : 12 }
                         }
                     },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    }
+                    interaction: { mode: 'index', axis: 'x', intersect: false }
                 }
             });
         }
 
-        // ===== END PHASE 3 FUNCTIONS =====
-
-        // ===== END PHASE 2 FUNCTIONS =====
-
-        // Check URL parameters on page load
-        function checkURLParams() {
-            const params = new URLSearchParams(window.location.search);
-            const division = params.get('division');
-            const wrestlers = params.get('wrestlers');
-
-            if (division && wrestlers) {
-                // Set division
-                const divisionRadio = document.getElementById(`div-${division}`);
-                if (divisionRadio) {
-                    divisionRadio.checked = true;
-                    selectedDivision = division;
-                    populateWrestlerDropdowns();
-                }
-
-                // Set wrestlers (with small delay to ensure dropdowns are populated)
-                setTimeout(() => {
-                    const wrestlerSlugs = wrestlers.split(',');
-                    if (wrestlerSlugs[0]) document.getElementById('wrestler1').value = wrestlerSlugs[0];
-                    if (wrestlerSlugs[1]) document.getElementById('wrestler2').value = wrestlerSlugs[1];
-                    if (wrestlerSlugs[2]) document.getElementById('wrestler3').value = wrestlerSlugs[2];
-                    
-                    validateSelection();
-                    
-                    // Auto-compare if valid
-                    if (!document.getElementById('compareBtn').disabled) {
-                        compareWrestlers();
-                    }
-                }, 100);
-            }
-        }
-
         function goBackToRankings() {
-            // If we came from another page on the site, go back
             const referrer = document.referrer;
-            if (referrer && referrer.includes(window.location.origin)) {
-                window.history.back();
-            } else {
-                // Fallback to home
-                window.location.href = 'index.html';
-            }
+            if (referrer && referrer.includes(window.location.origin)) window.history.back();
+            else window.location.href = 'index.html';
         }
 
-        // Tooltip Toggle Functions
+        // Tooltip toggle (on/off remembered per browser)
         (function initTooltips() {
             let stored = null;
-            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {} // storage can be blocked by the browser
+            try { stored = localStorage.getItem('aewTooltips'); } catch (e) {}
             const on = stored === null ? true : stored === 'true';
             if (on) document.body.classList.add('tooltips-on');
             const btn = document.getElementById('tooltipToggle');
