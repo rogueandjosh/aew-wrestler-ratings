@@ -274,6 +274,12 @@
         .bm-search .wrestler-search-wrap { width: 100%; }
         .bm-search > label.match-filter-group-title { font-size: 0.85em; margin-bottom: 5px; }
         .bm-filter-grid { align-items: end; }
+        /* Laptop: the six filters share the row with a narrower Customize box at the end */
+        @media (min-width: 769px) {
+            #archiveFilterGrid { grid-template-columns: repeat(6, minmax(0, 1fr)) auto; gap: 14px; }
+        }
+        .ar-cols-btn { height: 36px; padding: 0 14px; white-space: nowrap; background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9em; font-family: inherit; }
+        .ar-cols-btn:hover { background: rgba(255,215,0,0.3); }
         .bm-search input { width: 100%; box-sizing: border-box; height: 36px; padding: 0 30px 0 12px; font-size: 0.9em; }
         @media (max-width: 768px) {
             .bm-search > label.match-filter-group-title { font-size: 0.8em; margin-bottom: 4px; }
@@ -505,18 +511,18 @@
                                 <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
                             </div>
                         </div>
+                        <!-- Laptop only: Customize Columns sits at the end of the filter row (phones use cards, so it's hidden) -->
+                        <div class="ar-columns-row ar-cols-cell">
+                            <div class="match-filter-group-title" aria-hidden="true">Columns</div>
+                            <button type="button" onclick="toggleColumnSelector()" class="ar-cols-btn tt tt-below" data-tt="Choose which extra columns to show. Show, Rating and Wrestlers are always visible.">⚙️ Customize</button>
+                        </div>
                     </div>
                     <div class="bm-reset-row"><button type="button" class="match-filters-reset" id="archiveReset" onclick="resetArchiveFilters()" style="display: none;">Clear filters</button></div>
                 </div>
 
-                <!-- Results line (left) and Customize Columns (right) share one row -->
+                <!-- Results line -->
                 <div class="ar-top-row">
                 <p class="ar-summary tt" id="archiveSummary" data-tt="How many Best Matches fit your filters, and their average rating. Tap a week to open that week's rankings on the main page (on the match's division), or a name to open their wrestler stats."></p>
-                <div class="ar-columns-row">
-                    <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Rating and Wrestlers are always visible.">
-                        ⚙️ Customize Columns
-                    </button>
-                </div>
                 </div>
                 <div id="columnSelector" style="display: none; background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
