@@ -748,7 +748,7 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 10px;
             padding: 20px;
-            margin-top: 25px;
+            margin-top: 0;
             margin-bottom: 20px;
         }
 
@@ -794,6 +794,10 @@
             border-color: #ffd700;
             background: rgba(255, 255, 255, 0.15);
         }
+
+        /* Tiles under the search: keep labels readable */
+        .stats-summary .stat-label { color: #b8b8b8; }
+        .filter-controls .stats-summary { margin: 15px 0 0; }
 
         .filter-controls .search-box {
             border: none;
@@ -1623,18 +1627,40 @@
                 font-size: 0.8em;
             }
 
-            .tabs {
+            /* Division buttons: 3 per row (two tidy rows) */
+            #divisionTabs.tabs {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 8px;
+            }
+            #divisionTabs .tab,
+            #divisionTabs > div,
+            #divisionTabs > div > .tab {
+                width: 100%;
+                min-width: 0;
+                padding: 10px 4px;
+                font-size: 0.85em;
+                white-space: normal !important;
+                line-height: 1.2;
+            }
+            #divisionTabs > div { display: flex !important; padding: 0; }
+            #groupDropdown { left: auto !important; right: 0; }   /* right-hand column: open leftwards */
+            .tabs:not(#divisionTabs) {
                 flex-direction: column;
             }
-
-            .tab {
+            .tabs:not(#divisionTabs) .tab {
                 width: 100%;
             }
 
+            /* Number tiles: one row of three */
             .stats-summary {
-                flex-direction: column;
-                gap: 15px;
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 8px;
             }
+            .stats-summary .stat-box { padding: 10px 4px; }
+            .stats-summary .stat-number { font-size: 1.35em; }
+            .stats-summary .stat-label { font-size: 0.75em; }
 
             table {
                 font-size: 0.9em;
@@ -2596,7 +2622,7 @@
                 <li>Current rankings reflect current form — recent matches count more than older ones</li>
                 <li>Wrestlers drop out after 6 weeks of inactivity, but re-enter using their rating (which has continued to degrade/recover) if it hasn't reached 100</li>
                 <li>Dark matches, Pre-show matches and those that are under five minutes long (and therefore without a Cagematch rating) are not included</li>
-                <li>Updated weekly (Wednesdays before Dynamite)</li>
+                <li>Updated weekly (Tuesdays, before Dynamite)</li>
             </ul>
 
             <div class="find-out-more">
@@ -3741,6 +3767,20 @@
             const today = new Date();
             const mmdd = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
+            // Days with no AEW show ever (e.g. 31 Oct) have no file. The daily
+            // planner picks yesterday → 2 days ahead, so if tomorrow is already
+            // planned but today has no pick, there is nothing to fetch.
+            const picksData = await loadOnThisDayPicks();
+            const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+            const mmddTomorrow = `${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
+            const picks = picksData && picksData.picks;
+            const plannedTomorrow = picks && picks[mmddTomorrow] && picks[mmddTomorrow][tomorrow.getFullYear()] != null;
+            const pickedToday = picks && picks[mmdd] && picks[mmdd][today.getFullYear()] != null;
+            if (plannedTomorrow && !pickedToday) {
+                container.style.display = 'none';
+                return;
+            }
+
             let otdData;
             try {
                 const response = await fetch(`on-this-day-daily/${mmdd}.json`);
@@ -3752,7 +3792,7 @@
                 return;
             }
 
-            const [, , , picksData] = await Promise.all([loadWrestlersIndex(), loadTeamMembers(), loadNameChanges(), loadOnThisDayPicks()]);
+            await Promise.all([loadWrestlersIndex(), loadTeamMembers(), loadNameChanges()]);
 
             const fullDateSeed = `${today.getFullYear()}-${mmdd}`;
             const picked = pickOnThisDayContent(otdData, fullDateSeed, mmdd, today.getFullYear(), picksData);
@@ -5330,8 +5370,38 @@ let visibleColumns = {
         }
 
         function renderDivisionStructure(division, data) {
-            // Build the STATIC structure - table first, search/stats below
+            // Build the STATIC structure - search and summary first, then the table
             let html = `
+                <!-- Search sits above the table, so results show straight away -->
+                <div class="filter-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="search-${division}">🔍 Search Wrestlers</label>
+                            <input type="text"
+                                   id="search-${division}"
+                                   class="search-box"
+                                   placeholder="Type wrestler name..."
+                                   oninput="applyFilters('${division}')">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox"
+                                       id="show-dropped-${division}"
+                                       checked
+                                       aria-labelledby="show-dropped-label-${division}"
+                                       onchange="applyFilters('${division}', true)">
+                                <span class="toggle-slider"></span>
+                                <span class="sr-only">Show Dropped Out Wrestlers</span>
+                            </label>
+                            <label class="filter-label" id="show-dropped-label-${division}" for="show-dropped-${division}">Show Dropped Out Wrestlers</label>
+                        </div>
+                    </div>
+                    <div class="stats-summary" id="stats-${division}">
+                    </div>
+                </div>
+
                 <div class="table-container" id="table-${division}">
                 </div>
 
@@ -5348,33 +5418,6 @@ let visibleColumns = {
                     </button>
                 </div>
 
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <label for="search-${division}">🔍 Search Wrestlers</label>
-                            <input type="text" 
-                                   id="search-${division}" 
-                                   class="search-box" 
-                                   placeholder="Type wrestler name..."
-                                   oninput="applyFilters('${division}')">
-                        </div>
-                    </div>
-                    <div class="filter-row">
-                        <div class="toggle-container">
-    <label class="toggle-switch">
-        <input type="checkbox" 
-               id="show-dropped-${division}" 
-               checked
-               aria-labelledby="show-dropped-label-${division}"
-               onchange="applyFilters('${division}', true)">
-                <span class="toggle-slider"></span>
-        <span class="sr-only">Show Dropped Out Wrestlers</span>
-    </label>
-    <label class="filter-label" id="show-dropped-label-${division}" for="show-dropped-${division}">Show Dropped Out Wrestlers</label>
-</div>
-
-                <div class="stats-summary" id="stats-${division}">
-                </div>
             `;
 
             document.getElementById('content').innerHTML = html;
@@ -6889,23 +6932,12 @@ function renderStatistics(division) {
                 th.classList.remove('sorted-asc', 'sorted-desc');
             });
 
-            // Add sorted class to current column
-            const columnIndex = {
-                'name': 1,
-                'current': 2,
-                'peak': 3,
-                'floor': 4,
-                'average': 5,
-                'peakWeek': 6,
-                'weeksAtNumber1': 7
-            }[currentSortColumn];
-
-            if (columnIndex !== undefined) {
-                const th = document.querySelectorAll('th')[columnIndex];
-                if (th) {
-                    th.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
-                }
-            }
+            // Add sorted class to the heading that sorts by this column, found by
+            // its own sort call (not by position, which shifts when columns are
+            // added, hidden or reordered)
+            document.querySelectorAll(`th[onclick*="('${currentSortColumn}')"]`).forEach(th => {
+                th.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            });
         }
 
         function getRatingClass(rating) {
