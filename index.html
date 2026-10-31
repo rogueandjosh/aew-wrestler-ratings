@@ -2646,53 +2646,103 @@
             
             <p>What I've found most fascinating is comparing wrestlers and seeing how their ratings evolve over time — the peaks, the valleys, the comebacks. It tells a story that complements what we see on screen.</p>
 
+            <style>
+                .about-video-box { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+                .about-video-box video { max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700; background: #000; }
+                .about-video-expand, .about-video-close {
+                    background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.6);
+                    border-radius: 20px; padding: 7px 16px; font-size: 0.9em; font-weight: 600; cursor: pointer;
+                }
+                .about-video-close { display: none; }
+                /* "Watch bigger": the video fills the screen inside the page, with our own close button */
+                .about-video-box.is-big {
+                    position: fixed; inset: 0; z-index: 100000; background: rgba(0, 0, 0, 0.94);
+                    justify-content: center; padding: 16px; gap: 14px;
+                }
+                .about-video-box.is-big video { aspect-ratio: 9 / 16; height: calc(100vh - 110px); height: calc(100dvh - 110px); width: auto; max-width: 100%; object-fit: contain; }
+                .about-video-box.is-big .about-video-close { display: block; }
+                .about-video-box.is-big .about-video-expand { display: none; }
+                body.about-video-open { overflow: hidden; }
+            </style>
             <div style="margin: 30px 0;">
                 <h3 style="text-align: center;">📹 What is Elite Wrestler Ratings?</h3>
                 <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">The project in 1 minute</p>
-                <div style="display: flex; justify-content: center;">
+                <div class="about-video-box">
+                    <button type="button" class="about-video-close" aria-label="Back to normal size">✕ Back to normal size</button>
                     <video
                         class="about-video"
                         controls
                         playsinline
-                        preload="none"
-                        style="max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700;">
+                        controlslist="nofullscreen"
+                        disablepictureinpicture
+                        preload="none">
                         <source src="what-is-EWR.mp4" type="video/mp4">
                         Your browser doesn't support video playback.
                     </video>
+                    <button type="button" class="about-video-expand">⤢ Watch bigger</button>
                 </div>
             </div>
 
             <div style="margin: 30px 0;">
                 <h3 style="text-align: center;">📹 How are points gained or lost?</h3>
                 <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">The ratings explained in 1 minute</p>
-                <div style="display: flex; justify-content: center;">
+                <div class="about-video-box">
+                    <button type="button" class="about-video-close" aria-label="Back to normal size">✕ Back to normal size</button>
                     <video
                         class="about-video"
                         controls
                         playsinline
-                        preload="none"
-                        style="max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700;">
+                        controlslist="nofullscreen"
+                        disablepictureinpicture
+                        preload="none">
                         <source src="how-EWR-points-work.mp4" type="video/mp4">
                         Your browser doesn't support video playback.
                     </video>
+                    <button type="button" class="about-video-expand">⤢ Watch bigger</button>
                 </div>
             </div>
+
             <script>
-            // About videos: when a video finishes while full screen, go back to its normal size,
-            // and only one video plays at a time
+            // About videos: "Watch bigger" opens the video large inside the page with a "Back to normal size"
+            // button (works the same on every phone). It also shrinks back when the video ends, and only one
+            // video plays at a time.
             (function () {
+                const boxes = document.querySelectorAll('.about-video-box');
                 const vids = document.querySelectorAll('video.about-video');
-                const exitBig = v => {
+                let placeholder = null;
+                const exitNative = v => {
                     try {
-                        if (v.webkitDisplayingFullscreen && v.webkitExitFullscreen) v.webkitExitFullscreen();   // iPhone
+                        if (v.webkitDisplayingFullscreen && v.webkitExitFullscreen) v.webkitExitFullscreen();
                         else if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
                         else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
                     } catch (e) {}
                 };
+                const close = box => {
+                    if (!box.classList.contains('is-big')) return;
+                    box.classList.remove('is-big');
+                    document.body.classList.remove('about-video-open');
+                    if (placeholder) { placeholder.replaceWith(box); placeholder = null; }   // back to its spot on the page
+                };
+                const open = box => {
+                    boxes.forEach(close);
+                    placeholder = document.createElement('div');
+                    box.replaceWith(placeholder);
+                    document.body.appendChild(box);          // on <body> so nothing on the page can clip it
+                    box.classList.add('is-big');
+                    document.body.classList.add('about-video-open');
+                    const v = box.querySelector('video');
+                    v.play().catch(() => {});
+                };
+                boxes.forEach(box => {
+                    box.querySelector('.about-video-expand').addEventListener('click', () => open(box));
+                    box.querySelector('.about-video-close').addEventListener('click', () => close(box));
+                    box.addEventListener('click', e => { if (e.target === box) close(box); });   // tap the dark area
+                });
                 vids.forEach(v => {
-                    v.addEventListener('ended', () => { exitBig(v); v.currentTime = 0; });
+                    v.addEventListener('ended', () => { exitNative(v); close(v.closest('.about-video-box')); v.currentTime = 0; });
                     v.addEventListener('play', () => vids.forEach(o => { if (o !== v && !o.paused) o.pause(); }));
                 });
+                document.addEventListener('keydown', e => { if (e.key === 'Escape') boxes.forEach(close); });
             })();
             </script>
 
