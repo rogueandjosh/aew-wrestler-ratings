@@ -800,6 +800,11 @@
         .cmp-div-btn.active { background: #ffd700; color: #1a1a2e; }
         .cmp-div-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         .cmp-year-grid { max-width: 260px; grid-template-columns: 1fr !important; }
+        /* Laptop: Division buttons and the Year box share one row */
+        @media (min-width: 769px) {
+            .cmp-row { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 20px; align-items: start; }
+            .cmp-row .cmp-year-grid { max-width: none; }
+        }
         .cmp-year-grid .match-filter-group-title.cmp-h { font-size: 1.05em; margin-bottom: 8px; }
         .cmp-year-grid .match-filter-options { width: auto !important; left: 0 !important; right: 0 !important; }
 
@@ -939,6 +944,7 @@
         <main>
             <!-- Choose: division, years and up to three wrestlers in one panel -->
             <section class="division-section cmp-choose">
+                <div class="cmp-row">
                 <div class="cmp-block">
                     <h2 class="cmp-h tt" data-tt="Choose which division to compare from. All Divisions lets you compare across divisions, e.g. a wrestler with a tag team.">Division</h2>
                     <div class="cmp-divs" role="group" aria-label="Division">
@@ -960,6 +966,7 @@
                             <div class="match-filter-options" id="cmpYearOptions"></div>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 <div class="cmp-block">

@@ -336,6 +336,12 @@
             border: 2px solid #ffd700;
         }
 
+        /* Wider screens: the 10 badges spread evenly across the box */
+        @media (min-width: 769px) {
+            .recent-matches-list { justify-content: space-evenly; }
+            .recent-item { margin-right: 0 !important; }
+        }
+
         .recent-item {
             display: inline-flex;
             align-items: center;

@@ -49,7 +49,7 @@
 
         button, input, select, textarea { font-family: 'Overlock', 'Arial', sans-serif; }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }   /* same as the other main pages */
 
         header {
             text-align: center;
@@ -307,7 +307,8 @@
             font-family: inherit;
         }
         #archiveSortSelect option { background: #1a1a2e; color: #e0e0e0; }
-        .ar-summary { color: #ccc; font-size: 0.9em; margin: 0 0 10px; }
+        .ar-summary { color: #ccc; font-size: 0.9em; margin: 0; }
+        .ar-top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
         .ar-summary strong { color: #ffd700; }
         #arScrollHint[hidden], #archiveCards[hidden], #arScroll[hidden] { display: none !important; }
         .ar-week-link { color: #e0e0e0; text-decoration: none; border-bottom: 1px dotted rgba(255,215,0,0.6); }
@@ -508,10 +509,14 @@
                     <div class="bm-reset-row"><button type="button" class="match-filters-reset" id="archiveReset" onclick="resetArchiveFilters()" style="display: none;">Clear filters</button></div>
                 </div>
 
-                <div class="ar-columns-row" style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                <!-- Results line (left) and Customize Columns (right) share one row -->
+                <div class="ar-top-row">
+                <p class="ar-summary tt" id="archiveSummary" data-tt="How many Best Matches fit your filters, and their average rating. Tap a week to open that week's rankings on the main page (on the match's division), or a name to open their wrestler stats."></p>
+                <div class="ar-columns-row">
                     <button onclick="toggleColumnSelector()" class="tt tt-below" style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; color: #ffd700; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;" data-tt="Choose which extra columns to show. Show, Rating and Wrestlers are always visible.">
                         ⚙️ Customize Columns
                     </button>
+                </div>
                 </div>
                 <div id="columnSelector" style="display: none; background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
@@ -542,7 +547,6 @@
                     </div>
                 </div>
 
-                <p class="ar-summary tt" id="archiveSummary" data-tt="How many Best Matches fit your filters, and their average rating. Tap a week to open that week's rankings on the main page (on the match's division), or a name to open their wrestler stats."></p>
                 <p class="scroll-hint" id="arScrollHint" hidden>↔️ Swipe to see more columns</p>
                 <div class="bm-cards" id="archiveCards" hidden></div>
                 <div class="table-scroll ar-scroll" id="arScroll">
