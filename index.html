@@ -2651,6 +2651,7 @@
                 <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">The project in 1 minute</p>
                 <div style="display: flex; justify-content: center;">
                     <video
+                        class="about-video"
                         controls
                         playsinline
                         preload="none"
@@ -2666,6 +2667,7 @@
                 <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">The ratings explained in 1 minute</p>
                 <div style="display: flex; justify-content: center;">
                     <video
+                        class="about-video"
                         controls
                         playsinline
                         preload="none"
@@ -2675,6 +2677,24 @@
                     </video>
                 </div>
             </div>
+            <script>
+            // About videos: when a video finishes while full screen, go back to its normal size,
+            // and only one video plays at a time
+            (function () {
+                const vids = document.querySelectorAll('video.about-video');
+                const exitBig = v => {
+                    try {
+                        if (v.webkitDisplayingFullscreen && v.webkitExitFullscreen) v.webkitExitFullscreen();   // iPhone
+                        else if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    } catch (e) {}
+                };
+                vids.forEach(v => {
+                    v.addEventListener('ended', () => { exitBig(v); v.currentTime = 0; });
+                    v.addEventListener('play', () => vids.forEach(o => { if (o !== v && !o.paused) o.pause(); }));
+                });
+            })();
+            </script>
 
             <h3>Elite Wrestler Ratings</h3>
             <p>The ratings are based on match performances from the excellent <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700;">Cagematch.net</a> — not wins and losses, but how fans have received and rated each AEW wrestler's matches.</p>
