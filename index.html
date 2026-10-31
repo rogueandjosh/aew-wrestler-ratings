@@ -748,7 +748,7 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 10px;
             padding: 20px;
-            margin-top: 0;
+            margin-top: 25px;
             margin-bottom: 20px;
         }
 
@@ -793,6 +793,11 @@
             outline: none;
             border-color: #ffd700;
             background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Very narrow phones: slightly smaller division labels so they stay on one line */
+        @media (max-width: 400px) {
+            #divisionTabs.tabs .tab { font-size: 0.78em !important; }   /* (more specific than the 768px rule) */
         }
 
         /* Tiles under the search: keep labels readable */
@@ -1627,6 +1632,11 @@
                 font-size: 0.8em;
             }
 
+            /* Weekly Rankings / All Wrestler Statistics: compact, one line each */
+            .view-toggle { padding: 4px; margin-bottom: 14px; }
+            .toggle-btn { padding: 9px 6px; font-size: 0.85em; line-height: 1.2; }
+            .toggle-btn .ph-hide { display: none; }   /* "All Statistics" fits on one line */
+
             /* Division buttons: 3 per row (two tidy rows) */
             #divisionTabs.tabs {
                 display: grid;
@@ -1634,16 +1644,15 @@
                 gap: 8px;
             }
             #divisionTabs .tab,
-            #divisionTabs > div,
-            #divisionTabs > div > .tab {
+            #divisionTabs > div {
                 width: 100%;
                 min-width: 0;
-                padding: 10px 4px;
-                font-size: 0.85em;
-                white-space: normal !important;
                 line-height: 1.2;
             }
+            #divisionTabs .tab { padding: 0 4px; white-space: nowrap !important; }
             #divisionTabs > div { display: flex !important; padding: 0; }
+            #divisionTabs .tab { font-size: 0.85em !important; height: 44px; display: flex; align-items: center; justify-content: center; }
+            #divisionTabs .tab-long { display: none; }   /* "Men's Tag" rather than "Men's Tag Teams" */
             #groupDropdown { left: auto !important; right: 0; }   /* right-hand column: open leftwards */
             .tabs:not(#divisionTabs) {
                 flex-direction: column;
@@ -2460,15 +2469,15 @@
                 📊 Weekly Rankings
             </button>
             <button id="statsToggle" class="toggle-btn tt tt-below" onclick="switchToStatistics()" data-tt="This shows ALL wrestlers for each division, whether they are active or not.">
-                📈 All Wrestler Statistics
+                📈 All <span class="ph-hide">Wrestler </span>Statistics
             </button>
         </div>
 
         <div id="divisionTabs" class="tabs">
             <button class="tab active" onclick="handleDivisionClick('mens')">Men</button>
             <button class="tab" onclick="handleDivisionClick('womens')">Women</button>
-            <button class="tab" onclick="handleDivisionClick('menstag')">Men's Tag Teams</button>
-            <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag Teams</button>
+            <button class="tab" onclick="handleDivisionClick('menstag')">Men's Tag<span class="tab-long"> Teams</span></button>
+            <button class="tab" onclick="handleDivisionClick('womenstag')">Women's Tag<span class="tab-long"> Teams</span></button>
             <button class="tab" onclick="handleDivisionClick('trios')">Trios</button>
             <div style="position:relative;display:inline-flex;">
                 <button class="tab tt" id="groupBtn-multi" onclick="toggleGroupDropdown()" style="white-space:nowrap;" data-tt="Combine multiple divisions into one ranked list — choose All Divisions, Singles (Men's + Women's), or Teams (Tag + Trios).">Select Multiple ▾</button>
@@ -5370,9 +5379,25 @@ let visibleColumns = {
         }
 
         function renderDivisionStructure(division, data) {
-            // Build the STATIC structure - search and summary first, then the table
+            // Build the STATIC structure - table first, search/stats below
             let html = `
-                <!-- Search sits above the table, so results show straight away -->
+                <div class="table-container" id="table-${division}">
+                </div>
+
+                <button class="expand-toggle show-all-toggle" id="showAllBtn-${division}" onclick="toggleShowAll('${division}')" style="display: none;">
+                    ▼ Show All Wrestlers
+                </button>
+
+                <div id="dropped-${division}">
+                </div>
+
+                <div id="backToTopContainer-${division}" style="display: none; text-align: center; margin: 15px 0;">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: all 0.2s;">
+                        ▲ Back to Top
+                    </button>
+                </div>
+
+                <!-- Search and totals sit below the rankings -->
                 <div class="filter-controls">
                     <div class="filter-row">
                         <div class="filter-group">
@@ -5402,21 +5427,6 @@ let visibleColumns = {
                     </div>
                 </div>
 
-                <div class="table-container" id="table-${division}">
-                </div>
-
-                <button class="expand-toggle show-all-toggle" id="showAllBtn-${division}" onclick="toggleShowAll('${division}')" style="display: none;">
-                    ▼ Show All Wrestlers
-                </button>
-
-                <div id="dropped-${division}">
-                </div>
-
-                <div id="backToTopContainer-${division}" style="display: none; text-align: center; margin: 15px 0;">
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background: rgba(255,215,0,0.15); border: 2px solid #ffd700; color: #ffd700; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: all 0.2s;">
-                        ▲ Back to Top
-                    </button>
-                </div>
 
             `;
 
