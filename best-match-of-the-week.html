@@ -269,6 +269,11 @@
         /* Filters: years (shared picker), then the tick-list boxes, then search */
         .bm-filter-grid { margin-bottom: 14px; }
         .lb-filter-grid { max-width: 320px; margin-bottom: 18px; }
+        @media (min-width: 769px) {
+            .lb-top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: end; margin-bottom: 18px; }
+            .lb-top-row > .filters-row, .lb-top-row > .lb-filter-grid { margin: 0; max-width: none; }
+            .lb-top-row .lb-filter-grid { grid-template-columns: 1fr; }
+        }
         /* Search sits in the grid as the last box, same height as the others */
         .bm-search { gap: 0; }
         .bm-search .wrestler-search-wrap { width: 100%; }
@@ -581,6 +586,8 @@
         <div id="leaderboardTab" style="display: none;">
             <div class="section-card">
                 <div class="section-title tt" data-tt="Only wrestlers and teams with 2 or more Best Match appearances are shown.">Top Wrestlers &amp; Teams by Best Match Appearances</div>
+                <!-- Laptop: Search and Division side by side, equal widths (phones: stacked as before) -->
+                <div class="lb-top-row">
                 <div class="filters-row">
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
                         <label for="leaderboardWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to show only them. Tap ✕ to clear it.">Search Wrestler</label>
@@ -596,6 +603,7 @@
                             <button type="button" class="match-filter-toggle" id="lbDivisionToggle" aria-expanded="false" aria-controls="lbDivisionOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
                             <div class="match-filter-options" id="lbDivisionOptions"></div>
                         </div>
+                </div>
                 </div>
                 <p class="scroll-hint" id="lbScrollHint" hidden>↔️ Swipe to see more columns</p>
                 <div class="table-scroll lb-scroll" id="lbScroll">
