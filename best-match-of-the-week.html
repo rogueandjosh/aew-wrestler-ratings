@@ -512,7 +512,7 @@
                         <div class="filter-item bm-search match-filter-group">
                             <label for="archiveWrestlerSearch" class="match-filter-group-title tt" data-tt="Type a wrestler or team name to show only the matches they were in. Tap ✕ to clear it.">Search Wrestler</label>
                             <div class="wrestler-search-wrap">
-                                <input type="text" id="archiveWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Omega" oninput="onArchiveSearchInput()" autocomplete="off">
+                                <input type="text" id="archiveWrestlerSearch" list="arSearchList" placeholder="e.g. Omega" oninput="onArchiveSearchInput()" autocomplete="off">
                                 <button type="button" id="archiveWrestlerSearchClear" class="wrestler-search-clear" onclick="clearArchiveSearch()" style="display: none;" aria-label="Clear search">✕</button>
                             </div>
                         </div>
@@ -592,7 +592,7 @@
                     <div class="filter-item" style="flex: 1; min-width: 200px;">
                         <label for="leaderboardWrestlerSearch" class="tt" data-tt="Type a wrestler or team name to show only them. Tap ✕ to clear it.">Search Wrestler</label>
                         <div class="wrestler-search-wrap">
-                            <input type="text" id="leaderboardWrestlerSearch" list="wrestlerSearchList" placeholder="e.g. Kenny Omega" oninput="onLeaderboardSearchInput()" autocomplete="off">
+                            <input type="text" id="leaderboardWrestlerSearch" list="lbSearchList" placeholder="e.g. Kenny Omega" oninput="onLeaderboardSearchInput()" autocomplete="off">
                             <button type="button" id="leaderboardWrestlerSearchClear" class="wrestler-search-clear" onclick="clearLeaderboardSearch()" style="display: none;" aria-label="Clear search">✕</button>
                         </div>
                     </div>
@@ -623,7 +623,8 @@
         </main>
     </div>
 
-    <datalist id="wrestlerSearchList"></datalist>
+    <datalist id="arSearchList"></datalist>
+    <datalist id="lbSearchList"></datalist>
     <div id="ttBox"></div>
 
     <script src="best-match-shared.js?v=2"></script>
@@ -1155,6 +1156,7 @@
 
         function onArchiveFiltersChanged() {
             archiveDisplayCount = 30;
+            populateWrestlerSearchList();
             renderArchiveTable();
         }
 
@@ -1168,13 +1170,13 @@
         }
 
         // except: skip one box's own choice, for that box's counts
-        function archivePasses(e, except = null) {
+        function archivePasses(e, except = null, ignoreSearch = false) {
             for (const facet in archiveFacets) {
                 if (facet === except) continue;
                 const sel = archiveFacets[facet].selected;
                 if (sel && !sel.has(ARCHIVE_FACET_FNS[facet](e))) return false;
             }
-            if (archiveSearchTerm) {
+            if (archiveSearchTerm && !ignoreSearch) {
                 const allNames = [
                     ...(e.wrestlers || []),
                     ...(e.tagTeams || []),
@@ -1205,19 +1207,32 @@
             history.replaceState(null, '', `${window.location.pathname}${q ? '?' + q : ''}${window.location.hash}`);
         }
 
-        // Shared autocomplete list for both tabs' search boxes — every
-        // individual wrestler and team name that's ever appeared in a
-        // Best Match, sourced from the same data already loaded.
-        function populateWrestlerSearchList() {
-            const names = new Set();
-            allEntries.forEach(e => {
-                (e.wrestlers || []).forEach(n => names.add(n));
-                (e.tagTeams || []).forEach(n => names.add(n));
-                (e.trioTeams || []).forEach(n => names.add(stripTrioSuffix(n)));
-            });
+        // Search suggestions follow each tab's filters, so e.g. with Women's
+        // ticked only women (and women's teams) are offered.
+        function fillDatalist(id, names) {
+            const dl = document.getElementById(id);
+            if (!dl) return;
+            const esc = n => String(n).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+            dl.innerHTML = [...new Set(names)].filter(Boolean).sort((a, b) => a.localeCompare(b))
+                .map(n => `<option value="${esc(n)}"></option>`).join('');
+        }
 
-            const datalist = document.getElementById('wrestlerSearchList');
-            datalist.innerHTML = [...names].sort().map(n => `<option value="${n}"></option>`).join('');
+        // Archive: every wrestler/team in the matches that pass the other filters
+        // (division, year, format, stipulation, stakes) — not the search itself.
+        function populateWrestlerSearchList() {
+            const names = [];
+            allEntries.forEach(e => {
+                if (!archivePasses(e, null, true)) return;
+                (e.wrestlers || []).forEach(n => names.push(n));
+                (e.tagTeams || []).forEach(n => names.push(n));
+                (e.trioTeams || []).forEach(n => names.push(stripTrioSuffix(n)));
+            });
+            fillDatalist('arSearchList', names);
+        }
+
+        // Leaderboard: the names on the leaderboard for the ticked divisions.
+        function populateLeaderboardSearchList() {
+            fillDatalist('lbSearchList', (leaderboardRows || []).map(r => r.displayName || r.name));
         }
 
         function onArchiveSearchInput() {
@@ -1515,6 +1530,7 @@
                 };
             });
 
+            populateLeaderboardSearchList();
             sortAndRenderLeaderboard();
         }
 
