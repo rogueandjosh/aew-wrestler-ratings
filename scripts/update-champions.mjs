@@ -152,7 +152,12 @@ function levenshtein(a, b) {
   return row[b.length];
 }
 
-const titleKind = title => /trios|six[- ]man/i.test(title) ? 'trios' : /tag/i.test(title) ? 'tag' : 'singles';
+// Titles whose name doesn't say they're for teams (keep in step with TEAM_TITLE_KINDS in championships.html)
+const TITLE_KIND_OVERRIDES = {
+  'Artist Of Stardom Title': 'trios',
+};
+const titleKind = title => TITLE_KIND_OVERRIDES[title]
+  || (/trios|six[- ]man/i.test(title) ? 'trios' : /tag/i.test(title) ? 'tag' : 'singles');
 
 function siteTitleName(wikiTitle, knownTitles) {
   if (TITLE_NAME_OVERRIDES[wikiTitle]) return TITLE_NAME_OVERRIDES[wikiTitle];

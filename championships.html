@@ -3057,7 +3057,9 @@
         // who held the title at the end of that week. Underneath, the 3 champions before them.
         function buildCurrentChampionBlock(title) {
             const week = selectedWeekInfo();
-            const isTeam = /tag|trios|six man/i.test(title);
+            // Team titles whose name doesn't say so (keep in step with TITLE_KIND_OVERRIDES in scripts/update-champions.mjs)
+            const TEAM_TITLE_KINDS = ['Artist Of Stardom Title'];
+            const isTeam = /tag|trios|six man/i.test(title) || TEAM_TITLE_KINDS.includes(title);
             const reigns = championHistory[title] || [];
 
             // Reigns are kept in Wikipedia's order, which matters when two changes happen on the
