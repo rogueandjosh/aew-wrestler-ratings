@@ -3504,8 +3504,11 @@
         // Championship belt image(s), shown centrally between sides for a title match.
         // One belt per champion: tag titles show 2 overlapping, trios/six-man show 3.
         // Detection is by title name — the same rule championships.html uses.
+        // Team titles whose name doesn't say so (same list as TITLE_KIND_OVERRIDES in championships.html)
+        const TRIOS_TITLES_BY_NAME = ['artist of stardom title'];
         function getBeltCount(title) {
             const t = title.toLowerCase();
+            if (TRIOS_TITLES_BY_NAME.includes(t)) return 3;
             if (t.includes('trios') || t.includes('six-man') || t.includes('six man')) return 3;
             if (t.includes('tag')) return 2;
             return 1;

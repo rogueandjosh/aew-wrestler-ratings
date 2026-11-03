@@ -152,7 +152,7 @@ function levenshtein(a, b) {
   return row[b.length];
 }
 
-// Titles whose name doesn't say they're for teams (keep in step with TEAM_TITLE_KINDS in championships.html)
+// Titles whose name doesn't say they're for teams (keep in step with TITLE_KIND_OVERRIDES in championships.html)
 const TITLE_KIND_OVERRIDES = {
   'Artist Of Stardom Title': 'trios',
 };

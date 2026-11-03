@@ -2772,8 +2772,8 @@
             
             // Check if tag or trios title
             const lowerTitle = title.toLowerCase();
-            const isTrios = lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man');
-            const isTag = lowerTitle.includes('tag') && !isTrios;
+            const isTrios = titleKindOf(title) === 'trios';
+            const isTag = titleKindOf(title) === 'tag';
             
             if (showImage) {
                 if (isTag || isTrios) {
@@ -2940,6 +2940,15 @@
         // champions.json is written by a daily GitHub Action from Wikipedia's
         // "List of current champions" pages, with names already matched to the site's
         // own names (see scripts/update-champions.mjs). Shown only for the current week.
+        // Team titles whose name doesn't say so → their kind (belts, champion photos).
+        // Keep in step with TITLE_KIND_OVERRIDES in scripts/update-champions.mjs and getBeltCount in index.html.
+        function titleKindOf(title) {
+            const TITLE_KIND_OVERRIDES = { 'artist of stardom title': 'trios' };
+            const t = String(title || '').toLowerCase();
+            return TITLE_KIND_OVERRIDES[t]
+                || (t.includes('trios') || t.includes('six-man') || t.includes('six man') ? 'trios' : t.includes('tag') ? 'tag' : 'singles');
+        }
+
         let currentChampions = null;
         let championHistory = {};   // title → reigns, oldest first: { start, champion, slug } or { start, vacant }
         let championWeekEnds = {};  // archive week label → that week's last day (YYYY-MM-DD)
@@ -3057,9 +3066,7 @@
         // who held the title at the end of that week. Underneath, the 3 champions before them.
         function buildCurrentChampionBlock(title) {
             const week = selectedWeekInfo();
-            // Team titles whose name doesn't say so (keep in step with TITLE_KIND_OVERRIDES in scripts/update-champions.mjs)
-            const TEAM_TITLE_KINDS = ['Artist Of Stardom Title'];
-            const isTeam = /tag|trios|six man/i.test(title) || TEAM_TITLE_KINDS.includes(title);
+            const isTeam = titleKindOf(title) !== 'singles';
             const reigns = championHistory[title] || [];
 
             // Reigns are kept in Wikipedia's order, which matters when two changes happen on the
@@ -4374,8 +4381,8 @@
         function getBoostMultiplier(title, rating) {
             if (!TEAM_TITLE_BOOST_ENABLED) return 1.0;
             const lowerTitle = title.toLowerCase();
-            const isTrios = lowerTitle.includes('trios') || lowerTitle.includes('six-man') || lowerTitle.includes('six man');
-            const isTag = lowerTitle.includes('tag');
+            const isTrios = titleKindOf(title) === 'trios';
+            const isTag = titleKindOf(title) === 'tag';
             
             if (!isTrios && !isTag) return 1.0;
             
