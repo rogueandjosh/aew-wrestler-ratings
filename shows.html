@@ -2514,10 +2514,12 @@
                     ? `<button class="tab more-events-toggle" id="match-list-toggle">${matchListExpanded ? 'Show top 10 only' : `Show all ${fullCount} matches`}</button>`
                     : '');
 
-            // Leaderboard: 5 matches to qualify on the broad views (All Shows, or a whole show type);
-            // 3 inside a show, fewer when the selection only covers one or two shows
-            const broadView = nodes.length <= 2;
-            const minMatches = broadView ? 5 : Math.max(1, Math.min(3, showCount));
+            // Leaderboard minimum: 5 matches on big selections (20+ shows, e.g. All Shows, Weekly TV,
+            // PPVs); otherwise 3, or fewer when the selection only covers one or two shows. If fewer
+            // than 3 wrestlers/teams reach it (small show types like TV Specials, or narrow filters),
+            // it steps down until they do, so a single show always has its Top Performers.
+            let minMatches = showCount >= 20 ? 5 : Math.max(1, Math.min(3, showCount));
+            while (minMatches > 1 && calculateWrestlerStats(all, minMatches).length < 3) minMatches--;
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
             lbTitle.setAttribute('data-tt', `Ranked by average match rating. Tag and trios matches count for the team, singles for the wrestler. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
