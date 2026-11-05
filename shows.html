@@ -110,33 +110,9 @@
             margin-bottom: 25px;
         }
 
-        .filter-section h2 {
-            color: #ffd700;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-        }
 
-        .filter-section select {
-            width: 100%;
-            max-width: 300px;
-            padding: 12px;
-            font-size: 1em;
-            font-family: 'Overlock', cursive;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 5px;
-            color: #fff;
-            cursor: pointer;
-        }
 
-        .filter-section select:hover {
-            border-color: #ffd700;
-        }
 
-        .filter-section select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
 
         /* Tabs */
         .tabs {
@@ -438,65 +414,19 @@
             font-weight: bold;
         }
 
-        /* ‹ › arrows either side of each filter dropdown */
-        .filter-stepper {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
 
-        .filter-arrow {
-            background: none;
-            border: none;
-            color: rgba(255, 215, 0, 0.55);
-            font-size: 1.6em;
-            line-height: 1;
-            padding: 0 6px 3px;
-            cursor: pointer;
-            transition: color 0.15s ease;
-        }
 
-        .filter-arrow:hover {
-            color: #ffd700;
-        }
 
-        /* "More filters" — Format, Stakes and Card Position, folded away until wanted */
-        .more-filters-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 14px;
-            background: none;
-            border: none;
-            color: #ffd700;
-            font-family: 'Overlock', cursive;
-            font-weight: bold;
-            font-size: 0.95em;
-            cursor: pointer;
-            padding: 2px 4px;
-        }
-        .more-filters-toggle svg { transition: transform 0.2s; }
-        .more-filters-toggle.open svg { transform: rotate(180deg); }
-        .more-filters-toggle .mf-count { color: #a8a394; font-weight: normal; font-size: 0.9em; }
-        #moreFilters { display: none; margin-top: 12px; }
-        #moreFilters.open { display: flex; }
-        .facet-btn {
-            padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4);
-            border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em;
-            min-width: 150px; text-align: left;
-        }
-        .facet-menu {
-            display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700;
-            border-radius: 5px; z-index: 100; min-width: 190px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;
-        }
-        .facet-menu label {
-            display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;
-        }
-        .facet-all-none { display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2); }
-        .facet-all-none button {
-            flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700;
-            font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;
-        }
+
+
+
+
+
+
+
+
+
+
 
         /* One show: venue, show rating and a link to that week's rankings */
         .scope-info {
@@ -765,66 +695,20 @@
                 padding: 14px;
                 margin-bottom: 18px;
             }
-            .filter-row {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px !important;
-            }
-            .filter-row > div {
-                min-width: 0;
-            }
-            .filter-row h2 {
-                display: block;
-                font-size: 0.9em;
-                margin-bottom: 6px !important;
-            }
-            .filter-row > div > div {
-                display: block !important;
-            }
-            #yearDropdownBtn,
-            #divDropdownBtn {
-                width: 100%;
-                min-width: 0 !important;
-                font-size: 0.88em !important;
-                padding: 9px 10px !important;
-            }
-            #divDropdownMenu,
-            #moreFilters .filter-cell:nth-child(2) .facet-menu {
-                left: auto !important;
-                right: 0;
-            }
-            #moreFilters.open {
-                display: grid !important;
-            }
-            #moreFilters:not(.open) {
-                display: none !important;
-            }
-            #moreFilters > div:first-child {
-                grid-column: auto;
-            }
-            .facet-btn {
-                width: 100%;
-                min-width: 0 !important;
-                font-size: 0.88em !important;
-                padding: 9px 10px !important;
-            }
 
-            /* Shows dropdown full width, Year and Division side by side underneath */
-            .filter-row > div:first-child {
-                grid-column: 1 / -1;
-            }
-            .filter-row > div > .filter-stepper {
-                display: flex !important;
-            }
-            .filter-stepper > div {
-                flex: 1;
-                min-width: 0;
-                display: block !important;
-            }
-            .filter-arrow {
-                padding: 0 4px 3px;
-                font-size: 1.5em;
-            }
+
+
+
+
+
+
+
+
+
+
+
+
+
             #showDropdownBtn {
                 width: 100%;
                 min-width: 0 !important;
@@ -840,11 +724,12 @@
                 font-size: 0.82em;
             }
 
-            /* Breadcrumbs: back button plus a single-line trail of text links */
+            /* Breadcrumbs: back button plus a trail of text links that wraps onto a
+               second line when it's long, so nothing is hidden off the edge */
             .scope-crumbs {
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
                 justify-content: flex-start;
-                overflow-x: auto;
+                row-gap: 4px;
                 gap: 6px;
                 margin: 0 0 16px;
                 padding-bottom: 2px;
@@ -871,9 +756,6 @@
                 color: #fff;
             }
             .scope-crumbs .scope-back {
-                position: sticky;
-                left: 0;
-                z-index: 1;
                 background: #23253a;
                 border: 2px solid #ffd700;
                 border-radius: 8px;
@@ -966,13 +848,7 @@
             header.ewr-header .subtitle { font-size: 0.85em; }
         }
 
-        /* ===== Filter arrows: round gold chevrons, as in the week selectors ===== */
-        .filter-arrow {
-            width: 30px; height: 30px; min-width: 30px; padding: 0 !important; border-radius: 50%;
-            border: 1.5px solid rgba(255, 215, 0, 0.55); background: transparent; color: #ffd700;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 1em; margin: 0 4px;
-        }
-        .filter-arrow:hover { border-color: #ffd700; background: rgba(255, 215, 0, 0.15); }
+
 
         /* ===== View switch: one of three ===== */
         .view-switch {
@@ -1019,12 +895,11 @@
             .lb-table th:first-child { width: 28px !important; }
             .lb-table .lb-long { display: none; }
             .lb-table .lb-short { display: inline; }
-            /* Filter arrows a little smaller so the dropdowns keep their width */
-            .filter-arrow { width: 26px; height: 26px; min-width: 26px; margin: 0 2px; }
-            #yearDropdownBtn, #divDropdownBtn, .facet-btn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
         }
         @media (max-width: 380px) {
-            #yearDropdownBtn, #divDropdownBtn, .facet-btn { padding: 9px 6px !important; font-size: 0.82em !important; }
+
         }
 
         /* ===== Show-type buttons (like the ranking divisions) ===== */
@@ -1042,24 +917,42 @@
             .show-type-tabs #showDropdownMenu { left: auto; right: 0; min-width: 200px; }
         }
 
-        /* Location filter menu: countries, with US states indented under United States */
-        .loc-menu {
-            position: absolute; top: 100%; left: 0; z-index: 100; margin-top: 4px;
-            min-width: 200px; max-height: 340px; overflow-y: auto;
-            background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        /* ===== Filters (shared boxes from filter-ui.css) ===== */
+        .sh-filter-grid { align-items: end; }
+        .sh-more-cell { display: none; }
+        .sh-more-btn {
+            width: 100%; height: 36px; padding: 0 10px; border-radius: 5px; cursor: pointer;
+            background: rgba(255,215,0,0.12); border: 2px solid rgba(255,215,0,0.5); color: #ffd700;
+            font-family: inherit; font-weight: bold; font-size: 0.9em; white-space: nowrap;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        #locCheckboxes { padding: 6px 0; }
-        #locCheckboxes label { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; color: #ddd; font-size: 0.9em; }
-        #locCheckboxes .loc-country { font-weight: 700; color: #ffd700; }
-        #locCheckboxes .loc-state { padding-left: 32px; }
-        #locCheckboxes .loc-country-row { display: flex; align-items: center; }
-        #locCheckboxes .loc-country-row .loc-country { flex: 1; }
-        #locCheckboxes .loc-expand {
-            background: none; border: none; color: #ffd700; cursor: pointer;
-            font-size: 1em; padding: 6px 14px; line-height: 1;
+        .sh-more-btn:hover { background: rgba(255,215,0,0.22); }
+        .sh-more-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; }
+        .sh-more-btn .mf-count { color: #d8cfa8; font-weight: normal; font-size: 0.9em; }
+        .sh-more-btn .sh-more-arrow { font-size: 0.7em; transition: transform 0.2s; }
+        .sh-filter-grid.more-open .sh-more-arrow { transform: rotate(180deg); }
+        .filter-section .match-filters-footer:has(#showFiltersReset[style*="none"]) { display: none; }
+        @media (min-width: 769px) {
+            /* Laptop: all seven boxes in one row */
+            .sh-filter-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+            /* Lists can be wider than their box; the right-hand boxes open leftwards */
+            .sh-filter-grid .match-filter-options { right: auto; min-width: 100%; width: max-content; max-width: 280px; }
+            #cardPosFilterGroup .match-filter-options, #stipFilterGroup .match-filter-options { left: auto; right: 0; }
         }
-        #locCheckboxes .loc-unknown { color: #aaa; font-weight: 400; border-top: 1px solid rgba(255,215,0,0.2); margin-top: 4px; padding-top: 8px; }
-        #locCheckboxes input { accent-color: #ffd700; }
+        @media (max-width: 768px) {
+            /* Phones: Year, Division, Location and More filters; the other four fold away */
+            .sh-more-cell { display: block; }
+            .sh-filter-grid:not(.more-open) .sh-more { display: none; }
+        }
+
+
+
+
+
+
+
+
+
 
         /* The show-type buttons above already show the top level, so no lone "All Shows" crumb */
         .scope-crumbs.at-root { display: none; }
@@ -1068,20 +961,18 @@
         .match-row-stip { color: #ffd700; opacity: 0.85; }
 
         @media (max-width: 600px) {
-            /* Year and Division side by side; Location full width underneath */
-            .filter-row > div:first-child { grid-column: auto; }
-            .filter-row:not(#moreFilters) > div:last-child { grid-column: 1 / -1; }
-            /* More filters: Format | Stakes, then Card Position | Stipulation */
-            #moreFilters > div { grid-column: auto !important; }
-            /* menus in the right-hand column open leftwards so they stay on screen */
-            #moreFilters .filter-cell:nth-child(even) .facet-menu { left: auto !important; right: 0; }
-            #moreFilters .filter-cell:nth-child(odd) .facet-menu { left: 0 !important; right: auto; }
-            .facet-menu { max-width: calc(100vw - 40px); max-height: 60vh; overflow-y: auto; }
+
+
+
+
+
+
             #locDropdownBtn { width: 100%; min-width: 0 !important; font-size: 0.88em !important; padding: 9px 10px !important; }
-            .loc-menu { left: 0; right: 0; }
+
         }
     </style>
     <link rel="stylesheet" href="header.css?v=1">
+    <link rel="stylesheet" href="filter-ui.css?v=1">
 </head>
 <body>
     <div class="container">
@@ -1122,58 +1013,52 @@
                     </div>
         </nav>
 
-        <!-- Filters -->
+        <!-- Filters: the same tick-list boxes as Wrestler Stats, Best Match and Compare (filter-ui.js).
+             Laptop: all seven in one row. Phones: Year, Division, Location + "More filters" (2 per row). -->
         <section class="filter-section">
-            <div class="filter-row" style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
-                <div>
-                    <h2 class="tt" data-tt="Pick one or more years, or keep All Years for all-time stats." style="cursor: help; margin-bottom: 10px;">Year</h2>
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" id="yearDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 130px; text-align: left;">All Years</button>
-                        <div id="yearDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
-                            <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
-                                <button type="button" onclick="setAllYears(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
-                                <button type="button" onclick="setAllYears(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">Clear</button>
-                            </div>
-                            <div id="yearCheckboxes"></div>
-                        </div>
-                    </div>
+            <div class="match-filters-grid sh-filter-grid" id="showFilterGrid">
+                <div class="match-filter-group" id="yearFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Pick one or more years, or keep All for all-time stats.">Year</div>
+                    <button type="button" class="match-filter-toggle" id="yearFilterToggle" aria-expanded="false" aria-controls="yearFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="yearFilterOptions"></div>
                 </div>
-                <div>
-                    <h2 class="tt" data-tt="Filters by each match's own division, so Women's Tag shows only women's tag matches, even for wrestlers who also wrestle singles." style="cursor: help; margin-bottom: 10px;">Division</h2>
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" id="divDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Divisions</button>
-                        <div id="divDropdownMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #1a1a2e; border: 1px solid #ffd700; border-radius: 5px; z-index: 100; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-top: 4px;">
-                            <div style="display: flex; gap: 6px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,0.2);">
-                                <button type="button" onclick="setAllDivisions(true)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">All</button>
-                                <button type="button" onclick="setAllDivisions(false)" style="flex: 1; background: rgba(255,215,0,0.15); border: 1px solid #ffd700; border-radius: 4px; color: #ffd700; font-family: 'Overlock', cursive; font-size: 0.8em; padding: 3px 8px; cursor: pointer;">Clear</button>
-                            </div>
-                            <div style="padding: 6px 0;">
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="mens" checked onchange="updateDivisions()"> Men's</label>
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womens" checked onchange="updateDivisions()"> Women's</label>
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="menstag" checked onchange="updateDivisions()"> Men's Tag</label>
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="womenstag" checked onchange="updateDivisions()"> Women's Tag</label>
-                                <label style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="trios" checked onchange="updateDivisions()"> Trios</label>
-                                <label class="tt" data-tt="Matches outside the five ranked divisions, such as mixed tags and big multi-person tags." style="display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; color: #ddd; font-size: 0.9em;"><input type="checkbox" value="other" checked onchange="updateDivisions()"> Other</label>
-                            </div>
-                        </div>
-                    </div>
+                <div class="match-filter-group" id="divFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Filters by each match&#39;s own division, so Women&#39;s Tag shows only women&#39;s tag matches, even for wrestlers who also wrestle singles. Other is anything outside the five ranked divisions, such as mixed tags and big multi-person tags.">Division</div>
+                    <button type="button" class="match-filter-toggle" id="divFilterToggle" aria-expanded="false" aria-controls="divFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="divFilterOptions"></div>
                 </div>
-                <div>
-                    <h2 class="tt" data-tt="Where the show took place: a country, or a US state under United States. Tick several to combine them. Shows with no venue recorded yet are under Unknown." style="cursor: help; margin-bottom: 10px;">Location</h2>
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" id="locDropdownBtn" style="padding: 10px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4); border-radius: 5px; color: #fff; cursor: pointer; font-family: 'Overlock', cursive; font-size: 0.95em; min-width: 150px; text-align: left;">All Locations</button>
-                        <div id="locDropdownMenu" class="loc-menu" style="display: none;">
-                            <div class="facet-all-none">
-                                <button type="button" onclick="setAllLocations(true)">All</button>
-                                <button type="button" onclick="setAllLocations(false)">Clear</button>
-                            </div>
-                            <div id="locCheckboxes"></div>
-                        </div>
-                    </div>
+                <div class="match-filter-group" id="locFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Where the show took place. Countries are listed first: tap ▸ to pick US states or, for other countries, cities. Tick several to combine them.">Location</div>
+                    <button type="button" class="match-filter-toggle" id="locFilterToggle" aria-expanded="false" aria-controls="locFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="locFilterOptions"></div>
+                </div>
+                <div class="sh-more-cell match-filter-group">
+                    <button type="button" class="sh-more-btn" id="moreFiltersToggle" aria-expanded="false" aria-controls="showFilterGrid">More filters <span class="mf-count" id="moreFiltersCount"></span><span class="sh-more-arrow" aria-hidden="true">▼</span></button>
+                </div>
+                <div class="match-filter-group sh-more" id="formatFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Singles, tag, trios, multi-person tags, multi-way matches or battle royals.">Format</div>
+                    <button type="button" class="match-filter-toggle" id="formatFilterToggle" aria-expanded="false" aria-controls="formatFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="formatFilterOptions"></div>
+                </div>
+                <div class="match-filter-group sh-more" id="stakesFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Title matches, contender and eliminator matches, tournament matches, other stakes, or none.">Stakes</div>
+                    <button type="button" class="match-filter-toggle" id="stakesFilterToggle" aria-expanded="false" aria-controls="stakesFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="stakesFilterOptions"></div>
+                </div>
+                <div class="match-filter-group sh-more" id="cardPosFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Where the match was on the card: the main event, the opener, or elsewhere (Other).">Card Position</div>
+                    <button type="button" class="match-filter-toggle" id="cardPosFilterToggle" aria-expanded="false" aria-controls="cardPosFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="cardPosFilterOptions"></div>
+                </div>
+                <div class="match-filter-group sh-more" id="stipFilterGroup">
+                    <div class="match-filter-group-title tt" data-tt="Stipulation types, e.g. Ladder Matches, Cage Matches or Street Fights &amp; Brawls, or No Stips for regular matches. Same groups as on the wrestler pages.">Stipulation</div>
+                    <button type="button" class="match-filter-toggle" id="stipFilterToggle" aria-expanded="false" aria-controls="stipFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                    <div class="match-filter-options" id="stipFilterOptions"></div>
                 </div>
             </div>
-            <button type="button" class="more-filters-toggle" id="moreFiltersToggle" aria-expanded="false" aria-controls="moreFilters">More filters <span class="mf-count" id="moreFiltersCount"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-            <div class="filter-row" id="moreFilters" style="gap: 24px; flex-wrap: wrap; align-items: flex-start;"></div>
+            <div class="match-filters-footer">
+                <button type="button" class="match-filters-reset" id="showFiltersReset" style="display: none;">Clear filters</button>
+            </div>
         </section>
 
         <!-- Tab Navigation + Content (hidden until data loads) -->
@@ -1197,7 +1082,7 @@
         </div><!-- end tabsWrapper -->
     </div>
 
-    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em; max-width: 1400px; margin-left: auto; margin-right: auto;">
         <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank" style="color: #ffd700; text-decoration: none;">Wikimedia Commons</a> under Creative Commons licenses.</p>
         <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #ffd700; text-decoration: none;">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
         <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank" style="color: #ffd700; text-decoration: none;">Cagematch.net</a>.</p>
@@ -1206,6 +1091,7 @@
 
     <script src="tooltips.js?v=3"></script>
     <script src="match-filters.js?v=7"></script>
+    <script src="filter-ui.js?v=3"></script>
     <script>
         // ===========================================
         // CONFIGURATION
@@ -1399,127 +1285,126 @@
         // ===========================================
 
         // ===========================================
-        // FILTER ARROWS — step through All → each single option → back to All
+        // FILTERS — the shared tick-list boxes (filter-ui.js), same as Wrestler Stats,
+        // Best Match and Compare. Year, Division and the four "More filters" use
+        // FilterUI.checkboxFacet; Location is a country ▸ state/city tree like the
+        // one on Wrestler Stats. Counts in each box follow every other filter and the
+        // show type buttons.
         // ===========================================
+        const DIV_LABELS = { mens: "Men's", womens: "Women's", menstag: "Men's Tag", womenstag: "Women's Tag", trios: 'Trios', other: 'Other' };
+        const filterBoxes = {};          // year / div / format / stakes / cardPos / stip → FilterUI box
+        let uniqueMatches = [];          // one entry per match (for the counts)
+        const yearOf = m => (m.date || '').substring(0, 4);
+        const divOf = m => DIVISION_BY_MATCH[m.division] || 'other';
 
-        const FILTER_STEPPERS = [
-            { btnId: 'yearDropdownBtn', menu: '#yearCheckboxes', onChange: () => updateYears(), name: 'year', oldestFirst: true },
-            { btnId: 'divDropdownBtn', menu: '#divDropdownMenu', onChange: () => updateDivisions(), name: 'division' },
-            // Location steps through the single places (each US state, each country, Unknown)
-            { btnId: 'locDropdownBtn', menu: '#locCheckboxes', inputs: '#locCheckboxes input[data-loc]', onChange: () => updateLocations(), name: 'location' }
-        ];
-
-        function stepFilter(index, dir) {
-            const cfg = FILTER_STEPPERS[index];
-            const inputs = [...document.querySelectorAll(cfg.inputs || `${cfg.menu} input[type="checkbox"]`)];
-            if (cfg.oldestFirst) inputs.reverse();   // years are listed newest first; › should go forward in time
-            if (!inputs.length) return;
-            const checked = inputs.filter(cb => cb.checked);
-            // Position 0 = All; 1..n = a single option. A mixed selection counts as All.
-            const current = checked.length === 1 ? inputs.indexOf(checked[0]) + 1 : 0;
-            const next = (current + dir + inputs.length + 1) % (inputs.length + 1);
-            inputs.forEach((cb, i) => { cb.checked = next === 0 || i === next - 1; });
-            cfg.onChange();
-        }
-
-        // Wraps each filter dropdown with a ‹ and › button
-        function addFilterArrows() {
-            FILTER_STEPPERS.forEach((cfg, i) => {
-                const dropdown = document.getElementById(cfg.btnId).parentElement;
-                const wrap = document.createElement('div');
-                wrap.className = 'filter-stepper';
-                dropdown.parentElement.insertBefore(wrap, dropdown);
-                const arrow = (dir, symbol, label) => {
-                    const b = document.createElement('button');
-                    b.type = 'button';
-                    b.className = 'filter-arrow';
-                    b.innerHTML = symbol === '‹'
-                        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
-                        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
-                    b.setAttribute('aria-label', `${label} ${cfg.name}`);
-                    b.classList.add('tt');
-                    b.dataset.tt = cfg.oldestFirst ? (dir > 0 ? 'Next year (from All: 2019)' : 'Previous year (from All: the latest)') : `${label} ${cfg.name}`;
-                    b.addEventListener('click', () => stepFilter(i, dir));
-                    return b;
-                };
-                wrap.append(arrow(-1, '‹', 'Previous'), dropdown, arrow(1, '›', 'Next'));
-            });
-        }
-
-        // Builds the Format / Stakes / Card Position dropdowns (empty until the data loads)
-        function buildFacetFilters() {
-            const row = document.getElementById('moreFilters');
-            row.innerHTML = FACETS.map(f => `
-                <div class="filter-cell">
-                    <h2 class="tt" data-tt="${esc(f.tip)}" style="cursor: help; margin-bottom: 10px;">${f.title}</h2>
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" class="facet-btn" id="${f.key}DropdownBtn">All ${f.noun}</button>
-                        <div class="facet-menu" id="${f.key}DropdownMenu">
-                            <div class="facet-all-none">
-                                <button type="button" data-facet-all="${f.key}" data-val="1">All</button>
-                                <button type="button" data-facet-all="${f.key}" data-val="0">Clear</button>
-                            </div>
-                            <div style="padding: 6px 0;" id="${f.key}Checkboxes"></div>
-                        </div>
-                    </div>
-                </div>`).join('');
-            row.addEventListener('change', e => {
-                const cb = e.target.closest('input[data-facet]');
-                if (cb) updateFacet(cb.dataset.facet);
-            });
-            row.addEventListener('click', e => {
-                const b = e.target.closest('[data-facet-all]');
-                if (!b) return;
-                document.querySelectorAll(`#${b.dataset.facetAll}Checkboxes input`).forEach(cb => { cb.checked = b.dataset.val === '1'; });
-                updateFacet(b.dataset.facetAll);
-            });
-            const toggle = document.getElementById('moreFiltersToggle');
-            toggle.addEventListener('click', () => {
-                const open = !row.classList.contains('open');
-                row.classList.toggle('open', open);
-                toggle.classList.toggle('open', open);
-                toggle.setAttribute('aria-expanded', String(open));
-            });
-            FACETS.forEach(f => FILTER_STEPPERS.push({
-                btnId: `${f.key}DropdownBtn`, menu: `#${f.key}Checkboxes`, onChange: () => updateFacet(f.key), name: f.title.toLowerCase()
+        function setupFilters() {
+            const seen = new Set();
+            uniqueMatches = [];
+            allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => {
+                const key = m.id != null ? `id:${m.id}` : `${m.event}|${m.date}|${m.rating}|${m.matchType}`;
+                if (!seen.has(key)) { seen.add(key); uniqueMatches.push(m); }
             }));
-        }
 
-        // Once the wrestler files are in: list only the options that occur, in their usual order
-        function fillFacetFilters() {
+            availableYears = [...new Set(uniqueMatches.map(yearOf).filter(Boolean))].sort().reverse();
+            filterBoxes.year = FilterUI.checkboxFacet(document.getElementById('yearFilterGroup'), {
+                options: availableYears.map(y => ({ value: y, label: y })),
+                showTotal: false, showCounts: false,
+                onChange: sel => {
+                    // empty set = every year (old behaviour); '__none__' matches nothing
+                    selectedYears = sel === null ? new Set() : sel.size ? new Set(sel) : new Set(['__none__']);
+                    onFiltersChanged();
+                }
+            });
+            filterBoxes.div = FilterUI.checkboxFacet(document.getElementById('divFilterGroup'), {
+                options: ALL_DIVISIONS.map(d => ({ value: d, label: DIV_LABELS[d] })),
+                showTotal: false,
+                onChange: sel => { selectedDivisions = sel === null ? new Set(ALL_DIVISIONS) : new Set(sel); onFiltersChanged(); }
+            });
             FACETS.forEach(f => {
-                const present = new Set();
-                allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => present.add(f.of(m))));
+                const present = new Set(uniqueMatches.map(f.of));
                 const ordered = f.groups().filter(g => present.has(g)).concat([...present].filter(g => !f.groups().includes(g)).sort());
                 facetOptions[f.key] = ordered;
                 selectedFacets[f.key] = null;
-                document.getElementById(`${f.key}Checkboxes`).innerHTML = ordered.map(g =>
-                    `<label><input type="checkbox" data-facet="${f.key}" value="${esc(g)}" checked> ${esc(g)}</label>`).join('');
-                updateFacetBtn(f.key);
+                filterBoxes[f.key] = FilterUI.checkboxFacet(document.getElementById(`${f.key}FilterGroup`), {
+                    options: ordered.map(g => ({ value: g, label: g })),
+                    showTotal: false,
+                    onChange: sel => { selectedFacets[f.key] = sel; onFiltersChanged(); }
+                });
             });
+            renderLocationFilter();
+
+            const groups = ['year', 'div', 'loc', ...FACETS.map(f => f.key)].map(k => document.getElementById(`${k}FilterGroup`));
+            FilterUI.setupDropdowns(groups);
+            FilterUI.markColumns(document.getElementById('showFilterGrid'));
+
+            document.getElementById('moreFiltersToggle').addEventListener('click', () => {
+                const grid = document.getElementById('showFilterGrid');
+                const open = !grid.classList.contains('more-open');
+                grid.classList.toggle('more-open', open);
+                const btn = document.getElementById('moreFiltersToggle');
+                btn.setAttribute('aria-expanded', String(open));
+                btn.firstChild.textContent = open ? 'Fewer filters ' : 'More filters ';
+                FilterUI.closeAllDropdowns();
+            });
+            document.getElementById('showFiltersReset').addEventListener('click', resetFilters);
+            refreshFilterCounts();
         }
 
-        function updateFacet(key) {
-            const all = [...document.querySelectorAll(`#${key}Checkboxes input`)];
-            const ticked = all.filter(cb => cb.checked).map(cb => cb.value);
-            selectedFacets[key] = ticked.length === all.length ? null : new Set(ticked);
-            updateFacetBtn(key);
+        function onFiltersChanged() {
             processAllData();
             renderAllTabs();
+            refreshFilterCounts();
         }
 
-        function updateFacetBtn(key) {
-            const f = FACETS.find(x => x.key === key);
-            const all = document.querySelectorAll(`#${key}Checkboxes input`);
-            const ticked = [...document.querySelectorAll(`#${key}Checkboxes input:checked`)];
-            const btn = document.getElementById(`${key}DropdownBtn`);
-            if (ticked.length === all.length) btn.textContent = `All ${f.noun}`;
-            else if (ticked.length === 0) btn.textContent = 'None';
-            else if (ticked.length === 1) btn.textContent = ticked[0].value;
-            else btn.textContent = `${ticked.length} ${f.noun}`;
-            const set = FACETS.filter(x => selectedFacets[x.key]).length;
-            document.getElementById('moreFiltersCount').textContent = set ? `(${set} set)` : '';
+        function resetFilters() {
+            Object.values(filterBoxes).forEach(b => b.set(null));
+            selectedYears = new Set();
+            selectedDivisions = new Set(ALL_DIVISIONS);
+            FACETS.forEach(f => { selectedFacets[f.key] = null; });
+            selectedLocations = null;
+            syncLocationCheckboxes();
+            onFiltersChanged();
         }
+
+        // Does a match pass every filter (and the show type buttons), leaving out one filter's own choice?
+        function passesFilters(m, except) {
+            const tab = TAB_BY_SHOWTYPE[m.showType];
+            if (!tab || !selectedShowTypes.has(tab)) return false;
+            if (except !== 'year' && !matchesYear(m)) return false;
+            if (except !== 'div' && !matchesDivision(m)) return false;
+            if (except !== 'loc' && selectedLocations && !selectedLocations.has(locationOf(m))) return false;
+            return FACETS.every(f => f.key === except || !selectedFacets[f.key] || selectedFacets[f.key].has(f.of(m)));
+        }
+
+        // Counts beside each option, "More filters (2 set)" and the Clear filters button
+        function refreshFilterCounts() {
+            if (!uniqueMatches.length) return;
+            const countFor = (except, fn) => {
+                const base = uniqueMatches.filter(m => passesFilters(m, except));
+                const counts = {};
+                base.forEach(m => { const k = fn(m); counts[k] = (counts[k] || 0) + 1; });
+                return [counts, base.length];
+            };
+            filterBoxes.year.setCounts(...countFor('year', yearOf));
+            filterBoxes.div.setCounts(...countFor('div', divOf));
+            FACETS.forEach(f => filterBoxes[f.key].setCounts(...countFor(f.key, f.of)));
+            refreshLocationFilter(...countFor('loc', locationOf));
+
+            const moreSet = FACETS.filter(f => selectedFacets[f.key]).length;
+            document.getElementById('moreFiltersCount').textContent = moreSet ? `(${moreSet} set)` : '';
+            const anySet = Object.values(filterBoxes).some(b => b.selected !== null) || !!selectedLocations;
+            document.getElementById('showFiltersReset').style.display = anySet ? '' : 'none';
+        }
+
+
+
+        // Wraps each filter dropdown with a ‹ and › button
+
+        // Builds the Format / Stakes / Card Position dropdowns (empty until the data loads)
+
+        // Once the wrestler files are in: list only the options that occur, in their usual order
+
+
 
         function matchesFacets(match) {
             return FACETS.every(f => !selectedFacets[f.key] || selectedFacets[f.key].has(f.of(match)))
@@ -1543,88 +1428,110 @@
         const locGroupOf = key => key === 'unknown' ? null : key.startsWith('USA|') ? 'USA' : key.split('|')[1];
         const locPlaceOf = key => key.startsWith('USA|') ? key.slice(4) : key.split('|').slice(2).join('|');
 
-        function buildLocationFilter() {
+        // Location box: All, then countries (United States first, then by number of matches),
+        // each with ▸ to open its US states or, elsewhere, its cities; Unknown last.
+        // A country's box ticks/unticks everything inside it; part-ticked shows a dash.
+        const locOpen = new Set();
+        function renderLocationFilter() {
             const counts = {};
-            allWrestlerData.forEach(w => (w.allMatches || []).forEach(m => {
-                const k = locationOf(m);
-                counts[k] = (counts[k] || 0) + 1;
-            }));
-            // Countries: United States first, then the rest by number of matches
+            uniqueMatches.forEach(m => { const k = locationOf(m); counts[k] = (counts[k] || 0) + 1; });
             const groups = {};
             Object.keys(counts).filter(k => k !== 'unknown').forEach(k => {
                 const g = locGroupOf(k);
                 (groups[g] = groups[g] || { places: [], total: 0 }).places.push(k);
                 groups[g].total += counts[k];
             });
-            const order = Object.keys(groups).sort((x, y) => (y === 'USA') - (x === 'USA') || groups[y].total - groups[x].total);
-            let html = '';
+            const order = Object.keys(groups).sort((x, y) => (y === 'USA') - (x === 'USA') || groups[y].total - groups[x].total || x.localeCompare(y));
+            const leaves = order.flatMap(g => groups[g].places).concat(counts.unknown ? ['unknown'] : []);
+            const row = (lvl, arrow, keys, label, attrs = '') => `
+                <div class="show-row lvl-${lvl}${lvl === 'all' ? ' shortcut' : ''}">
+                    ${arrow}
+                    <label data-keys="${esc(keys.join('~'))}"${attrs}>
+                        <input type="checkbox" data-facet="location">
+                        <span>${label} <span class="count"></span></span>
+                    </label>
+                </div>`;
+            const spacer = '<span class="show-expand-spacer"></span>';
+            let html = row('all', spacer, leaves, '<strong>All</strong>').replace('lvl-all', 'lvl-0');
             order.forEach(g => {
                 const places = groups[g].places.sort((x, y) => locPlaceOf(x).localeCompare(locPlaceOf(y)));
-                html += `<div class="loc-group" data-group="${esc(g)}">
-                    <div class="loc-country-row">
-                        <label class="loc-country"><input type="checkbox" checked data-loc-parent="${esc(g)}"> ${esc(locCountryName(g))}</label>
-                        <button type="button" class="loc-expand" aria-expanded="false" aria-label="Show ${g === 'USA' ? 'states' : 'cities'} in ${esc(locCountryName(g))}">▸</button>
-                    </div>
-                    <div class="loc-places" hidden>
-                        ${places.map(k => `<label class="loc-state"><input type="checkbox" checked data-loc="${esc(k)}" data-group="${esc(g)}"> ${esc(locPlaceOf(k))}</label>`).join('')}
-                    </div>
-                </div>`;
+                const name = locCountryName(g);
+                const arrow = `<button type="button" class="show-expand" aria-expanded="false" aria-label="Show ${g === 'USA' ? 'states' : 'cities'} in ${esc(name)}" data-loc-group="${esc(g)}">▸</button>`;
+                html += row(0, arrow, places, esc(name), ` class="show-group" data-country="${esc(name)}"`);
+                html += `<div class="show-children" data-loc-kids="${esc(g)}" hidden>` +
+                    places.map(k => row(1, spacer, [k], esc(locPlaceOf(k)), ` data-full="${esc(locPlaceOf(k))}"`)).join('') + '</div>';
             });
-            if (counts.unknown) html += `<label class="loc-country loc-unknown"><input type="checkbox" checked data-loc="unknown"> Unknown</label>`;
-            const wrap = document.getElementById('locCheckboxes');
-            wrap.innerHTML = html;
-            wrap.onchange = e => {
-                const parent = e.target.closest('[data-loc-parent]');
-                if (parent) wrap.querySelectorAll(`[data-loc][data-group="${CSS.escape(parent.dataset.locParent)}"]`).forEach(cb => { cb.checked = parent.checked; });
-                updateLocations();
+            if (counts.unknown) html += row(0, spacer, ['unknown'], 'Unknown', ' data-full="Unknown"');
+            const box = document.getElementById('locFilterOptions');
+            box.innerHTML = html;
+            box.onchange = e => {
+                const cb = e.target;
+                if (!cb.matches('input[type="checkbox"]')) return;
+                const keys = cb.closest('label').dataset.keys.split('~');
+                const allLeaves = leaves;
+                const ticked = new Set(selectedLocations || allLeaves);
+                keys.forEach(k => cb.checked ? ticked.add(k) : ticked.delete(k));
+                selectedLocations = ticked.size === allLeaves.length ? null : ticked;
+                syncLocationCheckboxes();
+                onFiltersChanged();
             };
-            wrap.onclick = e => {
-                const btn = e.target.closest('.loc-expand');
+            box.onclick = e => {
+                const btn = e.target.closest('.show-expand');
                 if (!btn) return;
-                e.stopPropagation();
-                const places = btn.closest('.loc-group').querySelector('.loc-places');
-                places.hidden = !places.hidden;
-                btn.setAttribute('aria-expanded', String(!places.hidden));
-                btn.textContent = places.hidden ? '▸' : '▾';
+                e.preventDefault();
+                const kids = box.querySelector(`[data-loc-kids="${CSS.escape(btn.dataset.locGroup)}"]`);
+                kids.hidden = !kids.hidden;
+                btn.setAttribute('aria-expanded', String(!kids.hidden));
             };
             selectedLocations = null;
-            updateLocationBtn();
+            syncLocationCheckboxes();
         }
 
-        function setAllLocations(val) {
-            document.querySelectorAll('#locCheckboxes input').forEach(cb => { cb.checked = val; cb.indeterminate = false; });
-            updateLocations();
-        }
-
-        function updateLocations() {
-            const leaves = [...document.querySelectorAll('#locCheckboxes [data-loc]')];
-            const ticked = leaves.filter(cb => cb.checked).map(cb => cb.dataset.loc);
-            selectedLocations = ticked.length === leaves.length ? null : new Set(ticked);
-            updateLocationBtn();
-            processAllData();
-            renderAllTabs();
-        }
-
-        function updateLocationBtn() {
-            const leaves = [...document.querySelectorAll('#locCheckboxes [data-loc]')];
-            const ticked = leaves.filter(cb => cb.checked);
-            // Each country's tick box: ticked, empty, or a dash when only some places are ticked
-            const fullGroups = [];
-            document.querySelectorAll('#locCheckboxes [data-loc-parent]').forEach(p => {
-                const kids = leaves.filter(cb => cb.dataset.group === p.dataset.locParent);
-                const on = kids.filter(cb => cb.checked).length;
-                p.checked = on === kids.length;
-                p.indeterminate = on > 0 && on < kids.length;
-                if (on === kids.length) fullGroups.push(p.dataset.locParent);
+        function syncLocationCheckboxes() {
+            document.querySelectorAll('#locFilterOptions label[data-keys]').forEach(label => {
+                const keys = label.dataset.keys.split('~');
+                const on = selectedLocations ? keys.filter(k => selectedLocations.has(k)).length : keys.length;
+                const cb = label.querySelector('input');
+                cb.checked = on === keys.length;
+                cb.indeterminate = on > 0 && on < keys.length;
             });
-            const btn = document.getElementById('locDropdownBtn');
-            const groupOfTicked = new Set(ticked.map(cb => cb.dataset.group || 'unknown'));
-            if (ticked.length === leaves.length) btn.textContent = 'All Locations';
-            else if (ticked.length === 0) btn.textContent = 'None';
-            else if (ticked.length === 1) btn.textContent = ticked[0].parentElement.textContent.trim();
-            else if (groupOfTicked.size === 1 && fullGroups.includes([...groupOfTicked][0])) btn.textContent = locCountryName([...groupOfTicked][0]);
-            else btn.textContent = `${ticked.length} Locations`;
         }
+
+        // Counts per place, and the box text: All, one or two names, "All but …" or "3 selected"
+        function refreshLocationFilter(counts, total) {
+            const box = document.getElementById('locFilterOptions');
+            box.querySelectorAll('label[data-keys]').forEach(label => {
+                const n = label.dataset.keys.split('~').reduce((sum, k) => sum + (counts[k] || 0), 0);
+                label.querySelector('.count').textContent = `(${n})`;
+                label.classList.toggle('is-zero', n === 0);
+            });
+            let text = 'All';
+            if (selectedLocations) {
+                const names = [];
+                box.querySelectorAll(':scope > .show-row:not(.shortcut) label[data-keys]').forEach(label => {
+                    const keys = label.dataset.keys.split('~');
+                    const on = keys.filter(k => selectedLocations.has(k));
+                    if (on.length === keys.length) names.push(label.dataset.country || label.dataset.full);
+                    else if (on.length) {
+                        const kids = box.querySelector(`[data-loc-kids="${CSS.escape(locGroupOf(keys[0]))}"]`);
+                        kids.querySelectorAll('label[data-full]').forEach(l => { if (selectedLocations.has(l.dataset.keys)) names.push(l.dataset.full); });
+                    }
+                });
+                const leftOut = [...box.querySelectorAll('label[data-full]')].filter(l => !selectedLocations.has(l.dataset.keys)).map(l => l.dataset.full);
+                text = names.length === 0 ? 'None selected'
+                    : names.length <= 2 ? names.join(', ')
+                    : leftOut.length <= 2 ? `All but ${leftOut.join(', ')}`
+                    : `${names.length} selected`;
+            }
+            const toggle = document.getElementById('locFilterToggle');
+            toggle.querySelector('.toggle-text').textContent = text;
+            toggle.title = text;
+            toggle.classList.toggle('is-set', !!selectedLocations);
+        }
+
+
+
+
 
         function updateShowTypes() {
             const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')].map(cb => cb.value);
@@ -1632,6 +1539,7 @@
             scopePaths.shows = [];
             updateShowBtn();
             renderScopeView();
+            refreshFilterCounts();
         }
 
         function setAllShowTypes(val) {
@@ -1679,72 +1587,16 @@
         // YEAR FILTER
         // ===========================================
 
-        function buildYearDropdown() {
-            const yearSet = new Set();
-            allWrestlerData.forEach(w => {
-                if (!w.allMatches) return;
-                w.allMatches.forEach(m => {
-                    if (m.date) yearSet.add(m.date.substring(0, 4));
-                });
-            });
-            availableYears = [...yearSet].sort().reverse();
-            const container = document.getElementById('yearCheckboxes');
-            container.innerHTML = availableYears.map(y => `
-                <label style="display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;color:#ddd;font-size:0.9em;">
-                    <input type="checkbox" value="${y}" checked onchange="updateYears()"> ${y}
-                </label>`).join('');
-        }
 
-        function updateYears() {
-            const checked = [...document.querySelectorAll('#yearCheckboxes input:checked')].map(cb => cb.value);
-            selectedYears = new Set(checked);
-            updateYearBtn();
-            processAllData();
-            renderAllTabs();
-        }
 
-        function setAllYears(val) {
-            document.querySelectorAll('#yearCheckboxes input').forEach(cb => cb.checked = val);
-            updateYears();
-        }
 
-        function updateYearBtn() {
-            const btn = document.getElementById('yearDropdownBtn');
-            const all = document.querySelectorAll('#yearCheckboxes input');
-            const checked = document.querySelectorAll('#yearCheckboxes input:checked');
-            if (checked.length === 0) btn.textContent = 'None';
-            else if (checked.length === all.length) btn.textContent = 'All Years';
-            else if (checked.length === 1) btn.textContent = [...checked][0].value;
-            else btn.textContent = `${checked.length} Years`;
-        }
 
         // ===========================================
         // DIVISION FILTER
         // ===========================================
 
-        function updateDivisions() {
-            const checked = [...document.querySelectorAll('#divDropdownMenu input:checked')].map(cb => cb.value);
-            selectedDivisions = new Set(checked);
-            updateDivBtn();
-            processAllData();
-            renderAllTabs();
-        }
 
-        function setAllDivisions(val) {
-            document.querySelectorAll('#divDropdownMenu input[type="checkbox"]').forEach(cb => cb.checked = val);
-            updateDivisions();
-        }
 
-        function updateDivBtn() {
-            const btn = document.getElementById('divDropdownBtn');
-            const all = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]');
-            const checked = document.querySelectorAll('#divDropdownMenu input[type="checkbox"]:checked');
-            const labels = { mens: "Men's", womens: "Women's", menstag: "Men's Tag", womenstag: "Women's Tag", trios: "Trios", other: "Other" };
-            if (checked.length === 0) btn.textContent = 'None';
-            else if (checked.length === all.length) btn.textContent = 'All Divisions';
-            else if (checked.length === 1) btn.textContent = labels[[...checked][0].value] || [...checked][0].value;
-            else btn.textContent = `${checked.length} Divisions`;
-        }
 
         // Dropdown toggles and close handled in DOMContentLoaded below
 
@@ -2662,8 +2514,10 @@
                     ? `<button class="tab more-events-toggle" id="match-list-toggle">${matchListExpanded ? 'Show top 10 only' : `Show all ${fullCount} matches`}</button>`
                     : '');
 
-            // Leaderboard: 3 matches to qualify, fewer when the selection only covers one or two shows
-            const minMatches = Math.max(1, Math.min(3, showCount));
+            // Leaderboard: 5 matches to qualify on the broad views (All Shows, or a whole show type);
+            // 3 inside a show, fewer when the selection only covers one or two shows
+            const broadView = nodes.length <= 2;
+            const minMatches = broadView ? 5 : Math.max(1, Math.min(3, showCount));
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
             lbTitle.setAttribute('data-tt', `Ranked by average match rating. Tag and trios matches count for the team, singles for the wrestler. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
@@ -2726,6 +2580,27 @@
                 if (factions && factions.factions) factionsData = factions;
                 const realWeeks = archiveIdx && archiveIdx.weeks ? archiveIdx.weeks.filter(w => w.filename && w.filename !== 'archive-index.json') : [];
                 newestArchiveFile = realWeeks.length ? realWeeks[0].filename : null;
+                // One file with everyone's matches (built by the "Show details" GitHub Action).
+                // Rebuilt into the same shape the wrestler files had, so everything below is unchanged.
+                const packed = await getJson('show-matches.json');
+                if (packed && packed.wrestlers && packed.matches && packed.names) {
+                    const N = packed.names;
+                    const FIELDS = ['id', 'date', 'event', 'show', 'showType', 'rating', 'matchType', 'matchStipulation', 'stakes', 'matchPos', 'division'];
+                    const M = packed.matches.map(row => {
+                        const o = {};
+                        FIELDS.forEach((k, i) => { if (row[i] !== null) o[k] = row[i]; });
+                        return o;
+                    });
+                    allWrestlerData = packed.wrestlers.map(([ni, slug, division, isTeam, peakRating, apps]) => {
+                        const w = { name: N[ni], division, isTeam: !!isTeam, peakRating };
+                        if (slug) w.slug = slug;
+                        if (apps) w.allMatches = apps.map(([mi, opp, vs, par]) => ({
+                            ...M[mi], opponents: opp.map(i => N[i]), versus: vs.map(i => N[i]), partners: par.map(i => N[i])
+                        }));
+                        return w;
+                    });
+                } else {
+                // Backup: the single file didn't load, so read every wrestler file (the old way)
                 // Get list of all wrestlers from statistics.json
                 const statsData = await (await fetch('statistics.json')).json();
                 const allWrestlers = [];
@@ -2767,6 +2642,7 @@
                 }
                 
                 allWrestlerData = results.filter(w => w !== null);
+                }
 
                 // Peak rating + team flag per wrestler/team, for leaderboard photo rings
                 wrestlerInfo = {};
@@ -2775,9 +2651,7 @@
                 });
                 
                 // Build year dropdown from actual data
-                buildYearDropdown();
-                fillFacetFilters();
-                buildLocationFilter();
+                setupFilters();
                 findStipVariants();
 
                 // Process and render
@@ -2799,8 +2673,6 @@
         // ===========================================
         
         buildScopeViewMarkup();
-        buildFacetFilters();
-        addFilterArrows();
         if (!SHOW_VIEW_TABS) document.querySelectorAll('.view-switch').forEach(el => { el.style.display = 'none'; });
 
         // Card, breadcrumb, back and "more events" clicks in the show view
@@ -2824,8 +2696,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // Filter dropdowns: one open at a time, closed by clicking outside
-            const DROPDOWNS = [['showDropdownBtn', 'showDropdownMenu'], ['yearDropdownBtn', 'yearDropdownMenu'], ['divDropdownBtn', 'divDropdownMenu'], ['locDropdownBtn', 'locDropdownMenu']]
-                .concat(FACETS.map(f => [`${f.key}DropdownBtn`, `${f.key}DropdownMenu`]));
+            // (the filter boxes are handled by FilterUI.setupDropdowns)
+            const DROPDOWNS = [['showDropdownBtn', 'showDropdownMenu']];
             DROPDOWNS.forEach(([btnId, menuId]) => {
                 document.getElementById(btnId).addEventListener('click', e => {
                     e.stopPropagation();

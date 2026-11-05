@@ -8,7 +8,9 @@ on:
       - 'on-this-day-daily/**'        # venues and show ratings
       - 'championship-matches.json'   # title names
       - 'best-match-archive/**'       # Best Match of the Week
+      - 'statistics.json'             # wrestler list for show-matches.json
       - 'scripts/build-show-details.mjs'
+      - 'scripts/build-show-matches.mjs'
   workflow_dispatch:                   # adds a "Run workflow" button for manual runs
 
 permissions:
@@ -32,15 +34,24 @@ jobs:
       - name: Build show details for the Show Statistics page
         run: node scripts/build-show-details.mjs
 
-      - name: Commit show-details.json if changed
+      - name: Build the all-matches file for the Show Statistics page
+        run: node scripts/build-show-matches.mjs
+
+      - name: Commit show-details.json / show-matches.json if changed
         run: |
-          if [ -z "$(git status --porcelain show-details.json)" ]; then
+          # show-matches.json carries a build time, so only count it as changed if its data changed
+          if [ -n "$(git status --porcelain show-matches.json)" ] && git cat-file -e HEAD:show-matches.json 2>/dev/null; then
+            old=$(git show HEAD:show-matches.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);delete j.built;console.log(require('crypto').createHash('md5').update(JSON.stringify(j)).digest('hex'))})")
+            new=$(node -e "const j=JSON.parse(require('fs').readFileSync('show-matches.json','utf8'));delete j.built;console.log(require('crypto').createHash('md5').update(JSON.stringify(j)).digest('hex'))")
+            if [ "$old" = "$new" ]; then git checkout -- show-matches.json; fi
+          fi
+          if [ -z "$(git status --porcelain show-details.json show-matches.json)" ]; then
             echo "No changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
-          git add show-details.json
+          git add show-details.json show-matches.json
           git commit -m "Show details: rebuild for the Show Statistics page"
           # Uploads can push many commits in a row (e.g. one per On This Day
           # file), so a push can be beaten by a newer commit. Retry a few times.
