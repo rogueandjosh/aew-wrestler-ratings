@@ -933,7 +933,12 @@
             #showsView .stats-summary .stat-label { font-size: 0.7em !important; }
             .sl-long { display: none; }
             .sl-short { display: inline; }
-            .scope-table th.num, .scope-table td.num { width: 46px; }
+            .scope-table th.num, .scope-table td.num { width: 50px; padding-left: 3px !important; padding-right: 3px !important; }
+            /* Table headings: full words on two lines ("Match / Avg", "Best / Show") instead of short codes */
+            .scope-table th .sl-long { display: inline; }
+            .scope-table th .sl-short { display: none; }
+            .scope-table th .sort-btn { white-space: normal; line-height: 1.15; font-size: 0.92em; }
+            .scope-table thead th { vertical-align: bottom; }
         }
 
         /* ===== Top Performers: Matches and Best on every screen; scrolls sideways if needed ===== */
