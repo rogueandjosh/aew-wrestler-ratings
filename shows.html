@@ -895,6 +895,10 @@
         .scope-table th .sort-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; border-radius: 3px; }
         .scope-table th.sorted .sort-btn { color: #fff; }
         .scope-table th .sort-ind { font-size: 0.75em; }
+        /* Two-level header: Average (Match | Show) and Best (Match | Show) */
+        .scope-table thead th.grp-th { text-align: center; font-size: 0.8em; letter-spacing: 0.04em; text-transform: uppercase; padding-bottom: 2px !important; border-bottom: 1px solid rgba(255, 215, 0, 0.35); }
+        .scope-table thead .grp-row th[rowspan] { vertical-align: bottom; }
+        .scope-table.no-best-show .col-best-show { display: none; }
         @media (max-width: 600px) {
             /* Phones: two rows of four */
             #showsView .stats-summary { grid-template-columns: repeat(4, 1fr); }
@@ -2336,13 +2340,20 @@
                     <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
-                        <thead><tr id="scope-head">
-                            <th data-sort="name"><button type="button" class="sort-btn">Name<span class="sort-ind"></span></button></th>
-                            <th class="num tt" data-sort="matches" data-tt="Number of matches"><button type="button" class="sort-btn"><span class="sl-long">Matches</span><span class="sl-short">M</span><span class="sort-ind"></span></button></th>
-                            <th class="num tt" data-sort="matchAvg" data-tt="Average Cagematch rating of the matches"><button type="button" class="sort-btn">Match<span class="sl-long"> Avg</span><span class="sort-ind"></span></button></th>
-                            <th class="num tt" data-sort="showAvg" data-tt="Cagematch rating for the whole show (the community's score for the show itself). For a group of shows, the average, each show counted once."><button type="button" class="sort-btn">Show<span class="sl-long"> Avg</span><span class="sort-ind"></span></button></th>
-                            <th class="num tt" data-sort="best" data-tt="Highest-rated match"><button type="button" class="sort-btn">Best<span class="sort-ind"></span></button></th>
-                            <th class="chev" aria-label="Expand"></th></tr></thead>
+                        <thead id="scope-head">
+                            <tr class="grp-row">
+                                <th rowspan="2" data-sort="name"><button type="button" class="sort-btn">Name<span class="sort-ind"></span></button></th>
+                                <th rowspan="2" class="num tt" data-sort="matches" data-tt="Number of matches"><button type="button" class="sort-btn"><span class="sl-long">Matches</span><span class="sl-short">M</span><span class="sort-ind"></span></button></th>
+                                <th colspan="2" class="grp-th">Average</th>
+                                <th colspan="2" class="grp-th" id="scope-best-grp">Best</th>
+                                <th rowspan="2" class="chev" aria-label="Expand"></th>
+                            </tr>
+                            <tr>
+                                <th class="num tt" data-sort="matchAvg" data-tt="Average Cagematch rating of the matches"><button type="button" class="sort-btn">Match<span class="sort-ind"></span></button></th>
+                                <th class="num tt" data-sort="showAvg" data-tt="Cagematch rating for the whole show (the community's score for the show itself). For a group of shows, the average, each show counted once."><button type="button" class="sort-btn">Show<span class="sort-ind"></span></button></th>
+                                <th class="num tt" data-sort="best" data-tt="The highest-rated single match"><button type="button" class="sort-btn">Match<span class="sort-ind"></span></button></th>
+                                <th class="num tt col-best-show" data-sort="bestShow" data-tt="The highest-rated single show in this row (tap a number to see which show)"><button type="button" class="sort-btn">Show<span class="sort-ind"></span></button></th>
+                            </tr></thead>
                         <tbody id="scope-grid"></tbody>
                     </table>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
@@ -2550,9 +2561,15 @@
 
                 const rows = children.map(c => {
                     const u = getUniqueMatches(c.matches);
-                    return { c, matches: u.length, matchAvg: getAvg(u), showAvg: getShowStats(u).avg,
+                    const ss = getShowStats(u);
+                    return { c, matches: u.length, matchAvg: getAvg(u), showAvg: ss.avg, bestShowInfo: ss.best,
+                             bestShow: ss.best ? ss.best.rating : null,
                              best: u.length ? Math.max(...u.map(m => m.rating)) : null };
                 });
+                // Editions (every row is one show): Best Show would just repeat Show, so it's hidden
+                const oneShowRows = children.every(c => c.isEdition);
+                document.querySelector('#scope-grid-section .scope-table').classList.toggle('no-best-show', oneShowRows);
+                document.getElementById('scope-best-grp').colSpan = oneShowRows ? 1 : 2;
                 if (scopeSort) {
                     const { key, dir } = scopeSort;
                     rows.sort((a, b) => {
@@ -2568,11 +2585,11 @@
                     th.querySelector('.sort-ind').textContent = on ? (scopeSort.dir > 0 ? ' ▲' : ' ▼') : '';
                     th.classList.toggle('sorted', !!on);
                 });
-                const cell = v => `<td class="num ${v !== null ? getRatingClass(v) : ''}">${v !== null ? v.toFixed(2) : '--'}</td>`;
+                const cell = (v, extra = '', tip = '') => `<td class="num ${extra} ${v !== null ? getRatingClass(v) : ''}${tip ? ' tt' : ''}"${tip ? ` data-tt="${esc(tip)}"` : ''}>${v !== null ? v.toFixed(2) : '--'}</td>`;
                 document.getElementById('scope-grid').innerHTML = rows.map(r => `<tr class="scope-row" data-scope-key="${esc(r.c.key)}">
                         <td class="scope-name">${esc(r.c.label)}${r.c.isEdition ? `<span class="scope-date">${formatDate(r.c.date)}</span>` : ''}</td>
                         <td class="num">${r.matches}</td>
-                        ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best)}
+                        ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best)}${oneShowRows ? '' : cell(r.bestShow, 'col-best-show', r.bestShowInfo ? `Best show: ${r.bestShowInfo.name} (${formatDate(r.bestShowInfo.date)})` : '')}
                         <td class="chev">›</td>
                     </tr>`).join('');
             }
