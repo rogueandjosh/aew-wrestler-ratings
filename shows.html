@@ -916,11 +916,22 @@
         .tp-div-tabs { justify-content: flex-start; gap: 8px; margin-bottom: 15px; }
         .tp-div-tabs .tab { padding: 8px 16px; font-size: 0.9em; }
         .tp-div-tabs .tab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .tp-multi { position: relative; display: inline-flex; }
+        .tp-multi .tab { white-space: nowrap; width: 100%; }
+        .tp-multi-menu { position: absolute; top: 100%; left: 0; margin-top: 4px; background: #1a1a2e; border: 2px solid #ffd700;
+            border-radius: 8px; z-index: 200; min-width: 150px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); overflow: hidden; }
+        .tp-multi-menu[hidden] { display: none; }
+        .tp-multi-menu button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: #ffd700;
+            cursor: pointer; font-family: inherit; font-size: 0.95em; text-align: left; }
+        .tp-multi-menu button:hover, .tp-multi-menu button:focus-visible { background: rgba(255, 215, 0, 0.1); outline: none; }
+        .tp-div-tabs .tab-long { display: inline; }
         @media (max-width: 600px) {
             .tp-right { width: 100%; }
             .tp-filters-btn { flex: 1 1 auto; justify-content: center; }
             .tp-div-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .tp-div-tabs .tab { padding: 0 4px; min-height: 40px; font-size: 0.82em; transform: none !important; }
+            .tp-div-tabs .tab-long { display: none; }
+            .tp-multi-menu { left: auto; right: 0; }      /* right-hand column: open leftwards */
         }
 
         /* ⚙️ Columns: optional breakdown columns */
@@ -1443,15 +1454,24 @@
         // Top Performers: Wrestlers | Teams (kept while browsing; resets on reload)
         // Top Performers division tabs: who is listed, by their own division (All = everyone,
         // wrestlers and teams together). Kept while browsing; resets on reload.
+        // Same layout as the home page: one tab per division, plus a multiple-divisions button
+        // (All Divisions by default, or Singles / Teams) whose label shows the choice.
         let tpDiv = 'all';
+        const TP_GROUPS = { all: 'All', singles: 'Singles', teams: 'Teams' };
+        const TP_GROUP_DIVS = { singles: ['mens', 'womens'], teams: ['menstag', 'womenstag', 'trios'] };
         function setTpDiv(div) {
             tpDiv = div;
-            document.querySelectorAll('.tp-div-tabs [data-tp-div]').forEach(b => {
-                const on = b.dataset.tpDiv === div;
-                b.classList.toggle('active', on);
-                b.setAttribute('aria-selected', String(on));
-            });
+            document.querySelectorAll('.tp-div-tabs > .tab[data-tp-div]').forEach(b => b.classList.toggle('active', b.dataset.tpDiv === div));
+            const multi = document.getElementById('tpMultiBtn');
+            multi.classList.toggle('active', div in TP_GROUPS);
+            multi.textContent = `${TP_GROUPS[div in TP_GROUPS ? div : 'all']} ▾`;   // back to "All ▾" when a single division is picked
+            toggleTpMulti(false);
             renderScopeView();
+        }
+        function toggleTpMulti(open) {
+            const menu = document.getElementById('tpMultiMenu');
+            menu.hidden = !open;
+            document.getElementById('tpMultiBtn').setAttribute('aria-expanded', String(open));
         }
 
         // ⚙️ Filters in Top Performers: moves the page's own filter panel down here (no copies to keep
@@ -2470,13 +2490,20 @@
                     </div>
                     <div id="tpFiltersSlot" class="tp-filters-slot" hidden></div>
                     <!-- Who is listed (by their own division, like the home page tabs). The filters decide which matches count. -->
-                    <div class="tabs tp-div-tabs" role="tablist" aria-label="Top Performers: which division">
-                        <button type="button" role="tab" class="tab active" data-tp-div="all" aria-selected="true">All</button>
-                        <button type="button" role="tab" class="tab" data-tp-div="mens" aria-selected="false">Men's</button>
-                        <button type="button" role="tab" class="tab" data-tp-div="womens" aria-selected="false">Women's</button>
-                        <button type="button" role="tab" class="tab" data-tp-div="menstag" aria-selected="false">Men's Tag</button>
-                        <button type="button" role="tab" class="tab" data-tp-div="womenstag" aria-selected="false">Women's Tag</button>
-                        <button type="button" role="tab" class="tab" data-tp-div="trios" aria-selected="false">Trios</button>
+                    <div class="tabs tp-div-tabs">
+                        <button type="button" class="tab" data-tp-div="mens">Men</button>
+                        <button type="button" class="tab" data-tp-div="womens">Women</button>
+                        <button type="button" class="tab" data-tp-div="menstag">Men's Tag<span class="tab-long"> Teams</span></button>
+                        <button type="button" class="tab" data-tp-div="womenstag">Women's Tag<span class="tab-long"> Teams</span></button>
+                        <button type="button" class="tab" data-tp-div="trios">Trios</button>
+                        <div class="tp-multi">
+                            <button type="button" class="tab active tt" id="tpMultiBtn" aria-haspopup="true" aria-expanded="false" data-tt="Combine divisions into one list: All Divisions (default), Singles (Men + Women) or Teams (Tag + Trios).">All ▾</button>
+                            <div class="tp-multi-menu" id="tpMultiMenu" hidden>
+                                <button type="button" data-tp-div="all">All Divisions</button>
+                                <button type="button" data-tp-div="singles">Singles</button>
+                                <button type="button" data-tp-div="teams">Teams</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th id="tp-name-col">Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
                     <tbody id="scope-leaderboard"></tbody></table></div>
@@ -2776,12 +2803,14 @@
             // that the filters allow, so counts are totals unless a filter narrows them.
             // (A team never counts in a Men's or Women's singles-division match.)
             const SINGLES_DIVS = new Set(["Men's", "Women's"]);
-            const pool = all.filter(m => (tpDiv === 'all' || m.ownDiv === tpDiv) && !(m.isTeam && SINGLES_DIVS.has(m.division)))
+            const inTab = m => tpDiv === 'all' || (TP_GROUP_DIVS[tpDiv] ? TP_GROUP_DIVS[tpDiv].includes(m.ownDiv) : m.ownDiv === tpDiv);
+            const pool = all.filter(m => inTab(m) && !(m.isTeam && SINGLES_DIVS.has(m.division)))
                 .map(m => ({ ...m, credited: true }));
             let minMatches = showCount >= 20 ? 5 : Math.max(1, Math.min(3, showCount));
             while (minMatches > 1 && calculateWrestlerStats(pool, minMatches).length < 3) minMatches--;
-            const isTeamTab = ['menstag', 'womenstag', 'trios'].includes(tpDiv);
-            const who = tpDiv === 'all' ? 'Wrestlers and teams' : isTeamTab ? `${DIV_LABELS[tpDiv]} teams` : `${DIV_LABELS[tpDiv]} wrestlers`;
+            const isTeamTab = ['menstag', 'womenstag', 'trios', 'teams'].includes(tpDiv);
+            const who = tpDiv === 'all' ? 'Wrestlers and teams' : tpDiv === 'singles' ? "Men's and women's wrestlers"
+                : tpDiv === 'teams' ? 'Tag teams and trios' : isTeamTab ? `${DIV_LABELS[tpDiv]} teams` : `${DIV_LABELS[tpDiv]} wrestlers`;
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
             lbTitle.setAttribute('data-tt', `${who}, ranked by the average rating of every match they were in here. ` +
@@ -2947,8 +2976,10 @@
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
+            if (e.target.closest('#tpMultiBtn')) { toggleTpMulti(document.getElementById('tpMultiMenu').hidden); return; }
             const tpBtn = e.target.closest('.tp-div-tabs [data-tp-div]');
             if (tpBtn) { setTpDiv(tpBtn.dataset.tpDiv); return; }
+            if (!e.target.closest('.tp-multi')) toggleTpMulti(false);
             if (e.target.closest('#scope-cols-btn')) {
                 const panel = document.getElementById('scope-cols-panel');
                 panel.hidden = !panel.hidden;
