@@ -1247,6 +1247,10 @@
 
         // show-details.json (built by a GitHub Action): venue, show rating, week, title names, Best Match winners
         let showDetails = { shows: {}, titles: {}, bestMatches: [] };
+        // show-ratings.json (Apps Script export, ShowRatings.gs): Cagematch show rating for every show,
+        // "YYYY-MM-DD|Show name|Brand" → rating. The brand keeps apart two broadcasts that share a name
+        // (e.g. Holiday Bash '25 - Night 1 on Dynamite AND Collision).
+        let showRatings = {};
         let bestMatchIds = new Set();
         let factionsData = { factions: [] };
         let newestArchiveFile = null;      // the newest week is "current" on the rankings page
@@ -2537,7 +2541,8 @@
                 return;
             }
             const det = showDetails.shows[`${first.date}|${first.rawEvent}`] || [];
-            const [venue, showRating, weekLabel] = det;
+            const [venue, otdRating, weekLabel] = det;
+            const showRating = showRatings[`${first.date}|${first.rawEvent}|${first.show}`] ?? otdRating;   // On This Day value as a fallback
             const parts = [];
             if (venue) parts.push(`<span class="tt" data-tt="Where the show took place">📍 ${esc(venue.replace(/;\s*/, ', '))}</span>`);
             if (typeof showRating === 'number') parts.push(`<span class="tt" data-tt="The Cagematch community rating for the whole show">Show rating <strong>${showRating.toFixed(2)}</strong></span>`);
@@ -2573,10 +2578,12 @@
             
             try {
                 const getJson = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
-                const [, , details, factions, archiveIdx] = await Promise.all([
+                const [, , details, factions, archiveIdx, ratings] = await Promise.all([
                     loadNameChanges(), loadTeamMembers(),
-                    getJson('show-details.json'), getJson('factions.json'), getJson('archive/index.json')
+                    getJson('show-details.json'), getJson('factions.json'), getJson('archive/index.json'),
+                    getJson('show-ratings.json')
                 ]);
+                if (ratings && ratings.shows) showRatings = ratings.shows;
                 if (details) showDetails = { shows: details.shows || {}, titles: details.titles || {}, bestMatches: details.bestMatches || [] };
                 bestMatchIds = new Set(showDetails.bestMatches.map(Number));
                 if (factions && factions.factions) factionsData = factions;
