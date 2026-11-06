@@ -899,8 +899,19 @@
         .tp-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 15px; }
         .tp-head .section-title { margin-bottom: 0; }
         .tp-right { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .tp-div { width: 200px; }
-        .tp-div .match-filter-options { left: auto; right: 0; min-width: 100%; width: max-content; }
+        .tp-container { overflow: visible; }          /* so the filter lists can open over the table */
+        .tp-filters-btn {
+            height: 36px; padding: 0 14px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+            background: rgba(255, 215, 0, 0.12); border: 2px solid #ffd700; color: #ffd700;
+            font-family: inherit; font-weight: bold; font-size: 0.9em; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .tp-filters-btn:hover { background: rgba(255, 215, 0, 0.22); }
+        .tp-filters-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .tp-filters-btn #tpFiltersCount { color: #d8cfa8; font-weight: normal; font-size: 0.9em; }
+        .tp-filters-btn .tp-arrow { font-size: 0.7em; transition: transform 0.2s; }
+        .tp-filters-btn.open .tp-arrow { transform: rotate(180deg); }
+        .tp-filters-slot { margin-bottom: 15px; }
+        .tp-filters-slot .filter-section { margin-bottom: 0; }
         .tp-tabs { display: inline-flex; border: 2px solid #ffd700; border-radius: 8px; overflow: hidden; height: 36px; }
         .tp-tabs button { background: transparent; color: #ffd700; border: 0; padding: 0 16px; font: inherit; font-weight: bold; cursor: pointer; }
         .tp-tabs button + button { border-left: 1px solid rgba(255, 215, 0, 0.5); }
@@ -908,8 +919,7 @@
         .tp-tabs button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
         @media (max-width: 600px) {
             .tp-right { width: 100%; }
-            .tp-div { flex: 1 1 auto; width: auto; }
-            .tp-div .match-filter-options { left: 0; right: auto; }
+            .tp-filters-btn { flex: 1 1 auto; justify-content: center; }
         }
 
         /* ⚙️ Columns: optional breakdown columns */
@@ -1131,7 +1141,7 @@
                 </div>
             </div>
             <div class="match-filters-footer">
-                <button type="button" class="match-filters-reset" id="showFiltersReset" style="display: none;">Clear filters</button>
+                <button type="button" class="match-filters-reset" id="showFiltersReset" style="display: none;">Reset all filters</button>
             </div>
         </section>
 
@@ -1290,6 +1300,7 @@
         let scopeMatchesAll = [];   // every match entry with its drill-down path (first step = show type)
         let scopeTree = null;       // rebuilt on every processAllData()
         let scopePaths = { shows: [], stips: [], venues: [] }; // node keys drilled into, per view
+        const scopeShownDepth = { shows: 0, stips: 0, venues: 0 }; // how much of that path exists with the current filters
         let selectedShowTypes = new Set(SCOPE_TABS); // all show types by default
         let matchListExpanded = false; // "Show all N matches" on long match lists
         const MATCH_LIST_PREVIEW = 10;
@@ -1393,23 +1404,11 @@
                     onFiltersChanged();
                 }
             });
-            // Division appears twice (top filters and Top Performers): one filter, two boxes kept in step
-            const setDivisions = (sel, other) => {
-                selectedDivisions = sel === null ? new Set(ALL_DIVISIONS) : new Set(sel);
-                other.set(sel === null ? null : new Set(sel));
-                onFiltersChanged();
-            };
             filterBoxes.div = FilterUI.checkboxFacet(document.getElementById('divFilterGroup'), {
                 options: ALL_DIVISIONS.map(d => ({ value: d, label: DIV_LABELS[d] })),
                 showTotal: false,
-                onChange: sel => setDivisions(sel, tpDivBox)
+                onChange: sel => { selectedDivisions = sel === null ? new Set(ALL_DIVISIONS) : new Set(sel); onFiltersChanged(); }
             });
-            const tpDivBox = FilterUI.checkboxFacet(document.getElementById('tpDivFilterGroup'), {
-                options: ALL_DIVISIONS.map(d => ({ value: d, label: DIV_LABELS[d] })),
-                showTotal: false,
-                onChange: sel => setDivisions(sel, filterBoxes.div)
-            });
-            filterBoxes.tpDiv = tpDivBox;
             FACETS.forEach(f => {
                 const present = new Set(uniqueMatches.map(f.of));
                 const ordered = f.groups().filter(g => present.has(g)).concat([...present].filter(g => !f.groups().includes(g)).sort());
@@ -1423,7 +1422,7 @@
             });
             renderLocationFilter();
 
-            const groups = ['year', 'div', 'loc', ...FACETS.map(f => f.key), 'tpDiv'].map(k => document.getElementById(`${k}FilterGroup`));
+            const groups = ['year', 'div', 'loc', ...FACETS.map(f => f.key)].map(k => document.getElementById(`${k}FilterGroup`));
             FilterUI.setupDropdowns(groups);
             FilterUI.markColumns(document.getElementById('showFilterGrid'));
 
@@ -1452,6 +1451,23 @@
             renderScopeView();
         }
 
+        // ⚙️ Filters in Top Performers: moves the page's own filter panel down here (no copies to keep
+        // in step), and back to the top when closed. A marker remembers where it came from.
+        let filtersHome = null;
+        function toggleTpFilters(forceClose = false) {
+            const panel = document.querySelector('.filter-section');
+            const slot = document.getElementById('tpFiltersSlot');
+            const btn = document.getElementById('tpFiltersBtn');
+            if (!panel || !slot || !btn) return;
+            if (!filtersHome) { filtersHome = document.createComment('filters-home'); panel.before(filtersHome); }
+            FilterUI.closeAllDropdowns();
+            const open = !forceClose && slot.hidden;
+            if (open) { slot.appendChild(panel); slot.hidden = false; }
+            else { filtersHome.after(panel); slot.hidden = true; }
+            btn.setAttribute('aria-expanded', String(open));
+            btn.classList.toggle('open', open);
+        }
+
         function onFiltersChanged() {
             processAllData();
             renderAllTabs();
@@ -1459,7 +1475,7 @@
         }
 
         function resetFilters() {
-            Object.values(filterBoxes).forEach(b => b.set(null));      // includes the Top Performers copy of Division
+            Object.values(filterBoxes).forEach(b => b.set(null));
             selectedYears = new Set();
             selectedDivisions = new Set(ALL_DIVISIONS);
             FACETS.forEach(f => { selectedFacets[f.key] = null; });
@@ -1488,16 +1504,16 @@
                 return [counts, base.length];
             };
             filterBoxes.year.setCounts(...countFor('year', yearOf));
-            const divCounts = countFor('div', divOf);
-            filterBoxes.div.setCounts(...divCounts);
-            filterBoxes.tpDiv.setCounts(...divCounts);
+            filterBoxes.div.setCounts(...countFor('div', divOf));
             FACETS.forEach(f => filterBoxes[f.key].setCounts(...countFor(f.key, f.of)));
             refreshLocationFilter(...countFor('loc', locationOf));
 
             const moreSet = FACETS.filter(f => selectedFacets[f.key]).length;
             document.getElementById('moreFiltersCount').textContent = moreSet ? `(${moreSet} set)` : '';
-            const anySet = Object.entries(filterBoxes).some(([k, b]) => k !== 'tpDiv' && b.selected !== null) || !!selectedLocations;
-            document.getElementById('showFiltersReset').style.display = anySet ? '' : 'none';
+            const setCount = Object.values(filterBoxes).filter(b => b.selected !== null).length + (selectedLocations ? 1 : 0);
+            document.getElementById('showFiltersReset').style.display = setCount ? '' : 'none';
+            const tpCount = document.getElementById('tpFiltersCount');
+            if (tpCount) tpCount.textContent = setCount ? `(${setCount} set)` : '';
         }
 
 
@@ -2441,22 +2457,18 @@
                 </div>
                 </div>
 
-                <div class="table-container">
+                <div class="table-container tp-container">
                     <div class="tp-head">
                         <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
                         <div class="tp-right">
-                            <!-- A second copy of the page's Division filter (same filter: changing either changes both, and the whole page) -->
-                            <div class="match-filter-group tp-div" id="tpDivFilterGroup">
-                                <div class="match-filter-group-title tt" data-tt="Same as the Division filter at the top of the page: changing it here changes both, and the whole page.">Division</div>
-                                <button type="button" class="match-filter-toggle" id="tpDivFilterToggle" aria-expanded="false" aria-controls="tpDivFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
-                                <div class="match-filter-options" id="tpDivFilterOptions"></div>
-                            </div>
+                            <button type="button" class="tp-filters-btn tt tt-below" id="tpFiltersBtn" aria-expanded="false" aria-controls="tpFiltersSlot" data-tt="Opens the page's filters here (the same ones as at the top), so you can change them without scrolling up.">⚙️ Filters <span id="tpFiltersCount"></span><span class="tp-arrow" aria-hidden="true">▼</span></button>
                             <div class="tp-tabs" role="tablist" aria-label="Top Performers: wrestlers or teams">
                                 <button type="button" role="tab" data-tp-tab="wrestlers" class="on" aria-selected="true">Wrestlers</button>
                                 <button type="button" role="tab" data-tp-tab="teams" aria-selected="false">Teams</button>
                             </div>
                         </div>
                     </div>
+                    <div id="tpFiltersSlot" class="tp-filters-slot" hidden></div>
                     <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th id="tp-name-col">Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
                     <tbody id="scope-leaderboard"></tbody></table></div>
                 </div>`;
@@ -2476,7 +2488,10 @@
                 nodes.push(next);
                 validKeys.push(key);
             }
-            scopePaths[currentView] = validKeys;
+            // Don't forget the rest of the path: a filter that briefly leaves nothing (e.g. unticking
+            // "All" before ticking UK) would otherwise send you back to the top for good.
+            // Only moving (drillInto / drillTo) changes the remembered path.
+            scopeShownDepth[currentView] = validKeys.length;
             return nodes;
         }
 
@@ -2492,6 +2507,7 @@
         function drillInto(key) {
             scopeSort = null;
             matchListExpanded = false;
+            scopePaths[currentView] = scopePaths[currentView].slice(0, scopeShownDepth[currentView]);
             scopePaths[currentView].push(key);
             renderScopeView();
         }
@@ -2499,7 +2515,7 @@
         function drillTo(depth) {
             scopeSort = null;
             matchListExpanded = false;
-            scopePaths[currentView] = scopePaths[currentView].slice(0, depth);
+            scopePaths[currentView] = scopePaths[currentView].slice(0, Math.min(depth, scopeShownDepth[currentView]));
             renderScopeView();
         }
 
@@ -2922,6 +2938,7 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
+            if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
             const tpBtn = e.target.closest('.tp-tabs [data-tp-tab]');
             if (tpBtn) { setTpTab(tpBtn.dataset.tpTab); return; }
             if (e.target.closest('#scope-cols-btn')) {
