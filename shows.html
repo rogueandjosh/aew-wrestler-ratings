@@ -884,6 +884,30 @@
             #showsView .stats-summary .stat-number { font-size: 1.15em !important; }
         }
 
+        /* ===== Show vs match ratings (6 Nov 2026): 8 summary boxes, sortable breakdown table ===== */
+        #showsView .stats-summary { grid-template-columns: repeat(8, 1fr); }
+        .sl-short { display: none; }
+        .scope-table th .sort-btn {
+            background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit;
+            cursor: pointer; white-space: nowrap;
+        }
+        .scope-table th .sort-btn:hover { text-decoration: underline; }
+        .scope-table th .sort-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; border-radius: 3px; }
+        .scope-table th.sorted .sort-btn { color: #fff; }
+        .scope-table th .sort-ind { font-size: 0.75em; }
+        @media (max-width: 600px) {
+            /* Phones: two rows of four */
+            #showsView .stats-summary { grid-template-columns: repeat(4, 1fr); }
+            #showsView .stats-summary .stat-box:nth-child(4) { border-left: 1px solid rgba(255, 215, 0, 0.2); }
+            #showsView .stats-summary .stat-box:nth-child(5) { border-left: none; }
+            #showsView .stats-summary .stat-box:nth-child(n+4) { border-top: none; }
+            #showsView .stats-summary .stat-box:nth-child(n+5) { border-top: 1px solid rgba(255, 215, 0, 0.2); }
+            #showsView .stats-summary .stat-label { font-size: 0.7em !important; }
+            .sl-long { display: none; }
+            .sl-short { display: inline; }
+            .scope-table th.num, .scope-table td.num { width: 46px; }
+        }
+
         /* ===== Top Performers: Matches and Best on every screen; scrolls sideways if needed ===== */
         .lb-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .lb-table { min-width: 440px; }
@@ -2299,7 +2323,9 @@
                 <div class="scope-info" id="scope-info"></div>
                 <div class="stats-summary">
                     <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                    <div class="stat-box tt" data-tt="Average Cagematch community rating across these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Average Rating</div></div>
+                    <div class="stat-box tt" data-tt="Average Cagematch community rating of these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Avg Match<span class="sl-long"> Rating</span></div></div>
+                    <div class="stat-box tt" id="scope-avg-show-box" data-tt="Average Cagematch rating for the whole show (the community's score for the show itself, not its matches). Each show counts once."><div class="stat-number" id="scope-avg-show">--</div><div class="stat-label">Avg Show<span class="sl-long"> Rating</span></div></div>
+                    <div class="stat-box tt" id="scope-best-show-box" data-tt="The highest-rated show in this selection."><div class="stat-number" id="scope-best-show">--</div><div class="stat-label">Best Show</div></div>
                     <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
                     <div class="stat-box tt" data-tt="How many separate shows (episodes or events) these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
                     <div class="stat-box tt" data-tt="How many wrestlers and teams appear. Tag and trios matches count the team; singles and multi-person matches count each wrestler."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
@@ -2310,7 +2336,13 @@
                     <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
-                        <thead><tr><th>Name</th><th class="num tt" data-tt="Number of matches">Matches</th><th class="num tt" data-tt="Average Cagematch match rating">Avg</th><th class="num tt" data-tt="Highest-rated match">Best</th><th class="chev" aria-label="Expand"></th></tr></thead>
+                        <thead><tr id="scope-head">
+                            <th data-sort="name"><button type="button" class="sort-btn">Name<span class="sort-ind"></span></button></th>
+                            <th class="num tt" data-sort="matches" data-tt="Number of matches"><button type="button" class="sort-btn"><span class="sl-long">Matches</span><span class="sl-short">M</span><span class="sort-ind"></span></button></th>
+                            <th class="num tt" data-sort="matchAvg" data-tt="Average Cagematch rating of the matches"><button type="button" class="sort-btn">Match<span class="sl-long"> Avg</span><span class="sort-ind"></span></button></th>
+                            <th class="num tt" data-sort="showAvg" data-tt="Cagematch rating for the whole show (the community's score for the show itself). For a group of shows, the average, each show counted once."><button type="button" class="sort-btn">Show<span class="sl-long"> Avg</span><span class="sort-ind"></span></button></th>
+                            <th class="num tt" data-sort="best" data-tt="Highest-rated match"><button type="button" class="sort-btn">Best<span class="sort-ind"></span></button></th>
+                            <th class="chev" aria-label="Expand"></th></tr></thead>
                         <tbody id="scope-grid"></tbody>
                     </table>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
@@ -2356,12 +2388,14 @@
         }
 
         function drillInto(key) {
+            scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView].push(key);
             renderScopeView();
         }
 
         function drillTo(depth) {
+            scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, depth);
             renderScopeView();
@@ -2370,6 +2404,29 @@
         function getAvg(list) {
             return list.length ? list.reduce((sum, m) => sum + m.rating, 0) / list.length : null;
         }
+
+        // Show ratings: one per show (date + show name + brand), from show-ratings.json, else On This Day
+        function showRatingOf(m) {
+            const r = showRatings[`${m.date}|${m.rawEvent}|${m.show}`];
+            if (typeof r === 'number') return r;
+            const d = showDetails.shows[`${m.date}|${m.rawEvent}`];
+            return d && typeof d[1] === 'number' ? d[1] : null;
+        }
+        // { avg, best: {rating, name, date} | null } over the distinct shows these matches come from
+        function getShowStats(list) {
+            const seen = new Map();
+            list.forEach(m => {
+                const k = `${m.date}|${m.rawEvent}|${m.show}`;
+                if (!seen.has(k)) seen.set(k, { rating: showRatingOf(m), name: m.event, date: m.date });
+            });
+            const rated = [...seen.values()].filter(s => s.rating !== null);
+            if (!rated.length) return { avg: null, best: null };
+            const best = rated.reduce((a, b) => (b.rating > a.rating ? b : a));
+            return { avg: rated.reduce((sum, s) => sum + s.rating, 0) / rated.length, best };
+        }
+
+        // Breakdown table sort: null = the usual order; otherwise { key, dir: 1 | -1 }. Resets when you move level.
+        let scopeSort = null;
 
         function matchRowHTML(m, isLast) {
             const star = bestMatchIds.has(Number(m.id))
@@ -2427,6 +2484,17 @@
             // Summary
             document.getElementById('scope-total-matches').textContent = unique.length;
             document.getElementById('scope-avg-rating').textContent = avg !== null ? avg.toFixed(2) : '--';
+            const sStats = getShowStats(unique);
+            const avgShowEl = document.getElementById('scope-avg-show');
+            avgShowEl.textContent = sStats.avg !== null ? sStats.avg.toFixed(2) : '--';
+            const matchFiltered = FACETS.some(f => selectedFacets[f.key]) || selectedDivisions.size !== ALL_DIVISIONS.length;
+            document.getElementById('scope-avg-show-box').dataset.tt = 'Average Cagematch rating for the whole show (the community\'s score for the show itself, not its matches). Each show counts once.' +
+                (matchFiltered ? ' With Division or More filters set, it covers the shows that had at least one of the chosen matches; show ratings don\'t split by match.' : '');
+            const bestShowEl = document.getElementById('scope-best-show');
+            bestShowEl.textContent = sStats.best ? sStats.best.rating.toFixed(2) : '--';
+            document.getElementById('scope-best-show-box').dataset.tt = sStats.best
+                ? `The highest-rated show in this selection: ${sStats.best.name} (${formatDate(sStats.best.date)}), ${sStats.best.rating.toFixed(2)}.`
+                : 'The highest-rated show in this selection.';
             document.getElementById('scope-9plus').textContent = unique.filter(m => m.rating >= 9).length;
             document.getElementById('scope-shows').textContent = showCount;
             document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
@@ -2480,18 +2548,33 @@
 
                 if (currentView === 'venues') children.sort((a, b) => (a.key === 'venue:none') - (b.key === 'venue:none'));
 
-                document.getElementById('scope-grid').innerHTML = children.map(c => {
+                const rows = children.map(c => {
                     const u = getUniqueMatches(c.matches);
-                    const cAvg = getAvg(u);
-                    const best = u.length ? Math.max(...u.map(m => m.rating)) : null;
-                    return `<tr class="scope-row" data-scope-key="${esc(c.key)}">
-                        <td class="scope-name">${esc(c.label)}${c.isEdition ? `<span class="scope-date">${formatDate(c.date)}</span>` : ''}</td>
-                        <td class="num">${u.length}</td>
-                        <td class="num ${cAvg !== null ? getRatingClass(cAvg) : ''}">${cAvg !== null ? cAvg.toFixed(2) : '--'}</td>
-                        <td class="num ${best !== null ? getRatingClass(best) : ''}">${best !== null ? best.toFixed(2) : '--'}</td>
+                    return { c, matches: u.length, matchAvg: getAvg(u), showAvg: getShowStats(u).avg,
+                             best: u.length ? Math.max(...u.map(m => m.rating)) : null };
+                });
+                if (scopeSort) {
+                    const { key, dir } = scopeSort;
+                    rows.sort((a, b) => {
+                        if (key === 'name') return dir * a.c.label.localeCompare(b.c.label);
+                        const x = a[key], y = b[key];
+                        if (x === null || y === null) return (x === null) - (y === null);   // no value: always last
+                        return dir * (x - y);
+                    });
+                }
+                document.querySelectorAll('#scope-head th[data-sort]').forEach(th => {
+                    const on = scopeSort && scopeSort.key === th.dataset.sort;
+                    th.setAttribute('aria-sort', on ? (scopeSort.dir > 0 ? 'ascending' : 'descending') : 'none');
+                    th.querySelector('.sort-ind').textContent = on ? (scopeSort.dir > 0 ? ' ▲' : ' ▼') : '';
+                    th.classList.toggle('sorted', !!on);
+                });
+                const cell = v => `<td class="num ${v !== null ? getRatingClass(v) : ''}">${v !== null ? v.toFixed(2) : '--'}</td>`;
+                document.getElementById('scope-grid').innerHTML = rows.map(r => `<tr class="scope-row" data-scope-key="${esc(r.c.key)}">
+                        <td class="scope-name">${esc(r.c.label)}${r.c.isEdition ? `<span class="scope-date">${formatDate(r.c.date)}</span>` : ''}</td>
+                        <td class="num">${r.matches}</td>
+                        ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best)}
                         <td class="chev">›</td>
-                    </tr>`;
-                }).join('');
+                    </tr>`).join('');
             }
 
             // Match list: top 5 normally; every match on a single show, and at every level below
@@ -2686,6 +2769,16 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
+            const sortTh = e.target.closest('#scope-head th[data-sort]');
+            if (sortTh) {
+                // First tap: highest first (A–Z for Name); second tap: the other way; third: back to the usual order
+                const key = sortTh.dataset.sort, first = key === 'name' ? 1 : -1;
+                if (!scopeSort || scopeSort.key !== key) scopeSort = { key, dir: first };
+                else if (scopeSort.dir === first) scopeSort = { key, dir: -first };
+                else scopeSort = null;
+                renderScopeView();
+                return;
+            }
             const row = e.target.closest('.scope-row[data-scope-key], .scope-sub-btn[data-scope-key]');
             if (row) { drillInto(row.dataset.scopeKey); return; }
             const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
