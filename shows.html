@@ -895,10 +895,34 @@
         .scope-table th .sort-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; border-radius: 3px; }
         .scope-table th.sorted .sort-btn { color: #fff; }
         .scope-table th .sort-ind { font-size: 0.75em; }
-        /* Two-level header: Average (Match | Show) and Best (Match | Show) */
-        .scope-table thead th.grp-th { text-align: center; font-size: 0.8em; letter-spacing: 0.04em; text-transform: uppercase; padding-bottom: 2px !important; border-bottom: 1px solid rgba(255, 215, 0, 0.35); }
-        .scope-table thead .grp-row th[rowspan] { vertical-align: bottom; }
-        .scope-table.no-best-show .col-best-show { display: none; }
+        /* ⚙️ Columns: optional breakdown columns */
+        .scope-grid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+        .scope-grid-head .section-title { margin-bottom: 15px; }
+        .scope-grid-head .stats-cols-btn {
+            flex: 0 0 auto; background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700;
+            padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em; font-family: inherit;
+        }
+        .scope-grid-head .stats-cols-btn:hover { background: rgba(255, 215, 0, 0.25); }
+        .scope-grid-head .stats-cols-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; }
+        .scope-cols-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 12px; margin: 0 0 14px;
+            background: rgba(255, 215, 0, 0.06); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; font-size: 0.9em; }
+        .scope-cols-panel[hidden] { display: none; }
+        .scope-cols-label { color: #b8b8b8; }
+        .scope-col-opt { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: #e0e0e0; }
+        .scope-col-opt input { accent-color: #ffd700; width: 16px; height: 16px; }
+        .scope-table.hide-best .col-best, .scope-table.hide-bestShow .col-bestShow,
+        .scope-table.hide-nine .col-nine, .scope-table.hide-stars .col-stars { display: none; }
+
+        /* Laptop: the breakdown list and Top Matches side by side (phones and tablets: stacked) */
+        @media (min-width: 1025px) {
+            .scope-pair { display: flex; gap: 24px; align-items: flex-start; }
+            .scope-pair > .table-container { flex: 1 1 0; min-width: 0; }
+            /* Half width: headings may wrap onto two lines, number columns a little narrower */
+            .scope-pair .scope-table th .sort-btn { white-space: normal; line-height: 1.2; }
+            .scope-pair .scope-table th.num, .scope-pair .scope-table td.num { width: 64px; padding-left: 4px; padding-right: 4px; }
+            .scope-pair .scope-table thead th { vertical-align: bottom; }
+        }
+
         @media (max-width: 600px) {
             /* Phones: two rows of four */
             #showsView .stats-summary { grid-template-columns: repeat(4, 1fr); }
@@ -1842,6 +1866,7 @@
             if (rating >= 8) return 'rating-great';
             if (rating >= 7) return 'rating-good';
             if (rating >= 6) return 'rating-average';
+            if (rating >= 5) return 'rating-below';     // orange for 5–6, red only under 5 (same scale as the home page)
             return 'rating-poor';
         }
         
@@ -2336,23 +2361,25 @@
                     <div class="stat-box tt" data-tt="How many of these matches won Best Match of the Week. They're marked with a ⭐ in the match list."><div class="stat-number" id="scope-best">--</div><div class="stat-label">⭐ Best Matches</div></div>
                 </div>
 
+                <div class="scope-pair">
                 <div class="table-container" id="scope-grid-section">
-                    <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
+                    <div class="scope-grid-head">
+                        <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
+                        <button type="button" class="stats-cols-btn tt tt-below" id="scope-cols-btn" aria-expanded="false" aria-controls="scope-cols-panel" data-tt="Choose which columns to show. Your choice is remembered on this device.">⚙️ Columns</button>
+                    </div>
+                    <div class="scope-cols-panel" id="scope-cols-panel" hidden></div>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
-                        <thead id="scope-head">
-                            <tr class="grp-row">
-                                <th rowspan="2" data-sort="name"><button type="button" class="sort-btn">Name<span class="sort-ind"></span></button></th>
-                                <th rowspan="2" class="num tt" data-sort="matches" data-tt="Number of matches"><button type="button" class="sort-btn"><span class="sl-long">Matches</span><span class="sl-short">M</span><span class="sort-ind"></span></button></th>
-                                <th colspan="2" class="grp-th">Average</th>
-                                <th colspan="2" class="grp-th" id="scope-best-grp">Best</th>
-                                <th rowspan="2" class="chev" aria-label="Expand"></th>
-                            </tr>
-                            <tr>
-                                <th class="num tt" data-sort="matchAvg" data-tt="Average Cagematch rating of the matches"><button type="button" class="sort-btn">Match<span class="sort-ind"></span></button></th>
-                                <th class="num tt" data-sort="showAvg" data-tt="Cagematch rating for the whole show (the community's score for the show itself). For a group of shows, the average, each show counted once."><button type="button" class="sort-btn">Show<span class="sort-ind"></span></button></th>
-                                <th class="num tt" data-sort="best" data-tt="The highest-rated single match"><button type="button" class="sort-btn">Match<span class="sort-ind"></span></button></th>
-                                <th class="num tt col-best-show" data-sort="bestShow" data-tt="The highest-rated single show in this row (tap a number to see which show)"><button type="button" class="sort-btn">Show<span class="sort-ind"></span></button></th>
+                        <thead id="scope-head"><tr>
+                                <th data-sort="name"><button type="button" class="sort-btn">Name<span class="sort-ind"></span></button></th>
+                                <th class="num tt " data-sort="matches" data-tt="Number of matches"><button type="button" class="sort-btn"><span class="sl-long">Matches</span><span class="sl-short">M</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt " data-sort="matchAvg" data-tt="Average Cagematch rating of the matches"><button type="button" class="sort-btn"><span class="sl-long">Match Avg</span><span class="sl-short">Match</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt " data-sort="showAvg" data-tt="Cagematch rating for the whole show (the community&#39;s score for the show itself, not its matches). For a group of shows, the average, each show counted once."><button type="button" class="sort-btn"><span class="sl-long">Show Avg</span><span class="sl-short">Show</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt col-best" data-sort="best" data-tt="The highest-rated single match"><button type="button" class="sort-btn"><span class="sl-long">Best Match</span><span class="sl-short">Best M</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt col-bestShow" data-sort="bestShow" data-tt="The highest-rated single show in this row (tap a number to see which show)"><button type="button" class="sort-btn"><span class="sl-long">Best Show</span><span class="sl-short">Best S</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt col-nine" data-sort="nine" data-tt="Matches rated 9.0 or above"><button type="button" class="sort-btn"><span class="sl-long">9+ Matches</span><span class="sl-short">9+</span><span class="sort-ind"></span></button></th>
+                                <th class="num tt col-stars" data-sort="stars" data-tt="Matches that won Best Match of the Week"><button type="button" class="sort-btn"><span class="sl-long">⭐ Best Matches</span><span class="sl-short">⭐</span><span class="sort-ind"></span></button></th>
+                                <th class="chev" aria-label="Expand"></th>
                             </tr></thead>
                         <tbody id="scope-grid"></tbody>
                     </table>
@@ -2362,6 +2389,7 @@
                 <div class="table-container">
                     <h3 class="section-title tt" id="scope-top-title" style="cursor: help;"></h3>
                     <div class="best-match-card" id="scope-top-matches"></div>
+                </div>
                 </div>
 
                 <div class="table-container">
@@ -2438,6 +2466,38 @@
 
         // Breakdown table sort: null = the usual order; otherwise { key, dir: 1 | -1 }. Resets when you move level.
         let scopeSort = null;
+
+        // Optional breakdown columns (⚙️ Columns). Off by default; the choice is remembered on this device.
+        const SCOPE_OPTIONAL_COLS = [
+            { key: 'best', label: 'Best Match' },
+            { key: 'bestShow', label: 'Best Show' },     // not shown in Editions lists (each row is one show)
+            { key: 'nine', label: '9+ Matches' },
+            { key: 'stars', label: '⭐ Best Matches' }
+        ];
+        const SCOPE_COLS_KEY = 'ewr-shows-columns';
+        let scopeCols = new Set();
+        try { scopeCols = new Set(JSON.parse(localStorage.getItem(SCOPE_COLS_KEY) || '[]')); } catch (e) { scopeCols = new Set(); }
+
+        function applyScopeColumns(oneShowRows) {
+            const table = document.querySelector('#scope-grid-section .scope-table');
+            if (!table) return;
+            SCOPE_OPTIONAL_COLS.forEach(c => table.classList.toggle(`hide-${c.key}`, !scopeCols.has(c.key) || (c.key === 'bestShow' && oneShowRows)));
+        }
+
+        function renderScopeColsPanel() {
+            const panel = document.getElementById('scope-cols-panel');
+            panel.innerHTML = '<span class="scope-cols-label">Extra columns:</span>' + SCOPE_OPTIONAL_COLS.map(c => `
+                <label class="scope-col-opt${c.note ? ' tt' : ''}"${c.note ? ` data-tt="${esc(c.label + ': ' + c.note)}"` : ''}>
+                    <input type="checkbox" value="${c.key}"${scopeCols.has(c.key) ? ' checked' : ''}> ${esc(c.label)}
+                </label>`).join('');
+        }
+
+        function setScopeColumn(key, on) {
+            if (on) scopeCols.add(key); else scopeCols.delete(key);
+            if (!on && scopeSort && scopeSort.key === key) scopeSort = null;
+            try { localStorage.setItem(SCOPE_COLS_KEY, JSON.stringify([...scopeCols])); } catch (e) { /* not saved, still works */ }
+            renderScopeView();
+        }
 
         function matchRowHTML(m, isLast) {
             const star = bestMatchIds.has(Number(m.id))
@@ -2564,12 +2624,13 @@
                     const ss = getShowStats(u);
                     return { c, matches: u.length, matchAvg: getAvg(u), showAvg: ss.avg, bestShowInfo: ss.best,
                              bestShow: ss.best ? ss.best.rating : null,
-                             best: u.length ? Math.max(...u.map(m => m.rating)) : null };
+                             best: u.length ? Math.max(...u.map(m => m.rating)) : null,
+                             nine: u.filter(m => m.rating >= 9).length,
+                             stars: u.filter(m => bestMatchIds.has(Number(m.id))).length };
                 });
                 // Editions (every row is one show): Best Show would just repeat Show, so it's hidden
                 const oneShowRows = children.every(c => c.isEdition);
-                document.querySelector('#scope-grid-section .scope-table').classList.toggle('no-best-show', oneShowRows);
-                document.getElementById('scope-best-grp').colSpan = oneShowRows ? 1 : 2;
+                applyScopeColumns(oneShowRows);
                 if (scopeSort) {
                     const { key, dir } = scopeSort;
                     rows.sort((a, b) => {
@@ -2589,7 +2650,8 @@
                 document.getElementById('scope-grid').innerHTML = rows.map(r => `<tr class="scope-row" data-scope-key="${esc(r.c.key)}">
                         <td class="scope-name">${esc(r.c.label)}${r.c.isEdition ? `<span class="scope-date">${formatDate(r.c.date)}</span>` : ''}</td>
                         <td class="num">${r.matches}</td>
-                        ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best)}${oneShowRows ? '' : cell(r.bestShow, 'col-best-show', r.bestShowInfo ? `Best show: ${r.bestShowInfo.name} (${formatDate(r.bestShowInfo.date)})` : '')}
+                        ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best, 'col-best')}${cell(r.bestShow, 'col-bestShow', r.bestShowInfo ? `Best show: ${r.bestShowInfo.name} (${formatDate(r.bestShowInfo.date)})` : '')}
+                        <td class="num col-nine">${r.nine}</td><td class="num col-stars">${r.stars}</td>
                         <td class="chev">›</td>
                     </tr>`).join('');
             }
@@ -2786,6 +2848,13 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
+            if (e.target.closest('#scope-cols-btn')) {
+                const panel = document.getElementById('scope-cols-panel');
+                panel.hidden = !panel.hidden;
+                if (!panel.hidden) renderScopeColsPanel();
+                document.getElementById('scope-cols-btn').setAttribute('aria-expanded', String(!panel.hidden));
+                return;
+            }
             const sortTh = e.target.closest('#scope-head th[data-sort]');
             if (sortTh) {
                 // First tap: highest first (A–Z for Name); second tap: the other way; third: back to the usual order
@@ -2809,6 +2878,11 @@
                 showAllPpvEvents = !showAllPpvEvents;
                 renderScopeView();
             }
+        });
+
+        document.addEventListener('change', e => {
+            const cb = e.target.closest('#scope-cols-panel input[type="checkbox"]');
+            if (cb) setScopeColumn(cb.value, cb.checked);
         });
 
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
