@@ -912,14 +912,15 @@
         .tp-filters-btn.open .tp-arrow { transform: rotate(180deg); }
         .tp-filters-slot { margin-bottom: 15px; }
         .tp-filters-slot .filter-section { margin-bottom: 0; }
-        .tp-tabs { display: inline-flex; border: 2px solid #ffd700; border-radius: 8px; overflow: hidden; height: 36px; }
-        .tp-tabs button { background: transparent; color: #ffd700; border: 0; padding: 0 16px; font: inherit; font-weight: bold; cursor: pointer; }
-        .tp-tabs button + button { border-left: 1px solid rgba(255, 215, 0, 0.5); }
-        .tp-tabs button.on { background: #ffd700; color: #1a1a2e; }
-        .tp-tabs button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+        /* Division tabs (same look as the home page) */
+        .tp-div-tabs { justify-content: flex-start; gap: 8px; margin-bottom: 15px; }
+        .tp-div-tabs .tab { padding: 8px 16px; font-size: 0.9em; }
+        .tp-div-tabs .tab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         @media (max-width: 600px) {
             .tp-right { width: 100%; }
             .tp-filters-btn { flex: 1 1 auto; justify-content: center; }
+            .tp-div-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .tp-div-tabs .tab { padding: 0 4px; min-height: 40px; font-size: 0.82em; transform: none !important; }
         }
 
         /* ⚙️ Columns: optional breakdown columns */
@@ -1440,12 +1441,14 @@
         }
 
         // Top Performers: Wrestlers | Teams (kept while browsing; resets on reload)
-        let tpTab = 'wrestlers';
-        function setTpTab(tab) {
-            tpTab = tab;
-            document.querySelectorAll('.tp-tabs [data-tp-tab]').forEach(b => {
-                const on = b.dataset.tpTab === tab;
-                b.classList.toggle('on', on);
+        // Top Performers division tabs: who is listed, by their own division (All = everyone,
+        // wrestlers and teams together). Kept while browsing; resets on reload.
+        let tpDiv = 'all';
+        function setTpDiv(div) {
+            tpDiv = div;
+            document.querySelectorAll('.tp-div-tabs [data-tp-div]').forEach(b => {
+                const on = b.dataset.tpDiv === div;
+                b.classList.toggle('active', on);
                 b.setAttribute('aria-selected', String(on));
             });
             renderScopeView();
@@ -2024,6 +2027,7 @@
                         rawEvent: match.event,
                         matchPos: match.matchPos,
                         division: match.division,
+                        ownDiv: wrestler.division,      // the wrestler's/team's own division (Top Performers tabs)
                         wrestler: normWrestler,
                         isTeam: !!wrestler.isTeam,
                         slug: wrestler.slug || createSlug(normWrestler),
@@ -2462,13 +2466,18 @@
                         <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
                         <div class="tp-right">
                             <button type="button" class="tp-filters-btn tt tt-below" id="tpFiltersBtn" aria-expanded="false" aria-controls="tpFiltersSlot" data-tt="Opens the page's filters here (the same ones as at the top), so you can change them without scrolling up.">⚙️ Filters <span id="tpFiltersCount"></span><span class="tp-arrow" aria-hidden="true">▼</span></button>
-                            <div class="tp-tabs" role="tablist" aria-label="Top Performers: wrestlers or teams">
-                                <button type="button" role="tab" data-tp-tab="wrestlers" class="on" aria-selected="true">Wrestlers</button>
-                                <button type="button" role="tab" data-tp-tab="teams" aria-selected="false">Teams</button>
-                            </div>
                         </div>
                     </div>
                     <div id="tpFiltersSlot" class="tp-filters-slot" hidden></div>
+                    <!-- Who is listed (by their own division, like the home page tabs). The filters decide which matches count. -->
+                    <div class="tabs tp-div-tabs" role="tablist" aria-label="Top Performers: which division">
+                        <button type="button" role="tab" class="tab active" data-tp-div="all" aria-selected="true">All</button>
+                        <button type="button" role="tab" class="tab" data-tp-div="mens" aria-selected="false">Men's</button>
+                        <button type="button" role="tab" class="tab" data-tp-div="womens" aria-selected="false">Women's</button>
+                        <button type="button" role="tab" class="tab" data-tp-div="menstag" aria-selected="false">Men's Tag</button>
+                        <button type="button" role="tab" class="tab" data-tp-div="womenstag" aria-selected="false">Women's Tag</button>
+                        <button type="button" role="tab" class="tab" data-tp-div="trios" aria-selected="false">Trios</button>
+                    </div>
                     <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th id="tp-name-col">Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
                     <tbody id="scope-leaderboard"></tbody></table></div>
                 </div>`;
@@ -2763,23 +2772,22 @@
             // PPVs); otherwise 3, or fewer when the selection only covers one or two shows. If fewer
             // than 3 wrestlers/teams reach it (small show types like TV Specials, or narrow filters),
             // it steps down until they do, so a single show always has its Top Performers.
-            // Wrestlers tab: every match each person was in (any division the filters allow);
-            // Teams tab: tag teams and trios, for their team matches
-            // (teams only for team-style matches: a team never counts in a Men's or Women's singles match)
+            // Who: the tab (their own division; All = everyone). Which matches: every match they were in
+            // that the filters allow, so counts are totals unless a filter narrows them.
+            // (A team never counts in a Men's or Women's singles-division match.)
             const SINGLES_DIVS = new Set(["Men's", "Women's"]);
-            const pool = all.filter(m => tpTab === 'teams' ? (m.isTeam && !SINGLES_DIVS.has(m.division)) : !m.isTeam)
+            const pool = all.filter(m => (tpDiv === 'all' || m.ownDiv === tpDiv) && !(m.isTeam && SINGLES_DIVS.has(m.division)))
                 .map(m => ({ ...m, credited: true }));
             let minMatches = showCount >= 20 ? 5 : Math.max(1, Math.min(3, showCount));
             while (minMatches > 1 && calculateWrestlerStats(pool, minMatches).length < 3) minMatches--;
+            const isTeamTab = ['menstag', 'womenstag', 'trios'].includes(tpDiv);
+            const who = tpDiv === 'all' ? 'Wrestlers and teams' : isTeamTab ? `${DIV_LABELS[tpDiv]} teams` : `${DIV_LABELS[tpDiv]} wrestlers`;
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
-            lbTitle.setAttribute('data-tt', (tpTab === 'teams'
-                ? 'Tag teams and trios, ranked by the average rating of their team matches.'
-                : 'Wrestlers ranked by the average rating of every match they were in (singles, tag, trios and more).') +
-                ` Every filter at the top applies. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
-            document.getElementById('tp-name-col').textContent = tpTab === 'teams' ? 'Team' : 'Wrestler';
-            renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10,
-                tpTab === 'teams' ? 'No team matches here. Try Men\'s Tag, Women\'s Tag or Trios in Division.' : 'No data available');
+            lbTitle.setAttribute('data-tt', `${who}, ranked by the average rating of every match they were in here. ` +
+                `The tabs choose who is listed; the filters choose which matches count. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
+            document.getElementById('tp-name-col').textContent = tpDiv === 'all' ? 'Wrestler / Team' : isTeamTab ? 'Team' : 'Wrestler';
+            renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10, 'No matches here for this division with the current filters.');
         }
 
         // One show (an edition): venue, show rating and a link to that week's rankings
@@ -2939,8 +2947,8 @@
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
-            const tpBtn = e.target.closest('.tp-tabs [data-tp-tab]');
-            if (tpBtn) { setTpTab(tpBtn.dataset.tpTab); return; }
+            const tpBtn = e.target.closest('.tp-div-tabs [data-tp-div]');
+            if (tpBtn) { setTpDiv(tpBtn.dataset.tpDiv); return; }
             if (e.target.closest('#scope-cols-btn')) {
                 const panel = document.getElementById('scope-cols-panel');
                 panel.hidden = !panel.hidden;
