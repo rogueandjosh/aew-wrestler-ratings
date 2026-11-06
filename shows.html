@@ -895,6 +895,23 @@
         .scope-table th .sort-btn:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; border-radius: 3px; }
         .scope-table th.sorted .sort-btn { color: #fff; }
         .scope-table th .sort-ind { font-size: 0.75em; }
+        /* Top Performers: title, a copy of the Division filter, Wrestlers | Teams */
+        .tp-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 15px; }
+        .tp-head .section-title { margin-bottom: 0; }
+        .tp-right { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .tp-div { width: 200px; }
+        .tp-div .match-filter-options { left: auto; right: 0; min-width: 100%; width: max-content; }
+        .tp-tabs { display: inline-flex; border: 2px solid #ffd700; border-radius: 8px; overflow: hidden; height: 36px; }
+        .tp-tabs button { background: transparent; color: #ffd700; border: 0; padding: 0 16px; font: inherit; font-weight: bold; cursor: pointer; }
+        .tp-tabs button + button { border-left: 1px solid rgba(255, 215, 0, 0.5); }
+        .tp-tabs button.on { background: #ffd700; color: #1a1a2e; }
+        .tp-tabs button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+        @media (max-width: 600px) {
+            .tp-right { width: 100%; }
+            .tp-div { flex: 1 1 auto; width: auto; }
+            .tp-div .match-filter-options { left: 0; right: auto; }
+        }
+
         /* ⚙️ Columns: optional breakdown columns */
         .scope-grid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
         .scope-grid-head .section-title { margin-bottom: 15px; }
@@ -1376,11 +1393,23 @@
                     onFiltersChanged();
                 }
             });
+            // Division appears twice (top filters and Top Performers): one filter, two boxes kept in step
+            const setDivisions = (sel, other) => {
+                selectedDivisions = sel === null ? new Set(ALL_DIVISIONS) : new Set(sel);
+                other.set(sel === null ? null : new Set(sel));
+                onFiltersChanged();
+            };
             filterBoxes.div = FilterUI.checkboxFacet(document.getElementById('divFilterGroup'), {
                 options: ALL_DIVISIONS.map(d => ({ value: d, label: DIV_LABELS[d] })),
                 showTotal: false,
-                onChange: sel => { selectedDivisions = sel === null ? new Set(ALL_DIVISIONS) : new Set(sel); onFiltersChanged(); }
+                onChange: sel => setDivisions(sel, tpDivBox)
             });
+            const tpDivBox = FilterUI.checkboxFacet(document.getElementById('tpDivFilterGroup'), {
+                options: ALL_DIVISIONS.map(d => ({ value: d, label: DIV_LABELS[d] })),
+                showTotal: false,
+                onChange: sel => setDivisions(sel, filterBoxes.div)
+            });
+            filterBoxes.tpDiv = tpDivBox;
             FACETS.forEach(f => {
                 const present = new Set(uniqueMatches.map(f.of));
                 const ordered = f.groups().filter(g => present.has(g)).concat([...present].filter(g => !f.groups().includes(g)).sort());
@@ -1394,7 +1423,7 @@
             });
             renderLocationFilter();
 
-            const groups = ['year', 'div', 'loc', ...FACETS.map(f => f.key)].map(k => document.getElementById(`${k}FilterGroup`));
+            const groups = ['year', 'div', 'loc', ...FACETS.map(f => f.key), 'tpDiv'].map(k => document.getElementById(`${k}FilterGroup`));
             FilterUI.setupDropdowns(groups);
             FilterUI.markColumns(document.getElementById('showFilterGrid'));
 
@@ -1411,6 +1440,18 @@
             refreshFilterCounts();
         }
 
+        // Top Performers: Wrestlers | Teams (kept while browsing; resets on reload)
+        let tpTab = 'wrestlers';
+        function setTpTab(tab) {
+            tpTab = tab;
+            document.querySelectorAll('.tp-tabs [data-tp-tab]').forEach(b => {
+                const on = b.dataset.tpTab === tab;
+                b.classList.toggle('on', on);
+                b.setAttribute('aria-selected', String(on));
+            });
+            renderScopeView();
+        }
+
         function onFiltersChanged() {
             processAllData();
             renderAllTabs();
@@ -1418,7 +1459,7 @@
         }
 
         function resetFilters() {
-            Object.values(filterBoxes).forEach(b => b.set(null));
+            Object.values(filterBoxes).forEach(b => b.set(null));      // includes the Top Performers copy of Division
             selectedYears = new Set();
             selectedDivisions = new Set(ALL_DIVISIONS);
             FACETS.forEach(f => { selectedFacets[f.key] = null; });
@@ -1447,13 +1488,15 @@
                 return [counts, base.length];
             };
             filterBoxes.year.setCounts(...countFor('year', yearOf));
-            filterBoxes.div.setCounts(...countFor('div', divOf));
+            const divCounts = countFor('div', divOf);
+            filterBoxes.div.setCounts(...divCounts);
+            filterBoxes.tpDiv.setCounts(...divCounts);
             FACETS.forEach(f => filterBoxes[f.key].setCounts(...countFor(f.key, f.of)));
             refreshLocationFilter(...countFor('loc', locationOf));
 
             const moreSet = FACETS.filter(f => selectedFacets[f.key]).length;
             document.getElementById('moreFiltersCount').textContent = moreSet ? `(${moreSet} set)` : '';
-            const anySet = Object.values(filterBoxes).some(b => b.selected !== null) || !!selectedLocations;
+            const anySet = Object.entries(filterBoxes).some(([k, b]) => k !== 'tpDiv' && b.selected !== null) || !!selectedLocations;
             document.getElementById('showFiltersReset').style.display = anySet ? '' : 'none';
         }
 
@@ -1964,6 +2007,7 @@
                         id: match.id,
                         rawEvent: match.event,
                         matchPos: match.matchPos,
+                        division: match.division,
                         wrestler: normWrestler,
                         isTeam: !!wrestler.isTeam,
                         slug: wrestler.slug || createSlug(normWrestler),
@@ -2191,7 +2235,7 @@
         // RENDERING
         // ===========================================
         
-        function renderLeaderboard(id, wrestlers, limit = 10) {
+        function renderLeaderboard(id, wrestlers, limit = 10, emptyText = 'No data available') {
             const el = document.getElementById(id);
             el.innerHTML = wrestlers.slice(0, limit).map((w, i) => `
                 <tr><td class="rank ${i < 3 ? 'top3' : ''}">${i + 1}</td>
@@ -2200,7 +2244,7 @@
                 <td class="${getRatingClass(w.avg)}" style="font-weight: bold;">${w.avg.toFixed(2)}</td>
                 <td class="lb-num">${w.matches}</td>
                 <td class="lb-num ${getRatingClass(w.best)}" style="font-weight: bold;">${w.best.toFixed(2)}</td></tr>
-            `).join('') || '<tr><td colspan="6" style="text-align: center; color: #888;">No data available</td></tr>';
+            `).join('') || `<tr><td colspan="6" style="text-align: center; color: #888;">${esc(emptyText)}</td></tr>`;
         }
 
         // ===========================================
@@ -2398,8 +2442,22 @@
                 </div>
 
                 <div class="table-container">
-                    <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
-                    <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th>Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
+                    <div class="tp-head">
+                        <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
+                        <div class="tp-right">
+                            <!-- A second copy of the page's Division filter (same filter: changing either changes both, and the whole page) -->
+                            <div class="match-filter-group tp-div" id="tpDivFilterGroup">
+                                <div class="match-filter-group-title tt" data-tt="Same as the Division filter at the top of the page: changing it here changes both, and the whole page.">Division</div>
+                                <button type="button" class="match-filter-toggle" id="tpDivFilterToggle" aria-expanded="false" aria-controls="tpDivFilterOptions"><span class="toggle-text">All</span><span class="toggle-arrow" aria-hidden="true">▼</span></button>
+                                <div class="match-filter-options" id="tpDivFilterOptions"></div>
+                            </div>
+                            <div class="tp-tabs" role="tablist" aria-label="Top Performers: wrestlers or teams">
+                                <button type="button" role="tab" data-tp-tab="wrestlers" class="on" aria-selected="true">Wrestlers</button>
+                                <button type="button" role="tab" data-tp-tab="teams" aria-selected="false">Teams</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lb-scroll"><table class="lb-table"><thead><tr><th style="width: 50px;">#</th><th aria-label="Photo"></th><th id="tp-name-col">Wrestler</th><th class="tt" data-tt="Average Cagematch rating across their matches in this selection"><span class="lb-long">Avg Rating</span><span class="lb-short">Avg</span></th><th class="lb-num tt" data-tt="Matches in this selection">Matches</th><th class="lb-num tt" data-tt="Their highest-rated match in this selection">Best</th></tr></thead>
                     <tbody id="scope-leaderboard"></tbody></table></div>
                 </div>`;
         }
@@ -2689,12 +2747,23 @@
             // PPVs); otherwise 3, or fewer when the selection only covers one or two shows. If fewer
             // than 3 wrestlers/teams reach it (small show types like TV Specials, or narrow filters),
             // it steps down until they do, so a single show always has its Top Performers.
+            // Wrestlers tab: every match each person was in (any division the filters allow);
+            // Teams tab: tag teams and trios, for their team matches
+            // (teams only for team-style matches: a team never counts in a Men's or Women's singles match)
+            const SINGLES_DIVS = new Set(["Men's", "Women's"]);
+            const pool = all.filter(m => tpTab === 'teams' ? (m.isTeam && !SINGLES_DIVS.has(m.division)) : !m.isTeam)
+                .map(m => ({ ...m, credited: true }));
             let minMatches = showCount >= 20 ? 5 : Math.max(1, Math.min(3, showCount));
-            while (minMatches > 1 && calculateWrestlerStats(all, minMatches).length < 3) minMatches--;
+            while (minMatches > 1 && calculateWrestlerStats(pool, minMatches).length < 3) minMatches--;
             const lbTitle = document.getElementById('scope-lb-title');
             lbTitle.textContent = `Top ${scopeName ? scopeName + ' ' : ''}Performers`;
-            lbTitle.setAttribute('data-tt', `Ranked by average match rating. Tag and trios matches count for the team, singles for the wrestler. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
-            renderLeaderboard('scope-leaderboard', calculateWrestlerStats(all, minMatches));
+            lbTitle.setAttribute('data-tt', (tpTab === 'teams'
+                ? 'Tag teams and trios, ranked by the average rating of their team matches.'
+                : 'Wrestlers ranked by the average rating of every match they were in (singles, tag, trios and more).') +
+                ` Every filter at the top applies. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
+            document.getElementById('tp-name-col').textContent = tpTab === 'teams' ? 'Team' : 'Wrestler';
+            renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10,
+                tpTab === 'teams' ? 'No team matches here. Try Men\'s Tag, Women\'s Tag or Trios in Division.' : 'No data available');
         }
 
         // One show (an edition): venue, show rating and a link to that week's rankings
@@ -2853,6 +2922,8 @@
 
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
+            const tpBtn = e.target.closest('.tp-tabs [data-tp-tab]');
+            if (tpBtn) { setTpTab(tpBtn.dataset.tpTab); return; }
             if (e.target.closest('#scope-cols-btn')) {
                 const panel = document.getElementById('scope-cols-panel');
                 panel.hidden = !panel.hidden;
