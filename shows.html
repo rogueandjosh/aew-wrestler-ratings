@@ -898,7 +898,7 @@
         /* Top Performers: title, a copy of the Division filter, Wrestlers | Teams */
         .tp-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 15px; }
         .tp-head .section-title { margin-bottom: 0; }
-        .tp-right { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .tp-right { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; flex: 1 1 auto; justify-content: flex-end; min-width: 0; }
         .tp-container { overflow: visible; }          /* so the filter lists can open over the table */
         .tp-filters-btn {
             height: 36px; padding: 0 14px; border-radius: 8px; cursor: pointer; white-space: nowrap;
@@ -907,7 +907,12 @@
         }
         .tp-filters-btn:hover { background: rgba(255, 215, 0, 0.22); }
         .tp-filters-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-        .tp-filters-btn #tpFiltersCount { color: #d8cfa8; font-weight: normal; font-size: 0.9em; }
+        .tp-filters-btn { max-width: min(560px, 100%); min-width: 0; overflow: hidden; }
+        #tpFiltersBtn { display: inline-flex; }          /* beats tooltips.css ".tt { display: inline-block }" so the text can shrink */
+        .tp-filters-label { flex: 0 0 auto; }
+        .tp-filters-summary { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            color: #fff; font-weight: normal; text-align: left; margin-left: -6px; }
+        .tp-filters-summary:empty { display: none; }
         .tp-filters-btn .tp-arrow { font-size: 0.7em; transition: transform 0.2s; }
         .tp-filters-btn.open .tp-arrow { transform: rotate(180deg); }
         .tp-filters-slot { margin-bottom: 15px; }
@@ -927,7 +932,8 @@
         .tp-div-tabs .tab-long { display: inline; }
         @media (max-width: 600px) {
             .tp-right { width: 100%; }
-            .tp-filters-btn { flex: 1 1 auto; justify-content: center; }
+            .tp-filters-btn { flex: 1 1 100%; width: 100%; max-width: 100%; justify-content: flex-start; }
+            #tpFiltersBtn { display: flex; }
             .tp-div-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .tp-div-tabs .tab { padding: 0 4px; min-height: 40px; font-size: 0.82em; transform: none !important; }
             .tp-div-tabs .tab-long { display: none; }
@@ -1027,7 +1033,7 @@
         .sh-more-btn .mf-count { color: #d8cfa8; font-weight: normal; font-size: 0.9em; }
         .sh-more-btn .sh-more-arrow { font-size: 0.7em; transition: transform 0.2s; }
         .sh-filter-grid.more-open .sh-more-arrow { transform: rotate(180deg); }
-        .filter-section .match-filters-footer:has(#showFiltersReset[style*="none"]) { display: none; }
+        #showFiltersReset:disabled { opacity: 0.4; cursor: default; }
         @media (min-width: 769px) {
             /* Laptop: all seven boxes in one row */
             .sh-filter-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
@@ -1153,7 +1159,7 @@
                 </div>
             </div>
             <div class="match-filters-footer">
-                <button type="button" class="match-filters-reset" id="showFiltersReset" style="display: none;">Reset all filters</button>
+                <button type="button" class="match-filters-reset" id="showFiltersReset" disabled>Reset all filters</button>
             </div>
         </section>
 
@@ -1474,6 +1480,48 @@
             document.getElementById('tpMultiBtn').setAttribute('aria-expanded', String(open));
         }
 
+        // What's set, for the ⚙️ Filters button: "Title Match; United Kingdom", or as many as fit
+        // followed by "and 2 others". Uses each box's own label (names, or e.g. "Stipulation: 3 selected").
+        const FILTER_NAMES = { year: 'Year', div: 'Division', loc: 'Location', format: 'Format', stakes: 'Stakes', cardPos: 'Card Position', stip: 'Stipulation' };
+        function activeFilterLabels() {
+            const out = [];
+            ['year', 'div', 'loc', ...FACETS.map(f => f.key)].forEach(k => {
+                const isSet = k === 'loc' ? !!selectedLocations : filterBoxes[k] && filterBoxes[k].selected !== null;
+                if (!isSet) return;
+                const text = (document.querySelector(`#${k}FilterToggle .toggle-text`) || {}).textContent || '';
+                out.push(/selected$|^All but|^None/.test(text) ? `${FILTER_NAMES[k] || k}: ${text}` : text);
+            });
+            return out;
+        }
+        function updateTpFiltersSummary() {
+            const el = document.getElementById('tpFiltersSummary');
+            if (!el) return;
+            const labels = activeFilterLabels();
+            const btn = document.getElementById('tpFiltersBtn');
+            btn.title = labels.length ? `Filters: ${labels.join('; ')}` : 'Filters';
+            if (!labels.length) { el.textContent = ''; return; }
+            // Try all of them, then fewer + "and N others", until it fits on one line
+            for (let n = labels.length; n >= 1; n--) {
+                const rest = labels.length - n;
+                el.textContent = ': ' + labels.slice(0, n).join('; ') + (rest ? ` and ${rest} other${rest > 1 ? 's' : ''}` : '');
+                if (el.scrollWidth <= el.clientWidth + 1) return;
+            }
+            // Even one doesn't fit: the text is cut with "…" by CSS
+        }
+        window.addEventListener('resize', () => updateTpFiltersSummary());
+
+        // Keep an element at the same place on screen while things above it change height
+        // (stops the page jumping when filters change or the panel moves)
+        function keepInPlace(el, change) {
+            if (!el) return change();
+            const before = el.getBoundingClientRect().top;
+            change();
+            const shift = el.getBoundingClientRect().top - before;
+            if (Math.abs(shift) > 1) window.scrollBy(0, shift);
+        }
+        const tpAnchor = () => (document.getElementById('tpFiltersSlot') && !document.getElementById('tpFiltersSlot').hidden)
+            ? document.querySelector('.tp-head') : null;
+
         // ⚙️ Filters in Top Performers: moves the page's own filter panel down here (no copies to keep
         // in step), and back to the top when closed. A marker remembers where it came from.
         let filtersHome = null;
@@ -1485,16 +1533,23 @@
             if (!filtersHome) { filtersHome = document.createComment('filters-home'); panel.before(filtersHome); }
             FilterUI.closeAllDropdowns();
             const open = !forceClose && slot.hidden;
-            if (open) { slot.appendChild(panel); slot.hidden = false; }
-            else { filtersHome.after(panel); slot.hidden = true; }
+            // Top Performers' header stays put on screen while the panel moves in or out
+            keepInPlace(document.querySelector('.tp-head'), () => {
+                if (open) { slot.appendChild(panel); slot.hidden = false; }
+                else { filtersHome.after(panel); slot.hidden = true; }
+            });
+            updateTpFiltersSummary();
             btn.setAttribute('aria-expanded', String(open));
             btn.classList.toggle('open', open);
         }
 
         function onFiltersChanged() {
-            processAllData();
-            renderAllTabs();
-            refreshFilterCounts();
+            // With the panel open in Top Performers, keep it where it is while the content above changes
+            keepInPlace(tpAnchor(), () => {
+                processAllData();
+                renderAllTabs();
+                refreshFilterCounts();
+            });
         }
 
         function resetFilters() {
@@ -1534,9 +1589,8 @@
             const moreSet = FACETS.filter(f => selectedFacets[f.key]).length;
             document.getElementById('moreFiltersCount').textContent = moreSet ? `(${moreSet} set)` : '';
             const setCount = Object.values(filterBoxes).filter(b => b.selected !== null).length + (selectedLocations ? 1 : 0);
-            document.getElementById('showFiltersReset').style.display = setCount ? '' : 'none';
-            const tpCount = document.getElementById('tpFiltersCount');
-            if (tpCount) tpCount.textContent = setCount ? `(${setCount} set)` : '';
+            document.getElementById('showFiltersReset').disabled = !setCount;
+            updateTpFiltersSummary();
         }
 
 
@@ -2485,7 +2539,7 @@
                     <div class="tp-head">
                         <h3 class="section-title tt tt-below" id="scope-lb-title" style="cursor: help;"></h3>
                         <div class="tp-right">
-                            <button type="button" class="tp-filters-btn tt tt-below" id="tpFiltersBtn" aria-expanded="false" aria-controls="tpFiltersSlot" data-tt="Opens the page's filters here (the same ones as at the top), so you can change them without scrolling up.">⚙️ Filters <span id="tpFiltersCount"></span><span class="tp-arrow" aria-hidden="true">▼</span></button>
+                            <button type="button" class="tp-filters-btn tt tt-below" id="tpFiltersBtn" aria-expanded="false" aria-controls="tpFiltersSlot" data-tt="Opens the page's filters here (the same ones as at the top), so you can change them without scrolling up."><span class="tp-filters-label">⚙️ Filters</span><span class="tp-filters-summary" id="tpFiltersSummary"></span><span class="tp-arrow" aria-hidden="true">▼</span></button>
                         </div>
                     </div>
                     <div id="tpFiltersSlot" class="tp-filters-slot" hidden></div>
