@@ -982,6 +982,43 @@
             .trends-head { font-size: 1.1em; }
         }
 
+        /* ↺ Start over and 🎲 Surprise me */
+        .scope-tools { display: flex; justify-content: center; gap: 10px; margin: -10px 0 14px; flex-wrap: wrap; }
+        .tool-btn { background: rgba(255, 215, 0, 0.12); border: 2px solid #ffd700; color: #ffd700; border-radius: 8px; padding: 6px 14px;
+            font: inherit; font-weight: bold; font-size: 0.9em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .tool-btn:hover { background: rgba(255, 215, 0, 0.22); }
+        .tool-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .tool-btn.ghost { background: none; border-color: rgba(255, 215, 0, 0.55); color: #e8d98a; }
+        #startOverBtn { display: inline-flex; }
+        #startOverBtn[hidden] { display: none; }
+        .rnd-wrap { position: relative; }
+        .rnd-menu { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; background: #1a1a2e; border: 2px solid #ffd700;
+            border-radius: 10px; z-index: 300; width: 310px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); overflow: hidden; text-align: left; }
+        .rnd-menu[hidden] { display: none; }
+        .rnd-menu button { display: block; width: 100%; background: none; border: none; border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            padding: 10px 14px; color: #fff; font: inherit; cursor: pointer; text-align: left; }
+        .rnd-menu button:hover, .rnd-menu button:focus-visible { background: rgba(255, 215, 0, 0.1); outline: none; }
+        .rnd-menu button b { color: #ffd700; display: block; font-size: 0.98em; }
+        .rnd-menu button span { color: #b8b8b8; font-size: 0.8em; }
+        .rnd-note { padding: 8px 14px; color: #d8cfa8; font-size: 0.78em; background: rgba(255, 215, 0, 0.06); }
+        .rolled { display: flex; align-items: center; justify-content: center; gap: 8px 12px; flex-wrap: wrap; margin: 0 auto 22px; padding: 10px 16px;
+            max-width: 820px; border: 1px dashed rgba(255, 215, 0, 0.6); border-radius: 10px; background: rgba(255, 215, 0, 0.07); color: #fff; }
+        .rolled[hidden] { display: none; }
+        .rolled b { color: #ffd700; }
+        .rolled .rolled-kind { color: #b8b8b8; font-size: 0.9em; }
+        .rolled .tool-btn { padding: 4px 12px; font-size: 0.85em; }
+        .rolled-match { flex: 1 1 100%; text-align: left; }
+        .rolled-match .match-row { border-bottom: none; padding-bottom: 0; }
+        @media (max-width: 768px) {
+            .scope-tools { margin: 0 0 10px; flex-wrap: nowrap; }
+            .scope-tools .tool-btn { flex: 1 1 0; justify-content: center; padding: 8px 6px; }
+            .rnd-wrap { flex: 1 1 0; display: flex; }
+            .rnd-wrap .tool-btn { width: 100%; }
+            #startOverBtn:not([hidden]) ~ .rnd-wrap .rnd-menu { left: auto; right: 0; transform: none; }
+            .rnd-menu { width: min(310px, calc(100vw - 32px)); }
+            .rolled { justify-content: flex-start; font-size: 0.92em; }
+        }
+
         /* ⚙️ Columns: optional breakdown columns */
         .scope-grid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
         .scope-grid-head .section-title { margin-bottom: 15px; }
@@ -1794,6 +1831,7 @@
 
 
         function updateShowTypes() {
+            rolled = null;
             const checked = [...document.querySelectorAll('#showDropdownMenu input:checked')].map(cb => cb.value);
             selectedShowTypes = new Set(checked);
             scopePaths.shows = [];
@@ -1835,6 +1873,7 @@
         document.querySelectorAll('.view-switch-btn').forEach(b => b.addEventListener('click', () => {
             if (currentView === b.dataset.view) return;
             currentView = b.dataset.view;
+            rolled = null;
             updateViewButtons();
             renderScopeView();
         }));
@@ -2623,7 +2662,21 @@
 
         function buildScopeViewMarkup() {
             document.getElementById('showsView').innerHTML = `
+                <div class="scope-tools">
+                    <button type="button" class="tool-btn ghost tt tt-below" id="startOverBtn" hidden data-tt="Back to the main view: Shows, All Shows. Your filters stay as they are.">↺ Start over</button>
+                    <div class="rnd-wrap">
+                        <button type="button" class="tool-btn" id="rollBtn" aria-haspopup="true" aria-expanded="false" aria-controls="rollMenu">🎲 Surprise me ▾</button>
+                        <div class="rnd-menu" id="rollMenu" hidden>
+                            <button type="button" data-roll="show"><b>🎲 Random show</b><span>A show with its own page: full card, chart and top performers</span></button>
+                            <button type="button" data-roll="ppv"><b>🏟️ Random PPV</b><span>A random pay-per-view</span></button>
+                            <button type="button" data-roll="gem"><b>💎 Hidden gem</b><span>A match rated 8+ from weekly TV</span></button>
+                            <button type="button" data-roll="combo"><b>🔀 Random combo</b><span>Random filters, e.g. 2022 · Cage Matches · Main Event</span></button>
+                            <div class="rnd-note" id="rollNote"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="scope-crumbs" id="scope-crumbs"></div>
+                <div class="rolled" id="rolledBox" hidden aria-live="polite"></div>
                 <div class="scope-info" id="scope-info"></div>
                 <div class="stats-summary">
                     <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
@@ -2737,7 +2790,178 @@
             return out;
         }
 
+        // ===== ↺ Start over and 🎲 Surprise me =====
+        // Start over: back to the main view (Shows › All Shows); filters stay as they are.
+        // Surprise me: Random show / Random PPV / Hidden gem use the filters and show types already set;
+        // Random combo rolls its own filters (only combinations with at least ROLL_COMBO_MIN matches).
+        const ROLL_GEM_MIN = 8, ROLL_COMBO_MIN = 5;
+        let rolled = null;   // { kind, types, label, match } — what the last roll landed on
+
+        function isAtMainView() {
+            return currentView === 'shows' && selectedShowTypes.size === SCOPE_TABS.length && scopePaths.shows.length === 0;
+        }
+
+        function setAllShowTypesQuiet() {
+            document.querySelectorAll('#showDropdownMenu input').forEach(cb => { cb.checked = true; });
+            selectedShowTypes = new Set(SCOPE_TABS);
+            updateShowBtn();
+        }
+
+        function startOver() {
+            setAllShowTypesQuiet();
+            currentView = 'shows';
+            updateViewButtons();
+            scopePaths = { shows: [], stips: [], venues: [] };
+            scopeSort = null;
+            matchListExpanded = false;
+            rolled = null;
+            toggleRollMenu(false);
+            renderScopeView();
+            refreshFilterCounts();
+        }
+
+        // Opens a node in the Shows view by its full path from All Shows (e.g. PPVs › Double or Nothing › DoN '25)
+        function openShowsPath(keys) {
+            setAllShowTypesQuiet();
+            currentView = 'shows';
+            updateViewButtons();
+            scopePaths.shows = keys.slice();
+            scopeSort = null;
+            matchListExpanded = false;
+        }
+
+        const pickRandom = list => list[Math.floor(Math.random() * list.length)];
+
+        // One entry per show that has its own page (PPVs, specials, named episodes), from the filtered matches
+        function rollableShows(types) {
+            const shows = new Map();
+            scopeMatchesAll.forEach(m => {
+                const last = m.path[m.path.length - 1];
+                if (!last || !last.isEdition || !types.has(m.tab)) return;
+                const key = m.path.map(s => s.key).join('>');
+                if (!shows.has(key)) shows.set(key, { keys: m.path.map(s => s.key), label: last.label, date: last.date });
+            });
+            return [...shows.values()];
+        }
+
+        function rollShow(kind, types) {
+            const pool = rollableShows(kind === 'ppv' ? new Set(['ppv']) : types);
+            if (!pool.length) { rolled = { kind, types, empty: true }; renderScopeView(); return; }
+            const avoid = rolled && rolled.key;
+            const pick = pool.length > 1 ? pickRandom(pool.filter(s => s.keys.join('>') !== avoid)) : pool[0];
+            openShowsPath(pick.keys);
+            rolled = { kind, types, key: pick.keys.join('>'), label: `${pick.label} · ${formatDate(pick.date)}` };
+            renderScopeView();
+            refreshFilterCounts();
+        }
+
+        // An 8+ match from weekly TV; opens its show (or, for a regular episode, that show's page)
+        function rollGem(types) {
+            const seen = new Set();
+            const pool = scopeMatchesAll.filter(m => {
+                if (m.tab !== 'weekly' || !(m.rating >= ROLL_GEM_MIN) || seen.has(m.matchKey)) return false;
+                seen.add(m.matchKey);
+                return true;
+            });
+            if (!pool.length) { rolled = { kind: 'gem', types, empty: true }; renderScopeView(); return; }
+            const avoid = rolled && rolled.key;
+            const pick = pool.length > 1 ? pickRandom(pool.filter(m => m.matchKey !== avoid)) : pool[0];
+            openShowsPath(pick.path.map(s => s.key));
+            rolled = { kind: 'gem', types, key: pick.matchKey, match: pick, label: `${pick.event} · ${formatDate(pick.date)}` };
+            renderScopeView();
+            refreshFilterCounts();
+            const row = document.querySelector(`#scope-top-matches .match-row[data-mid="${CSS.escape(String(pick.id))}"]`);
+            if (row) { row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }
+        }
+
+        // Random filters: 2 or 3 of Year, Division, Location (country), Format, Stakes, Card Position, Stipulation
+        function rollCombo() {
+            const pool = uniqueMatches.filter(m => TAB_BY_SHOWTYPE[m.showType]);
+            const dims = {
+                year: { of: yearOf, skip: [] },
+                div: { of: divOf, skip: ['other'] },
+                loc: { of: m => locGroupOf(locationOf(m)), skip: [null] },
+                format: { of: FACETS.find(f => f.key === 'format').of, skip: [] },
+                stakes: { of: FACETS.find(f => f.key === 'stakes').of, skip: ['No Stakes'] },
+                cardPos: { of: FACETS.find(f => f.key === 'cardPos').of, skip: ['Other'] },
+                stip: { of: FACETS.find(f => f.key === 'stip').of, skip: ['No Stips'] }
+            };
+            let combo = null;
+            for (let tries = 0; tries < 300 && !combo; tries++) {
+                const keys = Object.keys(dims).sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.6 ? 2 : 3);
+                const pick = {};
+                let list = pool;
+                for (const k of keys) {
+                    const values = [...new Set(list.map(dims[k].of))].filter(v => v != null && !dims[k].skip.includes(v));
+                    if (!values.length) { list = []; break; }
+                    pick[k] = pickRandom(values);
+                    list = list.filter(m => dims[k].of(m) === pick[k]);
+                }
+                const label = Object.keys(pick).map(k => k === 'div' ? DIV_LABELS[pick[k]] : k === 'loc' ? locCountryName(pick[k]) : pick[k]).join(' · ');
+                if (list.length >= ROLL_COMBO_MIN && !(rolled && rolled.label === label)) combo = { pick, label, count: list.length };
+            }
+            if (!combo) return;
+            // Set the filters (the boxes show exactly what was rolled, so it can be tweaked)
+            Object.values(filterBoxes).forEach(b => b.set(null));
+            selectedYears = new Set();
+            selectedDivisions = new Set(ALL_DIVISIONS);
+            FACETS.forEach(f => { selectedFacets[f.key] = null; });
+            selectedLocations = null;
+            const p = combo.pick;
+            if (p.year) { filterBoxes.year.set(new Set([p.year])); selectedYears = new Set([p.year]); }
+            if (p.div) { filterBoxes.div.set(new Set([p.div])); selectedDivisions = new Set([p.div]); }
+            FACETS.forEach(f => { if (p[f.key]) { filterBoxes[f.key].set(new Set([p[f.key]])); selectedFacets[f.key] = new Set([p[f.key]]); } });
+            if (p.loc) selectedLocations = new Set(uniqueMatches.map(locationOf).filter(k => locGroupOf(k) === p.loc));
+            syncLocationCheckboxes();
+            openShowsPath([]);
+            rolled = { kind: 'combo', label: combo.label };
+            onFiltersChanged();
+        }
+
+        function doRoll(kind, again) {
+            toggleRollMenu(false);
+            // Roll again keeps the show types from the first roll (the roll itself switches to All Shows)
+            const types = again && rolled && rolled.types ? rolled.types : new Set(selectedShowTypes);
+            if (kind === 'combo') rollCombo();
+            else if (kind === 'gem') rollGem(types);
+            else rollShow(kind, types);
+        }
+
+        const ROLL_NAMES = { show: 'Random show', ppv: 'Random PPV', gem: 'Hidden gem', combo: 'Random combo' };
+        function renderScopeTools() {
+            const reset = document.getElementById('startOverBtn');
+            if (reset) reset.hidden = isAtMainView();
+            const note = document.getElementById('rollNote');
+            if (note) {
+                const labels = activeFilterLabels();
+                const typesSet = selectedShowTypes.size !== SCOPE_TABS.length;
+                note.textContent = labels.length || typesSet
+                    ? `Uses your filters${labels.length ? ` (${labels.join('; ')})` : ''}${typesSet ? `${labels.length ? ' and' : ''} the show types chosen` : ''}. Random combo sets its own.`
+                    : 'Set filters first to roll within them (e.g. a random UK show). Random combo sets its own.';
+            }
+            const box = document.getElementById('rolledBox');
+            if (!box) return;
+            if (!rolled) { box.hidden = true; box.innerHTML = ''; return; }
+            box.hidden = false;
+            const again = `<button type="button" class="tool-btn" data-roll="${rolled.kind}" data-again="1">🎲 Roll again</button>`;
+            if (rolled.empty) {
+                box.innerHTML = `<span>🎲 Nothing to roll for <b>${ROLL_NAMES[rolled.kind]}</b> with these filters. Try fewer filters.</span>`;
+                return;
+            }
+            box.innerHTML = `<span>🎲 Rolled: <b>${esc(rolled.label)}</b> <span class="rolled-kind">(${ROLL_NAMES[rolled.kind]})</span></span>${again}` +
+                (rolled.match ? `<div class="rolled-match">${matchRowHTML(rolled.match, true)}</div>` : '');
+        }
+
+        function toggleRollMenu(open) {
+            const menu = document.getElementById('rollMenu'), btn = document.getElementById('rollBtn');
+            if (!menu || !btn) return;
+            menu.hidden = !open;
+            btn.setAttribute('aria-expanded', String(open));
+            if (open) renderScopeTools();
+        }
+
         function drillInto(key) {
+            rolled = null;
             scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, scopeShownDepth[currentView]);
@@ -2746,6 +2970,7 @@
         }
 
         function drillTo(depth) {
+            rolled = null;
             scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, Math.min(depth, scopeShownDepth[currentView]));
@@ -3016,6 +3241,7 @@
             document.getElementById('tp-name-col').textContent = tpDiv === 'all' ? 'Wrestler / Team' : isTeamTab ? 'Team' : 'Wrestler';
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10, 'No matches here for this division with the current filters.');
             renderTrends(node, unique, showCount);
+            renderScopeTools();
         }
 
         // ===== Charts: Trends box and the Table | Chart switch =====
@@ -3376,6 +3602,11 @@
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
             if (e.target.closest('#filtersHomeBar')) { toggleTpFilters(true, true); return; }
+            if (e.target.closest('#startOverBtn')) { startOver(); return; }
+            if (e.target.closest('#rollBtn')) { toggleRollMenu(document.getElementById('rollMenu').hidden); return; }
+            const rollBtn = e.target.closest('[data-roll]');
+            if (rollBtn) { doRoll(rollBtn.dataset.roll, !!rollBtn.dataset.again); return; }
+            if (!e.target.closest('.rnd-wrap')) toggleRollMenu(false);
             if (e.target.closest('#trendsToggle')) { toggleTrends(); return; }
             const gv = e.target.closest('.tc-toggle [data-grid-view]');
             if (gv) { setGridView(gv.dataset.gridView); return; }
@@ -3418,6 +3649,13 @@
         document.addEventListener('change', e => {
             const cb = e.target.closest('#scope-cols-panel input[type="checkbox"]');
             if (cb) setScopeColumn(cb.value, cb.checked);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('rollMenu') && !document.getElementById('rollMenu').hidden) {
+                toggleRollMenu(false);
+                document.getElementById('rollBtn').focus();
+            }
         });
 
         document.addEventListener('DOMContentLoaded', loadAllWrestlerData);
