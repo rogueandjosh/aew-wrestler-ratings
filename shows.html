@@ -976,11 +976,27 @@
         .tc-toggle button[aria-pressed="true"] { background: #ffd700; color: #1a1a2e; }
         .tc-toggle button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
         .scope-rows-chart { position: relative; margin-bottom: 10px; }
+        /* Back / path / Start over inside the breakdown box */
+        .grid-nav { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; margin: -4px 0 14px; padding: 8px 10px;
+            background: rgba(255, 215, 0, 0.06); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; font-size: 0.88em; }
+        .grid-nav[hidden] { display: none; }
+        .grid-nav .grid-back { padding: 4px 12px; font-size: 0.95em; }
+        .grid-nav .tool-btn { padding: 4px 10px; font-size: 0.95em; margin-left: auto; }
+        .grid-path { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; min-width: 0; flex: 1 1 auto; }
+        .grid-crumb { background: none; border: none; padding: 2px 0; color: #ffd700; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 215, 0, 0.4); }
+        .grid-crumb:hover { text-decoration-color: #ffd700; }
+        .grid-crumb:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 3px; }
+        .grid-here { color: #fff; font-weight: bold; }
+        .grid-sep { color: #777; }
+        @media (max-width: 600px) {
+            .grid-nav { gap: 6px 8px; }
+            .grid-path { order: 3; flex: 1 1 100%; }
+        }
         @media (max-width: 400px) {
             .scope-grid-head { flex-wrap: wrap; }
-            .scope-grid-head { gap: 0 12px; }
-            .scope-grid-head .section-title { flex: 1 1 100%; margin-bottom: 10px; }
-            .scope-head-right { flex-wrap: wrap; margin-bottom: 12px; }
+            #scope-grid-section .scope-grid-head { row-gap: 0; column-gap: 12px; }
+            #scope-grid-section .scope-grid-head .section-title { flex: 1 1 100%; margin-bottom: 10px; }
+            #scope-grid-section .scope-head-right { flex-wrap: wrap; margin-bottom: 12px; }
         }
         .scope-rows-chart[hidden] { display: none; }
         #scope-grid-section.chart-mode .scope-table, #scope-grid-section.chart-mode #scope-cols-btn,
@@ -2713,6 +2729,7 @@
                             <button type="button" class="stats-cols-btn tt tt-below" id="scope-cols-btn" aria-expanded="false" aria-controls="scope-cols-panel" data-tt="Choose which columns to show. Your choice is remembered on this device.">⚙️ Columns</button>
                         </div>
                     </div>
+                    <nav class="grid-nav" id="gridNav" aria-label="Where you are" hidden></nav>
                     <div class="scope-cols-panel" id="scope-cols-panel" hidden></div>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
                     <table class="scope-table">
@@ -2811,7 +2828,33 @@
         const STATE_KEY = 'ewr-shows-state';
         const URL_FACETS = ['format', 'stakes', 'cardPos', 'stip'];
         let stateReady = false;          // nothing is written until the page has put itself back together
-        let restoreAfterLoad = null;     // { y, tpOpen, rolled } from sessionStorage, used once after the first render
+        let restoreAfterLoad = null;
+        let restoringNav = false;        // true while Back/Forward is putting a previous level back
+
+        // Back / Forward between levels: put back that step's view, show types and path; filters stay as they are now
+        window.addEventListener('popstate', () => {
+            if (!stateReady) return;
+            const p = new URLSearchParams(location.search);
+            restoringNav = true;
+            const view = p.get('view');
+            currentView = view === 'stips' || view === 'venues' ? view : 'shows';
+            updateViewButtons();
+            const t = (p.get('types') || '').split(',').filter(x => SCOPE_TABS.includes(x));
+            const types = t.length ? t : SCOPE_TABS;
+            document.querySelectorAll('#showDropdownMenu input').forEach(cb => { cb.checked = types.includes(cb.value); });
+            selectedShowTypes = new Set(types);
+            updateShowBtn();
+            scopePaths = { shows: [], stips: [], venues: [] };
+            if (p.get('path')) scopePaths[currentView] = p.get('path').split('>');
+            scopeSort = null;
+            matchListExpanded = false;
+            rowsChartAll = false;
+            rolled = null;
+            toggleRollMenu(false);
+            renderScopeView();
+            refreshFilterCounts();
+            restoringNav = false;
+        });     // { y, tpOpen, rolled } from sessionStorage, used once after the first render
         try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { /* older browsers */ }
 
         function stateToUrl() {
@@ -2828,7 +2871,11 @@
             const q = p.toString().replace(/%2C/g, ',').replace(/%7C/g, '|').replace(/%3E/g, '>').replace(/%7E/g, '~').replace(/%27/g, "'").replace(/%3A/g, ':');
             const url = location.pathname + (q ? '?' + q : '') + location.hash;
             if (url !== location.pathname + location.search + location.hash) {
-                try { history.replaceState(null, '', url); } catch (e) { /* address not updated; page still works */ }
+                // Moving to another level/view/show type is a new step in the browser history, so the phone's
+                // Back goes up a level; filter and tab changes just update the current step
+                const navSig = params => ['view', 'types', 'path'].map(k => params.get(k) || '').join('#');
+                const push = !restoringNav && navSig(p) !== navSig(new URLSearchParams(location.search));
+                try { history[push ? 'pushState' : 'replaceState'](null, '', url); } catch (e) { /* address not updated; page still works */ }
             }
             saveSessionState();
         }
@@ -3146,7 +3193,22 @@
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, scopeShownDepth[currentView]);
             scopePaths[currentView].push(key);
-            renderScopeView();
+            renderAndKeepPlace();
+        }
+
+        // After moving level: if the table is still there it stays put on screen; if the new level has no table
+        // (one show, one stipulation, one arena) the page scrolls up to its name and summary
+        function renderAndKeepPlace() {
+            const grid = document.getElementById('scope-grid-section');
+            const gridWasOnScreen = grid && grid.style.display !== 'none' && grid.getBoundingClientRect().top < window.innerHeight;
+            keepInPlace(gridWasOnScreen ? grid : null, renderScopeView);
+            if (grid && grid.style.display === 'none') {
+                const top = document.querySelector('.scope-tools');
+                if (top && top.getBoundingClientRect().top < 0) {
+                    const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    top.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+                }
+            }
         }
 
         function drillTo(depth) {
@@ -3155,7 +3217,7 @@
             scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, Math.min(depth, scopeShownDepth[currentView]));
-            renderScopeView();
+            renderAndKeepPlace();
         }
 
         function getAvg(list) {
@@ -3354,6 +3416,15 @@
             } else {
                 gridSection.style.display = '';
                 document.getElementById('scope-grid-title').textContent = getGridTitle(node, children);
+                // Back, the path and Start over right here, so going back doesn't mean scrolling up
+                const gridNav = document.getElementById('gridNav');
+                gridNav.hidden = nodes.length < 2;
+                gridNav.innerHTML = nodes.length < 2 ? '' :
+                    `<button type="button" class="tab grid-back" data-scope-depth="${nodes.length - 2}">← Back</button>` +
+                    `<span class="grid-path">${nodes.map((n, i) => i === nodes.length - 1
+                        ? `<span class="grid-here" aria-current="page">${esc(n.label)}</span>`
+                        : `<button type="button" class="grid-crumb" data-scope-depth="${i}">${esc(n.label)}</button>`).join('<span class="grid-sep" aria-hidden="true">›</span>')}</span>` +
+                    `<button type="button" class="tool-btn ghost js-start-over">↺ Start over</button>`;
 
                 if (children.every(c => c.isEdition)) {
                     children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
@@ -3846,7 +3917,7 @@
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
             if (e.target.closest('#filtersHomeBar')) { toggleTpFilters(true, true); return; }
-            if (e.target.closest('#startOverBtn')) { startOver(); return; }
+            if (e.target.closest('#startOverBtn, .js-start-over')) { startOver(); return; }
             if (e.target.closest('#rollBtn')) { toggleRollMenu(document.getElementById('rollMenu').hidden); return; }
             const rollBtn = e.target.closest('[data-roll]');
             if (rollBtn) { doRoll(rollBtn.dataset.roll, !!rollBtn.dataset.again); return; }
@@ -3884,7 +3955,7 @@
             }
             const row = e.target.closest('.scope-row[data-scope-key], .scope-sub-btn[data-scope-key]');
             if (row) { drillInto(row.dataset.scopeKey); return; }
-            const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
+            const crumb = e.target.closest('#scope-crumbs [data-scope-depth], #gridNav [data-scope-depth]');
             if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
             if (e.target.closest('#rows-chart-toggle')) {
                 rowsChartAll = !rowsChartAll;
