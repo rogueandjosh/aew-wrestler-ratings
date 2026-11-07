@@ -534,6 +534,9 @@
             min-width: 0;
         }
 
+        .card-pos { color: #b8b8b8; font-weight: normal; }
+        #matchOrderToggle { display: inline-flex; }
+        #matchOrderToggle[hidden] { display: none; }
         .match-row-title {
             font-weight: bold;
             color: #fff;
@@ -2724,7 +2727,12 @@
                 </div>
 
                 <div class="table-container">
-                    <h3 class="section-title tt" id="scope-top-title" style="cursor: help;"></h3>
+                    <div class="scope-grid-head">
+                        <h3 class="section-title tt" id="scope-top-title" style="cursor: help;"></h3>
+                        <div class="tc-toggle tt tt-below" id="matchOrderToggle" role="group" aria-label="Order the matches" hidden data-tt="Card order (opener first, numbered like the Match by Match chart) or highest rated first. Remembered on this device.">
+                            <button type="button" data-match-order="card" aria-pressed="true">Card order</button><button type="button" data-match-order="rating" aria-pressed="false">Highest rated</button>
+                        </div>
+                    </div>
                     <div class="best-match-card" id="scope-top-matches"></div>
                 </div>
                 </div>
@@ -3092,7 +3100,7 @@
             renderScopeView();
         }
 
-        function matchRowHTML(m, isLast) {
+        function matchRowHTML(m, isLast, cardPos) {
             const star = bestMatchIds.has(Number(m.id))
                 ? '<span class="bm-star tt" data-tt="Best Match of the Week">⭐</span>' : '';
             const title = m.id != null && showDetails.titles[m.id]
@@ -3101,7 +3109,7 @@
                 <div class="match-row${isLast ? ' last' : ''}" data-mid="${esc(String(m.id))}">
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
-                        <div class="match-row-title">${esc(getMatchupText(m))}${star}</div>
+                        <div class="match-row-title">${cardPos ? `<span class="card-pos">${cardPos}.</span> ` : ''}${esc(getMatchupText(m))}${star}</div>
                         <div class="match-row-meta">${title}${m.stipulation ? '<span class="match-row-stip">' + esc(m.stipulation) + '</span> · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
@@ -3292,25 +3300,32 @@
 
             // Match list: top 5 normally; every match on a single show, and at every level below
             // "All Stipulations" (groups and subgroups list all their matches straight away)
-            const showFullList = !!node.isLeaf || (isStips && !node.isStipRoot);
+            const showFullList = !!node.isLeaf || (isStips && !node.isStipRoot) || showCount === 1;
+            // One show: card order (opener = 1 … main event, numbered like the Match by Match chart) or highest rated
+            const oneShow = showCount === 1;
+            const byCard = oneShow && matchOrder === 'card';
+            const orderToggle = document.getElementById('matchOrderToggle');
+            orderToggle.hidden = !oneShow;
+            orderToggle.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.matchOrder === (byCard ? 'card' : 'rating'))));
             const topTitle = document.getElementById('scope-top-title');
             let topList = showFullList
-                ? dedupeMatches(unique).sort((a, b) => b.rating - a.rating)
+                ? dedupeMatches(unique).sort(byCard ? (a, b) => Number(a.id) - Number(b.id) : (a, b) => b.rating - a.rating)
                 : getTop5(all);
             topTitle.textContent = showFullList ? `All Matches (${topList.length})` : `Top 5 ${scopeName ? scopeName + ' ' : ''}Matches`;
-            topTitle.setAttribute('data-tt', showFullList
+            topTitle.setAttribute('data-tt', byCard ? 'Every match on this show in card order, from the opener to the main event.'
+                : showFullList
                 ? (isStips ? 'Every match in this selection, highest rated first.'
                     : currentView === 'venues' ? 'Every match at this venue, highest rated first.' : 'Every match on this show, highest rated first.')
                 : 'The five highest-rated matches in this selection, by Cagematch community rating.');
 
-            // Long lists start with the top 10 and a "Show all" button
+            // Long lists start with the top 10 and a "Show all" button (not in card order: the whole card always shows)
             const fullCount = topList.length;
-            const collapsed = showFullList && fullCount > MATCH_LIST_PREVIEW && !matchListExpanded;
-            if (collapsed) topList = topList.slice(0, MATCH_LIST_PREVIEW);
+            const canCollapse = showFullList && !byCard && fullCount > MATCH_LIST_PREVIEW;
+            if (canCollapse && !matchListExpanded) topList = topList.slice(0, MATCH_LIST_PREVIEW);
             document.getElementById('scope-top-matches').innerHTML = (topList.length
-                ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1)).join('')
+                ? topList.map((m, i) => matchRowHTML(m, i === topList.length - 1, byCard ? i + 1 : null)).join('')
                 : '<div style="text-align:center;color:#888;padding:10px 0;">No matches for the selected filters</div>')
-                + (showFullList && fullCount > MATCH_LIST_PREVIEW
+                + (canCollapse
                     ? `<button class="tab more-events-toggle" id="match-list-toggle">${matchListExpanded ? 'Show top 10 only' : `Show all ${fullCount} matches`}</button>`
                     : '');
 
@@ -3343,7 +3358,9 @@
         // ===== Charts: Trends box and the Table | Chart switch =====
         // Both follow the current selection and filters. Choices (Trends open/closed, Table or Chart)
         // are remembered on this device.
-        const TRENDS_KEY = 'ewr-shows-trends', GRID_VIEW_KEY = 'ewr-shows-gridview';
+        const TRENDS_KEY = 'ewr-shows-trends', GRID_VIEW_KEY = 'ewr-shows-gridview', MATCH_ORDER_KEY = 'ewr-shows-matchorder';
+        let matchOrder = 'card';
+        try { matchOrder = localStorage.getItem(MATCH_ORDER_KEY) === 'rating' ? 'rating' : 'card'; } catch (e) { /* default */ }
         const CH_GOLD = '#ffd700', CH_BLUE = '#7cc4ff';
         let trendsOpen = true, gridView = 'table';
         try { trendsOpen = localStorage.getItem(TRENDS_KEY) !== 'closed'; gridView = localStorage.getItem(GRID_VIEW_KEY) === 'chart' ? 'chart' : 'table'; } catch (e) { /* defaults */ }
@@ -3703,6 +3720,13 @@
             if (rollBtn) { doRoll(rollBtn.dataset.roll, !!rollBtn.dataset.again); return; }
             if (!e.target.closest('.rnd-wrap')) toggleRollMenu(false);
             if (e.target.closest('#trendsToggle')) { toggleTrends(); return; }
+            const mo = e.target.closest('[data-match-order]');
+            if (mo) {
+                matchOrder = mo.dataset.matchOrder;
+                try { localStorage.setItem(MATCH_ORDER_KEY, matchOrder); } catch (err) { /* not saved, still works */ }
+                renderScopeView();
+                return;
+            }
             const gv = e.target.closest('.tc-toggle [data-grid-view]');
             if (gv) { setGridView(gv.dataset.gridView); return; }
             if (e.target.closest('#tpMultiBtn')) { toggleTpMulti(document.getElementById('tpMultiMenu').hidden); return; }
