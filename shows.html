@@ -2043,10 +2043,22 @@
                 .forEach(tm => {
                     if (![...tm.members].every(x => left.has(x))) return;   // overlaps a bigger team already used
                     tm.members.forEach(x => left.delete(x));
-                    parts.push({ at: Math.min(...[...tm.members].map(x => side.indexOf(x))), text: tm.label });
+                    parts.push({ at: Math.min(...[...tm.members].map(x => side.indexOf(x))), text: tm.label, members: tm.members });
                 });
-            side.forEach((x, i) => { if (left.has(x)) parts.push({ at: i, text: x }); });
-            const texts = parts.sort((a, b) => a.at - b.at).map(p => p.text);
+            side.forEach((x, i) => { if (left.has(x)) parts.push({ at: i, text: x, single: true }); });
+            // When a side mixes several teams/people, a pairing name ("Davis & Fletcher", "Castagnoli, PAC & Yuta")
+            // reads badly next to others, so it becomes the wrestlers' full names. Real team names (FTR, The Young Bucks,
+            // "Dark Order (Grayson & Uno)") stay. A side that is exactly one team keeps the team's name.
+            const isPairing = t => /,| & /.test(t.replace(/\([^)]*\)/g, ''));
+            let list = parts;
+            if (parts.length > 1) {
+                list = [];
+                parts.forEach(p => {
+                    if (!p.single && isPairing(p.text)) side.forEach((x, i) => { if (p.members.has(x)) list.push({ at: i, text: x }); });
+                    else list.push(p);
+                });
+            }
+            const texts = [...new Set(list.sort((a, b) => a.at - b.at).map(p => p.text))];   // two pairs of one faction → named once
             return texts.length === 1 ? texts[0] : `${texts.slice(0, -1).join(', ')} & ${texts[texts.length - 1]}`;
         }
 
