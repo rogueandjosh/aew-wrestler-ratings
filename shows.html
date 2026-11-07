@@ -983,6 +983,7 @@
         }
 
         /* ↺ Start over and 🎲 Surprise me */
+        .stats-summary .stat-of { font-size: 0.55em; color: #b8b8b8; font-weight: normal; }
         .scope-tools { display: flex; justify-content: center; gap: 10px; margin: -10px 0 14px; flex-wrap: wrap; }
         .tool-btn { background: rgba(255, 215, 0, 0.12); border: 2px solid #ffd700; color: #ffd700; border-radius: 8px; padding: 6px 14px;
             font: inherit; font-weight: bold; font-size: 0.9em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -993,14 +994,14 @@
         #startOverBtn[hidden] { display: none; }
         .rnd-wrap { position: relative; }
         .rnd-menu { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; background: #1a1a2e; border: 2px solid #ffd700;
-            border-radius: 10px; z-index: 300; width: 310px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); overflow: hidden; text-align: left; }
+            border-radius: 10px; z-index: 300; width: 300px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); overflow: hidden; text-align: left; }
         .rnd-menu[hidden] { display: none; }
-        .rnd-menu button { display: block; width: 100%; background: none; border: none; border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-            padding: 10px 14px; color: #fff; font: inherit; cursor: pointer; text-align: left; }
-        .rnd-menu button:hover, .rnd-menu button:focus-visible { background: rgba(255, 215, 0, 0.1); outline: none; }
-        .rnd-menu button b { color: #ffd700; display: block; font-size: 0.98em; }
-        .rnd-menu button span { color: #b8b8b8; font-size: 0.8em; }
-        .rnd-note { padding: 8px 14px; color: #d8cfa8; font-size: 0.78em; background: rgba(255, 215, 0, 0.06); }
+        .rg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px 12px 4px; }
+        .rnd-menu .rg-grid button { display: block; border: 1px solid rgba(255, 215, 0, 0.5); border-radius: 8px; background: rgba(255, 215, 0, 0.08);
+            color: #ffd700; font: inherit; font-weight: bold; font-size: 0.88em; padding: 9px 4px; text-align: center; white-space: nowrap; cursor: pointer; }
+        .rnd-menu .rg-grid button:hover { background: rgba(255, 215, 0, 0.2); }
+        .rnd-menu .rg-grid button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+        .rnd-note { margin-top: 6px; padding: 8px 14px; color: #d8cfa8; font-size: 0.78em; background: rgba(255, 215, 0, 0.06); }
         .rolled { display: flex; align-items: center; justify-content: center; gap: 8px 12px; flex-wrap: wrap; margin: 0 auto 22px; padding: 10px 16px;
             max-width: 820px; border: 1px dashed rgba(255, 215, 0, 0.6); border-radius: 10px; background: rgba(255, 215, 0, 0.07); color: #fff; }
         .rolled[hidden] { display: none; }
@@ -1015,7 +1016,7 @@
             .rnd-wrap { flex: 1 1 0; display: flex; }
             .rnd-wrap .tool-btn { width: 100%; }
             #startOverBtn:not([hidden]) ~ .rnd-wrap .rnd-menu { left: auto; right: 0; transform: none; }
-            .rnd-menu { width: min(310px, calc(100vw - 32px)); }
+            .rnd-menu { width: min(300px, calc(100vw - 32px)); }
             .rolled { justify-content: flex-start; font-size: 0.92em; }
         }
 
@@ -2667,10 +2668,16 @@
                     <div class="rnd-wrap">
                         <button type="button" class="tool-btn" id="rollBtn" aria-haspopup="true" aria-expanded="false" aria-controls="rollMenu">🎲 Surprise me ▾</button>
                         <div class="rnd-menu" id="rollMenu" hidden>
-                            <button type="button" data-roll="show"><b>🎲 Random show</b><span>A show with its own page: full card, chart and top performers</span></button>
-                            <button type="button" data-roll="ppv"><b>🏟️ Random PPV</b><span>A random pay-per-view</span></button>
-                            <button type="button" data-roll="gem"><b>💎 Hidden gem</b><span>A match rated 8+ from weekly TV</span></button>
-                            <button type="button" data-roll="combo"><b>🔀 Random combo</b><span>Random filters, e.g. 2022 · Cage Matches · Main Event</span></button>
+                            <div class="rg-grid">
+                                <button type="button" class="tt" data-roll="show" data-tt="A random show with its own page: full card, chart and top performers">🎲 Show</button>
+                                <button type="button" class="tt" data-roll="latest" data-tt="The most recent show with its own page (within your filters)">🆕 Latest show</button>
+                                <button type="button" class="tt" data-roll="ppv" data-tt="A random pay-per-view">🏟️ PPV</button>
+                                <button type="button" class="tt" data-roll="event" data-tt="An event and all its editions, e.g. All In or Grand Slam">🎪 Event</button>
+                                <button type="button" class="tt" data-roll="stip" data-tt="A stipulation page, e.g. Ladder Match, Texas Death, Stadium Stampede">🪜 Stipulation</button>
+                                <button type="button" class="tt" data-roll="place" data-tt="A country, state, city or arena">📍 Place</button>
+                                <button type="button" class="tt" data-roll="gem" data-tt="A match rated 8+ from Dynamite, Collision or Rampage">💎 TV Gem</button>
+                                <button type="button" class="tt" data-roll="combo" data-tt="Random filters, e.g. 2022 · Cage Matches · Main Event">🔀 Combo</button>
+                            </div>
                             <div class="rnd-note" id="rollNote"></div>
                         </div>
                     </div>
@@ -2678,16 +2685,7 @@
                 <div class="scope-crumbs" id="scope-crumbs"></div>
                 <div class="rolled" id="rolledBox" hidden aria-live="polite"></div>
                 <div class="scope-info" id="scope-info"></div>
-                <div class="stats-summary">
-                    <div class="stat-box tt" data-tt="Total number of matches for the current selection and filters."><div class="stat-number" id="scope-total-matches">--</div><div class="stat-label">Total Matches</div></div>
-                    <div class="stat-box tt" data-tt="Average Cagematch community rating of these matches."><div class="stat-number" id="scope-avg-rating">--</div><div class="stat-label">Avg Match<span class="sl-long"> Rating</span></div></div>
-                    <div class="stat-box tt" id="scope-avg-show-box" data-tt="Average Cagematch rating for the whole show (the community's score for the show itself, not its matches). Each show counts once."><div class="stat-number" id="scope-avg-show">--</div><div class="stat-label">Avg Show<span class="sl-long"> Rating</span></div></div>
-                    <div class="stat-box tt" id="scope-best-show-box" data-tt="The highest-rated show in this selection."><div class="stat-number" id="scope-best-show">--</div><div class="stat-label">Best Show</div></div>
-                    <div class="stat-box tt" data-tt="Number of matches rated 9.0 or above out of 10 by the Cagematch community."><div class="stat-number" id="scope-9plus">--</div><div class="stat-label">9+ Matches</div></div>
-                    <div class="stat-box tt" data-tt="How many separate shows (episodes or events) these matches come from."><div class="stat-number" id="scope-shows">--</div><div class="stat-label">Shows</div></div>
-                    <div class="stat-box tt" data-tt="How many wrestlers and teams appear. Tag and trios matches count the team; singles and multi-person matches count each wrestler."><div class="stat-number" id="scope-wrestlers">--</div><div class="stat-label">Wrestlers</div></div>
-                    <div class="stat-box tt" data-tt="How many of these matches won Best Match of the Week. They're marked with a ⭐ in the match list."><div class="stat-number" id="scope-best">--</div><div class="stat-label">⭐ Best Matches</div></div>
-                </div>
+                <div class="stats-summary" id="scope-summary"></div>
 
                 <div class="table-container trends" id="trends">
                     <button type="button" class="trends-head" id="trendsToggle" aria-expanded="true" aria-controls="trendsBody">Trends <span class="tr-arrow" aria-hidden="true">▼</span></button>
@@ -2846,11 +2844,68 @@
 
         function rollShow(kind, types) {
             const pool = rollableShows(kind === 'ppv' ? new Set(['ppv']) : types);
+            if (kind === 'latest' && pool.length) {
+                const pick = pool.reduce((a, b) => ((b.date || '') > (a.date || '') ? b : a));
+                openShowsPath(pick.keys);
+                rolled = { kind, types, key: pick.keys.join('>'), label: `${pick.label} · ${formatDate(pick.date)}` };
+                renderScopeView();
+                refreshFilterCounts();
+                return;
+            }
             if (!pool.length) { rolled = { kind, types, empty: true }; renderScopeView(); return; }
             const avoid = rolled && rolled.key;
             const pick = pool.length > 1 ? pickRandom(pool.filter(s => s.keys.join('>') !== avoid)) : pool[0];
             openShowsPath(pick.keys);
             rolled = { kind, types, key: pick.keys.join('>'), label: `${pick.label} · ${formatDate(pick.date)}` };
+            renderScopeView();
+            refreshFilterCounts();
+        }
+
+        // Random event: an event with 2+ editions (All In: London, Grand Slam, Double or Nothing...), all editions listed
+        // Random stipulation / place: a page in the Stipulations or Venues view (place = any level: country, state, city, arena)
+        function rollPage(kind, types) {
+            const pool = new Map();
+            scopeMatchesAll.forEach(m => {
+                if (!types.has(m.tab)) return;
+                if (kind === 'event') {
+                    const last = m.path[m.path.length - 1];
+                    if (!last || !last.isEdition || m.path.length < 3) return;
+                    const parent = m.path.slice(0, -1);
+                    const key = parent.map(st => st.key).join('>');
+                    if (!pool.has(key)) pool.set(key, { keys: parent.map(st => st.key), label: parent[parent.length - 1].label, editions: new Set() });
+                    pool.get(key).editions.add(last.key);
+                } else {
+                    const path = kind === 'stip' ? m.stipPath : m.venuePath;
+                    if (!path) return;
+                    // Stipulation: the stipulation itself. Place: every level of the location
+                    const ends = kind === 'stip' ? [path.length] : path.map((_, i) => i + 1);
+                    ends.forEach(n => {
+                        const sub = path.slice(0, n);
+                        if (sub[n - 1].key === 'venue:none') return;
+                        const key = sub.map(st => st.key).join('>');
+                        if (!pool.has(key)) pool.set(key, { keys: sub.map(st => st.key), label: kind === 'place' ? sub.map(st => st.label).reverse().slice(0, 2).join(', ') : sub[n - 1].label });
+                    });
+                }
+            });
+            let list = [...pool.values()];
+            if (kind === 'event') list = list.filter(e => e.editions.size >= 2);
+            if (!list.length) { rolled = { kind, types, empty: true }; renderScopeView(); return; }
+            const avoid = rolled && rolled.key;
+            const pick = list.length > 1 ? pickRandom(list.filter(x => x.keys.join('>') !== avoid)) : list[0];
+            const view = kind === 'event' ? 'shows' : kind === 'stip' ? 'stips' : 'venues';
+            if (view === 'shows') openShowsPath(pick.keys);
+            else {
+                // Same show types as when rolled; the Stipulations / Venues view keeps them
+                document.querySelectorAll('#showDropdownMenu input').forEach(cb => { cb.checked = types.has(cb.value); });
+                selectedShowTypes = new Set(types);
+                updateShowBtn();
+                currentView = view;
+                updateViewButtons();
+                scopePaths[view] = pick.keys.slice();
+                scopeSort = null;
+                matchListExpanded = false;
+            }
+            rolled = { kind, types, key: pick.keys.join('>'), label: pick.label };
             renderScopeView();
             refreshFilterCounts();
         }
@@ -2924,10 +2979,11 @@
             const types = again && rolled && rolled.types ? rolled.types : new Set(selectedShowTypes);
             if (kind === 'combo') rollCombo();
             else if (kind === 'gem') rollGem(types);
+            else if (kind === 'event' || kind === 'stip' || kind === 'place') rollPage(kind, types);
             else rollShow(kind, types);
         }
 
-        const ROLL_NAMES = { show: 'Random show', ppv: 'Random PPV', gem: 'Hidden gem', combo: 'Random combo' };
+        const ROLL_NAMES = { latest: 'Latest show', show: 'Random show', ppv: 'Random PPV', event: 'Random event', stip: 'Random stipulation', place: 'Random place', gem: 'TV Gem', combo: 'Random combo' };
         function renderScopeTools() {
             const reset = document.getElementById('startOverBtn');
             if (reset) reset.hidden = isAtMainView();
@@ -2936,19 +2992,19 @@
                 const labels = activeFilterLabels();
                 const typesSet = selectedShowTypes.size !== SCOPE_TABS.length;
                 note.textContent = labels.length || typesSet
-                    ? `Uses your filters${labels.length ? ` (${labels.join('; ')})` : ''}${typesSet ? `${labels.length ? ' and' : ''} the show types chosen` : ''}. Random combo sets its own.`
-                    : 'Set filters first to roll within them (e.g. a random UK show). Random combo sets its own.';
+                    ? `Rolls within your filters${labels.length ? ` (${labels.join('; ')})` : ''}${typesSet ? `${labels.length ? ' and' : ''} show types` : ''}. Combo picks its own.`
+                    : 'Rolls within your filters. Combo picks its own.';
             }
             const box = document.getElementById('rolledBox');
             if (!box) return;
             if (!rolled) { box.hidden = true; box.innerHTML = ''; return; }
             box.hidden = false;
-            const again = `<button type="button" class="tool-btn" data-roll="${rolled.kind}" data-again="1">🎲 Roll again</button>`;
+            const again = rolled.kind === 'latest' ? '' : `<button type="button" class="tool-btn" data-roll="${rolled.kind}" data-again="1">🎲 Roll again</button>`;
             if (rolled.empty) {
                 box.innerHTML = `<span>🎲 Nothing to roll for <b>${ROLL_NAMES[rolled.kind]}</b> with these filters. Try fewer filters.</span>`;
                 return;
             }
-            box.innerHTML = `<span>🎲 Rolled: <b>${esc(rolled.label)}</b> <span class="rolled-kind">(${ROLL_NAMES[rolled.kind]})</span></span>${again}` +
+            box.innerHTML = `<span>${rolled.kind === 'latest' ? '🆕 Latest show' : '🎲 Rolled'}: <b>${esc(rolled.label)}</b> <span class="rolled-kind">(${ROLL_NAMES[rolled.kind]})</span></span>${again}` +
                 (rolled.match ? `<div class="rolled-match">${matchRowHTML(rolled.match, true)}</div>` : '');
         }
 
@@ -3064,6 +3120,26 @@
             return titles[Math.min(node.level, titles.length - 1)];
         }
 
+        // Show Rank: every show on the site by show rating (filters don't change it). Ties share a rank.
+        let showRankList = null;
+        function showRankOf(rating, tab) {
+            if (!showRankList) {
+                const seen = new Map();
+                uniqueMatches.forEach(m => {
+                    const t = TAB_BY_SHOWTYPE[m.showType];
+                    const k = `${m.date}|${m.event}|${m.show}`;
+                    if (!t || seen.has(k)) return;
+                    const r = showRatingOf({ date: m.date, rawEvent: m.event, show: m.show });
+                    if (r !== null) seen.set(k, { r, t });
+                });
+                showRankList = [...seen.values()];
+            }
+            const typeList = showRankList.filter(x => x.t === tab);
+            return { all: 1 + showRankList.filter(x => x.r > rating).length, total: showRankList.length,
+                     type: 1 + typeList.filter(x => x.r > rating).length, typeTotal: typeList.length,
+                     typeName: (TAB_CONFIG[tab] || {}).label || 'shows of this type' };
+        }
+
         function renderScopeView() {
             if (!scopeTree) return;
             const isStips = currentView === 'stips';
@@ -3089,24 +3165,44 @@
 
             crumbsEl.scrollLeft = crumbsEl.scrollWidth; // mobile: show the current level
 
-            // Summary
-            document.getElementById('scope-total-matches').textContent = unique.length;
-            document.getElementById('scope-avg-rating').textContent = avg !== null ? avg.toFixed(2) : '--';
+            // Summary: 8 boxes. One show: its own Show Rating and Show Rank, and the Best Match, instead of
+            // Avg Show / Best Show / Shows (which would only repeat the show rating or say 1)
             const sStats = getShowStats(unique);
-            const avgShowEl = document.getElementById('scope-avg-show');
-            avgShowEl.textContent = sStats.avg !== null ? sStats.avg.toFixed(2) : '--';
             const matchFiltered = FACETS.some(f => selectedFacets[f.key]) || selectedDivisions.size !== ALL_DIVISIONS.length;
-            document.getElementById('scope-avg-show-box').dataset.tt = 'Average Cagematch rating for the whole show (the community\'s score for the show itself, not its matches). Each show counts once.' +
-                (matchFiltered ? ' With Division or More filters set, it covers the shows that had at least one of the chosen matches; show ratings don\'t split by match.' : '');
-            const bestShowEl = document.getElementById('scope-best-show');
-            bestShowEl.textContent = sStats.best ? sStats.best.rating.toFixed(2) : '--';
-            document.getElementById('scope-best-show-box').dataset.tt = sStats.best
-                ? `The highest-rated show in this selection: ${sStats.best.name} (${formatDate(sStats.best.date)}), ${sStats.best.rating.toFixed(2)}.`
-                : 'The highest-rated show in this selection.';
-            document.getElementById('scope-9plus').textContent = unique.filter(m => m.rating >= 9).length;
-            document.getElementById('scope-shows').textContent = showCount;
-            document.getElementById('scope-wrestlers').textContent = new Set(all.filter(m => m.credited).map(m => m.wrestler)).size;
-            document.getElementById('scope-best').textContent = unique.filter(m => bestMatchIds.has(Number(m.id))).length;
+            const fmt = v => (v !== null && v !== undefined ? v.toFixed(2) : '--');
+            const nineCount = unique.filter(m => m.rating >= 9).length;
+            const boxes = [
+                [unique.length, 'Total Matches', 'Total number of matches for the current selection and filters.'],
+                [fmt(avg), 'Avg Match<span class="sl-long"> Rating</span>', 'Average Cagematch community rating of these matches.']
+            ];
+            if (showCount === 1) {
+                const sr = sStats.avg;
+                const rank = sr !== null ? showRankOf(sr, unique[0].tab) : null;
+                const best = unique.length ? unique.reduce((a, b) => (b.rating > a.rating ? b : a)) : null;
+                boxes.push(
+                    [fmt(sr), 'Show Rating', 'The Cagematch community rating for this show as a whole (not its matches).'],
+                    [rank ? `#${rank.all} <span class="stat-of">of ${rank.total}</span>` : '--', 'Show Rank',
+                        rank ? `Ranked #${rank.all} of ${rank.total} shows by show rating, and #${rank.type} of ${rank.typeTotal} ${rank.typeName}. Ranked against every show, whatever filters are set.` : 'Where this show ranks by show rating.'],
+                    [fmt(best && best.rating), 'Best Match', best ? `Best match: ${getMatchupText(best)} (${best.rating.toFixed(2)})` : 'The highest-rated match on this show.'],
+                    [nineCount, '9+ Matches', 'Number of matches rated 9.0 or above out of 10 by the Cagematch community.']
+                );
+            } else {
+                boxes.push(
+                    [fmt(sStats.avg), 'Avg Show<span class="sl-long"> Rating</span>', 'Average Cagematch rating for the whole show (the community\'s score for the show itself, not its matches). Each show counts once.' +
+                        (matchFiltered ? ' With Division or More filters set, it covers the shows that had at least one of the chosen matches; show ratings don\'t split by match.' : '')],
+                    [fmt(sStats.best && sStats.best.rating), 'Best Show', sStats.best
+                        ? `The highest-rated show in this selection: ${sStats.best.name} (${formatDate(sStats.best.date)}), ${sStats.best.rating.toFixed(2)}.`
+                        : 'The highest-rated show in this selection.'],
+                    [nineCount, '9+ Matches', 'Number of matches rated 9.0 or above out of 10 by the Cagematch community.'],
+                    [showCount, 'Shows', 'How many separate shows (episodes or events) these matches come from.']
+                );
+            }
+            boxes.push(
+                [new Set(all.filter(m => m.credited).map(m => m.wrestler)).size, 'Wrestlers', 'How many wrestlers and teams appear. Tag and trios matches count the team; singles and multi-person matches count each wrestler.'],
+                [unique.filter(m => bestMatchIds.has(Number(m.id))).length, '⭐ Best Matches', 'How many of these matches won Best Match of the Week. They\'re marked with a ⭐ in the match list.']
+            );
+            document.getElementById('scope-summary').innerHTML = boxes.map(([v, label, tip]) =>
+                `<div class="stat-box tt" data-tt="${esc(tip)}"><div class="stat-number">${v}</div><div class="stat-label">${label}</div></div>`).join('');
             renderShowInfo(node, unique);
 
             // Rows for the next level down. In a Stipulation Matches group, every stipulation is listed straight away
@@ -3452,10 +3548,9 @@
             }
             const det = showDetails.shows[`${first.date}|${first.rawEvent}`] || [];
             const [venue, otdRating, weekLabel] = det;
-            const showRating = showRatings[`${first.date}|${first.rawEvent}|${first.show}`] ?? otdRating;   // On This Day value as a fallback
             const parts = [];
             if (venue) parts.push(`<span class="tt" data-tt="Where the show took place">📍 ${esc(venue.replace(/;\s*/, ', '))}</span>`);
-            if (typeof showRating === 'number') parts.push(`<span class="tt" data-tt="The Cagematch community rating for the whole show">Show rating <strong>${showRating.toFixed(2)}</strong></span>`);
+            // (The show rating is in the summary boxes: Show Rating and Show Rank)
             const file = weekFileFor(weekLabel);
             if (file) {
                 const href = file === newestArchiveFile ? 'index.html' : `index.html#week=${encodeURIComponent('archive/' + file)}&division=mens`;
