@@ -916,6 +916,10 @@
         .tp-filters-btn .tp-arrow { font-size: 0.7em; transition: transform 0.2s; }
         .tp-filters-btn.open .tp-arrow { transform: rotate(180deg); }
         .tp-filters-slot { margin-bottom: 15px; }
+        #filtersHomeBar { display: flex; width: 100%; max-width: 100%; margin-bottom: 25px; height: 44px; }
+        #filtersHomeBar[hidden] { display: none; }
+        .fhb-note { flex: 0 0 auto; margin-left: auto; padding-left: 12px; color: #d8cfa8; font-weight: normal; font-size: 0.9em; }
+        @media (max-width: 600px) { .fhb-long { display: none; } #filtersHomeBar { height: auto; min-height: 44px; flex-wrap: wrap; padding: 6px 12px; } }
         .tp-filters-slot .filter-section { margin-bottom: 0; }
         /* Division tabs (same look as the home page) */
         .tp-div-tabs { justify-content: flex-start; gap: 8px; margin-bottom: 15px; }
@@ -1074,7 +1078,7 @@
         #showFiltersReset:disabled { opacity: 0.4; cursor: default; }
         @media (min-width: 769px) {
             /* Laptop: all seven boxes in one row */
-            .sh-filter-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+            #showFilterGrid.sh-filter-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }   /* id: filter-ui.css loads later */
             /* Lists can be wider than their box; the right-hand boxes open leftwards */
             .sh-filter-grid .match-filter-options { right: auto; min-width: 100%; width: max-content; max-width: 280px; }
             #cardPosFilterGroup .match-filter-options, #stipFilterGroup .match-filter-options { left: auto; right: 0; }
@@ -1155,6 +1159,8 @@
 
         <!-- Filters: the same tick-list boxes as Wrestler Stats, Best Match and Compare (filter-ui.js).
              Laptop: all seven in one row. Phones: Year, Division, Location + "More filters" (2 per row). -->
+        <!-- Shown here while the filters are open down in Top Performers: same summary; tap to bring them back up -->
+        <button type="button" class="tp-filters-btn filters-home-bar" id="filtersHomeBar" hidden aria-controls="tpFiltersSlot"><span class="tp-filters-label">⚙️ Filters</span><span class="tp-filters-summary" id="homeFiltersSummary"></span><span class="fhb-note">Open below <span class="fhb-long">in Top Performers </span>· tap to bring back here ▲</span></button>
         <section class="filter-section">
             <div class="match-filters-grid sh-filter-grid" id="showFilterGrid">
                 <div class="match-filter-group" id="yearFilterGroup">
@@ -1536,20 +1542,23 @@
             });
             return out;
         }
+        // Fills the "⚙️ Filters: …" summary on the Top Performers button and on the bar left at the top
         function updateTpFiltersSummary() {
-            const el = document.getElementById('tpFiltersSummary');
-            if (!el) return;
             const labels = activeFilterLabels();
-            const btn = document.getElementById('tpFiltersBtn');
-            btn.title = labels.length ? `Filters: ${labels.join('; ')}` : 'Filters';
-            if (!labels.length) { el.textContent = ''; return; }
-            // Try all of them, then fewer + "and N others", until it fits on one line
-            for (let n = labels.length; n >= 1; n--) {
-                const rest = labels.length - n;
-                el.textContent = ': ' + labels.slice(0, n).join('; ') + (rest ? ` and ${rest} other${rest > 1 ? 's' : ''}` : '');
-                if (el.scrollWidth <= el.clientWidth + 1) return;
-            }
-            // Even one doesn't fit: the text is cut with "…" by CSS
+            [['tpFiltersSummary', 'tpFiltersBtn'], ['homeFiltersSummary', 'filtersHomeBar']].forEach(([sumId, btnId]) => {
+                const el = document.getElementById(sumId), btn = document.getElementById(btnId);
+                if (!el || !btn) return;
+                btn.title = labels.length ? `Filters: ${labels.join('; ')}` : 'Filters';
+                if (!labels.length) { el.textContent = ''; return; }
+                if (btn.hidden) { el.textContent = ': ' + labels.join('; '); return; }   // measured when shown
+                // Try all of them, then fewer + "and N others", until it fits on one line
+                for (let n = labels.length; n >= 1; n--) {
+                    const rest = labels.length - n;
+                    el.textContent = ': ' + labels.slice(0, n).join('; ') + (rest ? ` and ${rest} other${rest > 1 ? 's' : ''}` : '');
+                    if (el.scrollWidth <= el.clientWidth + 1) return;
+                }
+                // Even one doesn't fit: the text is cut with "…" by CSS
+            });
         }
         window.addEventListener('resize', () => updateTpFiltersSummary());
 
@@ -1568,19 +1577,30 @@
         // ⚙️ Filters in Top Performers: moves the page's own filter panel down here (no copies to keep
         // in step), and back to the top when closed. A marker remembers where it came from.
         let filtersHome = null;
-        function toggleTpFilters(forceClose = false) {
+        function toggleTpFilters(forceClose = false, fromTop = false) {
             const panel = document.querySelector('.filter-section');
             const slot = document.getElementById('tpFiltersSlot');
             const btn = document.getElementById('tpFiltersBtn');
+            const bar = document.getElementById('filtersHomeBar');
             if (!panel || !slot || !btn) return;
             if (!filtersHome) { filtersHome = document.createComment('filters-home'); panel.before(filtersHome); }
             FilterUI.closeAllDropdowns();
             const open = !forceClose && slot.hidden;
-            // Top Performers' header stays put on screen while the panel moves in or out
-            keepInPlace(document.querySelector('.tp-head'), () => {
+            const move = () => {
                 if (open) { slot.appendChild(panel); slot.hidden = false; }
                 else { filtersHome.after(panel); slot.hidden = true; }
-            });
+                if (bar) bar.hidden = !open;
+            };
+            if (fromTop && bar) {
+                // Tapped the bar at the top: the filters open right where the bar was
+                const before = bar.getBoundingClientRect().top;
+                move();
+                const shift = panel.getBoundingClientRect().top - before;
+                if (Math.abs(shift) > 1) window.scrollBy(0, shift);
+            } else {
+                // Top Performers' header stays put on screen while the panel moves in or out
+                keepInPlace(document.querySelector('.tp-head'), move);
+            }
             updateTpFiltersSummary();
             btn.setAttribute('aria-expanded', String(open));
             btn.classList.toggle('open', open);
@@ -3355,6 +3375,7 @@
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
+            if (e.target.closest('#filtersHomeBar')) { toggleTpFilters(true, true); return; }
             if (e.target.closest('#trendsToggle')) { toggleTrends(); return; }
             const gv = e.target.closest('.tc-toggle [data-grid-view]');
             if (gv) { setGridView(gv.dataset.gridView); return; }
