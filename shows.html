@@ -976,6 +976,12 @@
         .tc-toggle button[aria-pressed="true"] { background: #ffd700; color: #1a1a2e; }
         .tc-toggle button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
         .scope-rows-chart { position: relative; margin-bottom: 10px; }
+        @media (max-width: 400px) {
+            .scope-grid-head { flex-wrap: wrap; }
+            .scope-grid-head { gap: 0 12px; }
+            .scope-grid-head .section-title { flex: 1 1 100%; margin-bottom: 10px; }
+            .scope-head-right { flex-wrap: wrap; margin-bottom: 12px; }
+        }
         .scope-rows-chart[hidden] { display: none; }
         #scope-grid-section.chart-mode .scope-table, #scope-grid-section.chart-mode #scope-cols-btn,
         #scope-grid-section.chart-mode #scope-cols-panel { display: none !important; }
@@ -2724,6 +2730,7 @@
                         <tbody id="scope-grid"></tbody>
                     </table>
                     <div class="scope-rows-chart" id="scope-rows-chart" hidden><canvas id="scopeRowsCanvas" role="img"></canvas></div>
+                    <button type="button" class="tab more-events-toggle" id="rows-chart-toggle" style="display:none;"></button>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
                 </div>
 
@@ -2855,23 +2862,24 @@
                 }
             }
             if (p.get('path')) scopePaths[currentView] = list('path', '>');
-            if (p.has('year')) {
-                const v = list('year', ',').filter(y => availableYears.includes(y));
-                filterBoxes.year.set(new Set(v));
-                selectedYears = v.length ? new Set(v) : new Set(['__none__']);
-            }
-            if (p.has('div')) {
-                const v = list('div', ',').filter(d => ALL_DIVISIONS.includes(d));
-                filterBoxes.div.set(new Set(v));
-                selectedDivisions = new Set(v);
-            }
+            // An empty value means "None selected" (all unticked). Values that don't exist (a typo, or an option
+            // renamed since the link was shared) are dropped; if none are left, that filter stays on All.
+            const pick = (k, sep, valid) => {
+                if (!p.has(k)) return null;
+                if (p.get(k) === '') return [];
+                const v = list(k, sep).filter(x => valid.includes(x));
+                return v.length ? v : null;
+            };
+            const years = pick('year', ',', availableYears);
+            if (years) { filterBoxes.year.set(new Set(years)); selectedYears = years.length ? new Set(years) : new Set(['__none__']); }
+            const divs = pick('div', ',', ALL_DIVISIONS);
+            if (divs) { filterBoxes.div.set(new Set(divs)); selectedDivisions = new Set(divs); }
             URL_FACETS.forEach(k => {
-                if (!p.has(k)) return;
-                const v = list(k, '|').filter(x => (facetOptions[k] || []).includes(x));
-                filterBoxes[k].set(new Set(v));
-                selectedFacets[k] = new Set(v);
+                const v = pick(k, '|', facetOptions[k] || []);
+                if (v) { filterBoxes[k].set(new Set(v)); selectedFacets[k] = new Set(v); }
             });
-            if (p.has('loc')) { selectedLocations = new Set(list('loc', '~')); syncLocationCheckboxes(); }
+            const locs = pick('loc', '~', [...new Set(uniqueMatches.map(locationOf))]);
+            if (locs) { selectedLocations = new Set(locs); syncLocationCheckboxes(); }
             const tp = p.get('tp');
             if (tp && (tp in TP_GROUPS || DIV_LABELS[tp])) setTpDiv(tp);
 
@@ -3133,6 +3141,7 @@
 
         function drillInto(key) {
             rolled = null;
+            rowsChartAll = false;
             scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, scopeShownDepth[currentView]);
@@ -3142,6 +3151,7 @@
 
         function drillTo(depth) {
             rolled = null;
+            rowsChartAll = false;
             scopeSort = null;
             matchListExpanded = false;
             scopePaths[currentView] = scopePaths[currentView].slice(0, Math.min(depth, scopeShownDepth[currentView]));
@@ -3620,7 +3630,15 @@
             section.classList.toggle('chart-mode', on);
             toggle.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.gridView === (on ? 'chart' : 'table'))));
             wrap.hidden = !on;
+            const more = document.getElementById('rows-chart-toggle');
+            more.style.display = 'none';
             if (!on) { drawChart('rows', null); return; }
+            // Long lists: the first ROWS_CHART_PREVIEW rows (in the table's order) and a "Show all" button
+            if (rows.length > ROWS_CHART_PREVIEW) {
+                more.style.display = 'block';
+                more.textContent = rowsChartAll ? `Show top ${ROWS_CHART_PREVIEW} only` : `Show all ${rows.length}`;
+                if (!rowsChartAll) rows = rows.slice(0, ROWS_CHART_PREVIEW);
+            }
             const isPhone = window.innerWidth <= 768;
             const labelOf = r => {
                 const l = r.c.isEdition ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label;
@@ -3648,6 +3666,9 @@
                             footer: items => { const n = rows[items[0].dataIndex].matches; return `${n} match${n === 1 ? '' : 'es'} · tap to open`; } } } },
                     scales: { x: { grid, ticks, min, max: 10 }, y: { grid: { display: false }, ticks: { color: '#fff', autoSkip: false } } } } });
         }
+
+        const ROWS_CHART_PREVIEW = 15;
+        let rowsChartAll = false;
 
         function setGridView(v) {
             gridView = v === 'chart' ? 'chart' : 'table';
@@ -3865,6 +3886,11 @@
             if (row) { drillInto(row.dataset.scopeKey); return; }
             const crumb = e.target.closest('#scope-crumbs [data-scope-depth]');
             if (crumb) { drillTo(Number(crumb.dataset.scopeDepth)); return; }
+            if (e.target.closest('#rows-chart-toggle')) {
+                rowsChartAll = !rowsChartAll;
+                renderScopeView();
+                return;
+            }
             if (e.target.closest('#match-list-toggle')) {
                 matchListExpanded = !matchListExpanded;
                 renderScopeView();
