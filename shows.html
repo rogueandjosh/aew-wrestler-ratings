@@ -1393,6 +1393,10 @@
         // "YYYY-MM-DD|Show name|Brand" → rating. The brand keeps apart two broadcasts that share a name
         // (e.g. Holiday Bash '25 - Night 1 on Dynamite AND Collision).
         let showRatings = {};
+        // match-sides.json (Apps Script export, MatchSides.gs): every match's wrestlers in Data sheet row order,
+        // which is Cagematch card order (winners first). Match id → [name, ...]. Used to split tag matches into
+        // their real sides; missing file or match = the older guess from the wrestler files.
+        let matchSides = {};
         let bestMatchIds = new Set();
         let factionsData = { factions: [] };
         let newestArchiveFile = null;      // the newest week is "current" on the rankings page
@@ -1999,9 +2003,66 @@
 
         // Builds "Team A vs Team B" for team matches using the team entries in the same match.
         // Falls back to individual names when no team entry covers a side.
+        // ----- Sides from the card line-up (match-sides.json) -----
+        // Splits a line-up (card order) into sides using the match type. Returns null when the type or the
+        // number of names doesn't give a clean split, so the caller falls back to the older guess.
+        function splitLineup(names, type, teams) {
+            const t = String(type || '').toLowerCase().trim();
+            const n = names.length;
+            const groups = size => (size > 0 && n % size === 0 && n / size >= 2)
+                ? Array.from({ length: n / size }, (_, i) => names.slice(i * size, (i + 1) * size)) : null;
+            if (n < 2) return null;
+            if (t === 'one on one') return n === 2 ? [[names[0]], [names[1]]] : null;
+            if (t === 'tag team') return groups(2);
+            if (t === 'trios') return groups(3);
+            if (/^\d+ (man|person|woman) tag$/.test(t) || /^mixed (tag team|trios)$/.test(t)) return n % 2 === 0 ? groups(n / 2) : null;
+            if (/^\d+ way tag$/.test(t) || t === 'multi tag') return groups(2);
+            if (/^\d+ way trios$/.test(t) || t === 'multi trios') return groups(3);
+            const h = t.match(/^(\d+) on (\d+) handicap$/);
+            if (h) {
+                const a = Number(h[1]), b = Number(h[2]);
+                if (a + b !== n) return null;
+                // Card order puts the winners first, so either side can come first: prefer the split where the
+                // bigger side is a known team (e.g. MJF vs Dutch & Vincent); otherwise as the type is written
+                const big = Math.max(a, b);
+                const isTeam = side => teams.some(tm => tm.members.size === side.length && side.every(x => tm.members.has(x)));
+                const split = first => [names.slice(0, first), names.slice(first)];
+                const options = [split(a), split(b)];
+                return options.find(o => isTeam(o.find(sd => sd.length === big))) || options[0];
+            }
+            // Everyone for themselves (3 Way, 4 Way, Multi Man, battle royals...): each wrestler is a side, in card order
+            return names.map(x => [x]);
+        }
+
+        // Names one side: the biggest known teams inside it first, then anyone left, in card order
+        function sideLabel(side, teams) {
+            const left = new Set(side);
+            const parts = [];
+            teams.filter(tm => tm.members.size > 1 && [...tm.members].every(x => left.has(x)))
+                .sort((a, b) => b.members.size - a.members.size)
+                .forEach(tm => {
+                    if (![...tm.members].every(x => left.has(x))) return;   // overlaps a bigger team already used
+                    tm.members.forEach(x => left.delete(x));
+                    parts.push({ at: Math.min(...[...tm.members].map(x => side.indexOf(x))), text: tm.label });
+                });
+            side.forEach((x, i) => { if (left.has(x)) parts.push({ at: i, text: x }); });
+            const texts = parts.sort((a, b) => a.at - b.at).map(p => p.text);
+            return texts.length === 1 ? texts[0] : `${texts.slice(0, -1).join(', ')} & ${texts[texts.length - 1]}`;
+        }
+
+        function lineupMatchupText(m, teams) {
+            const lineup = m.id != null ? matchSides[m.id] : null;
+            if (!lineup) return null;
+            const names = [...new Set(lineup.map(normaliseName))];
+            const sides = splitLineup(names, m.matchType, teams);
+            return sides ? sides.map(sd => sideLabel(sd, teams)).join(' vs ') : null;
+        }
+
         function getMatchupText(m) {
             const entries = matchIndex.get(m.matchKey) || [];
             const teams = getMatchTeams(entries, (showDetails.shows[`${m.date}|${m.rawEvent}`] || [])[2] || null);
+            const fromCard = lineupMatchupText(m, teams);
+            if (fromCard) return fromCard;
             const isTeamStyle = /tag|trios/i.test(m.matchType || '');
             const twoSided = TWO_SIDED_TEAM_TYPES.test(m.matchType || '');
 
@@ -3175,6 +3236,10 @@
                     getJson('show-ratings.json')
                 ]);
                 if (ratings && ratings.shows) showRatings = ratings.shows;
+                const sides = await getJson('match-sides.json');
+                if (sides && sides.lineups && sides.names) {
+                    Object.keys(sides.lineups).forEach(id => { matchSides[id] = sides.lineups[id].map(i => sides.names[i]); });
+                }
                 if (details) showDetails = { shows: details.shows || {}, titles: details.titles || {}, bestMatches: details.bestMatches || [] };
                 bestMatchIds = new Set(showDetails.bestMatches.map(Number));
                 if (factions && factions.factions) factionsData = factions;
