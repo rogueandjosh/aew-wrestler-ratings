@@ -940,6 +940,44 @@
             .tp-multi-menu { left: auto; right: 0; }      /* right-hand column: open leftwards */
         }
 
+
+        /* Trends: line chart (Match vs Show by year / edition / month) and bar chart (rating spread, or match by match on one show) */
+        .trends-head { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 0 0 10px; margin: 0; color: #ffd700; font: inherit; font-size: 1.3em; font-weight: bold; cursor: pointer; text-align: left; }
+        .trends-head:focus-visible { outline: 2px solid #ffd700; outline-offset: 4px; }
+        .trends-head .tr-arrow { font-size: 0.6em; transition: transform 0.2s; }
+        .trends-head[aria-expanded="false"] .tr-arrow { transform: rotate(-90deg); }
+        .trends-head[aria-expanded="false"] { border-bottom-color: transparent; padding-bottom: 0; }
+        .trends-body { margin-top: 20px; }
+        .trends-body[hidden] { display: none; }
+        .trends-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; }
+        .trends-grid.one { grid-template-columns: 1fr; }
+        .trend-card { min-width: 0; }
+        .trend-card h4 { color: #ffd700; margin: 0 0 4px; font-size: 1.05em; }
+        .trend-card .sub { color: #b8b8b8; font-size: 0.82em; margin: 0 0 10px; }
+        .trend-card .cw { position: relative; height: 260px; }
+        .trend-legend { display: flex; gap: 14px; font-size: 0.82em; color: #ddd; margin-bottom: 6px; }
+        .trend-legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+        .trend-legend i.dash { background: repeating-linear-gradient(90deg, #7cc4ff 0 4px, transparent 4px 7px) !important; }
+        .match-row.flash { animation: rowFlash 1.6s ease-out; }
+        @keyframes rowFlash { 0%, 30% { background: rgba(255, 215, 0, 0.22); } 100% { background: transparent; } }
+        @media (prefers-reduced-motion: reduce) { .match-row.flash { animation: none; background: rgba(255, 215, 0, 0.15); } }
+        /* Table | Chart switch on the breakdown list */
+        .scope-head-right { display: flex; align-items: flex-start; gap: 8px; flex: 0 0 auto; }
+        .tc-toggle { display: inline-flex; border: 2px solid #ffd700; border-radius: 6px; overflow: hidden; }
+        .tc-toggle button { background: none; border: none; padding: 5px 11px; font: inherit; font-size: 0.85em; font-weight: bold; color: #ffd700; cursor: pointer; }
+        .tc-toggle button[aria-pressed="true"] { background: #ffd700; color: #1a1a2e; }
+        .tc-toggle button:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+        .scope-rows-chart { position: relative; margin-bottom: 10px; }
+        .scope-rows-chart[hidden] { display: none; }
+        #scope-grid-section.chart-mode .scope-table, #scope-grid-section.chart-mode #scope-cols-btn,
+        #scope-grid-section.chart-mode #scope-cols-panel { display: none !important; }
+        @media (max-width: 768px) {
+            .trends-grid { grid-template-columns: 1fr; }
+            .trend-card .cw { height: 210px; }
+            .trends-head { font-size: 1.1em; }
+        }
+
         /* ⚙️ Columns: optional breakdown columns */
         .scope-grid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
         .scope-grid-head .section-title { margin-bottom: 15px; }
@@ -1191,6 +1229,7 @@
         <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script src="tooltips.js?v=3"></script>
     <script src="match-filters.js?v=7"></script>
     <script src="filter-ui.js?v=3"></script>
@@ -2504,11 +2543,21 @@
                     <div class="stat-box tt" data-tt="How many of these matches won Best Match of the Week. They're marked with a ⭐ in the match list."><div class="stat-number" id="scope-best">--</div><div class="stat-label">⭐ Best Matches</div></div>
                 </div>
 
+                <div class="table-container trends" id="trends">
+                    <button type="button" class="trends-head" id="trendsToggle" aria-expanded="true" aria-controls="trendsBody">Trends <span class="tr-arrow" aria-hidden="true">▼</span></button>
+                    <div class="trends-body" id="trendsBody"></div>
+                </div>
+
                 <div class="scope-pair">
                 <div class="table-container" id="scope-grid-section">
                     <div class="scope-grid-head">
                         <h3 class="section-title tt tt-below" id="scope-grid-title" data-tt="Select a row to open it and see its own matches and performers." style="cursor: help;"></h3>
-                        <button type="button" class="stats-cols-btn tt tt-below" id="scope-cols-btn" aria-expanded="false" aria-controls="scope-cols-panel" data-tt="Choose which columns to show. Your choice is remembered on this device.">⚙️ Columns</button>
+                        <div class="scope-head-right">
+                            <div class="tc-toggle tt tt-below" role="group" aria-label="Show the list as" data-tt="Table or bar chart. Your choice is remembered on this device.">
+                                <button type="button" data-grid-view="table" aria-pressed="true">Table</button><button type="button" data-grid-view="chart" aria-pressed="false">Chart</button>
+                            </div>
+                            <button type="button" class="stats-cols-btn tt tt-below" id="scope-cols-btn" aria-expanded="false" aria-controls="scope-cols-panel" data-tt="Choose which columns to show. Your choice is remembered on this device.">⚙️ Columns</button>
+                        </div>
                     </div>
                     <div class="scope-cols-panel" id="scope-cols-panel" hidden></div>
                     <div class="scope-subgroups" id="scope-subgroups"></div>
@@ -2526,6 +2575,7 @@
                             </tr></thead>
                         <tbody id="scope-grid"></tbody>
                     </table>
+                    <div class="scope-rows-chart" id="scope-rows-chart" hidden><canvas id="scopeRowsCanvas" role="img"></canvas></div>
                     <button class="tab more-events-toggle" id="scope-more-toggle" style="display:none;"></button>
                 </div>
 
@@ -2674,7 +2724,7 @@
             const title = m.id != null && showDetails.titles[m.id]
                 ? `<span class="match-row-title-name">🏆 ${esc(showDetails.titles[m.id])}</span> · ` : '';
             return `
-                <div class="match-row${isLast ? ' last' : ''}">
+                <div class="match-row${isLast ? ' last' : ''}" data-mid="${esc(String(m.id))}">
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
                         <div class="match-row-title">${esc(getMatchupText(m))}${star}</div>
@@ -2823,6 +2873,7 @@
                         <td class="num col-nine">${r.nine}</td><td class="num col-stars">${r.stars}</td>
                         <td class="chev">›</td>
                     </tr>`).join('');
+                renderRowsChart(rows);
             }
 
             // Match list: top 5 normally; every match on a single show, and at every level below
@@ -2871,6 +2922,203 @@
                 `The tabs choose who is listed; the filters choose which matches count. Minimum ${minMatches} match${minMatches === 1 ? '' : 'es'} to qualify.`);
             document.getElementById('tp-name-col').textContent = tpDiv === 'all' ? 'Wrestler / Team' : isTeamTab ? 'Team' : 'Wrestler';
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10, 'No matches here for this division with the current filters.');
+            renderTrends(node, unique, showCount);
+        }
+
+        // ===== Charts: Trends box and the Table | Chart switch =====
+        // Both follow the current selection and filters. Choices (Trends open/closed, Table or Chart)
+        // are remembered on this device.
+        const TRENDS_KEY = 'ewr-shows-trends', GRID_VIEW_KEY = 'ewr-shows-gridview';
+        const CH_GOLD = '#ffd700', CH_BLUE = '#7cc4ff';
+        let trendsOpen = true, gridView = 'table';
+        try { trendsOpen = localStorage.getItem(TRENDS_KEY) !== 'closed'; gridView = localStorage.getItem(GRID_VIEW_KEY) === 'chart' ? 'chart' : 'table'; } catch (e) { /* defaults */ }
+        const liveCharts = {};
+        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // Same colours as the rating numbers (getRatingClass)
+        function ratingColour(r) {
+            return r >= 9 ? '#4ade80' : r >= 8 ? '#86efac' : r >= 7 ? '#a3e635' : r >= 6 ? '#fbbf24' : r >= 5 ? '#fb923c' : '#f87171';
+        }
+        const round2 = v => (v === null || v === undefined ? null : Math.round(v * 100) / 100);
+
+        function chartBase() {
+            const grid = { color: 'rgba(255, 255, 255, 0.08)' }, ticks = { color: '#ccc' };
+            const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+            return { grid, ticks, opts: { maintainAspectRatio: false, animation: reduced ? false : { duration: 350 },
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 15, 30, 0.95)', borderColor: 'rgba(255, 215, 0, 0.5)', borderWidth: 1, padding: 10 } } } };
+        }
+
+        function drawChart(key, canvas, config) {
+            if (liveCharts[key]) { liveCharts[key].destroy(); delete liveCharts[key]; }
+            if (canvas) liveCharts[key] = new Chart(canvas, config);
+        }
+
+        // Line chart points: one per edition when every row is an edition of the same event,
+        // otherwise one per year, or one per month when everything is in a single year
+        function trendPoints(node, unique) {
+            const kids = node.children ? [...node.children.values()] : [];
+            const point = (label, full, list) => {
+                const u = getUniqueMatches(list), ss = getShowStats(u);
+                return { label, full, match: round2(getAvg(u)), show: round2(ss.avg), n: u.length };
+            };
+            if (kids.length > 1 && kids.every(c => c.isEdition)) {
+                const eds = kids.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+                const short = eds.map(e => { const y = e.label.match(/'\d\d.*$/); return y ? y[0] : `'${(e.date || '').slice(2, 4)}`; });
+                const pts = eds.map((e, i) => point(short.filter(x => x === short[i]).length > 1 ? `${short[i]} ${formatDate(e.date)}` : short[i], `${e.label} (${formatDate(e.date)})`, e.matches));
+                return { pts, per: 'edition', note: '' };
+            }
+            const thisYear = String(new Date().getFullYear());
+            const years = [...new Set(unique.map(m => (m.date || '').slice(0, 4)).filter(Boolean))].sort();
+            if (years.length > 1) {
+                return { per: 'year', note: years.includes(thisYear) ? ` (${thisYear}* = so far)` : '',
+                    pts: years.map(y => point(y === thisYear ? y + '*' : y, y === thisYear ? `${y} (so far)` : y, unique.filter(m => m.date.startsWith(y)))) };
+            }
+            const months = [...new Set(unique.map(m => (m.date || '').slice(0, 7)).filter(Boolean))].sort();
+            if (months.length > 1) {
+                return { per: 'month', note: years[0] ? ` in ${years[0]}` : '',
+                    pts: months.map(ym => point(MONTHS[Number(ym.slice(5, 7)) - 1], `${MONTHS[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`, unique.filter(m => m.date.startsWith(ym)))) };
+            }
+            return { pts: [], per: '', note: '' };
+        }
+
+        function renderTrends(node, unique, showCount) {
+            const box = document.getElementById('trends');
+            if (!box) return;
+            const btn = document.getElementById('trendsToggle'), body = document.getElementById('trendsBody');
+            btn.setAttribute('aria-expanded', String(trendsOpen));
+            body.hidden = !trendsOpen;
+            if (typeof Chart === 'undefined' || !unique.length) {
+                box.style.display = 'none';
+                Object.keys(liveCharts).filter(k => k !== 'rows').forEach(k => { liveCharts[k].destroy(); delete liveCharts[k]; });
+                return;
+            }
+            box.style.display = '';
+            if (!trendsOpen) return;   // drawn when opened
+
+            const single = showCount === 1;
+            const trend = single ? { pts: [] } : trendPoints(node, unique);
+            const hasLine = trend.pts.length > 1;
+            body.innerHTML = `<div class="trends-grid${hasLine ? '' : ' one'}">
+                ${hasLine ? `<div class="trend-card"><h4>Match vs Show Ratings</h4><p class="sub">Average per ${trend.per}${trend.note}</p>
+                    <div class="trend-legend"><span><i style="background:${CH_GOLD}"></i>Avg Match</span><span><i style="background:${CH_BLUE}"></i>Avg Show</span></div>
+                    <div class="cw"><canvas id="trendLine" role="img"></canvas></div></div>` : ''}
+                <div class="trend-card"><h4>${single ? 'Match by Match' : 'Rating Spread'}</h4>
+                    <p class="sub">${single ? 'Each match in card order, opener to main event. Tap a bar to find it in the list.' : 'How many matches got each rating'}</p>
+                    ${single ? `<div class="trend-legend"><span><i class="dash"></i>Show rating</span></div>` : ''}
+                    <div class="cw"><canvas id="trendBar" role="img"></canvas></div></div>
+            </div>`;
+
+            const { grid, ticks, opts } = chartBase();
+            if (hasLine) {
+                const vals = trend.pts.flatMap(p => [p.match, p.show]).filter(v => v !== null);
+                const canvas = document.getElementById('trendLine');
+                canvas.setAttribute('aria-label', `Line chart of average match and show ratings per ${trend.per}: ` +
+                    trend.pts.map(p => `${p.full} match ${p.match ?? 'none'}, show ${p.show ?? 'none'}`).join('; '));
+                drawChart('line', canvas, { type: 'line',
+                    data: { labels: trend.pts.map(p => p.label), datasets: [
+                        { label: 'Avg Match', data: trend.pts.map(p => p.match), borderColor: CH_GOLD, backgroundColor: CH_GOLD, tension: 0.3, pointRadius: 4, pointHoverRadius: 6, spanGaps: true },
+                        { label: 'Avg Show', data: trend.pts.map(p => p.show), borderColor: CH_BLUE, backgroundColor: CH_BLUE, tension: 0.3, pointRadius: 4, pointHoverRadius: 6, spanGaps: true }] },
+                    options: { ...opts, interaction: { mode: 'index', intersect: false },
+                        plugins: { ...opts.plugins, tooltip: { ...opts.plugins.tooltip, callbacks: {
+                            title: items => trend.pts[items[0].dataIndex].full,
+                            label: c => ` ${c.dataset.label}: ${c.parsed.y === null ? '--' : c.parsed.y.toFixed(2)}`,
+                            footer: items => { const n = trend.pts[items[0].dataIndex].n; return `${n} match${n === 1 ? '' : 'es'}`; } } } },
+                        scales: { x: { grid, ticks }, y: { grid, ticks, suggestedMin: Math.min(5.5, Math.floor(Math.min(...vals) * 2) / 2), suggestedMax: Math.max(9, Math.ceil(Math.max(...vals) * 2) / 2), max: 10 } } } });
+            } else drawChart('line', null);
+
+            const barCanvas = document.getElementById('trendBar');
+            if (single) {
+                // Data sheet order = Cagematch card order, so match ids run opener → main event
+                const ms = dedupeMatches(unique).sort((a, b) => Number(a.id) - Number(b.id));
+                const sr = getShowStats(unique).avg;
+                barCanvas.setAttribute('aria-label', 'Bar chart of each match rating in card order: ' +
+                    ms.map((m, i) => `${i + 1}. ${getMatchupText(m)} ${m.rating.toFixed(2)}`).join('; ') + (sr !== null ? `. Show rating ${sr.toFixed(2)}.` : ''));
+                const datasets = [{ label: 'Match rating', data: ms.map(m => m.rating), backgroundColor: ms.map(m => ratingColour(m.rating)), borderRadius: 4, order: 2 }];
+                if (sr !== null) datasets.push({ type: 'line', label: 'Show rating', data: ms.map(() => sr), borderColor: CH_BLUE, borderDash: [6, 5], borderWidth: 2, pointRadius: 0, pointHitRadius: 0, order: 1 });
+                drawChart('bar', barCanvas, { type: 'bar', data: { labels: ms.map((m, i) => String(i + 1)), datasets },
+                    options: { ...opts,
+                        onClick: (e, els) => { const el = els.find(x => x.datasetIndex === 0); if (el) scrollToMatch(ms[el.index].id); },
+                        onHover: (e, els) => { e.native.target.style.cursor = els.some(x => x.datasetIndex === 0) ? 'pointer' : 'default'; },
+                        plugins: { ...opts.plugins, tooltip: { ...opts.plugins.tooltip, filter: i => i.datasetIndex === 0, callbacks: {
+                            title: items => `${items[0].dataIndex + 1}. ${getMatchupText(ms[items[0].dataIndex])}`,
+                            label: c => ` Rating: ${c.parsed.y.toFixed(2)}`,
+                            footer: () => sr !== null ? `Show rating: ${sr.toFixed(2)}` : '' } } },
+                        scales: { x: { grid, ticks }, y: { grid, ticks, min: 0, max: 10 } } } });
+            } else {
+                const B = [['<4', 0, 4], ['4s', 4, 5], ['5s', 5, 6], ['6s', 6, 7], ['7s', 7, 8], ['8s', 8, 9], ['9+', 9, 99]];
+                const counts = B.map(b => unique.filter(m => m.rating >= b[1] && m.rating < b[2]).length);
+                const full = ['under 4', '4.00–4.99', '5.00–5.99', '6.00–6.99', '7.00–7.99', '8.00–8.99', '9.00 or more'];
+                barCanvas.setAttribute('aria-label', 'Bar chart of how many matches got each rating: ' + B.map((b, i) => `${full[i]}: ${counts[i]}`).join('; '));
+                drawChart('bar', barCanvas, { type: 'bar',
+                    data: { labels: B.map(b => b[0]), datasets: [{ label: 'Matches', data: counts, backgroundColor: B.map(b => ratingColour(b[1] + 0.01)), borderRadius: 4 }] },
+                    options: { ...opts, plugins: { ...opts.plugins, tooltip: { ...opts.plugins.tooltip, callbacks: {
+                            title: items => `Rated ${full[items[0].dataIndex]}`,
+                            label: c => { const pct = unique.length ? Math.round(c.parsed.y / unique.length * 100) : 0; return ` ${c.parsed.y.toLocaleString()} match${c.parsed.y === 1 ? '' : 'es'} (${pct}%)`; } } } },
+                        scales: { x: { grid, ticks }, y: { grid, ticks: { ...ticks, precision: 0 }, beginAtZero: true, title: { display: true, text: 'Matches', color: '#b8b8b8' } } } } });
+            }
+        }
+
+        // Bar tapped on the Match by Match chart: open the full list if needed, then scroll to that match
+        function scrollToMatch(id) {
+            const find = () => document.querySelector(`#scope-top-matches .match-row[data-mid="${CSS.escape(String(id))}"]`);
+            let row = find();
+            if (!row && !matchListExpanded) { matchListExpanded = true; renderScopeView(); row = find(); }
+            if (!row) return;
+            const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+            row.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+            row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+        }
+
+        // Table | Chart: the breakdown rows as horizontal bars (Match Avg and Show Avg), same order as the table
+        function renderRowsChart(rows) {
+            const section = document.getElementById('scope-grid-section');
+            const wrap = document.getElementById('scope-rows-chart');
+            const toggle = section.querySelector('.tc-toggle');
+            const canChart = typeof Chart !== 'undefined';
+            toggle.style.display = canChart ? '' : 'none';
+            const on = canChart && gridView === 'chart';
+            section.classList.toggle('chart-mode', on);
+            toggle.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.gridView === (on ? 'chart' : 'table'))));
+            wrap.hidden = !on;
+            if (!on) { drawChart('rows', null); return; }
+            const isPhone = window.innerWidth <= 768;
+            const labelOf = r => {
+                const l = r.c.isEdition ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label;
+                const max = isPhone ? 20 : 34;
+                return l.length > max ? l.slice(0, max - 1) + '…' : l;
+            };
+            const vals = rows.flatMap(r => [r.matchAvg, r.showAvg]).filter(v => v !== null);
+            const min = vals.length ? Math.max(0, Math.min(4, Math.floor(Math.min(...vals)) - 1)) : 0;
+            wrap.style.height = `${rows.length * (isPhone ? 44 : 46) + 50}px`;
+            const canvas = document.getElementById('scopeRowsCanvas');
+            canvas.setAttribute('aria-label', 'Bar chart of average match and show rating for each row: ' +
+                rows.map(r => `${r.c.label} match ${r.matchAvg !== null ? r.matchAvg.toFixed(2) : 'none'}, show ${r.showAvg !== null ? r.showAvg.toFixed(2) : 'none'}`).join('; '));
+            const { grid, ticks, opts } = chartBase();
+            drawChart('rows', canvas, { type: 'bar',
+                data: { labels: rows.map(labelOf), datasets: [
+                    { label: 'Match Avg', data: rows.map(r => round2(r.matchAvg)), backgroundColor: CH_GOLD, borderRadius: 3 },
+                    { label: 'Show Avg', data: rows.map(r => round2(r.showAvg)), backgroundColor: CH_BLUE, borderRadius: 3 }] },
+                options: { ...opts, indexAxis: 'y',
+                    onClick: (e, els) => { if (els.length) drillInto(rows[els[0].index].c.key); },
+                    onHover: (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
+                    plugins: { ...opts.plugins, legend: { display: true, position: 'top', labels: { color: '#ddd', boxWidth: 30 } },
+                        tooltip: { ...opts.plugins.tooltip, callbacks: {
+                            title: items => { const r = rows[items[0].dataIndex]; return r.c.isEdition ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label; },
+                            label: c => ` ${c.dataset.label}: ${c.parsed.x === null ? '--' : c.parsed.x.toFixed(2)}`,
+                            footer: items => { const n = rows[items[0].dataIndex].matches; return `${n} match${n === 1 ? '' : 'es'} · tap to open`; } } } },
+                    scales: { x: { grid, ticks, min, max: 10 }, y: { grid: { display: false }, ticks: { color: '#fff', autoSkip: false } } } } });
+        }
+
+        function setGridView(v) {
+            gridView = v === 'chart' ? 'chart' : 'table';
+            try { localStorage.setItem(GRID_VIEW_KEY, gridView); } catch (e) { /* not saved, still works */ }
+            renderScopeView();
+        }
+
+        function toggleTrends() {
+            trendsOpen = !trendsOpen;
+            try { localStorage.setItem(TRENDS_KEY, trendsOpen ? 'open' : 'closed'); } catch (e) { /* not saved, still works */ }
+            renderScopeView();
         }
 
         // One show (an edition): venue, show rating and a link to that week's rankings
@@ -3030,6 +3278,9 @@
         // Card, breadcrumb, back and "more events" clicks in the show view
         document.addEventListener('click', e => {
             if (e.target.closest('#tpFiltersBtn')) { toggleTpFilters(); return; }
+            if (e.target.closest('#trendsToggle')) { toggleTrends(); return; }
+            const gv = e.target.closest('.tc-toggle [data-grid-view]');
+            if (gv) { setGridView(gv.dataset.gridView); return; }
             if (e.target.closest('#tpMultiBtn')) { toggleTpMulti(document.getElementById('tpMultiMenu').hidden); return; }
             const tpBtn = e.target.closest('.tp-div-tabs [data-tp-div]');
             if (tpBtn) { setTpDiv(tpBtn.dataset.tpDiv); return; }
