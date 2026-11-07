@@ -1643,6 +1643,7 @@
                 keepInPlace(document.querySelector('.tp-head'), move);
             }
             updateTpFiltersSummary();
+            saveSessionState();
             btn.setAttribute('aria-expanded', String(open));
             btn.classList.toggle('open', open);
         }
@@ -2796,6 +2797,112 @@
             return out;
         }
 
+        // ===== Remembering your place: Back, refresh and shared links =====
+        // Where you are and the filters live in the address (shows.html?types=ppv&path=...&stakes=Title Match),
+        // so a link opens the same view. Scroll position, sort, "Show all", the Top Performers filter panel and the
+        // last roll are kept for this tab in sessionStorage, matched to that address.
+        const STATE_KEY = 'ewr-shows-state';
+        const URL_FACETS = ['format', 'stakes', 'cardPos', 'stip'];
+        let stateReady = false;          // nothing is written until the page has put itself back together
+        let restoreAfterLoad = null;     // { y, tpOpen, rolled } from sessionStorage, used once after the first render
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { /* older browsers */ }
+
+        function stateToUrl() {
+            if (!stateReady) return;
+            const p = new URLSearchParams();
+            if (currentView !== 'shows') p.set('view', currentView);
+            if (selectedShowTypes.size !== SCOPE_TABS.length) p.set('types', SCOPE_TABS.filter(t => selectedShowTypes.has(t)).join(','));
+            if (scopePaths[currentView].length) p.set('path', scopePaths[currentView].join('>'));
+            if (filterBoxes.year && filterBoxes.year.selected !== null) p.set('year', [...filterBoxes.year.selected].sort().join(','));
+            if (filterBoxes.div && filterBoxes.div.selected !== null) p.set('div', [...filterBoxes.div.selected].join(','));
+            URL_FACETS.forEach(k => { const b = filterBoxes[k]; if (b && b.selected !== null) p.set(k, [...b.selected].join('|')); });
+            if (selectedLocations) p.set('loc', [...selectedLocations].join('~'));
+            if (tpDiv !== 'all') p.set('tp', tpDiv);
+            const q = p.toString().replace(/%2C/g, ',').replace(/%7C/g, '|').replace(/%3E/g, '>').replace(/%7E/g, '~').replace(/%27/g, "'").replace(/%3A/g, ':');
+            const url = location.pathname + (q ? '?' + q : '') + location.hash;
+            if (url !== location.pathname + location.search + location.hash) {
+                try { history.replaceState(null, '', url); } catch (e) { /* address not updated; page still works */ }
+            }
+            saveSessionState();
+        }
+
+        function saveSessionState() {
+            if (!stateReady) return;
+            const slot = document.getElementById('tpFiltersSlot');
+            const r = rolled && !rolled.empty ? { kind: rolled.kind, label: rolled.label, key: rolled.key, types: rolled.types ? [...rolled.types] : null, gem: !!rolled.match } : null;
+            try {
+                sessionStorage.setItem(STATE_KEY, JSON.stringify({
+                    url: location.search, y: Math.round(window.scrollY), sort: scopeSort, expanded: matchListExpanded,
+                    tpOpen: !!(slot && !slot.hidden), rolled: r
+                }));
+            } catch (e) { /* storage blocked: Back still keeps the address */ }
+        }
+        window.addEventListener('pagehide', saveSessionState);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSessionState(); });
+
+        // Before the first render: view, show types, path, filters and Top Performers tab from the address
+        function applyStateFromUrl() {
+            const p = new URLSearchParams(location.search);
+            const list = (k, sep) => (p.get(k) ? p.get(k).split(sep) : []);
+            const view = p.get('view');
+            if (view === 'stips' || view === 'venues') { currentView = view; updateViewButtons(); }
+            if (p.has('types')) {
+                const t = list('types', ',').filter(x => SCOPE_TABS.includes(x));
+                if (t.length) {
+                    document.querySelectorAll('#showDropdownMenu input').forEach(cb => { cb.checked = t.includes(cb.value); });
+                    selectedShowTypes = new Set(t);
+                    updateShowBtn();
+                }
+            }
+            if (p.get('path')) scopePaths[currentView] = list('path', '>');
+            if (p.has('year')) {
+                const v = list('year', ',').filter(y => availableYears.includes(y));
+                filterBoxes.year.set(new Set(v));
+                selectedYears = v.length ? new Set(v) : new Set(['__none__']);
+            }
+            if (p.has('div')) {
+                const v = list('div', ',').filter(d => ALL_DIVISIONS.includes(d));
+                filterBoxes.div.set(new Set(v));
+                selectedDivisions = new Set(v);
+            }
+            URL_FACETS.forEach(k => {
+                if (!p.has(k)) return;
+                const v = list(k, '|').filter(x => (facetOptions[k] || []).includes(x));
+                filterBoxes[k].set(new Set(v));
+                selectedFacets[k] = new Set(v);
+            });
+            if (p.has('loc')) { selectedLocations = new Set(list('loc', '~')); syncLocationCheckboxes(); }
+            const tp = p.get('tp');
+            if (tp && (tp in TP_GROUPS || DIV_LABELS[tp])) setTpDiv(tp);
+
+            // The rest, if this tab was last on this same address
+            let saved = null;
+            try { saved = JSON.parse(sessionStorage.getItem(STATE_KEY) || 'null'); } catch (e) { saved = null; }
+            if (saved && saved.url === location.search) {
+                if (saved.sort && saved.sort.key) scopeSort = saved.sort;
+                matchListExpanded = !!saved.expanded;
+                restoreAfterLoad = saved;
+            }
+        }
+
+        // After the first render: Top Performers filter panel, the rolled box and the scroll position
+        function finishRestore() {
+            const saved = restoreAfterLoad;
+            restoreAfterLoad = null;
+            stateReady = true;
+            if (saved) {
+                if (saved.rolled) {
+                    const r = saved.rolled;
+                    rolled = { kind: r.kind, label: r.label, key: r.key, types: r.types ? new Set(r.types) : null };
+                    if (r.gem) rolled.match = scopeMatchesAll.find(m => m.matchKey === r.key) || null;
+                    renderScopeTools();
+                }
+                if (saved.tpOpen) toggleTpFilters();
+            }
+            stateToUrl();
+            if (saved && saved.y) requestAnimationFrame(() => window.scrollTo(0, saved.y));
+        }
+
         // ===== ↺ Start over and 🎲 Surprise me =====
         // Start over: back to the main view (Shows › All Shows); filters stay as they are.
         // Surprise me: Random show / Random PPV / Hidden gem use the filters and show types already set;
@@ -3353,6 +3460,7 @@
             renderLeaderboard('scope-leaderboard', calculateWrestlerStats(pool, minMatches), 10, 'No matches here for this division with the current filters.');
             renderTrends(node, unique, showCount);
             renderScopeTools();
+            stateToUrl();
         }
 
         // ===== Charts: Trends box and the Table | Chart switch =====
@@ -3688,14 +3796,17 @@
                 // Build year dropdown from actual data
                 setupFilters();
                 findStipVariants();
+                applyStateFromUrl();     // a shared link, Back or refresh: same view and filters as before
 
                 // Process and render
                 processAllData();
                 renderAllTabs();
+                refreshFilterCounts();
                 
                 // Hide loading, show content
                 loadingContainer.style.display = 'none';
                 document.getElementById('tabsWrapper').style.display = 'block';
+                finishRestore();
                 
             } catch (error) {
                 console.error('Error loading data:', error);
