@@ -7958,7 +7958,7 @@ function renderDynamicStatistics(division, statisticsData, selectedWeekLabel) {
     updateSortedColumnStyle();
 }
 
-async function renderAnalysisSections(sections) {
+async function renderAnalysisSections(sections, weekLabel = null) {
     const container = document.getElementById('analysisSections');
     if (!container) return;
 
@@ -7981,7 +7981,7 @@ async function renderAnalysisSections(sections) {
             const fixedText = fixNameCapitals(sections[key], knownNames);
             // Pass division key so only that division's names are linked
             // 'overall' gets all divisions
-            const linked = await linkWrestlerNames(fixedText, key === 'overall' ? null : key);
+            const linked = await linkWrestlerNames(fixedText, key === 'overall' ? null : key, weekLabel);
             html += '<div class="analysis-section-label">' + sectionLabels[key] + '</div>';
             html += '<div class="analysis-text">' + linked + '</div>';
         }
@@ -8012,7 +8012,7 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                     return;
                 }
                 weekEl.textContent = expandMonthName(data.week);
-                await renderAnalysisSections(data.sections || {});
+                await renderAnalysisSections(data.sections || {}, data.week);
                 // Restore toggle behaviour
                 header.onclick = toggleAnalysis;
                 header.style.cursor = 'pointer';
@@ -8042,7 +8042,7 @@ function updateAnalysisBanner(weekLabel, restoreOpen = false) {
                     return;
                 }
                 weekEl.textContent = expandMonthName(data.week);
-                await renderAnalysisSections(data.sections || {});
+                await renderAnalysisSections(data.sections || {}, data.week);
                 // Archive weeks: start collapsed, user can expand
                 body.classList.remove('open');
                 chevron.classList.remove('open');
@@ -8076,9 +8076,14 @@ function toggleAnalysis() {
     document.querySelector('.analysis-header').setAttribute('aria-expanded', isOpen);
 }
 
+// Team names (tag/trios) found by buildNameToSlug — used to show faction names in the analysis
+const analysisTeamNames = new Set();
+
 async function buildNameToSlug(divisionFilter = null) {
     const divisions = divisionFilter ? [divisionFilter] : ['mens', 'womens', 'menstag', 'womenstag', 'trios'];
     const nameToSlug = {};
+    analysisTeamNames.clear();
+    const isTeamDivision = d => d === 'menstag' || d === 'womenstag' || d === 'trios';
 
     // Add names from specified division(s) only
     if (ratingsData) {
@@ -8086,6 +8091,7 @@ async function buildNameToSlug(divisionFilter = null) {
             (ratingsData[division] || []).forEach(w => {
                 const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
                 if (cleanName) nameToSlug[cleanName] = createSlug(cleanName);
+                if (cleanName && isTeamDivision(division)) analysisTeamNames.add(cleanName);
             });
         });
     }
@@ -8102,6 +8108,7 @@ async function buildNameToSlug(divisionFilter = null) {
                 (prevData[division] || []).forEach(w => {
                     const cleanName = w.name.replace(/\s*\(.*?\)\s*/g, '').trim();
                     if (cleanName && !nameToSlug[cleanName]) nameToSlug[cleanName] = createSlug(cleanName);
+                    if (cleanName && isTeamDivision(division)) analysisTeamNames.add(cleanName);
                 });
             });
         }
@@ -8153,7 +8160,33 @@ function fixNameCapitals(text, names) {
     return result;
 }
 
-async function linkWrestlerNames(text, divisionFilter = null) {
+// ── Faction names in the weekly analysis ───────────────────────────
+// The analysis is typed with the sheet's team names (e.g. "Cassidy, O'Reilly & Strong").
+// Like the rankings, a team that belongs to a faction is shown by the faction's name
+// (getFactionDisplayName, week of the analysis). Display only — the link still goes to
+// the team's own page. The typed name is kept when the faction's name is already in the
+// same sentence (e.g. "The Conglomeration (Cassidy, O'Reilly & Strong)",
+// "the Death Riders duo of Moxley & PAC").
+function analysisSentenceAround(text, start, end) {
+    let s = start;
+    while (s > 0 && !(/[.!?\n]/.test(text[s - 1]) && (s === text.length || /\s/.test(text[s] || ' ')))) s--;
+    let e = end;
+    while (e < text.length && !(/[.!?\n]/.test(text[e]) && (e + 1 >= text.length || /\s/.test(text[e + 1])))) e++;
+    return text.slice(s, e);
+}
+
+function analysisDisplayName(name, text, matchIndex, weekLabel) {
+    if (!weekLabel || !analysisTeamNames.has(name)) return name;
+    if (!factionsData || !factionsData.factions || !factionsData.factions.length) return name;
+    const faction = stripTrioSuffix(getFactionDisplayName(name, weekLabel, true));
+    if (!faction || faction === name) return name;
+    const factionCore = faction.replace(/^The\s+/i, '').toLowerCase();
+    const sentence = analysisSentenceAround(text, matchIndex, matchIndex + name.length).toLowerCase();
+    if (sentence.includes(factionCore)) return name;
+    return faction;
+}
+
+async function linkWrestlerNames(text, divisionFilter = null, weekLabel = null) {
     if (!text || !ratingsData) return text || '';
 
     const nameToSlug = await buildNameToSlug(divisionFilter);
@@ -8173,7 +8206,10 @@ async function linkWrestlerNames(text, divisionFilter = null) {
         const placeholder = '%%LINK' + placeholderIndex + '%%';
         const newResult = result.replace(regex, placeholder);
         if (newResult !== result) {
-            placeholders[placeholder] = '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + name + '</a>';
+            // Sentence check reads the original text (earlier links are placeholders in result)
+            const inOriginal = regex.exec(text);
+            const shown = analysisDisplayName(name, text, inOriginal ? inOriginal.index : 0, weekLabel);
+            placeholders[placeholder] = '<a href="wrestler-stats.html?wrestler=' + nameToSlug[name] + '" class="wrestler-link">' + shown + '</a>';
             placeholderIndex++;
             result = newResult;
         }

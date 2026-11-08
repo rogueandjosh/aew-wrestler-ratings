@@ -2954,14 +2954,111 @@
         let championWeekEnds = {};  // archive week label → that week's last day (YYYY-MM-DD)
         let teamMembersForChamps = null;
         let nameChangesForChamps = [];
+        let factionsForChamps = null;
+
+        // ── Faction names for teams (same rules as getFactionDisplayName on the home page) ──
+        // A team that belongs to a faction is shown by the faction's name, e.g.
+        // "Cassidy, O'Reilly & Strong" → "The Conglomeration". Display only — links,
+        // photos and sorting keep the team's own name.
+        function champCompareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            if (week1 === 'current') return 1;
+            if (week2 === 'current') return -1;
+            const parse = w => {
+                const m = String(w || '').match(/(\w+)\s+['\u2019](\d+)(?:\s+Week\s+(\d+))?/);
+                if (!m) return null;
+                const month = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 }[m[1]];
+                return { year: 2000 + parseInt(m[2], 10), month, weekNum: m[3] ? parseInt(m[3], 10) : 1 };
+            };
+            const a = parse(week1), b = parse(week2);
+            if (!a || !b) return 0;
+            if (a.year !== b.year) return a.year - b.year;
+            if (a.month !== b.month) return a.month - b.month;
+            return a.weekNum - b.weekNum;
+        }
+
+        // "2026-06-14" → "Jun '26 Week 2" (close enough for faction start/end weeks)
+        function champWeekLabelFromDate(iso) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+            if (!m) return null;
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${months[parseInt(m[2], 10) - 1]} '${m[1].slice(2)} Week ${Math.ceil(parseInt(m[3], 10) / 7)}`;
+        }
+
+        function champTeamMembers(teamName, savedMembers) {
+            if (savedMembers && savedMembers.length >= 2) return savedMembers;
+            const teams = teamMembersForChamps || {};
+            for (const key of [teamName, teamName.replace(/^The\s+/i, ''), 'The ' + teamName, currentNameOf(teamName)]) {
+                if (teams[key] && teams[key].length >= 2) return teams[key];
+            }
+            const older = nameChangesForChamps.find(c => c.newName === teamName);
+            if (older && teams[older.oldName] && teams[older.oldName].length >= 2) return teams[older.oldName];
+            if (teamName.includes(' & ')) {
+                const parts = []; let cur = ''; let depth = 0;
+                for (let i = 0; i < teamName.length; i++) {
+                    const ch = teamName[i];
+                    if (ch === '(') depth++; else if (ch === ')') depth--;
+                    if (depth === 0 && teamName.substring(i, i + 3) === ' & ') { parts.push(cur.trim()); cur = ''; i += 2; }
+                    else cur += ch;
+                }
+                if (cur.trim()) parts.push(cur.trim());
+                if (parts.length >= 2) return parts;
+            }
+            return [];
+        }
+
+        function champFactionName(teamName, weekLabel, savedMembers) {
+            const raw = String(teamName || '');
+            const clean = raw.replace(/\s*\(Trio\)\s*/gi, '').trim();
+            if (!raw || !weekLabel || !factionsForChamps || !factionsForChamps.length) return clean;
+            const lower = raw.toLowerCase();
+            const candidates = [];
+            for (const faction of factionsForChamps) {
+                if ((faction.forcedTeams || []).some(t => t.toLowerCase() === lower)) return faction.name;
+                const afterStart = champCompareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || champCompareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if ((faction.overrides || []).some(o => o.toLowerCase() === lower)) continue;
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (!former.leftDate || champCompareWeeks(former.leftDate, faction.dateFrom) > 0) activeMembers.push(former.name);
+                }
+                const isActive = m => activeMembers.some(fm => fm.toLowerCase() === m.toLowerCase());
+                const team = champTeamMembers(raw, savedMembers);
+                if (faction.replacePartialCombos && team.length === 0) {
+                    const matched = activeMembers.filter(m => lower.includes(m.trim().split(/\s+/).pop().toLowerCase()));
+                    if (matched.length >= 2) candidates.push({ faction, matchCount: matched.length, total: matched.length, formerHits: matched.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, team, isActive });
+                    continue;
+                }
+                if (team.length === 0) continue;
+                const inTeam = team.filter(isActive);
+                if (inTeam.length < 2) continue;
+                candidates.push({ faction, matchCount: inTeam.length, total: team.length, formerHits: inTeam.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, team, isActive });
+            }
+            if (!candidates.length) return clean;
+            candidates.sort((a, b) => {
+                const aAll = a.matchCount === a.total, bAll = b.matchCount === b.total;
+                if (aAll !== bAll) return aAll ? -1 : 1;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                if (a.formerHits !== b.formerHits) return a.formerHits - b.formerHits;
+                return (a.faction.dateTo !== 'Current' ? 1 : 0) - (b.faction.dateTo !== 'Current' ? 1 : 0);
+            });
+            const best = candidates[0];
+            if (best.faction.replacePartialCombos || best.matchCount === best.total) return best.faction.name;
+            const others = best.team.filter(m => !best.isActive(m));
+            if (others.length) return `${best.faction.name} & ${others.map(m => m.trim().split(/\s+/).pop()).join(' & ')}`;
+            return clean;
+        }
 
         async function loadCurrentChampions() {
             try {
-                const [champRes, teamRes, namesRes] = await Promise.all([
+                const [champRes, teamRes, namesRes, factionsRes] = await Promise.all([
                     fetch('champions.json', { cache: 'no-cache' }),
                     fetch('team-members.json'),
-                    fetch('name-changes.json').catch(() => null)
+                    fetch('name-changes.json').catch(() => null),
+                    fetch('factions.json').catch(() => null)
                 ]);
+                if (factionsRes && factionsRes.ok) factionsForChamps = (await factionsRes.json()).factions || null;
                 if (namesRes && namesRes.ok) {
                     const nc = await namesRes.json();
                     nameChangesForChamps = (nc.changes || []).slice().sort((a, b) => a.matchId - b.matchId);
@@ -3106,9 +3203,12 @@
                 main = `<div class="current-champion-main"><div>${labelHtml(labelBase)}<div class="current-champion-name">Vacant</div>${holder.start ? `<div class="current-champion-since">Since ${fmtLong(holder.start)}</div>` : ''}</div></div>`;
             } else {
                 const photos = champPhotosHtml(holder.champion, holder.slug, isTeam, holder.members);
+                const holderShown = isTeam
+                    ? champFactionName(holder.champion, week.isCurrent ? (championshipData && championshipData.currentWeek) || champWeekLabelFromDate(todayIso()) : week.label, photos.members)
+                    : holder.champion;
                 const nameHtml = holder.slug
-                    ? `<a class="current-champion-name" href="wrestler-stats.html?wrestler=${holder.slug}">${holder.champion}</a>`
-                    : `<span class="current-champion-name">${holder.champion}</span>`;
+                    ? `<a class="current-champion-name" href="wrestler-stats.html?wrestler=${holder.slug}">${holderShown}</a>`
+                    : `<span class="current-champion-name">${holderShown}</span>`;
                 let daysText = '';
                 if (holder.start) {
                     const asOf = daysBetween(holder.start, week.isCurrent ? todayIso() : week.date);
@@ -3140,7 +3240,8 @@
                     <div class="current-champion-label tt" data-tt="The three champions before them, with the dates and length of each reign. Vacancies are skipped. Click a name to see that wrestler's stats.">Previous Champions</div>
                     ${previous.map(r => {
                         const photos = champPhotosHtml(r.champion, r.slug, isTeam, r.members);
-                        const name = r.slug ? `<a href="wrestler-stats.html?wrestler=${r.slug}">${r.champion}</a>` : r.champion;
+                        const shown = isTeam ? champFactionName(r.champion, champWeekLabelFromDate(r.start), photos.members) : r.champion;
+                        const name = r.slug ? `<a href="wrestler-stats.html?wrestler=${r.slug}">${shown}</a>` : shown;
                         const dates = `${fmtShort(r.start)} – ${r.end ? fmtShort(r.end) : '?'}`;
                         const days = r.end ? ` · ${fmtDays(daysBetween(r.start, r.end))}` : '';
                         return `<div class="previous-champion">
@@ -3357,6 +3458,9 @@
             }
             
             const sorted = sortCompetitors(titleData.competitors, titleName);
+            const teamTitle = titleKindOf(titleName) !== 'singles';
+            const factionWeek = (championshipData && championshipData.currentWeek) || champWeekLabelFromDate(todayIso());
+            const shownName = n => teamTitle ? champFactionName(n, factionWeek) : n;
             const escapedTitle = titleName.replace(/'/g, "\\'");
             
             return `
@@ -3379,7 +3483,7 @@
                             <tbody>
                                 ${sorted.map(c => `
                                     <tr>
-                                        <td><a href="wrestler-stats.html?wrestler=${createSlug(c.name)}" class="competitor-link">${c.name}</a></td>
+                                        <td><a href="wrestler-stats.html?wrestler=${createSlug(c.name)}" class="competitor-link">${shownName(c.name)}</a></td>
                                         <td>${c.matches}</td>
                                         <td>${c.avg != null ? c.avg.toFixed(2) : '—'}</td>
                                         <td>${c.high != null ? c.high.toFixed(2) : '—'}</td>

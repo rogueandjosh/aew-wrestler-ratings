@@ -1067,7 +1067,8 @@
         const isPhone = () => window.matchMedia('(max-width: 768px)').matches;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await Promise.all([loadStatisticsData(), loadTeamData()]);
+            await Promise.all([loadStatisticsData(), loadTeamData(), loadCurrentRankings()]);
+            buildPickOptions(); // again, now faction names and the current week are loaded
             setupYears();
             setupEventListeners();
             checkURLParams();
@@ -1085,9 +1086,10 @@
         // ---------- data ----------
         async function loadTeamData() {
             try {
-                const [teamRes, nameRes] = await Promise.all([fetch('team-members.json'), fetch('name-changes.json')]);
+                const [teamRes, nameRes, factionRes] = await Promise.all([fetch('team-members.json'), fetch('name-changes.json'), fetch('factions.json').catch(() => null)]);
                 if (teamRes.ok) allTeamMembers = await teamRes.json();
                 if (nameRes.ok) allNameChanges = await nameRes.json();
+                if (factionRes && factionRes.ok) allFactions = (await factionRes.json()).factions || null;
             } catch (error) {
                 console.log('Could not load team/name-change data:', error);
             }
@@ -1181,7 +1183,7 @@
                 .filter(w => typeof w.name === 'string' && !w.name.startsWith('Inactive'))
                 .forEach(w => pickOptions.push({
                     name: w.name, division: div, slug: createSlug(w.name),
-                    label: selectedDivision === 'all' ? `${w.name} (${getDivisionLabel(div)})` : w.name
+                    label: selectedDivision === 'all' ? `${displayName(w.name, div)} · ${getDivisionLabel(div)}` : displayName(w.name, div)
                 })));
             pickOptions.sort((a, b) => a.name.localeCompare(b.name));
         }
@@ -1268,8 +1270,8 @@
                 const taken = new Set([1, 2, 3].filter(k => k !== n && picks[k]).map(k => picks[k].slug));
                 let opts = pickOptions.filter(o => !taken.has(o.slug));
                 if (q && !current) {
-                    opts = opts.filter(o => o.name.toLowerCase().includes(q))
-                        .sort((a, b) => (b.name.toLowerCase().startsWith(q)) - (a.name.toLowerCase().startsWith(q)) || a.name.localeCompare(b.name));
+                    opts = opts.filter(o => o.name.toLowerCase().includes(q) || o.label.toLowerCase().includes(q))
+                        .sort((a, b) => (b.label.toLowerCase().startsWith(q)) - (a.label.toLowerCase().startsWith(q)) || a.name.localeCompare(b.name));
                 }
                 shown = opts.slice(0, 80);
                 active = -1;
@@ -1548,7 +1550,7 @@
                 const photo = getPhotoHTML(d, st.rating, st.active);
                 return `<th scope="col" class="cmp-who">
                     <a href="${getWrestlerStatsUrl(d.name)}" class="cmp-who-photo">${photo}</a>
-                    <a href="${getWrestlerStatsUrl(d.name)}" class="cmp-who-name">${escapeHtml(d.name)}</a>
+                    <a href="${getWrestlerStatsUrl(d.name)}" class="cmp-who-name">${escapeHtml(displayName(d.name, d.division))}</a>
                     <span class="cmp-who-div">${getDivisionLabel(d.division)}</span>
                     <span class="status-badge ${st.active ? 'active' : 'inactive'}">${st.active ? 'Active' : 'Inactive'}</span>
                 </th>`;
@@ -1635,7 +1637,7 @@
                 const vs = shared.filter(m => m.side === 'vs');
                 const wi = shared.filter(m => m.side === 'with');
                 const un = shared.filter(m => m.side === 'unknown');
-                const title = `<div class="h2h-title">${escapeHtml(a.name)} <span>+</span> ${escapeHtml(b.name)}</div>`;
+                const title = `<div class="h2h-title">${escapeHtml(displayName(a.name, a.division))} <span>+</span> ${escapeHtml(displayName(b.name, b.division))}</div>`;
                 if (!shared.length) return `<div class="h2h-pair">${title}<p class="h2h-none">Never in the same match${yt}.</p></div>`;
                 const summary = [
                     vs.length ? `Faced each other <strong>${vs.length}</strong> time${vs.length > 1 ? 's' : ''} · average <strong>${avg(vs)}</strong>` : '',
@@ -1656,6 +1658,100 @@
                     ? `<button type="button" class="h2h-more" onclick="const l=this.previousElementSibling;const on=l.classList.toggle('expanded');this.textContent=on?'Show fewer':'Show all (${shared.length})';">Show all (${shared.length})</button>` : '';
                 return `<div class="h2h-pair">${title}<p class="h2h-summary">${summary}</p><ul class="h2h-list">${rows}</ul>${more}</div>`;
             }).join('');
+        }
+
+        // ---------- faction names ----------
+        // Teams in a faction show as "Faction (team name)", e.g. "Death Riders (Castagnoli & Moxley)",
+        // so different teams from one faction can be told apart. Same matching rules as
+        // getFactionDisplayName on the home page, for the current week. Display only —
+        // links, photos, searching by the team's own name and the address are unchanged.
+        let allFactions = null;
+        const factionNameCache = new Map();
+
+        function cmpCompareWeeks(week1, week2) {
+            if (week1 === week2) return 0;
+            const parse = w => {
+                const m = String(w || '').match(/(\w+)\s+['\u2019](\d+)(?:\s+Week\s+(\d+))?/);
+                if (!m) return null;
+                const month = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 }[m[1]];
+                return { year: 2000 + parseInt(m[2], 10), month, weekNum: m[3] ? parseInt(m[3], 10) : 1 };
+            };
+            const a = parse(week1), b = parse(week2);
+            if (!a || !b) return 0;
+            if (a.year !== b.year) return a.year - b.year;
+            if (a.month !== b.month) return a.month - b.month;
+            return a.weekNum - b.weekNum;
+        }
+
+        function cmpFactionWeek() {
+            if (currentRankingsData && currentRankingsData.currentWeek) return currentRankingsData.currentWeek;
+            const d = new Date();
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${months[d.getMonth()]} '${String(d.getFullYear()).slice(2)} Week ${Math.ceil(d.getDate() / 7)}`;
+        }
+
+        function splitTeamName(teamName) {
+            const parts = []; let cur = ''; let depth = 0;
+            for (let i = 0; i < teamName.length; i++) {
+                const ch = teamName[i];
+                if (ch === '(') depth++; else if (ch === ')') depth--;
+                if (depth === 0 && teamName.substring(i, i + 3) === ' & ') { parts.push(cur.trim()); cur = ''; i += 2; }
+                else cur += ch;
+            }
+            if (cur.trim()) parts.push(cur.trim());
+            return parts.length >= 2 ? parts : [];
+        }
+
+        function getFactionName(teamName) {
+            const raw = String(teamName || '');
+            if (!raw || !allFactions || !allFactions.length) return null;
+            const weekLabel = cmpFactionWeek();
+            const lower = raw.toLowerCase();
+            const candidates = [];
+            for (const faction of allFactions) {
+                if ((faction.forcedTeams || []).some(t => t.toLowerCase() === lower)) return faction.name;
+                const afterStart = cmpCompareWeeks(weekLabel, faction.dateFrom) >= 0;
+                const beforeEnd = faction.dateTo === 'Current' || cmpCompareWeeks(weekLabel, faction.dateTo) <= 0;
+                if (!afterStart || !beforeEnd) continue;
+                if ((faction.overrides || []).some(o => o.toLowerCase() === lower)) continue;
+                const activeMembers = [...faction.members];
+                for (const former of (faction.formerMembers || [])) {
+                    if (!former.leftDate || cmpCompareWeeks(former.leftDate, faction.dateFrom) > 0) activeMembers.push(former.name);
+                }
+                const isActive = m => activeMembers.some(fm => fm.toLowerCase() === m.toLowerCase());
+                const team = findTeamMembers(raw) || splitTeamName(raw);
+                if (faction.replacePartialCombos && team.length === 0) {
+                    const matched = activeMembers.filter(m => lower.includes(m.trim().split(/\s+/).pop().toLowerCase()));
+                    if (matched.length >= 2) candidates.push({ faction, matchCount: matched.length, total: matched.length, formerHits: matched.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, team, isActive });
+                    continue;
+                }
+                if (team.length === 0) continue;
+                const inTeam = team.filter(isActive);
+                if (inTeam.length < 2) continue;
+                candidates.push({ faction, matchCount: inTeam.length, total: team.length, formerHits: inTeam.filter(m => !faction.members.some(fm => fm.toLowerCase() === m.toLowerCase())).length, team, isActive });
+            }
+            if (!candidates.length) return null;
+            candidates.sort((a, b) => {
+                const aAll = a.matchCount === a.total, bAll = b.matchCount === b.total;
+                if (aAll !== bAll) return aAll ? -1 : 1;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                if (a.formerHits !== b.formerHits) return a.formerHits - b.formerHits;
+                return (a.faction.dateTo !== 'Current' ? 1 : 0) - (b.faction.dateTo !== 'Current' ? 1 : 0);
+            });
+            const best = candidates[0];
+            if (best.faction.replacePartialCombos || best.matchCount === best.total) return best.faction.name;
+            const others = best.team.filter(m => !best.isActive(m));
+            return others.length ? `${best.faction.name} & ${others.map(m => m.trim().split(/\s+/).pop()).join(' & ')}` : null;
+        }
+
+        // "Death Riders (Castagnoli & Moxley)" for a faction team, otherwise the name as it is
+        function displayName(name, division) {
+            const clean = String(name || '').replace(/\s*\(Trio\)\s*/gi, '').trim();
+            if (!TEAM_DIVS.includes(divisionKey(division))) return name;
+            const key = name + '|' + cmpFactionWeek();
+            if (!factionNameCache.has(key)) factionNameCache.set(key, getFactionName(name));
+            const faction = factionNameCache.get(key);
+            return faction && faction.toLowerCase() !== clean.toLowerCase() ? `${faction} (${clean})` : clean;
         }
 
         // ---------- photos ----------
@@ -1749,7 +1845,7 @@
             const labels = axis.map(k => `${MONTHS[k % 12]} '${String(Math.floor(k / 12)).slice(-2)}`);
 
             const datasets = dataArray.map((d, i) => ({
-                label: d.name,
+                label: displayName(d.name, d.division),
                 data: axis.map(k => {
                     const r = perWrestler[i][k];
                     return r ? r.reduce((a, b) => a + b, 0) / r.length : null;
