@@ -101,7 +101,16 @@
             background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.6);
             border-radius: 20px; padding: 7px 16px; font-size: 0.9em; font-weight: 600; cursor: pointer;
         }
-        .video-min[hidden], .up-next[hidden] { display: none; }
+        .video-min[hidden], .up-next[hidden], .unmute-btn[hidden] { display: none; }
+
+        /* Shown when a video had to start muted (the browser blocked sound until a tap) */
+        .unmute-btn {
+            background: #ffd700; color: #1a1a2e; border: none; border-radius: 20px;
+            padding: 8px 18px; font-size: 0.95em; font-weight: 700; cursor: pointer;
+            animation: unmutePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes unmutePulse { 50% { box-shadow: 0 0 0 6px rgba(255, 215, 0, 0.25); } }
+        @media (prefers-reduced-motion: reduce) { .unmute-btn { animation: none; } }
 
         /* "Up next" — shown when a video ends */
         .up-next {
@@ -214,6 +223,7 @@
                     <source src="${v.src}" type="video/mp4">
                     Your browser doesn't support video playback.
                 </video>
+                <button type="button" class="unmute-btn" hidden>🔊 Tap for sound</button>
                 <button type="button" class="video-min" hidden>⤡ Minimise video</button>
                 ${next ? `<div class="up-next" hidden>
                     <div class="up-next-text"><span>Up next</span>${esc(next.title)}</div>
@@ -239,6 +249,9 @@
             const btn = v.parentElement.querySelector('.video-min');
             exitFull(v);
             v.pause();
+            v.muted = false;
+            const unmute = v.parentElement.querySelector('.unmute-btn');
+            if (unmute) unmute.hidden = true;
             v.load();                 // back to the start, nothing loaded (preload="none")
             v.style.aspectRatio = v.dataset.compactRatio;
             if (btn) btn.hidden = true;
@@ -254,6 +267,9 @@
                 if (upNext) upNext.hidden = true;
                 vids.forEach(o => { if (o !== v && !o.paused) minimise(o); });
             });
+            const unmute = card.querySelector('.unmute-btn');
+            if (unmute) unmute.addEventListener('click', () => { v.muted = false; v.play().catch(() => {}); });
+            v.addEventListener('volumechange', () => { if (unmute && !v.muted) unmute.hidden = true; });
             v.addEventListener('ended', () => setTimeout(() => {
                 minimise(v);
                 if (upNext) upNext.hidden = false;
@@ -283,13 +299,31 @@
         setTimeout(() => card.classList.remove('highlight'), 2500);
     }
 
-    // Opened with #<video id> (e.g. from the home page or a page's tour link): bring it into view
+    // Opened with #<video id> (e.g. from the home page or a page's tour link): bring it into view.
+    // With ?play=<id> too (the home page's "Up next"), it also starts playing. Browsers often
+    // block sound until someone taps the page, so if playing with sound is refused it plays
+    // muted with a "🔊 Tap for sound" button instead.
     function openFromAddress() {
-        const id = decodeURIComponent(location.hash.slice(1));
+        const params = new URLSearchParams(location.search);
+        const playId = params.get('play');
+        const id = decodeURIComponent(location.hash.slice(1)) || playId;
         const card = id && document.getElementById(id);
+        if (playId) history.replaceState(null, '', location.pathname + (id ? '#' + id : ''));   // a refresh won't start it again
         if (!card || !card.classList.contains('video-card')) return;
         card.scrollIntoView({ block: 'start' });
         flash(card);
+        if (playId === id) autoPlay(card);
+    }
+
+    function autoPlay(card) {
+        const v = card.querySelector('video');
+        const unmute = card.querySelector('.unmute-btn');
+        if (!v) return;
+        v.muted = false;
+        v.play().catch(() => {
+            v.muted = true;
+            v.play().then(() => { if (unmute) unmute.hidden = false; }).catch(() => {});
+        });
     }
 
     buildVideos();
