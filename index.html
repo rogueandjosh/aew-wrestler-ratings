@@ -2376,6 +2376,9 @@
                     <a href="shows.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         📺 Show Statistics
                     </a>
+                    <a href="videos.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
+                        📹 Videos
+                    </a>
                     <a href="wrestler-compare.html" style="display: block; padding: 12px 16px; color: #ffd700; text-decoration: none; transition: all 0.3s; font-size: 0.95em;">
                         🥊 Compare Wrestlers
                     </a>
@@ -2663,53 +2666,40 @@
                         Your browser doesn't support video playback.
                     </video>
                     <button type="button" class="about-video-min" hidden>⤡ Minimise video</button>
+                    <!-- Shown when the video ends. To suggest a different video, change the link and title -->
+                    <div class="about-up-next" hidden>
+                        <div class="about-up-next-text"><span>Up next</span>How are points gained or lost?</div>
+                        <a href="videos.html#points" class="about-up-next-btn">▶ Watch</a>
+                    </div>
+                    <a href="videos.html" class="about-more-videos">📹 More videos: how points work and page tours →</a>
                 </div>
             </div>
 
-            <div style="margin: 30px 0;">
-                <h3 style="text-align: center;">📹 How are points gained or lost?</h3>
-                <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">The ratings explained in 1 minute</p>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <video
-                        class="about-video"
-                        controls
-                        playsinline
-                        preload="none"
-                        style="max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700;">
-                        <source src="how-EWR-points-work.mp4" type="video/mp4">
-                        Your browser doesn't support video playback.
-                    </video>
-                    <button type="button" class="about-video-min" hidden>⤡ Minimise video</button>
-                </div>
-            </div>
-
-            <div id="shows-video" style="margin: 30px 0; scroll-margin-top: 20px;">
-                <h3 style="text-align: center;">📹 Explore the Shows page</h3>
-                <p style="text-align: center; color: #b8b8b8; font-size: 0.9em; margin-bottom: 16px;">A 1-minute tour of <a href="shows.html" style="color: #ffd700;">Show Statistics</a></p>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <video
-                        class="about-video"
-                        controls
-                        playsinline
-                        preload="none"
-                        style="max-width: 380px; width: 100%; border-radius: 12px; border: 2px solid #ffd700;">
-                        <source src="shows-page-tour.mp4" type="video/mp4">
-                        Your browser doesn't support video playback.
-                    </video>
-                    <button type="button" class="about-video-min" hidden>⤡ Minimise video</button>
-                </div>
-            </div>
             <style>
                 .about-video-min {
                     background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.6);
                     border-radius: 20px; padding: 7px 16px; font-size: 0.9em; font-weight: 600; cursor: pointer;
                 }
-                .about-video-min[hidden] { display: none; }
+                .about-video-min[hidden], .about-up-next[hidden] { display: none; }
+                .about-up-next {
+                    width: 100%; max-width: 380px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+                    background: rgba(255, 215, 0, 0.1); border: 1px dashed rgba(255, 215, 0, 0.6); border-radius: 10px; padding: 10px 12px;
+                }
+                .about-up-next-text { font-size: 0.9em; color: #e0e0e0; text-align: left; }
+                .about-up-next-text span { display: block; font-size: 0.8em; color: #b8b8b8; text-transform: uppercase; letter-spacing: 0.05em; }
+                .about-up-next-btn {
+                    flex-shrink: 0; background: #ffd700; color: #1a1a2e; border-radius: 8px;
+                    padding: 8px 14px; font-weight: 700; font-size: 0.9em; text-decoration: none;
+                }
+                .about-more-videos { color: #ffd700; font-size: 0.95em; text-decoration: none; border-bottom: 1px solid rgba(255, 215, 0, 0.4); }
+                .about-more-videos:hover { border-bottom-color: #ffd700; }
             </style>
             <script>
             // About videos: a video grows to full size when it plays. "Minimise video" (shown while it's big)
             // stops it and puts it back to the compact size it started at, and the same happens when it ends.
             // Only one video plays at a time.
+            // Old links to the Shows tour (index.html#shows-video) now go to the Videos page
+            if (location.hash === '#shows-video') location.replace('videos.html#shows-tour');
             (function () {
                 const vids = document.querySelectorAll('video.about-video');
                 const exitFull = v => {
@@ -2734,9 +2724,15 @@
                     v.addEventListener('play', () => {
                         v.style.aspectRatio = '';                    // full size while it plays
                         if (btn) btn.hidden = false;
+                        const upNext = v.parentElement.querySelector('.about-up-next');
+                        if (upNext) upNext.hidden = true;
                         vids.forEach(o => { if (o !== v && !o.paused) minimise(o); });
                     });
-                    v.addEventListener('ended', () => setTimeout(() => minimise(v), 300));
+                    v.addEventListener('ended', () => setTimeout(() => {
+                        minimise(v);
+                        const upNext = v.parentElement.querySelector('.about-up-next');
+                        if (upNext) upNext.hidden = false;
+                    }, 300));
                     if (btn) btn.addEventListener('click', () => {
                         const top = v.getBoundingClientRect().top;
                         minimise(v);
@@ -2797,6 +2793,7 @@
                     <p>Minimum 2 matches to appear in rankings.</p>
 
                     <h3>Worked Example</h3>
+                    <p class="worked-example-video">📹 Prefer to watch? <a href="videos.html#points" style="color: #ffd700;">How are points gained or lost? (1 minute)</a></p>
                     <p>Two matches, both rated 9.08 on Cagematch with ~275 votes each. But the rating points gained were very different (ratings as they stood in the rankings that week):</p>
                     
                     <!-- Visual Comparison Cards (figures from the rebuilt ratings, Oct 2026) -->

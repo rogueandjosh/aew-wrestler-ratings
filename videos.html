@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="https://www.elitewrestlerratings.com/videos.html" />
+        <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6YFQ4441BC');
+  (function () {
+    var loaded = false;
+    function loadGA() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC';
+      document.head.appendChild(s);
+    }
+    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+      window.addEventListener(evt, loadGA, { once: true, passive: true });
+    });
+    window.addEventListener('load', function () { setTimeout(loadGA, 6000); });
+  })();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos — Elite Wrestler Ratings</title>
+    <meta name="description" content="Short videos about Elite Wrestler Ratings: what the project is, how wrestlers gain and lose points, and 1-minute tours of the site's pages.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="tooltips.css?v=2">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Overlock', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        button { font-family: 'Overlock', 'Arial', sans-serif; }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header.ewr-header h1 {
+            color: #ffd700; font-size: 2.5em; margin: 30px 0 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        header.ewr-header .subtitle { color: #b8b8b8; font-size: 1em; margin-bottom: 8px; }
+
+        .back-link {
+            text-decoration: none; border: 2px solid #ffd700; padding: 8px 16px; border-radius: 8px;
+            display: inline-block; color: #ffd700; font-size: 14px; font-weight: 500;
+            background: none; cursor: pointer; transition: all 0.3s;
+        }
+        .back-link:hover { background: rgba(255, 215, 0, 0.15); }
+
+        /* ── Sections ── */
+        .video-section { margin-bottom: 40px; }
+        .video-section h2 {
+            color: #ffd700; font-size: 1.6em; margin-bottom: 6px;
+            padding-bottom: 8px; border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .video-section .section-sub { color: #b8b8b8; font-size: 0.95em; margin: 8px 0 20px; }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── One video ── */
+        .video-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 14px;
+            padding: 18px 16px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            scroll-margin-top: 20px;
+            transition: box-shadow 0.4s, border-color 0.4s;
+        }
+        .video-card.highlight { border-color: #ffd700; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.35); }
+        .video-card h3 { color: #ffd700; text-align: center; font-size: 1.2em; }
+        .video-card .video-sub { color: #b8b8b8; font-size: 0.9em; text-align: center; }
+        .video-card .video-sub a { color: #ffd700; }
+        .video-card video {
+            max-width: 380px; width: 100%;
+            border-radius: 12px; border: 2px solid #ffd700; background: #000;
+        }
+
+        .video-min {
+            background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.6);
+            border-radius: 20px; padding: 7px 16px; font-size: 0.9em; font-weight: 600; cursor: pointer;
+        }
+        .video-min[hidden], .up-next[hidden] { display: none; }
+
+        /* "Up next" — shown when a video ends */
+        .up-next {
+            width: 100%; max-width: 380px;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            background: rgba(255, 215, 0, 0.1); border: 1px dashed rgba(255, 215, 0, 0.6);
+            border-radius: 10px; padding: 10px 12px;
+        }
+        .up-next-text { font-size: 0.9em; color: #e0e0e0; }
+        .up-next-text span { display: block; font-size: 0.8em; color: #b8b8b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .up-next-btn {
+            flex-shrink: 0; background: #ffd700; color: #1a1a2e; border: none; border-radius: 8px;
+            padding: 8px 14px; font-weight: 700; font-size: 0.9em; cursor: pointer; text-decoration: none;
+        }
+        .up-next-btn:hover { background: #ffe44d; }
+
+        .more-coming { text-align: center; color: #888; font-size: 0.9em; margin-top: 10px; }
+
+        footer {
+            text-align: center; padding: 20px; margin-top: 40px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3); color: #999; font-size: 0.85em;
+        }
+        footer a { color: #ffd700; text-decoration: none; }
+        footer p { margin-bottom: 4px; }
+
+        @media (max-width: 600px) {
+            header.ewr-header h1 { font-size: 1.8em; }
+            .video-section h2 { font-size: 1.35em; }
+            .video-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link rel="stylesheet" href="header.css?v=1">
+</head>
+<body>
+<div class="container">
+
+    <header class="ewr-header">
+        <div class="nav-buttons">
+            <button type="button" onclick="goBack()" class="back-link">← Back</button>
+            <a href="index.html" class="back-link">🏠 Home</a>
+        </div>
+        <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
+        <h1>📹 Videos</h1>
+        <p class="subtitle">How Elite Wrestler Ratings works, and 1-minute tours of the site's pages.</p>
+    </header>
+
+    <!-- Filled from the VIDEOS list in the script below -->
+    <section class="video-section" id="how-it-works">
+        <h2>🧠 How it works</h2>
+        <p class="section-sub">Watch these in order: the project first, then how wrestlers gain and lose points.</p>
+        <div class="video-grid" data-section="how"></div>
+    </section>
+
+    <section class="video-section" id="page-tours">
+        <h2>🗺️ Page tours</h2>
+        <p class="section-sub">Quick tours of each page: what's on it and how to get the most out of it.</p>
+        <div class="video-grid" data-section="tours"></div>
+        <p class="more-coming">More tours coming soon.</p>
+    </section>
+
+</div>
+
+<footer>
+    <p>Wrestler images sourced from <a href="https://commons.wikimedia.org" target="_blank">Wikimedia Commons</a> under Creative Commons licenses.</p>
+    <p>All images are used under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a> or compatible licenses and remain property of their respective copyright holders.</p>
+    <p>Match ratings data sourced from <a href="https://www.cagematch.net" target="_blank">Cagematch.net</a>.</p>
+    <p style="margin-top: 10px;">&copy; 2026 Elite Wrestler Ratings. All rights reserved.</p>
+</footer>
+
+<script src="tooltips.js?v=3"></script>
+<script>
+    function goBack() {
+        if (document.referrer && document.referrer.includes(window.location.origin)) {
+            window.history.back();
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
+    // ── THE VIDEO LIST ──────────────────────────────────────────────────
+    // To add a video: add one entry here. Everything on the page is built from it.
+    //   id      — the link name: videos.html#<id> opens the page at that video
+    //   section — 'how' (How it works) or 'tours' (Page tours); shown in list order
+    //   next    — id of the video suggested when this one ends (leave out for none)
+    //   page    — for tours: the page it's about, linked under the title
+    // The home page's "What is EWR?" video suggests 'points' next (set in index.html).
+    const VIDEOS = [
+        { id: 'what-is-ewr', section: 'how',   title: 'What is Elite Wrestler Ratings?', sub: 'The project in 1 minute',          src: 'what-is-EWR.mp4',          next: 'points' },
+        { id: 'points',      section: 'how',   title: 'How are points gained or lost?',  sub: 'The ratings explained in 1 minute', src: 'how-EWR-points-work.mp4', next: 'shows-tour' },
+        { id: 'shows-tour',  section: 'tours', title: 'Explore the Shows page',          sub: 'A 1-minute tour of',                src: 'shows-page-tour.mp4',      page: { href: 'shows.html', name: 'Show Statistics' } }
+    ];
+
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+    function buildVideos() {
+        VIDEOS.forEach(v => {
+            const grid = document.querySelector(`.video-grid[data-section="${v.section}"]`);
+            if (!grid) return;
+            const next = v.next && VIDEOS.find(o => o.id === v.next);
+            const sub = v.page
+                ? `${esc(v.sub)} <a href="${v.page.href}">${esc(v.page.name)}</a>`
+                : esc(v.sub);
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.id = v.id;
+            card.innerHTML = `
+                <h3>📹 ${esc(v.title)}</h3>
+                <p class="video-sub">${sub}</p>
+                <video class="about-video" controls playsinline preload="none">
+                    <source src="${v.src}" type="video/mp4">
+                    Your browser doesn't support video playback.
+                </video>
+                <button type="button" class="video-min" hidden>⤡ Minimise video</button>
+                ${next ? `<div class="up-next" hidden>
+                    <div class="up-next-text"><span>Up next</span>${esc(next.title)}</div>
+                    <button type="button" class="up-next-btn" data-next="${next.id}">▶ Play</button>
+                </div>` : ''}`;
+            grid.appendChild(card);
+        });
+    }
+
+    // A video grows to full size when it plays. "Minimise video" (shown while it's big)
+    // stops it and puts it back to the compact size it started at, and the same happens
+    // when it ends — then "Up next" appears. Only one video plays at a time.
+    function setupVideos() {
+        const vids = document.querySelectorAll('video.about-video');
+        const exitFull = v => {
+            try {
+                if (v.webkitDisplayingFullscreen && v.webkitExitFullscreen) v.webkitExitFullscreen();   // iPhone
+                else if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+            } catch (e) {}
+        };
+        const minimise = v => {
+            const btn = v.parentElement.querySelector('.video-min');
+            exitFull(v);
+            v.pause();
+            v.load();                 // back to the start, nothing loaded (preload="none")
+            v.style.aspectRatio = v.dataset.compactRatio;
+            if (btn) btn.hidden = true;
+        };
+        vids.forEach(v => {
+            const card = v.closest('.video-card');
+            const btn = card.querySelector('.video-min');
+            const upNext = card.querySelector('.up-next');
+            v.dataset.compactRatio = (v.offsetWidth && v.offsetHeight) ? `${v.offsetWidth} / ${v.offsetHeight}` : '2 / 1';
+            v.addEventListener('play', () => {
+                v.style.aspectRatio = '';
+                if (btn) btn.hidden = false;
+                if (upNext) upNext.hidden = true;
+                vids.forEach(o => { if (o !== v && !o.paused) minimise(o); });
+            });
+            v.addEventListener('ended', () => setTimeout(() => {
+                minimise(v);
+                if (upNext) upNext.hidden = false;
+            }, 300));
+            if (btn) btn.addEventListener('click', () => {
+                const top = v.getBoundingClientRect().top;
+                minimise(v);
+                if (top < 0) card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            });
+        });
+
+        // "▶ Play" on Up next: go to that video and start it (the tap allows playing with sound)
+        document.querySelectorAll('.up-next-btn').forEach(b => b.addEventListener('click', () => {
+            b.closest('.up-next').hidden = true;
+            const target = document.getElementById(b.dataset.next);
+            if (!target) return;
+            history.replaceState(null, '', '#' + target.id);
+            target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            flash(target);
+            const tv = target.querySelector('video');
+            if (tv) tv.play().catch(() => {});
+        }));
+    }
+
+    function flash(card) {
+        card.classList.add('highlight');
+        setTimeout(() => card.classList.remove('highlight'), 2500);
+    }
+
+    // Opened with #<video id> (e.g. from the home page or a page's tour link): bring it into view
+    function openFromAddress() {
+        const id = decodeURIComponent(location.hash.slice(1));
+        const card = id && document.getElementById(id);
+        if (!card || !card.classList.contains('video-card')) return;
+        card.scrollIntoView({ block: 'start' });
+        flash(card);
+    }
+
+    buildVideos();
+    setupVideos();
+    openFromAddress();
+    window.addEventListener('hashchange', openFromAddress);
+</script>
+</body>
+</html>
