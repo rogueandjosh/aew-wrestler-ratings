@@ -1943,6 +1943,16 @@
             return fixed;
         }
 
+        // Named weekly episodes are shown with their show in front, e.g. "One Year Anniversary"
+        // -> "Collision: One Year Anniversary". Names that already say the show
+        // ("Christmas Collision '24", "Saturday Night Dynamite") and everything else stay as they are.
+        // Display only — keys, links and the address still use the plain event name.
+        function eventDisplayName(eventName, show, showType) {
+            if (!eventName || !show || TAB_BY_SHOWTYPE[showType] !== 'weekly') return eventName;
+            if (eventName.toLowerCase().includes(show.toLowerCase())) return eventName;
+            return `${show}: ${eventName}`;
+        }
+
         // "Blood and Guts '21" -> "Blood and Guts", "Fyter Fest '20 - Night 2" -> "Fyter Fest"
         function getThemeName(eventName) {
             const base = eventName
@@ -1969,7 +1979,7 @@
 
             const edition = {
                 key: `ed:${eventName.toLowerCase()}|${match.date || ''}`,
-                label: eventName,
+                label: eventDisplayName(eventName, show, match.showType),
                 date: match.date || '',
                 isEdition: true,
                 isLeaf: true
@@ -2308,6 +2318,7 @@
                         slug: wrestler.slug || createSlug(normWrestler),
                         rating: match.rating,
                         event: eventName,
+                        eventLabel: eventDisplayName(eventName, match.show, match.showType),
                         show: match.show,
                         date: match.date,
                         matchType: match.matchType,
@@ -3095,7 +3106,7 @@
             const avoid = rolled && rolled.key;
             const pick = pool.length > 1 ? pickRandom(pool.filter(m => m.matchKey !== avoid)) : pool[0];
             openShowsPath(pick.path.map(s => s.key));
-            rolled = { kind: 'gem', types, key: pick.matchKey, match: pick, label: `${pick.event} · ${formatDate(pick.date)}` };
+            rolled = { kind: 'gem', types, key: pick.matchKey, match: pick, label: `${pick.eventLabel || pick.event} · ${formatDate(pick.date)}` };
             renderScopeView();
             refreshFilterCounts();
             const row = document.querySelector(`#scope-top-matches .match-row[data-mid="${CSS.escape(String(pick.id))}"]`);
@@ -3239,7 +3250,7 @@
             const seen = new Map();
             list.forEach(m => {
                 const k = `${m.date}|${m.rawEvent}|${m.show}`;
-                if (!seen.has(k)) seen.set(k, { rating: showRatingOf(m), name: m.event, date: m.date });
+                if (!seen.has(k)) seen.set(k, { rating: showRatingOf(m), name: m.eventLabel || m.event, date: m.date });
             });
             const rated = [...seen.values()].filter(s => s.rating !== null);
             if (!rated.length) return { avg: null, best: null };
@@ -3292,7 +3303,7 @@
                     <div class="match-row-rating ${getRatingClass(m.rating)}">${m.rating.toFixed(2)}</div>
                     <div class="match-row-body">
                         <div class="match-row-title">${cardPos ? `<span class="card-pos">${cardPos}.</span> ` : ''}${esc(getMatchupText(m))}${star}</div>
-                        <div class="match-row-meta">${title}${m.stipulation ? '<span class="match-row-stip">' + esc(m.stipulation) + '</span> · ' : ''}${esc(m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
+                        <div class="match-row-meta">${title}${m.stipulation ? '<span class="match-row-stip">' + esc(m.stipulation) + '</span> · ' : ''}${esc(m.eventLabel || m.event)}${m.matchType ? ' · ' + esc(m.matchType) : ''} · ${formatDate(m.date)}</div>
                     </div>
                 </div>`;
         }
