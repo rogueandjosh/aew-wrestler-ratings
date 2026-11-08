@@ -299,10 +299,10 @@
         setTimeout(() => card.classList.remove('highlight'), 2500);
     }
 
-    // Opened with #<video id> (e.g. from the home page or a page's tour link): bring it into view.
-    // With ?play=<id> too (the home page's "Up next"), it also starts playing. Browsers often
-    // block sound until someone taps the page, so if playing with sound is refused it plays
-    // muted with a "🔊 Tap for sound" button instead.
+    // Opened with #<video id> (a page's tour link, the home page's "Up next", an Updates card…):
+    // bring that video into view and start it. Browsers often block sound until someone taps
+    // the page, so if playing with sound is refused it plays muted with a "🔊 Tap for sound"
+    // button instead. (Older ?play=<id> links still work.)
     function openFromAddress() {
         const params = new URLSearchParams(location.search);
         const playId = params.get('play');
@@ -312,7 +312,7 @@
         if (!card || !card.classList.contains('video-card')) return;
         card.scrollIntoView({ block: 'start' });
         flash(card);
-        if (playId === id) autoPlay(card);
+        autoPlay(card);
     }
 
     function autoPlay(card) {
