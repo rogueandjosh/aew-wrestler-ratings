@@ -61,6 +61,8 @@ function isDoubtful(details) {
     if (members && members.some(m => listed.has(m.trim().toLowerCase()))) return true;
   }
   if (/\bman tag\b/i.test(details.matchType || '') && list.length !== 2) return true;
+  // 8/10/12-person tags (man, woman or person) and handicaps: sides can't be shown reliably yet — never picked
+  if (/\b\d+ (man|woman|person) tag\b|handicap/i.test(details.matchType || '')) return true;
   
   // Mixed matches (e.g. mixed trios) have incomplete wrestler lists — never picked
   if (/mixed/i.test(details.matchType || '')) return true;
