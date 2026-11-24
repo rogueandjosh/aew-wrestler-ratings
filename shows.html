@@ -1324,7 +1324,7 @@
         // (any level whose cards are individual shows uses "Editions" instead)
         const TAB_CONFIG = {
             weekly:    { label: 'Weekly TV', name: 'Weekly TV', rootLabel: 'All Weekly TV',      countLabel: 'Episodes', collapseSingle: false,
-                         childTitles: ['Performance by Show', 'Named Episodes'] },
+                         childTitles: ['Performance by Show', 'Episodes'] },
             ppv:       { label: 'PPVs', name: 'PPV', rootLabel: 'All PPVs',           countLabel: 'Events',   collapseSingle: false,
                          childTitles: ['PPV Performance by Event', 'Performance by Location'] },
             tvspecial: { label: 'TV Specials', name: 'TV Special', rootLabel: 'All TV Specials',    countLabel: 'Events',   collapseSingle: false,
@@ -1972,6 +1972,13 @@
         // Returns { tab, path } for a match, or null if it has no usable show data.
         // Each path step is a drill-down level; the last step is always the individual show (edition)
         // except for regular weekly episodes, which only count at the show level.
+        // "2026-11-19" → "19 Nov 2026"
+        function longDate(iso) {
+            const [y, m, d] = String(iso || '').split('-');
+            const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(m) - 1];
+            return mon ? `${Number(d)} ${mon} ${y}` : String(iso || '');
+        }
+
         function getScopePath(match, eventName) {
             const tab = TAB_BY_SHOWTYPE[match.showType];
             const show = match.show;
@@ -1988,7 +1995,12 @@
             if (tab === 'weekly') {
                 if (!WEEKLY_SHOW_ORDER.includes(show)) return null;
                 const showStep = { key: show.toLowerCase(), label: show };
-                if (eventName.toLowerCase() === show.toLowerCase()) return { tab, path: [showStep] };
+                if (eventName.toLowerCase() === show.toLowerCase()) {
+                    // Regular (un-named) episodes: Dynamite › Regular Episodes › 2026 › Dynamite – 19 Nov 2026
+                    const y = (match.date || '').slice(0, 4);
+                    return { tab, path: [showStep, { key: 'regular', label: 'Regular Episodes' }, { key: 'ry:' + y, label: y },
+                        { ...edition, key: `ed:${show.toLowerCase()}|${match.date || ''}`, label: `${show} – ${longDate(match.date)}`, datedLabel: true }] };
+                }
                 const theme = getThemeName(eventName);
                 return { tab, path: [showStep, { key: 'theme:' + theme.toLowerCase(), label: theme }, edition] };
             }
@@ -2373,7 +2385,7 @@
                     if (!node.children.has(step.key)) {
                         node.children.set(step.key, {
                             key: step.key, label: step.label, date: step.date,
-                            isEdition: !!step.isEdition, isLeaf: !!step.isLeaf, kind: step.kind,
+                            isEdition: !!step.isEdition, isLeaf: !!step.isLeaf, kind: step.kind, datedLabel: !!step.datedLabel,
                             tab: m.tab, level: i, children: new Map(), matches: [], labelCounts: {}
                         });
                     }
@@ -3021,7 +3033,7 @@
                 const last = m.path[m.path.length - 1];
                 if (!last || !last.isEdition || !types.has(m.tab)) return;
                 const key = m.path.map(s => s.key).join('>');
-                if (!shows.has(key)) shows.set(key, { keys: m.path.map(s => s.key), label: last.label, date: last.date });
+                if (!shows.has(key)) shows.set(key, { keys: m.path.map(s => s.key), label: last.datedLabel ? last.label : `${last.label} · ${formatDate(last.date)}`, date: last.date });
             });
             return [...shows.values()];
         }
@@ -3031,7 +3043,7 @@
             if (kind === 'latest' && pool.length) {
                 const pick = pool.reduce((a, b) => ((b.date || '') > (a.date || '') ? b : a));
                 openShowsPath(pick.keys);
-                rolled = { kind, types, key: pick.keys.join('>'), label: `${pick.label} · ${formatDate(pick.date)}` };
+                rolled = { kind, types, key: pick.keys.join('>'), label: pick.label };
                 renderScopeView();
                 refreshFilterCounts();
                 return;
@@ -3040,7 +3052,7 @@
             const avoid = rolled && rolled.key;
             const pick = pool.length > 1 ? pickRandom(pool.filter(s => s.keys.join('>') !== avoid)) : pool[0];
             openShowsPath(pick.keys);
-            rolled = { kind, types, key: pick.keys.join('>'), label: `${pick.label} · ${formatDate(pick.date)}` };
+            rolled = { kind, types, key: pick.keys.join('>'), label: pick.label };
             renderScopeView();
             refreshFilterCounts();
         }
@@ -3053,7 +3065,7 @@
                 if (!types.has(m.tab)) return;
                 if (kind === 'event') {
                     const last = m.path[m.path.length - 1];
-                    if (!last || !last.isEdition || m.path.length < 3) return;
+                    if (!last || !last.isEdition || m.path.length < 3 || last.datedLabel) return;
                     const parent = m.path.slice(0, -1);
                     const key = parent.map(st => st.key).join('>');
                     if (!pool.has(key)) pool.set(key, { keys: parent.map(st => st.key), label: parent[parent.length - 1].label, editions: new Set() });
@@ -3188,7 +3200,7 @@
                 box.innerHTML = `<span>🎲 Nothing to roll for <b>${ROLL_NAMES[rolled.kind]}</b> with these filters. Try fewer filters.</span>`;
                 return;
             }
-            box.innerHTML = `<span>${rolled.kind === 'latest' ? '🆕 Latest show' : '🎲 Rolled'}: <b>${esc(rolled.label)}</b> <span class="rolled-kind">(${ROLL_NAMES[rolled.kind]})</span></span>${again}` +
+            box.innerHTML = `<span>${rolled.kind === 'latest' ? '🆕 Latest show' : '🎲 Rolled'}: <b>${esc(rolled.label)}</b>${rolled.kind === 'latest' ? '' : ` <span class="rolled-kind">(${ROLL_NAMES[rolled.kind]})</span>`}</span>${again}` +
                 (rolled.match ? `<div class="rolled-match">${matchRowHTML(rolled.match, true)}</div>` : '');
         }
 
@@ -3315,7 +3327,8 @@
                 const kind = children[0] && children[0].kind;
                 return { country: 'Countries', region: 'States & Regions', city: 'Cities', arena: 'Arenas' }[kind] || 'Venues';
             }
-            if (children.every(c => c.isEdition)) return 'Editions';
+            if (children.every(c => c.isEdition)) return children.every(c => c.datedLabel) ? 'Episodes' : 'Editions';
+            if (children.every(c => String(c.key).startsWith('ry:'))) return 'Years';
             if (node.isCombined) return 'Performance by Show Type';
             const titles = TAB_CONFIG[node.tab].childTitles;
             return titles[Math.min(node.level, titles.length - 1)];
@@ -3442,6 +3455,8 @@
 
                 if (children.every(c => c.isEdition)) {
                     children.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+                } else if (children.every(c => String(c.key).startsWith('ry:'))) {
+                    children.sort((a, b) => b.label.localeCompare(a.label));     // Regular Episodes: newest year first
                 } else if (!isStips && node.isCombined) {
                     children.sort((a, b) => SCOPE_TABS.indexOf(a.tab) - SCOPE_TABS.indexOf(b.tab));
                 } else if (currentView === 'shows' && node.tab === 'weekly' && node.level === 0) {
@@ -3491,7 +3506,7 @@
                 });
                 const cell = (v, extra = '', tip = '') => `<td class="num ${extra} ${v !== null ? getRatingClass(v) : ''}${tip ? ' tt' : ''}"${tip ? ` data-tt="${esc(tip)}"` : ''}>${v !== null ? v.toFixed(2) : '--'}</td>`;
                 document.getElementById('scope-grid').innerHTML = rows.map(r => `<tr class="scope-row" data-scope-key="${esc(r.c.key)}">
-                        <td class="scope-name">${esc(r.c.label)}${r.c.isEdition ? `<span class="scope-date">${formatDate(r.c.date)}</span>` : ''}</td>
+                        <td class="scope-name">${esc(r.c.label)}${r.c.isEdition && !r.c.datedLabel ? `<span class="scope-date">${formatDate(r.c.date)}</span>` : ''}</td>
                         <td class="num">${r.matches}</td>
                         ${cell(r.matchAvg)}${cell(r.showAvg)}${cell(r.best, 'col-best')}${cell(r.bestShow, 'col-bestShow', r.bestShowInfo ? `Best show: ${r.bestShowInfo.name} (${formatDate(r.bestShowInfo.date)})` : '')}
                         <td class="num col-nine">${r.nine}</td><td class="num col-stars">${r.stars}</td>
@@ -3596,7 +3611,7 @@
                 const u = getUniqueMatches(list), ss = getShowStats(u);
                 return { label, full, match: round2(getAvg(u)), show: round2(ss.avg), n: u.length };
             };
-            if (kids.length > 1 && kids.every(c => c.isEdition)) {
+            if (kids.length > 1 && kids.every(c => c.isEdition) && new Set(kids.map(c => (c.date || '').slice(0, 4))).size > 1) {
                 const eds = kids.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
                 const short = eds.map(e => { const y = e.label.match(/'\d\d.*$/); return y ? y[0] : `'${(e.date || '').slice(2, 4)}`; });
                 const pts = eds.map((e, i) => point(short.filter(x => x === short[i]).length > 1 ? `${short[i]} ${formatDate(e.date)}` : short[i], `${e.label} (${formatDate(e.date)})`, e.matches));
@@ -3726,7 +3741,7 @@
             }
             const isPhone = window.innerWidth <= 768;
             const labelOf = r => {
-                const l = r.c.isEdition ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label;
+                const l = r.c.isEdition && !r.c.datedLabel ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label;
                 const max = isPhone ? 20 : 34;
                 return l.length > max ? l.slice(0, max - 1) + '…' : l;
             };
@@ -3746,7 +3761,7 @@
                     onHover: (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
                     plugins: { ...opts.plugins, legend: { display: true, position: 'top', labels: { color: '#ddd', boxWidth: 30 } },
                         tooltip: { ...opts.plugins.tooltip, callbacks: {
-                            title: items => { const r = rows[items[0].dataIndex]; return r.c.isEdition ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label; },
+                            title: items => { const r = rows[items[0].dataIndex]; return r.c.isEdition && !r.c.datedLabel ? `${r.c.label} (${formatDate(r.c.date)})` : r.c.label; },
                             label: c => ` ${c.dataset.label}: ${c.parsed.x === null ? '--' : c.parsed.x.toFixed(2)}`,
                             footer: items => { const n = rows[items[0].dataIndex].matches; return `${n} match${n === 1 ? '' : 'es'} · tap to open`; } } } },
                     scales: { x: { grid, ticks, min, max: 10 }, y: { grid: { display: false }, ticks: { color: '#fff', autoSkip: false } } } } });
