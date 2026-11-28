@@ -6,6 +6,17 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="canonical" href="https://www.elitewrestlerratings.com/updates.html" />
+    <!-- Owner opt-out: open any page with ?notrack once per browser to stop GA counting your visits (?track turns it back on) -->
+<script>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]notrack\b/.test(q)) localStorage.setItem('ewr_notrack', '1');
+      if (/[?&]track\b/.test(q)) localStorage.removeItem('ewr_notrack');
+      if (localStorage.getItem('ewr_notrack') === '1') window['ga-disable-G-6YFQ4441BC'] = true;
+    } catch (e) {}
+  })();
+</script>
         <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -436,7 +447,7 @@
     <header class="ewr-header">
         <div class="nav-buttons">
             <button type="button" onclick="goBack()" class="back-link">← Back</button>
-            <a href="index.html" class="back-link">🏠 Home</a>
+            <a href="/" class="back-link">🏠 Home</a>
         </div>
         <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
 
@@ -711,7 +722,7 @@
                     <li>New comments appear on the site once they've been approved, to keep spam out</li>
                 </ul>
                 <p>Emoji reactions have been removed to keep the section simple. Comments from the old GitHub-based system haven't carried over.</p>
-                <p>Find it on the <a href="index.html">main page</a> — scroll down past the rankings.</p>
+                <p>Find it on the <a href="/">main page</a> — scroll down past the rankings.</p>
             </div>
         </div>
 
@@ -930,7 +941,7 @@
                     <li>React to the week's rankings with emoji reactions</li>
                     <li>A GitHub account is needed to post — no GitHub? Send questions via <a href="https://www.instagram.com/elitewrestlerratings" target="_blank">Instagram</a> instead</li>
                 </ul>
-                <p>The comment section sits below the rankings on the <a href="index.html">main page</a> — scroll down after the results to find it.</p>
+                <p>The comment section sits below the rankings on the <a href="/">main page</a> — scroll down after the results to find it.</p>
             </div>
         </div>
 
@@ -995,8 +1006,8 @@
                     <li>The rating tiers — Bronze, Silver, Gold and Platinum</li>
                     <li>Rankings updated every Wednesday, tracking every wrestler since AEW began in 2019</li>
                 </ul>
-                <p>Watch it on the <a href="index.html#about">About section</a> of the homepage, or check out the <a href="https://www.instagram.com/elitewrestlerratings" target="_blank">Instagram Reel</a>.</p>
-                <a href="index.html#about" class="update-link-btn">📹 Watch the Video →</a>
+                <p>Watch it on the <a href="/#about">About section</a> of the homepage, or check out the <a href="https://www.instagram.com/elitewrestlerratings" target="_blank">Instagram Reel</a>.</p>
+                <a href="/#about" class="update-link-btn">📹 Watch the Video →</a>
             </div>
         </div>
 
@@ -1087,7 +1098,7 @@
         if (document.referrer && document.referrer.includes(window.location.origin)) {
             window.history.back();
         } else {
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     }
 

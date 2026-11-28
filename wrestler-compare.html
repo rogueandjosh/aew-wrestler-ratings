@@ -6,6 +6,17 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="canonical" href="https://www.elitewrestlerratings.com/wrestler-compare.html" />
+    <!-- Owner opt-out: open any page with ?notrack once per browser to stop GA counting your visits (?track turns it back on) -->
+<script>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]notrack\b/.test(q)) localStorage.setItem('ewr_notrack', '1');
+      if (/[?&]track\b/.test(q)) localStorage.removeItem('ewr_notrack');
+      if (localStorage.getItem('ewr_notrack') === '1') window['ga-disable-G-6YFQ4441BC'] = true;
+    } catch (e) {}
+  })();
+</script>
         <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -933,7 +944,7 @@
         <header class="ewr-header">
             <div class="nav-buttons">
                 <button type="button" onclick="goBackToRankings()" class="back-link">← Back</button>
-                <a href="index.html" class="back-link">🏠 Home</a>
+                <a href="/" class="back-link">🏠 Home</a>
             </div>
             <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1 style="cursor: pointer;" onclick="window.location.href='wrestler-compare.html'" title="Reset to default">🥊 Compare Wrestlers</h1>
@@ -1903,7 +1914,7 @@
         function goBackToRankings() {
             const referrer = document.referrer;
             if (referrer && referrer.includes(window.location.origin)) window.history.back();
-            else window.location.href = 'index.html';
+            else window.location.href = '/';
         }
 
         // Tooltip toggle (on/off remembered per browser)

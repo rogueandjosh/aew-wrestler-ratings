@@ -16,6 +16,17 @@
     document.head.appendChild(link);
   })();
 </script>
+    <!-- Owner opt-out: open any page with ?notrack once per browser to stop GA counting your visits (?track turns it back on) -->
+<script>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]notrack\b/.test(q)) localStorage.setItem('ewr_notrack', '1');
+      if (/[?&]track\b/.test(q)) localStorage.removeItem('ewr_notrack');
+      if (localStorage.getItem('ewr_notrack') === '1') window['ga-disable-G-6YFQ4441BC'] = true;
+    } catch (e) {}
+  })();
+</script>
        <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -772,7 +783,7 @@
         <header class="ewr-header">
             <div class="nav-buttons">
                 <button type="button" onclick="goBackToRankings()" class="back-link">← Back</button>
-                <a href="index.html" class="back-link">🏠 Home</a>
+                <a href="/" class="back-link">🏠 Home</a>
             </div>
             <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1 id="pageTitle" style="cursor: pointer;" onclick="window.location.href='wrestler-stats.html?wrestler=' + new URLSearchParams(window.location.search).get('wrestler')" title="Reset to default">Individual Wrestler Statistics</h1>
@@ -3938,7 +3949,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
                 <div class="error">
                     <h2>Error</h2>
                     <p>${message}</p>
-                    <a href="index.html" class="back-link">← Back to Rankings</a>
+                    <a href="/" class="back-link">← Back to Rankings</a>
                 </div>
             `;
         }
@@ -3959,7 +3970,7 @@ statusBadge.className = isCurrentlyActive ? 'status-badge status-active' : 'stat
             
             if (returnWeek && returnDivision && isFromRankings) {
                 // Coming from rankings - use state restoration
-                let url = `index.html#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
+                let url = `/#week=${encodeURIComponent(returnWeek)}&division=${returnDivision}`;
                 
                 // If came from statistics view, add that to the hash
                 if (returnView === 'statistics') {

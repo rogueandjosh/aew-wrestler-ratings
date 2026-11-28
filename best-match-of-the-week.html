@@ -6,6 +6,17 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="canonical" href="https://www.elitewrestlerratings.com/best-match-of-the-week.html" />
+    <!-- Owner opt-out: open any page with ?notrack once per browser to stop GA counting your visits (?track turns it back on) -->
+<script>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]notrack\b/.test(q)) localStorage.setItem('ewr_notrack', '1');
+      if (/[?&]track\b/.test(q)) localStorage.removeItem('ewr_notrack');
+      if (localStorage.getItem('ewr_notrack') === '1') window['ga-disable-G-6YFQ4441BC'] = true;
+    } catch (e) {}
+  })();
+</script>
         <!-- Google Analytics (loads on first interaction, or after 6 seconds) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -449,7 +460,7 @@
         <header class="ewr-header">
             <div class="nav-buttons">
                 <a href="javascript:history.back()" class="back-link">← Back</a>
-                <a href="index.html" class="back-link">🏠 Home</a>
+                <a href="/" class="back-link">🏠 Home</a>
             </div>
             <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1>⭐ Best Match of the Week</h1>
@@ -577,7 +588,7 @@
             <div class="section-card explanation-text">
                 <div class="section-title">What is Best Match of the Week?</div>
                 <p>Each week, every match from that week's shows is compared by its Cagematch.net community rating — the highest-rated match becomes that week's <strong style="color:#ffd700;">Best Match of the Week</strong>.</p>
-                <p>You'll also see this indicated with a gold <strong style="color:#ffd700; font-size:1.2em;">*</strong> next to the relevant wrestler(s) or team(s) on the <a href="index.html">main rankings pages</a> — click it for a quick popup with the match details. And on the <strong>All Wrestler Statistics</strong> view, the <strong style="color:#ffd700;">⭐</strong> column shows a running total of how many times each wrestler or team has featured in a Best Match, cumulative up to whichever week you have selected.</p>
+                <p>You'll also see this indicated with a gold <strong style="color:#ffd700; font-size:1.2em;">*</strong> next to the relevant wrestler(s) or team(s) on the <a href="/">main rankings pages</a> — click it for a quick popup with the match details. And on the <strong>All Wrestler Statistics</strong> view, the <strong style="color:#ffd700;">⭐</strong> column shows a running total of how many times each wrestler or team has featured in a Best Match, cumulative up to whichever week you have selected.</p>
                 <p>In the <strong>Archive</strong>, tap a week to open the rankings for that week on the main page (on that match's division), or tap a wrestler's name to open their stats.</p>
                 <p>The <strong>Leaderboard</strong> tab only includes wrestlers and teams with 2 or more Best Match appearances, to keep the list focused on genuinely repeat performers rather than one-off entries.</p>
             </div>
@@ -1301,7 +1312,7 @@
         const BM_DIVISION_SLUGS = { "Men's": 'mens', "Women's": 'womens', 'Tag': 'menstag', "Women's Tag": 'womenstag', 'Trios': 'trios' };
         function weekRankingsLink(e) {
             if (!e.__file) return null;
-            return `index.html#week=${encodeURIComponent('archive/' + e.__file)}&division=${BM_DIVISION_SLUGS[e.division] || 'mens'}`;
+            return `/#week=${encodeURIComponent('archive/' + e.__file)}&division=${BM_DIVISION_SLUGS[e.division] || 'mens'}`;
         }
 
         function onArchiveSortSelect(value) {
