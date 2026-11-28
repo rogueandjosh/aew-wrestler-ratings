@@ -6,6 +6,17 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="canonical" href="https://www.elitewrestlerratings.com/shows.html" />
+    <!-- Owner opt-out: open any page with ?notrack once per browser to stop GA counting your visits (?track turns it back on) -->
+<script>
+  (function () {
+    try {
+      var q = location.search;
+      if (/[?&]notrack\b/.test(q)) localStorage.setItem('ewr_notrack', '1');
+      if (/[?&]track\b/.test(q)) localStorage.removeItem('ewr_notrack');
+      if (localStorage.getItem('ewr_notrack') === '1') window['ga-disable-G-6YFQ4441BC'] = true;
+    } catch (e) {}
+  })();
+</script>
     <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YFQ4441BC"></script>
 <script>
@@ -1187,7 +1198,7 @@
         <header class="ewr-header">
             <div class="nav-buttons">
                 <button type="button" onclick="goBack()" class="back-link">← Back</button>
-                <a href="index.html" class="back-link">🏠 Home</a>
+                <a href="/" class="back-link">🏠 Home</a>
             </div>
             <button id="tooltipToggle" class="active" onclick="toggleTooltips()" title="Turn the extra info boxes on or off">💡 Tooltips ON</button>
             <h1><a href="shows.html" title="Reset to default">📺 Show Statistics</a></h1>
@@ -1482,7 +1493,7 @@
             if (referrer && referrer.includes(window.location.origin)) {
                 window.history.back();
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/';
             }
         }
 
@@ -3799,7 +3810,7 @@
             // (The show rating is in the summary boxes: Show Rating and Show Rank)
             const file = weekFileFor(weekLabel);
             if (file) {
-                const href = file === newestArchiveFile ? 'index.html' : `index.html#week=${encodeURIComponent('archive/' + file)}&division=mens`;
+                const href = file === newestArchiveFile ? '/' : `/#week=${encodeURIComponent('archive/' + file)}&division=mens`;
                 parts.push(`<a class="tt" data-tt="The wrestler rankings for ${esc(weekLabel)}, the week of this show" href="${href}">📊 Rankings after this show →</a>`);
             }
             el.innerHTML = parts.join('');
